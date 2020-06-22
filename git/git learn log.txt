@@ -1,0 +1,152 @@
+注册
+git config --global user.name "username"
+git config --global user.email "email_address"
+
+需要在git工作目录下：不是在安装目录初始化
+需要先建立一个项目文件夹如：D:\MyProject
+git init
+
+Git 工作流程：
+1.在工作目录中添加修改文件
+
+2.讲需要进行版本管理的文件放入暂存区域
+
+git add file
+
+3.将暂存区域的文件提交到git仓库
+
+git commit -m "add a readme file" : 后面的字符串表示对该次版本的描述
+
+20170407215637
+
+查看当前状态
+git status：注意只有在git工作目录下才有效,一般用于新建一个文件后查看状态，是否加入暂存区
+
+如：
+git add LICENSE
+git status
+
+恢复最近一次的暂存区域，即反悔最近提交的文件
+git reset HEAD <file>...
+测试可知：若未加入文件限制，可能会把最近的改变都还原，
+只能再次git add 
+但是只要提交后
+git commit -m "discriable"
+HEAD便无用
+
+git checkout -- filename
+危险命令，如未提交到暂存区，该命令会将暂存区的上一个版本
+文件覆盖当前工作区文件，如你更改的当前工作区文件就是用
+该命令，会丢失保存的内容
+
+
+若：
+git add file
+git status
+然后又修改了该file
+这时会有暂存区和工作区 绿色和红色 添加未添加的区别
+git add modifyfile
+此时会覆盖暂存区的file
+
+
+git log
+查看历史提交记录，使用SHA1计算的值作为ID记录每一次的文件修改，排序使用时间降序
+
+
+20170408140619
+
+
+git reset HEAD~
+HEAD~是指当前head指针指的上一个版本
+命令完成后仓库repository的上一版本会回到暂存区
+git status
+此时由于暂存区是上一个版本的记录，而工作目录是原本head新版本
+一样的记录，此时就会产生工作目录新版本与暂存区是旧版本不一致
+status就会提醒工作区一改变，却没有提交到stage and repository
+git log
+此时只有两个记录，但是并没有丢失那个新版本，只是head没有指向它了
+a <- b(head) <- c(head只能看到前面的)
+git reset HEAD~10表示10个~（head~~~~~~~~~~）
+
+reset 选项
+git reset [--mixed] HEAD~(默认添加)
+移动head 指向上一个快照
+将移动后的head快照回滚到暂存区
+
+git reset --soft HEAD~
+移动head指向上一个快照
+相当于撤销提交commit（但是提交后任然会被保存，只是指针不再指向）
+
+git reset --hard HEAD~
+在--mixed基础上覆盖到工作目录，有危险
+
+git reset SHA1_ID
+可以使用指定的SHA值来回滚指定快照，在不清楚指针head时使用
+可以回滚也可以恢复以前的版本，只要知道以前的id
+如果已经回滚，有没有记录上一个版本的id
+git log已经无法查到
+注意：指定的值至少5位以上：de4e23fb.....
+这里使用的是--mixed默认恢复到暂存区和仓库，没有对工作区修改
+
+git reset snapshort_version filename|path
+回滚某个快照中个别文件
+
+对git log 无法查看撤销commit的sha ID，就无法使用git reset SHA1_ID撤销
+【穿越回来】
+如果你对退回到历史版本后悔了，想回到历史版本以后的某个版本，怎么办？
+需要两步：
+第一步：使用git reflog查看HEAD变动的历史。
+因为任何一个commit都曾是HEAD的位置。所以找到HEAD的历史，
+就能找到任何一个commit。
+第二步：git reset --hard commit_id穿越回来
+随意可以通过git reset --hard commit_id来穿越到任何版本。
+例如我们想回到最新版本，则执行命令：
+【git reflog 与 git log区别】
+git reflog 可以查看所有分支的所有操作记录（包括commit和reset的操作），
+包括已经被删除的commit记录，
+git log则不能察看已经删除了的commit记录
+
+
+20170410140017
+
+git diff
+此命令比较的是工作目录(Working tree)和暂存区域快照(index)之间的差异
+也就是修改之后还没有暂存起来的变化内容。
+使用diff命令前，必须要添加到 add 暂存区或 commit repository
+并且要对工作区的对应的文件修改过才有输出不同
+@@ -1 +1,2 @@
+表示旧文件从第1行开始不显示1行，新文件从第1行开始显示2行
+@@ -12,20 +12,20 @@
+表示旧文件从第12行开始显示20行，新文件从第12行开始显示20行
+可通过vim的快捷键控制显示
+/search_name搜索
+
+
+git config --global core.quotepath false 
+告诉 git 不对 0x80 以上的字符进行转义 
+用于解决git log 中文文件名乱码的问题
+但是找不到git diff 中文件内容中文乱码的问题
+尽管都设置了UTF-8 NO BOM格式
+
+ 
+
+git diff SHA1 SHA2
+比较两个历史版本之间的差异
+通过git log 或 git reflog查看shaid
+
+git diff SHA1_ID
+比较任意快照和当前工作目录下的差异
+
+git diff HEAD 
+比较最新快照和当前工作目录下的差异
+
+git diff --cached SHA1_ID
+比较暂存区和仓库快照
+
+
+
+
+
+
+
+
