@@ -227,3 +227,31 @@ rm -rf old-repository.git
 ```bash
 git remote -v
 ```
+
+- 如何避免在git push时输入密码
+
+  原因：
+
+  在push时使用的是https而不是ssh
+
+  ```bash
+  $ git remote -v
+  > origin  https://github.com/USERNAME/REPOSITORY.git (fetch)
+  > origin  https://github.com/USERNAME/REPOSITORY.git (push)
+  ```
+
+  方法：使用ssh push
+
+  ```bash
+  $ git remote set-url origin git@github.com:USERNAME/REPOSITORY.git
+  # Verify new remote URL
+  $ git remote -v
+  > origin  git@github.com:USERNAME/REPOSITORY.git (fetch)
+  > origin  git@github.com:USERNAME/REPOSITORY.git (push)
+  ```
+
+  参考：
+
+  - [Git push requires username and password](https://stackoverflow.com/q/6565357/8566831)
+  - [github Switching remote URLs from HTTPS to SSH](https://help.github.com/en/github/using-git/changing-a-remotes-url#switching-remote-urls-from-https-to-ssh)
+
