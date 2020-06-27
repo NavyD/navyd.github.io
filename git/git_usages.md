@@ -77,3 +77,7 @@ github有多个服务器，可能在使用ssh时对改变的ip时自动加入`~/
 解决：
 
 warnings后ip已添加到ssh hosts文件中，下次push时不会再warning
+
+参考：
+
+- [Warning: Permanently added the RSA host key for IP address](https://stackoverflow.com/a/18711834/8566831)
