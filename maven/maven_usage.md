@@ -630,3 +630,52 @@ mvn clean dependency:copy-dependencies package
 当多个执行被给定一个特定的阶段时，它们按照POM中指定的顺序执行，首先是继承的执行。
 
 一些目标可以在一个以上的阶段中使用，并且可能没有明智的默认，你可以指定一个阶段
+
+## 常见问题
+
+### resource path
+
+描述：
+
+项目目录结构：
+
+```
+src
+ |-test
+    |-java
+       |-org.abc.xyz
+          |-abcTest.java
+    |-resources
+       |-abc.a
+```
+
+在abcTest中不能找到`src/test/resources/abc.a`中的文件
+
+```java
+FileChannel fc = FileChannel.open(Path.of("./abc.a"),  StandardOpenOption.READ);
+```
+
+原因：
+
+在maven中由`Apache Maven Resources Plugin`管理main test resources
+
+方法1： `ClassLoader`
+
+该方法可以不依赖maven路径，eclipse,idea都可用
+
+```java
+ClassLoader classLoader = getClass().getClassLoader();
+File file = new File(classLoader.getResource("somefile").getFile());
+System.out.println(file.getAbsolutePath());
+```
+
+方法2：maven path
+
+```java
+File resourcesDirectory = new File("src/test/resources");
+```
+
+参考：
+
+- [How to get the path of src/test/resources directory in JUnit?](https://stackoverflow.com/q/28673651/8566831)
+- [Apache Maven Resources Plugin](https://maven.apache.org/plugins/maven-resources-plugin/index.html)
