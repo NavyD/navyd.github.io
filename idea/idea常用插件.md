@@ -1,4 +1,8 @@
-# idea常见问题
+# idea插件
+
+## plugins
+
+- Free-idea-mybatis
 
 ## plugins marketplace加载很慢
 
@@ -11,7 +15,3 @@
 去除`secure connection`
 
 `Setting -> Appearance & Behavior -> Syetem Setting -> Updates`路径，勾掉Use secure connection
-
-## plugins
-
-- Free-idea-mybatis
