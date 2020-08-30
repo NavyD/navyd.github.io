@@ -6,6 +6,8 @@
 
 ### 如何将本地仓库同步到github新的仓库中
 
+方法1
+
 ```bash
 # Create a bare clone of the repository.
 git clone --bare https://github.com/exampleuser/old-repository.git
@@ -17,6 +19,14 @@ git push --mirror https://github.com/exampleuser/new-repository.git
 # Remove the temporary local repository you created earlier.
 cd ..
 rm -rf old-repository.git
+```
+
+方法2
+
+```bash
+git remote add origin git@github.com:NavyD/jvm-rust.git
+git branch -M master 
+git push -u origin master                       
 ```
 
 参考
