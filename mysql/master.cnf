@@ -1,0 +1,12 @@
+[mysqld]
+# docker server date 
+default-time-zone = +8:00
+
+# log
+
+# 事务成功后持久化redo log,binlog
+innodb_flush_log_at_trx_commit = 1
+sync_binlog = 1
+
+# isolation
+transaction_isolation = REPEATABLE-READ
