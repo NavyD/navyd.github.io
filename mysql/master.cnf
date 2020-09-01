@@ -8,5 +8,8 @@ default-time-zone = +8:00
 innodb_flush_log_at_trx_commit = 1
 sync_binlog = 1
 
-# isolation
-transaction_isolation = REPEATABLE-READ
+# transaction isolation
+transaction-isolation = REPEATABLE-READ
+transaction-read-only = OFF
+# 自动提交事务
+set autocommit = 1
