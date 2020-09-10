@@ -69,7 +69,7 @@ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo apt install ./google-chrome-stable_current_amd64.deb
 ```
 
-#### 安装zsh
+#### zsh配置
 
 ```bash
 sudo apt-get install zsh
@@ -78,12 +78,23 @@ git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
 ```
 
-zsh配置
+配置
 
 ```bash
 plugins=(git z extract zsh-autosuggestions zsh-syntax-highlighting mvn)
 ZSH_THEME="ys"
 ```
+
+##### home/end 响应修复
+
+写入shell环境：
+
+```bash
+bindkey  "^[[H"   beginning-of-line
+bindkey  "^[[F"   end-of-line
+```
+
+参考：[Fix key settings (Home/End/Insert/Delete) in .zshrc when running Zsh in Terminator Terminal Emulator](https://stackoverflow.com/questions/8638012/fix-key-settings-home-end-insert-delete-in-zshrc-when-running-zsh-in-terminat)
 
 ##### 注意
 
@@ -335,3 +346,7 @@ $ cat ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml | 
 注意：在`xfce4-settings-manager -> keyboard`中快捷键不全
 
 参考：[Change global keyboard shortcuts](https://unix.stackexchange.com/questions/44643/change-global-keyboard-shortcuts#:~:text=Go%20to%20Menu%20%E2%86%92%20Settings,Xfce4%2C%20though%20not%20user%20friendly.)
+
+### 黑屏
+
+在一段时间没有操作后就会黑屏，但是`xfce4-session`并没有进程退出
