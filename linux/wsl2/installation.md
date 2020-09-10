@@ -12,8 +12,108 @@ sudo sed --in-place=.bak "s/archive.ubuntu.com/mirrors.aliyun.com/g" /etc/apt/so
 
 ### softwares
 
+#### 通用
+
 ```bash
-sudo apt-get install openjdk-14-jdk
+sudo apt-get install openjdk-14-jdk shellcheck tldr
+```
+
+- tldr: Displays simple help pages for command-line tools
+
+#### fcitx中文输入法
+
+```bash
+sudo apt-get install fcitx fcitx-pinyin
+```
+
+注意：
+
+- 如果输入法没有响应，可检查配置是否在shell环境中
+
+```bash
+export XMODIFIERS=@im=fcitx
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+```
+
+- 如果切换快捷键没有反应，可以看下是不是设置与windows一样了，最好是不一样就好打开fcitx配置
+`input method configuration -> global config`:
+
+```
+trigger input method: CTRL+SHIFT+SPACE,
+extra key for trigger input method: L_SHIFT,
+enable hotkey to scroll between input method: checked
+```
+
+#### VS code
+
+#### Idea
+
+安装idea桌面快捷方式到`/usr/share/applications/intellij-idea.desktop`：
+
+```toml
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Icon=/usr/local/bin/idea/idea-IU-201.7846.76//bin/idea.png
+Exec="/usr/local/bin/idea/idea-IU-201.7846.76//bin/idea.sh %f"
+Name=IntelliJ Idea
+Categories=Development;IDE;
+```
+
+#### Chrome
+
+```bash
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install ./google-chrome-stable_current_amd64.deb
+```
+
+#### 安装zsh
+
+```bash
+sudo apt-get install zsh
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+```
+
+zsh配置
+
+```bash
+plugins=(git z extract zsh-autosuggestions zsh-syntax-highlighting mvn)
+ZSH_THEME="ys"
+```
+
+##### 注意
+
+当从bash先启动startxfce4，退出后加载的是zsh，则可能导致先前的变量`DISPLAY`无效：
+
+```bash
+$ startxfce4
+/usr/lib/xorg/Xorg.wrap: Only console users are allowed to run the X server
+```
+
+修改文件`/etc/X11/Xwrapper.config`：
+
+```bash
+allowed_users = anybody
+```
+
+启动后依然出现error，这是由于`DISPLAY`无效导致，在`.zshrc`中重设即可
+
+[Error when trying to use Xorg: Only console users are allowed to run the X server?
+](https://unix.stackexchange.com/a/529945)
+
+#### Docker安装
+
+- [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
+- [Install Docker Compose](https://docs.docker.com/compose/install/)
+
+ohmyzsh自带plugin支持命令行补全
+
+```bash
+plugins=(git z extract zsh-autosuggestions zsh-syntax-highlighting mvn docker)
 ```
 
 ## desktop environment
