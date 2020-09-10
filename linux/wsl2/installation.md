@@ -305,3 +305,33 @@ E: Sub-process /usr/bin/dpkg returned an error code (1)
 还有另一种方法：重建`/var/lib/dpkg/info`
 
 [E: Sub-process /usr/bin/dpkg returned an error code (1)解决办法](https://blog.csdn.net/stickmangod/article/details/85316142)
+
+### 修改快捷键
+
+#### xml
+
+用xml的方式修改`~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml`
+
+```bash
+$ cat ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml | grep -i insert
+      <property name="&lt;Alt&gt;Insert" type="string" value=""/>
+```
+
+将对应的`property.value`置为空即可
+
+```bash
+$ cat ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml | grep -i f12
+      <property name="&lt;Alt&gt;F12" type="empty"/>
+```
+
+参考：
+
+- [pycharm在ubuntu xfce下面Alt+insert快捷键冲突解决](https://yuchi.blog.csdn.net/article/details/77433901)
+
+#### editor
+
+在settings editor中找`xfce4-keyboard-shortcuts`中对应的快捷键，删除`property.value`置为空
+
+注意：在`xfce4-settings-manager -> keyboard`中快捷键不全
+
+参考：[Change global keyboard shortcuts](https://unix.stackexchange.com/questions/44643/change-global-keyboard-shortcuts#:~:text=Go%20to%20Menu%20%E2%86%92%20Settings,Xfce4%2C%20though%20not%20user%20friendly.)
