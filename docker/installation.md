@@ -41,3 +41,6 @@ service docker status > /dev/null || sudo service docker start
 
 - [sudo visudo 退出保存](https://blog.csdn.net/weiyi556/article/details/78980139)
 - [how wsl config service auto start, like docker #30](https://github.com/microsoft/WSL2-Linux-Kernel/issues/30#issuecomment-577667701)
+
+## docker更换为国内镜像
+
