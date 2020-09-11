@@ -350,3 +350,23 @@ $ cat ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml | 
 ### 黑屏
 
 在一段时间没有操作后就会黑屏，但是`xfce4-session`并没有进程退出
+
+在/etc/X11/xorg.conf.d/文件夹下创建文件20-intel.conf。
+
+```bash
+sudo mkdir /etc/X11/xorg.conf.d
+sudo vim /etc/X11/xorg.conf.d/20-intel.conf
+```
+
+然后在文件中输入以下内容，保存退出即可解决问题。
+
+```bash
+Section "Device"
+  Identifier "Intel Graphics"
+  Driver "intel"
+EndSection
+```
+
+***测试不可用***
+
+参考： [[Debian10]intel核显使用xfce锁屏会黑屏无法唤醒解决方案](https://www.cnblogs.com/DouglasLuo/p/12715993.html)
