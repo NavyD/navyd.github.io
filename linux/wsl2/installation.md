@@ -349,24 +349,22 @@ $ cat ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml | 
 
 ### 黑屏
 
-在一段时间没有操作后就会黑屏，但是`xfce4-session`并没有进程退出
+描述：
 
-在/etc/X11/xorg.conf.d/文件夹下创建文件20-intel.conf。
+在`ctrl+alt+L`按下后黑屏
 
-```bash
-sudo mkdir /etc/X11/xorg.conf.d
-sudo vim /etc/X11/xorg.conf.d/20-intel.conf
-```
+解决方法：
 
-然后在文件中输入以下内容，保存退出即可解决问题。
+`light-locker`进程
 
 ```bash
-Section "Device"
-  Identifier "Intel Graphics"
-  Driver "intel"
-EndSection
+$ ps -aux | grep light-locker
+navyd      582  0.0  0.0 263736 21016 pts/0    Sl   14:47   0:00 light-locker
+
+$ killall light-locker
 ```
 
-***测试不可用***
+参考：
 
-参考： [[Debian10]intel核显使用xfce锁屏会黑屏无法唤醒解决方案](https://www.cnblogs.com/DouglasLuo/p/12715993.html)
+- [How do I disable automatic screen locking in Xubuntu?](https://askubuntu.com/a/544824)
+- [Disable Ctrl-Alt-L's behavior of locking the screen](https://askubuntu.com/questions/1005457/disable-ctrl-alt-ls-behavior-of-locking-the-screen)
