@@ -4,35 +4,21 @@ Deque接口的大小可变数组的实现。
 
 特性：
 
-- 底层实现时循环数组
+- 底层实现：循环数组
 - 没有容量限制，在数组元素装满时自动扩容
 - 禁止插入null元素
 - 作为Stack和Queue时比LinkedList实现更好（前提是减少频繁的扩容和remove数组移动操作）
 - 不是线程安全的
 
-## 结构：
+## 类结构
 
-```java
-public class ArrayDeque<E> extends AbstractCollection<E> implements Deque<E>, Cloneable, Serializable
-```
+![](./images/c4f7b8de-1d5b-4f46-809d-6135b3d337f6.png)
 
-![](https://upload-images.jianshu.io/upload_images/16181993-ba0197a65b4508cd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-
-所有方法：
-
-![arraydeque_1.png](https://upload-images.jianshu.io/upload_images/16181993-8ce437374a9927ec.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-
-### 主要字段：
+### 主要字段
 
 ```java
 // 存储元素数组大小是2的幂  
 transient Object[] elements;
-
-// head指针指向当前元素并插入时由后向前移动
-transient int head;
-
-// tail指针指向下个添加元素的位置。插入由前往后
-transient int tail;
 
 // 数组的最小长度
 private static final int MIN_INITIAL_CAPACITY = 8;
@@ -40,7 +26,15 @@ private static final int MIN_INITIAL_CAPACITY = 8;
 
 ## 循环数组
 
-循环数组通过保持数组头部head和尾部tail两个元素指针按对应的插入顺序访问元素。类似与链表的访问
+循环数组通过保持数组头部head和尾部tail两个元素指针按对应的插入顺序访问元素。类似与链表的访问，java相关字段
+
+```java
+// head指针指向当前元素并插入时由后向前移动
+transient int head;
+
+// tail指针指向下个添加元素的位置。插入由前往后
+transient int tail;
+```
 
 ### 插入
 
@@ -98,8 +92,6 @@ addLast将元素插入到数组头部`tail & length`，插入后tail指向下一
 3. 移动head部分到数组末端并将head的元素置为null
 
 ![](images/arraydeque_6.png)
-
-
 
 #### delete源码
 
@@ -190,7 +182,6 @@ addLast将元素插入到数组头部`tail & length`，插入后tail指向下一
 ### 指针位置
 
 在ArrayDeque为空时有head == tail，head != tail时ArrayDeque一定存在元素（在add时可能有短暂的head==tail触发扩容操作）
-
 
 
 **读取时** head指针指向最近插入的head元素。tail指针指向下一个插入的tai元素位置即指向null，在addX插入扩容时短暂与head相等而不指向null。
