@@ -48,6 +48,49 @@ addLast将元素插入到数组头部`tail & length`，插入后tail指向下一
 
 ![](../../../assets/images/1d50a9d5-4697-4984-bbf0-623904d85e26.png)
 
+#### add源码
+
+```java
+/**
+ * Inserts the specified element at the front of this deque.
+ *
+ * @param e the element to add
+ * @throws NullPointerException if the specified element is null
+ */
+public void addFirst(E e) {
+    if (e == null)
+        throw new NullPointerException();
+    // 对head指针取余，如head=0时，-1&15=15,14&15=14，将head指针从数组后面开始
+    // 从head=e.length-1开始
+    elements[head = (head - 1) & (elements.length - 1)] = e;
+    // 扩容
+    if (head == tail)
+        doubleCapacity();
+}
+```
+
+- void addLast(E e)
+
+```java
+/**
+ * Inserts the specified element at the end of this deque.
+ *
+ * <p>This method is equivalent to {@link #add}.
+ *
+ * @param e the element to add
+ * @throws NullPointerException if the specified element is null
+ */
+public void addLast(E e) {
+    if (e == null)
+        throw new NullPointerException();
+    // 直接插入tail位置
+    elements[tail] = e;
+    // 将tail只想后一个位置 判断tail == head就扩容
+    if ( (tail = (tail + 1) & (elements.length - 1)) == head)
+        doubleCapacity();
+}
+```
+
 ### 扩容
 
 当`tail==head`时触发扩容操作。在插入数组最后一个空位时，相应指针会移动一位使得tail == head。
