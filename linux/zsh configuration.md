@@ -174,8 +174,10 @@ $
 
 ```zsh
 # 显示随机名言
-fortune | cowsay
+fortune | cowsay -f "$(find /usr/share/cowsay/cows/ | shuf -n 1)"
 ```
+
+参考：[cowsay command line with random cowfile](https://askubuntu.com/a/514134)
 
 ### rand-quote plugin
 
