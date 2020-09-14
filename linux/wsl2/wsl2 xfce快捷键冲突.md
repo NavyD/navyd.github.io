@@ -71,3 +71,11 @@ sudo vim /usr/share/fcitx/addon/fcitx-vk.conf
 ```
 
 参考：[Weird on screen keyboard appearing when pressing ctrl+alt+b](https://askubuntu.com/a/884288)
+
+## 通用冲突
+
+### 描述
+
+- `alt+f12`在idea中打开terminal时不可用
+- `alt+insert`idea不可用
+- `ctrl+alt+l`为xfce锁屏，idea格式化不可用
