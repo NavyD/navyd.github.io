@@ -92,7 +92,14 @@ windows防火墙开启入站规则或者直接关闭防火墙
     Set-ExecutionPolicy RemoteSigned
     ```
 
-2. 如果没有找到`ifconfig`命令，则ubuntu安装`sudo apt-get install net-tools`
+2. 如果没有找到`ifconfig`命令，则ubuntu安装`sudo apt-get install net-tools`。还有一种方式只用`ip`命令：`ip a | awk '/^[0-9]+: / {}; /inet.*eth0/ {print gensub(/(.*)\/(.*)/, "\\1", "g", $2)}'`，但是ps中不能运行
+
+    ```powershell
+    bash.exe -c "ip a | awk '/^[0-9]+: / {}; /inet.*eth0/ {print gensub(/(.*)\/(.*)/, "\\1", "g", $2)}'"
+    \\1, g, )}': -c: line 0: unexpected EOF while looking for matching `''
+    \\1, g, )}': -c: line 1: syntax error: unexpected end of file
+    ```
+
 3. 如果提示`The requested operation requires elevation (Run as administrator).`，则需要在管理员打开powershell运行
 
     ```powershell
