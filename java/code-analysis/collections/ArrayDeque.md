@@ -14,17 +14,23 @@ Deque接口的大小可变数组的实现。
 
 ![](../../../assets/images/c4f7b8de-1d5b-4f46-809d-6135b3d337f6.png)
 
-### 主要字段
+### 构造器
+
+默认的ArrayDeque构造器创建的数组长度为16，而ArrayDeque能创建的最小数组长度即为16
 
 ```java
 // 存储元素数组大小是2的幂  
 transient Object[] elements;
-
-// 数组的最小长度
-private static final int MIN_INITIAL_CAPACITY = 8;
+/**
+ * Constructs an empty array deque with an initial capacity
+ * sufficient to hold 16 elements.
+ */
+public ArrayDeque() {
+    elements = new Object[16];
+}
 ```
 
-## 循环数组
+## 数据结构：循环数组
 
 循环数组通过保持数组头部head和尾部tail两个元素指针按对应的插入顺序访问元素。类似与链表的访问，java相关字段
 
@@ -35,6 +41,50 @@ transient int head;
 // tail指针指向下个添加元素的位置。插入由前往后
 transient int tail;
 ```
+
+### 指针位置
+
+#### 关系
+
+在ArrayDeque为空时有`head == tail`：
+
+- 初始状态：`head==tail==0`
+- 删除所有元素时：`head==tail`，可能在任何位置不一定在0
+
+当ArrayDeque一定存在元素：
+
+- head != tail时（在add时可能有短暂的head==tail触发扩容操作）
+
+head指针指向最近插入的head元素。tail指针指向下一个插入的tail元素位置即指向null，在addX插入扩容时短暂与head相等而不指向null。
+
+即在 *插入时* head需要向前移动一位插入新元素并置为head-1。tail直接插入当前位置并指向下一个空位置
+
+#### 移动
+
+以head为例，当head在插入时向后移动，初始化时`head=0`，插入一个元素`head-1=-1`，不可为数组索引；删除时当`head=data.length-1`，删除最后元素`head+1=data.length`，不可索引。
+
+通常的方式是对head取余如：
+
+- `(this.head + 1) % this.data.length`插入head向前移动
+- `(this.head - 1 + this.data.length) % this.data.length`删除head向后移动
+
+但是取余%这样频繁操作可能会影响性能，ArrayDeque用分配2^n位操作[分配空间](#分配空间)的方式优化了性能
+
+#### 插入
+
+在插入时必定tail <= head，在扩容后`head < tail`，插入时head后移，有`tail < head`
+
+#### 删除
+
+删除时tail和head的位置大小无法确定，哪一种都有可能，最终都是tail左移`<--`，head右移`-->`
+
+1. `tail < head`：指针head或tail都没有过界，head仍然在尾部，tail在头部
+2. `tail > head`：指针head或tail有一个过界，head可能删除到了头部，或tail删除到了尾部。不存在同时过界
+3. `tail == head`：所有元素全部删除完时tail == head，此时指针可能在数组任何位置
+
+典型的指针位置图示：
+
+![](../../../assets/images/07e4cd7d-755d-40ab-8870-71c000f0d6e3.png)
 
 ### 插入
 
@@ -47,6 +97,26 @@ addLast将元素插入到数组头部`tail & length`，插入后tail指向下一
 插入图示：
 
 ![](../../../assets/images/1d50a9d5-4697-4984-bbf0-623904d85e26.png)
+
+ArrayDeque的底层数组大小为2的次幂，这样可以使用位操作提高取余的速度
+
+#### 取余操作
+
+下面是使用8bit(最高位为符号位)进行addFirst的取余操作过程：
+
+```
+head = (head - 1) & (elements.length - 1)
+
+head = 0		elements.length = 16	// 初始化时的设置
+// 第一次插入
+1111 1111		// (complement) head-1 =-1 
+0000 1111	&	// elements.length - 1=15
+0000 1111		// -1 & 15 = 15
+// 第二次插入
+0000 1110		// (complement) head(15)-1 = 14
+0000 1111	&	// elements.length - 1 = 15
+0000 1110		// 14 & 15 = 14
+```
 
 #### add源码
 
@@ -67,11 +137,7 @@ public void addFirst(E e) {
     if (head == tail)
         doubleCapacity();
 }
-```
 
-- void addLast(E e)
-
-```java
 /**
  * Inserts the specified element at the end of this deque.
  *
@@ -90,6 +156,8 @@ public void addLast(E e) {
         doubleCapacity();
 }
 ```
+
+
 
 ### 扩容
 
@@ -360,203 +428,112 @@ private boolean delete(int i) {
 
 指定位置靠近head时通过右移覆盖删除，指定位置靠近tail时通过左移覆盖删除
 
-### 指针位置
+### 简单实现
 
-在ArrayDeque为空时有head == tail，head != tail时ArrayDeque一定存在元素（在add时可能有短暂的head==tail触发扩容操作）
-
-**读取时** head指针指向最近插入的head元素。tail指针指向下一个插入的tail元素位置即指向null，在addX插入扩容时短暂与head相等而不指向null。
-
-**插入时** head需要向前移动一位插入新元素并置为head-1。tail直接插入当前位置并指向下一个空位置
-
-#### 插入
-
-在插入时必定tail <= head，在扩容后`head < tail`，插入时head后移，有`tail < head`
-
-#### 删除
-
-删除时tail和head的位置大小无法确定，哪一种都有可能
-
-1. `tail < head`：指针head或tail都没有过界，head仍然在尾部，tail在头部
-2. `tail > head`：指针head或tail有一个过界，head可能删除到了头部，或tail删除到了尾部。不存在同时过界
-3. `tail == head`：所有元素全部删除完时tail == head，此时指针可能在数组任何位置
-
-典型的指针位置图示：
-
-![](../../../assets/images/07e4cd7d-755d-40ab-8870-71c000f0d6e3.png)
-
-## 构造器
+[641. 设计循环双端队列](https://leetcode-cn.com/problems/design-circular-deque/)
 
 ```java
-    /**
-     * Constructs an empty array deque with an initial capacity
-     * sufficient to hold 16 elements.
-     */
-    public ArrayDeque() {
-        elements = new Object[16];
+class MyCircularDeque {
+    private final int[] data;
+    private int head;
+    private int tail;
+
+    /** Initialize your data structure here. Set the size of the deque to be k. */
+    public MyCircularDeque(int k) {
+        this.data = new int[k + 1];
+        this.head = 0;
+        this.tail = 0;
     }
-    /**
-     * Constructs an empty array deque with an initial capacity
-     * sufficient to hold the specified number of elements.
-     *
-     * @param numElements  lower bound on initial capacity of the deque
-     */
-    public ArrayDeque(int numElements) {
-    	// 取num的2次幂
-        allocateElements(numElements);
+
+    /** Adds an item at the front of Deque. Return true if the operation is successful. */
+    public boolean insertFront(int value) {
+        if (this.isFull()) {
+            return false;
+        }
+
+        this.head = (this.head - 1 + this.data.length) % this.data.length;
+        this.data[this.head] = value;
+        return true;
     }
-    
-    /**
-     * Constructs a deque containing the elements of the specified
-     * collection, in the order they are returned by the collection's
-     * iterator.  (The first element returned by the collection's
-     * iterator becomes the first element, or <i>front</i> of the
-     * deque.)
-     *
-     * @param c the collection whose elements are to be placed into the deque
-     * @throws NullPointerException if the specified collection is null
-     */
-    public ArrayDeque(Collection<? extends E> c) {
-        allocateElements(c.size());
-        addAll(c);
+
+    /** Adds an item at the rear of Deque. Return true if the operation is successful. */
+    public boolean insertLast(int value) {
+        if (this.isFull()) {
+            return false;
+        }
+        this.data[this.tail] = value;
+        this.tail = (this.tail + 1) % data.length;
+        return true;
     }
+
+    /** Deletes an item from the front of Deque. Return true if the operation is successful. 
+    public boolean deleteFront() {
+        if (this.isEmpty()) {
+            return false;
+        }
+        this.data[this.head] = -1;
+        this.head = (this.head + 1) % this.data.length;
+        return true;
+    }
+
+    /** Deletes an item from the rear of Deque. Return true if the operation is successful. */
+    public boolean deleteLast() {
+        if (this.isEmpty()) {
+            return false;
+        }
+        this.tail = (this.tail - 1 + this.data.length) % this.data.length;
+        this.data[this.tail] = -1;
+        return true;
+    }
+
+    /** Get the front item from the deque. */
+    public int getFront() {
+        if (this.isEmpty()) {
+            return -1;
+        }
+        return this.data[this.head];
+    }
+
+    /** Get the last item from the deque. */
+    public int getRear() {
+        if (this.isEmpty()) {
+            return -1;
+        }
+        return this.data[(this.tail - 1 + this.data.length) % this.data.length];
+    }
+
+    /** Checks whether the circular deque is empty or not. */
+    public boolean isEmpty() {
+        return this.head == this.tail;
+    }
+
+    /** Checks whether the circular deque is full or not. */
+    public boolean isFull() {
+        return this.head == (this.tail + 1) % this.data.length;
+    }
+
+}
 ```
 
-### 注意
-
-- 默认的ArrayDeque构造器创建的数组长度为16，而ArrayDeque能创建的最小数组长度即为16
-
-## 队列Queue
+## 队列Queue与堆栈Stack
 
 ### 插入
 
-- boolean add(E e)
-
-```java
-    /**
-     * Inserts the specified element at the end of this deque.
-     *
-     * <p>This method is equivalent to {@link #addLast}.
-     *
-     * @param e the element to add
-     * @return {@code true} (as specified by {@link Collection#add})
-     * @throws NullPointerException if the specified element is null
-     */
-    public boolean add(E e) {
-        addLast(e);
-        return true;
-    }
-```
-
-- boolean offer(E e)
-
-```java
-    /**
-     * Inserts the specified element at the end of this deque.
-     *
-     * <p>This method is equivalent to {@link #offerLast}.
-     *
-     * @param e the element to add
-     * @return {@code true} (as specified by {@link Queue#offer})
-     * @throws NullPointerException if the specified element is null
-     */
-    public boolean offer(E e) {
-        return offerLast(e);
-    }
-```
-
-#### 注意
-
-- 与LinkedList一样属于无界队列，不存在因为容量限制而添加失败，所以addX和offerX系列的方法本质都是一样的，但是作为queue使用时仍然应该区分这两种形式的api。
+与LinkedList一样属于无界队列，不存在因为容量限制而添加失败，所以addX和offerX系列的方法本质都是一样的，但是作为queue使用时仍然应该区分这两种形式的api。
 
 offer和add底层调用为addLast(E e)，但是在这两个方法中一个前者可以返回false(实际仍然不可offerLast)，后者返回固定值true。在需要使用true/false验证时可以使用推荐offer方法
 
 ### 删除
 
-- E remove()
-
-```java
-    /**
-     * Retrieves and removes the head of the queue represented by this deque.
-     *
-     * This method differs from {@link #poll poll} only in that it throws an
-     * exception if this deque is empty.
-     *
-     * <p>This method is equivalent to {@link #removeFirst}.
-     *
-     * @return the head of the queue represented by this deque
-     * @throws NoSuchElementException {@inheritDoc}
-     */
-    public E remove() {
-        return removeFirst();
-    }
-```
-
-- E poll()
-
-```java
-    /**
-     * Retrieves and removes the head of the queue represented by this deque
-     * (in other words, the first element of this deque), or returns
-     * {@code null} if this deque is empty.
-     *
-     * <p>This method is equivalent to {@link #pollFirst}.
-     *
-     * @return the head of the queue represented by this deque, or
-     *         {@code null} if this deque is empty
-     */
-    public E poll() {
-        return pollFirst();
-    }
-```
-
-#### 注意
-
-- remove和poll方法在队列为空时前者抛出异常而后者返回null。底层实现均调用pollFirst()，区别在于前者判断为null时抛出异常而后者返回null
+remove和poll方法在队列为空时前者抛出异常而后者返回null。底层实现均调用pollFirst()，区别在于前者判断为null时抛出异常而后者返回null
 
 ### 检查
 
-- E element()
-
-```java
-    /**
-     * Retrieves, but does not remove, the head of the queue represented by
-     * this deque.  This method differs from {@link #peek peek} only in
-     * that it throws an exception if this deque is empty.
-     *
-     * <p>This method is equivalent to {@link #getFirst}.
-     *
-     * @return the head of the queue represented by this deque
-     * @throws NoSuchElementException {@inheritDoc}
-     */
-    public E element() {
-        return getFirst();
-    }
-```
-
-- E peek()
-
-```java
-    /**
-     * Retrieves, but does not remove, the head of the queue represented by
-     * this deque, or returns {@code null} if this deque is empty.
-     *
-     * <p>This method is equivalent to {@link #peekFirst}.
-     *
-     * @return the head of the queue represented by this deque, or
-     *         {@code null} if this deque is empty
-     */
-    public E peek() {
-        return peekFirst();
-    }
-```
-
-#### 注意
-
-- element和peek方法底层实现都是返回head指针位置的数组元素，区别在于当队列为空时前者抛出异常而后者返回null
+element和peek方法底层实现都是返回head指针位置的数组元素，区别在于当队列为空时前者抛出异常而后者返回null
 
 ### 总结
 
-- 将ArrayDeque作为队列实现比LinkedList更好，因为其禁止插入null和有更好的性能
+***将ArrayDeque作为队列实现比LinkedList更好，因为其禁止插入null和有更好的性能***
 
 链表在访问时不容易缓存命中，且需要更大的内存，作为队列唯一的好处是在迭代时更容易删除。
 
@@ -566,787 +543,186 @@ ArrayDeque作为队列针对与数组两端add/remove操作时要快于LinkedLis
 
 参考： [Why is ArrayDeque better than LinkedList](https://stackoverflow.com/a/6163204)
 
-## 堆栈Stack
-
-### 入栈
-
-```java
-    /**
-     * Pushes an element onto the stack represented by this deque.  In other
-     * words, inserts the element at the front of this deque.
-     *
-     * <p>This method is equivalent to {@link #addFirst}.
-     *
-     * @param e the element to push
-     * @throws NullPointerException if the specified element is null
-     */
-    public void push(E e) {
-        addFirst(e);
-    }
-```
-
-### 出栈
-
-```java
-    /**
-     * Pops an element from the stack represented by this deque.  In other
-     * words, removes and returns the first element of this deque.
-     *
-     * <p>This method is equivalent to {@link #removeFirst()}.
-     *
-     * @return the element at the front of this deque (which is the top
-     *         of the stack represented by this deque)
-     * @throws NoSuchElementException {@inheritDoc}
-     */
-    public E pop() {
-        return removeFirst();
-    }
-```
-
-### 检查
-
-```java
-    /**
-     * Retrieves, but does not remove, the head of the queue represented by
-     * this deque, or returns {@code null} if this deque is empty.
-     *
-     * <p>This method is equivalent to {@link #peekFirst}.
-     *
-     * @return the head of the queue represented by this deque, or
-     *         {@code null} if this deque is empty
-     */
-    public E peek() {
-        return peekFirst();
-    }
-```
-
-### 总结
-
-同队列。。。
-
-
-
 ## 双端队列Deque
 
 ### 插入
 
-- void addFirst(E e)
-
-```java
-    /**
-     * Inserts the specified element at the front of this deque.
-     *
-     * @param e the element to add
-     * @throws NullPointerException if the specified element is null
-     */
-    public void addFirst(E e) {
-        if (e == null)
-            throw new NullPointerException();
-        // 对head指针取余，如head=0时，-1&15=15,14&15=14，将head指针从数组后面开始
-        // 从head=e.length-1开始
-        elements[head = (head - 1) & (elements.length - 1)] = e;
-        // 扩容
-        if (head == tail)
-            doubleCapacity();
-    }
-```
-
-- void addLast(E e)
-
-```java
-    /**
-     * Inserts the specified element at the end of this deque.
-     *
-     * <p>This method is equivalent to {@link #add}.
-     *
-     * @param e the element to add
-     * @throws NullPointerException if the specified element is null
-     */
-    public void addLast(E e) {
-        if (e == null)
-            throw new NullPointerException();
-        // 直接插入tail位置
-        elements[tail] = e;
-        // 将tail只想后一个位置 判断tail == head就扩容
-        if ( (tail = (tail + 1) & (elements.length - 1)) == head)
-            doubleCapacity();
-    }
-```
-
-- boolean offerFirst(E e)
-
-```java
-    public boolean offerFirst(E e) {
-        addFirst(e);
-        return true;
-    }
-```
-
-- public boolean offerLast(E e)
-
-```java
-    public boolean offerLast(E e) {
-        addLast(e);
-        return true;
-    }
-```
-
-#### 注意
-
 - addX和offerX在存在容量限制时插入失败前者抛出异常，后者返回false。但ArrayDeque不存在容量限制因此两者并无本质区别
 - addFirst与addLast在插入时使用位操作代替取余操作提高速度
-
-ArrayDeque的底层数组大小为2的次幂，这样可以使用位操作提高取余的速度
-
-下面是使用8bit(最高位为符号位)进行addFirst的取余操作过程：
-
-```
-head = (head - 1) & (elements.length - 1)
-
-head = 0		elements.length = 16	// 初始化时的设置
-// 第一次插入
-1111 1111		// (complement) head-1 =-1 
-0000 1111	&	// elements.length - 1=15
-0000 1111		// -1 & 15 = 15
-// 第二次插入
-0000 1110		// (complement) head(15)-1 = 14
-0000 1111	&	// elements.length - 1 = 15
-0000 1110		// 14 & 15 = 14
-```
-
 - 所有的插入方法都不允许插入null元素，否则抛出异常
 - head指针指向最近插入头部的元素，tail指针指向最近插入尾部元素的下一个空位置
 
-
 ### 删除
-
-- E removeFirst()
-
-```java
-    /**
-     * @throws NoSuchElementException {@inheritDoc}
-     */
-    public E removeFirst() {
-        E x = pollFirst();
-        if (x == null)
-            throw new NoSuchElementException();
-        return x;
-    }
-```
-
-- E removeLast()
-
-```java
-    /**
-     * @throws NoSuchElementException {@inheritDoc}
-     */
-    public E removeLast() {
-        E x = pollLast();
-        if (x == null)
-            throw new NoSuchElementException();
-        return x;
-    }
-```
-
-- E pollFirst()
-
-```java
-    // 移除head指针元素并指向head+1
-    public E pollFirst() {
-        int h = head;
-        @SuppressWarnings("unchecked")
-        E result = (E) elements[h];
-        // Element is null if deque empty
-        if (result == null)
-            return null;
-        // 移除当前头部元素
-        elements[h] = null;     // Must null out slot
-        // head指针往前移动一位，指向新的头部元素
-        head = (h + 1) & (elements.length - 1);
-        return result;
-    }
-```
-
-- E pollLast()
-
-```java
-    // 移除尾部元素
-    public E pollLast() {
-    	// 将tail指针向前移动一位为删除元素位置
-        int t = (tail - 1) & (elements.length - 1);
-        @SuppressWarnings("unchecked")
-        E result = (E) elements[t];
-        if (result == null)
-            return null;
-        elements[t] = null;
-        tail = t;
-        return result;
-    }
-```
-
-#### 注意
 
 - removeX和pollX方法都是移除双端元素，底层方法也一致，区别在于当队列为空时前者抛出异常，后者返回null。
 - 双端队列Deque是对两端元素的移除，不会对队列中的元素移除，所以不需要进行数组元素移动的操作
 
 ### 检查
 
-- E getFirst()
-
-```java
-    /**
-     * @throws NoSuchElementException {@inheritDoc}
-     */
-    public E getFirst() {
-        @SuppressWarnings("unchecked")
-        E result = (E) elements[head];
-        if (result == null)
-            throw new NoSuchElementException();
-        return result;
-    }
-```
-
-- E getLast()
-
-```java
-    /**
-     * @throws NoSuchElementException {@inheritDoc}
-     */
-    public E getLast() {
-        @SuppressWarnings("unchecked")
-        E result = (E) elements[(tail - 1) & (elements.length - 1)];
-        if (result == null)
-            throw new NoSuchElementException();
-        return result;
-    }
-```
-
-- E peekFirst()
-
-```java
-    @SuppressWarnings("unchecked")
-    public E peekFirst() {
-        // elements[head] is null if deque empty
-        return (E) elements[head];
-    }
-```
-
-- E peekLast()
-
-```java
-    @SuppressWarnings("unchecked")
-    public E peekLast() {
-        return (E) elements[(tail - 1) & (elements.length - 1)];
-    }
-```
-
-#### 注意
-
 - getX和peekX方法都是返回两端元素，底层均为读取数组元素，区别在于当队列为空时前者抛出异常，后者返回null
 - First使用head指针，读取时head指针指向头部元素，Last使用tail指针，读取时需要往前移动到尾部元素
 
-### 移除内部元素
-
-- boolean removeFirstOccurrence(Object o)
-
-```java
-    /**
-     * Removes the first occurrence of the specified element in this
-     * deque (when traversing the deque from head to tail).
-     * If the deque does not contain the element, it is unchanged.
-     * More formally, removes the first element {@code e} such that
-     * {@code o.equals(e)} (if such an element exists).
-     * Returns {@code true} if this deque contained the specified element
-     * (or equivalently, if this deque changed as a result of the call).
-     *
-     * @param o element to be removed from this deque, if present
-     * @return {@code true} if the deque contained the specified element
-     */
-    public boolean removeFirstOccurrence(Object o) {
-        // ArrayDeque不允许null元素 直接返回false
-        if (o == null)
-            return false;
-        // 掩码   对head以后的下标取余运算
-        int mask = elements.length - 1;
-        int i = head;
-        Object x;
-        // 从头部元素head开始遍历整个队列(到尾部元素完为止)
-        while ( (x = elements[i]) != null) {
-            if (o.equals(x)) {
-                delete(i);
-                return true;
-            }
-            i = (i + 1) & mask;
-        }
-        return false;
-    }
-```
-
-- boolean removeLastOccurrence(Object o)
-
-```java
-  	/**
-     * Removes the last occurrence of the specified element in this
-     * deque (when traversing the deque from head to tail).
-     * If the deque does not contain the element, it is unchanged.
-     * More formally, removes the last element {@code e} such that
-     * {@code o.equals(e)} (if such an element exists).
-     * Returns {@code true} if this deque contained the specified element
-     * (or equivalently, if this deque changed as a result of the call).
-     *
-     * @param o element to be removed from this deque, if present
-     * @return {@code true} if the deque contained the specified element
-     */
-    public boolean removeLastOccurrence(Object o) {
-        if (o == null)
-            return false;
-        int mask = elements.length - 1;
-        // 从tail开始遍历
-        int i = (tail - 1) & mask;
-        Object x;
-        while ( (x = elements[i]) != null) {
-            if (o.equals(x)) {
-                // 删除元素
-                delete(i);
-                return true;
-            }
-            i = (i - 1) & mask;
-        }
-        return false;
-    }
-```
-
-#### 注意
-
-- delete相关源码在循环数组部分已经给出详细解释
-
-## 集合Collection
-
-### 添加
-
-- boolean add(E e)
-
-```java
-    /**
-     * Inserts the specified element at the end of this deque.
-     *
-     * <p>This method is equivalent to {@link #addLast}.
-     *
-     * @param e the element to add
-     * @return {@code true} (as specified by {@link Collection#add})
-     * @throws NullPointerException if the specified element is null
-     */
-    public boolean add(E e) {
-        addLast(e);
-        return true;
-    }
-```
-
-- boolean addAll(Collection<? extends E> c)
-
-抽象类AbstractCollection的实现，通过c的迭代器调用add方法添加到arraydeque
-
 ### 移除
-
-- void clear()
-
-```java
-    /**
-     * Removes all of the elements from this deque.
-     * The deque will be empty after this call returns.
-     */
-    public void clear() {
-        int h = head;
-        int t = tail;
-        // 验证当前ArrayDeque是否为空  
-        // 注意如果arraydeque不为空则head!=tail成立(在add时可能短暂的相等)
-        if (h != t) { // clear all cells
-            head = tail = 0;
-            int i = h;
-            int mask = elements.length - 1;
-            // 按照head--tail指针遍历移除元素  避免遍历整个数组
-            do {
-                elements[i] = null;
-                i = (i + 1) & mask;
-            } while (i != t);
-        }
-    }
-```
-
-- boolean remove(Object o)
-
-```java
-    /**
-     * Removes a single instance of the specified element from this deque.
-     * If the deque does not contain the element, it is unchanged.
-     * More formally, removes the first element {@code e} such that
-     * {@code o.equals(e)} (if such an element exists).
-     * Returns {@code true} if this deque contained the specified element
-     * (or equivalently, if this deque changed as a result of the call).
-     *
-     * <p>This method is equivalent to {@link #removeFirstOccurrence(Object)}.
-     *
-     * @param o element to be removed from this deque, if present
-     * @return {@code true} if this deque contained the specified element
-     */
-    public boolean remove(Object o) {
-        return removeFirstOccurrence(o);
-    }
-```
-
-详情参考Deque部分的移除内部元素内容
-
-- boolean removeAll(Collection<?> c)
-
-由抽象类AbstractCollection实现。使用在arraydeque的迭代器中将元素包含在c中的调用iterator.remove删除
-
-- boolean retainAll(Collection<?> c)
-
-有抽象类AbstractCollection实现，与removeAll仅有的区别为不包含的调用iterator.remove删除
-
-#### 注意
 
 - 数组的移除需要移动数组元素，代价高昂
 - clear()操作仍然保留底层数组，而且只在head--tail之中移除已设置的元素为null，不用遍历完整的数组
 
-### 查询
-
-- boolean contains(Object o)
-
 ```java
-    /**
-     * Returns {@code true} if this deque contains the specified element.
-     * More formally, returns {@code true} if and only if this deque contains
-     * at least one element {@code e} such that {@code o.equals(e)}.
-     *
-     * @param o object to be checked for containment in this deque
-     * @return {@code true} if this deque contains the specified element
-     */
-    public boolean contains(Object o) {
-        if (o == null)
-            return false;
+/**
+ * Removes all of the elements from this deque.
+ * The deque will be empty after this call returns.
+ */
+public void clear() {
+    int h = head;
+    int t = tail;
+    // 验证当前ArrayDeque是否为空  
+    // 注意如果arraydeque不为空则head!=tail成立(在add时可能短暂的相等)
+    if (h != t) { // clear all cells
+        head = tail = 0;
+        int i = h;
         int mask = elements.length - 1;
-        int i = head;
-        Object x;
-        // 由head开始遍历 直到遇到与指定对象相等的元素或找不到相等元素
-        while ( (x = elements[i]) != null) {
-            if (o.equals(x))
-                return true;
+        // 按照head--tail指针遍历移除元素  避免遍历整个数组
+        do {
+            elements[i] = null;
             i = (i + 1) & mask;
-        }
-        return false;
+        } while (i != t);
     }
+}
 ```
-
-- boolean containsAll(Collection<?> c)
-
-由抽象类AbstractCollection实现，使用c的迭代器在每个元素上调用contains()
-
-- boolean isEmpty()
-
-```java
-    /**
-     * Returns {@code true} if this deque contains no elements.
-     *
-     * @return {@code true} if this deque contains no elements
-     */
-    public boolean isEmpty() {
-        return head == tail;
-    }
-```
-
-- int size()
-
-```java
-    /**
-     * Returns the number of elements in this deque.
-     *
-     * @return the number of elements in this deque
-     */
-    public int size() {
-        // 如：0 -- tail=3 -- head=7-- length=8 即tail-head=-4 & 7 = 4
-        return (tail - head) & (elements.length - 1);
-    }
-```
-
-### 比较和哈希
-
-抽象类AbstractCollection使用Object类的默认实现
 
 ### 迭代器
-
-- Iterator<E> iterator()
-
-```java
-    /**
-     * Returns an iterator over the elements in this deque.  The elements
-     * will be ordered from first (head) to last (tail).  This is the same
-     * order that elements would be dequeued (via successive calls to
-     * {@link #remove} or popped (via successive calls to {@link #pop}).
-     *
-     * @return an iterator over the elements in this deque
-     */
-    public Iterator<E> iterator() {
-        return new DeqIterator();
-    }
-```
-
-- Iterator<E> descendingIterator()
-
-```java
-    public Iterator<E> descendingIterator() {
-        return new DescendingIterator();
-    }
-
-    // 该类是DeqIterator类的镜像，用tail代替head操作
-    private class DescendingIterator implements Iterator<E> {
-        /*
-         * This class is nearly a mirror-image of DeqIterator, using
-         * tail instead of head for initial cursor, and head instead of
-         * tail for fence.
-         */
-        private int cursor = tail;
-        private int fence = head;
-        private int lastRet = -1;
-
-        public boolean hasNext() {
-            return cursor != fence;
-        }
-
-        public E next() {
-            if (cursor == fence)
-                throw new NoSuchElementException();
-            cursor = (cursor - 1) & (elements.length - 1);
-            @SuppressWarnings("unchecked")
-            E result = (E) elements[cursor];
-            if (head != fence || result == null)
-                throw new ConcurrentModificationException();
-            lastRet = cursor;
-            return result;
-        }
-
-        public void remove() {
-            if (lastRet < 0)
-                throw new IllegalStateException();
-            if (!delete(lastRet)) {
-                cursor = (cursor + 1) & (elements.length - 1);
-                fence = head;
-            }
-            lastRet = -1;
-        }
-    }
-```
-
-#### 并行迭代器
-
-不熟悉暂不讨论
-
-#### 实现
-
-```java
-    private class DeqIterator implements Iterator<E> {
-        /**
-         * Index of element to be returned by subsequent call to next.
-         */
-        private int cursor = head;
-
-        /**
-         * Tail recorded at construction (also in remove), to stop
-         * iterator and also to check for comodification.
-         */
-        // 用于迭代完成检查和结构修改检查
-        private int fence = tail;
-
-        /**
-         * Index of element returned by most recent call to next.
-         * Reset to -1 if element is deleted by a call to remove.
-         */
-        private int lastRet = -1;
-
-        public boolean hasNext() { 
-            // 是否迭代到tail位置 即完成迭代
-            return cursor != fence;
-        }
-
-        public E next() {
-            // 迭代完成 没有元素了
-            if (cursor == fence)
-                throw new NoSuchElementException();
-            @SuppressWarnings("unchecked")
-            E result = (E) elements[cursor];
-            // This check doesn't catch all possible comodifications,
-            // but does catch the ones that corrupt traversal
-            // 如果有其他线程修改了结构  仅能保证正确的遍历
-            if (tail != fence || result == null)
-                throw new ConcurrentModificationException();
-            lastRet = cursor;
-            // 下一个元素位置
-            cursor = (cursor + 1) & (elements.length - 1);
-            return result;
-        }
-
-        public void remove() {
-            if (lastRet < 0) 
-                throw new IllegalStateException();
-            // 如果是左移 导致下一个元素移动到删除位置lastRet即cursor-1上，类似与删除数组上一个元素，需要将当前cursor-1使在next能够读取到
-            if (delete(lastRet)) { // if left-shifted, undo increment in next()
-                // 设置为上一个位置 原cursor表示的元素被移动到cursor-1位置了
-                cursor = (cursor - 1) & (elements.length - 1);
-                // tail被改变 -1
-                fence = tail;
-            }// 如果时右移 不会影响当前cursor位置上的元素，类似删除数组下一个元素，保持当前cursor  虽然head改变了 但是不影响cursor继续遍历
-            lastRet = -1;
-        }
-
-        public void forEachRemaining(Consumer<? super E> action) {
-            Objects.requireNonNull(action);
-            Object[] a = elements;
-            int m = a.length - 1, f = fence, i = cursor;
-            // 调用foreachremaining方法后不能在调用next方法
-            cursor = f;
-            // 从当前位置cursor开始遍历直到fence即tail为止
-            while (i != f) {
-                @SuppressWarnings("unchecked") E e = (E)a[i];
-                i = (i + 1) & m;
-                if (e == null)
-                    throw new ConcurrentModificationException();
-                action.accept(e);
-            }
-        }
-    }
-```
-
-#### 注意
 
 - 循环数组的迭代有点类似与链表迭代，都是从head开始都tail结束，不同是循环数组的下一个元素需要用取余操作实现。
 - 循环数组与链表在迭代的唯一劣势就是remove()，因为数组删除元素需要移动数组元素。在循环数组中还需要考虑左移开始右移来判断下一个位置元素是否被替换，左移被替换后需要更新当前cursor为cursor-1
 
-这里要说一个坑了，由于方法`private boolean delete(int i)`返回一个boolean值，最初没有在意，以为表示是否删除成功，当我写看到注释`This method is called delete rather than remove to emphasize that its semantics differ from those of `List.remove(int)`.`什么叫强调与List.remove()不同，然后就忘记了这回事，等我写完循环数组的删除时，没什么感觉，脑壳昏，没有注意到`front<back`是返回false。然后在看迭代器时发现在remove()中`if(delete(lastRet))`，还能删除失败吗，回去看了一眼，卧槽，front<back居然返回false，但是不对啊，指定元素都已经被覆盖了，删除成功了啊，再回去看一下原来是表示右移，卧了个槽，还好还好，要是我当时看到返回false，我估计直接崩溃，为什么要返回false。。。
-
-delete的注释中可能是想说，这个方法语义和remove不同，即执行delete操作而已。
-
-### 转换数组
-
-- Object[] toArray()
-
 ```java
+private class DeqIterator implements Iterator<E> {
     /**
-     * Returns an array containing all of the elements in this deque
-     * in proper sequence (from first to last element).
-     *
-     * <p>The returned array will be "safe" in that no references to it are
-     * maintained by this deque.  (In other words, this method must allocate
-     * a new array).  The caller is thus free to modify the returned array.
-     *
-     * <p>This method acts as bridge between array-based and collection-based
-     * APIs.
-     *
-     * @return an array containing all of the elements in this deque
+     * Index of element to be returned by subsequent call to next.
      */
-    public Object[] toArray() {
-        return copyElements(new Object[size()]);
+    private int cursor = head;
+
+    /**
+     * Tail recorded at construction (also in remove), to stop
+     * iterator and also to check for comodification.
+     */
+    // 用于迭代完成检查和结构修改检查
+    private int fence = tail;
+
+    /**
+     * Index of element returned by most recent call to next.
+     * Reset to -1 if element is deleted by a call to remove.
+     */
+    private int lastRet = -1;
+
+    public boolean hasNext() { 
+        // 是否迭代到tail位置 即完成迭代
+        return cursor != fence;
     }
-```
 
-- T[] toArray(T[] a)
-
-```java
-    /**
-     * Returns an array containing all of the elements in this deque in
-     * proper sequence (from first to last element); the runtime type of the
-     * returned array is that of the specified array.  If the deque fits in
-     * the specified array, it is returned therein.  Otherwise, a new array
-     * is allocated with the runtime type of the specified array and the
-     * size of this deque.
-     *
-     * <p>If this deque fits in the specified array with room to spare
-     * (i.e., the array has more elements than this deque), the element in
-     * the array immediately following the end of the deque is set to
-     * {@code null}.
-     *
-     * <p>Like the {@link #toArray()} method, this method acts as bridge between
-     * array-based and collection-based APIs.  Further, this method allows
-     * precise control over the runtime type of the output array, and may,
-     * under certain circumstances, be used to save allocation costs.
-     *
-     * <p>Suppose {@code x} is a deque known to contain only strings.
-     * The following code can be used to dump the deque into a newly
-     * allocated array of {@code String}:
-     *
-     *  <pre> {@code String[] y = x.toArray(new String[0]);}</pre>
-     *
-     * Note that {@code toArray(new Object[0])} is identical in function to
-     * {@code toArray()}.
-     *
-     * @param a the array into which the elements of the deque are to
-     *          be stored, if it is big enough; otherwise, a new array of the
-     *          same runtime type is allocated for this purpose
-     * @return an array containing all of the elements in this deque
-     * @throws ArrayStoreException if the runtime type of the specified array
-     *         is not a supertype of the runtime type of every element in
-     *         this deque
-     * @throws NullPointerException if the specified array is null
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T[] toArray(T[] a) {
-        int size = size();
-        // 指定数组长度小于deque元素个数  创建长度为size的新数组
-        if (a.length < size)
-            a = (T[])java.lang.reflect.Array.newInstance(
-                    a.getClass().getComponentType(), size);
-        copyElements(a);
-        // 指定数组长度过大，将a[size]置为null 后面的位置不影响
-        if (a.length > size)
-            a[size] = null;
-        return a;
+    public E next() {
+        // 迭代完成 没有元素了
+        if (cursor == fence)
+            throw new NoSuchElementException();
+        @SuppressWarnings("unchecked")
+        E result = (E) elements[cursor];
+        // This check doesn't catch all possible comodifications,
+        // but does catch the ones that corrupt traversal
+        // 如果有其他线程修改了结构  仅能保证正确的遍历
+        if (tail != fence || result == null)
+            throw new ConcurrentModificationException();
+        lastRet = cursor;
+        // 下一个元素位置
+        cursor = (cursor + 1) & (elements.length - 1);
+        return result;
     }
-```
 
-#### 实现
+    public void remove() {
+        if (lastRet < 0) 
+            throw new IllegalStateException();
+        // 如果是左移 导致下一个元素移动到删除位置lastRet即cursor-1上，类似与删除数组上一个元素，需要将当前cursor-1使在next能够读取到
+        if (delete(lastRet)) { // if left-shifted, undo increment in next()
+            // 设置为上一个位置 原cursor表示的元素被移动到cursor-1位置了
+            cursor = (cursor - 1) & (elements.length - 1);
+            // tail被改变 -1
+            fence = tail;
+        }// 如果时右移 不会影响当前cursor位置上的元素，类似删除数组下一个元素，保持当前cursor  虽然head改变了 但是不影响cursor继续遍历
+        lastRet = -1;
+    }
 
-```java
-    /**
-     * Copies the elements from our element array into the specified array,
-     * in order (from first to last element in the deque).  It is assumed
-     * that the array is large enough to hold all elements in the deque.
-     *
-     * @return its argument
-     */
-    // 复制elements数组到指定数组。需要指定数组长度至少为deque的元素个数
-    private <T> T[] copyElements(T[] a) {
-        // 即删除head或tail到数组另一端
-    	// 如果循环数组是连续的一段head在tail前:[0--head--tail--e.length-1]
-        if (head < tail) {
-            System.arraycopy(elements, head, a, 0, size());
+    public void forEachRemaining(Consumer<? super E> action) {
+        Objects.requireNonNull(action);
+        Object[] a = elements;
+        int m = a.length - 1, f = fence, i = cursor;
+        // 调用foreachremaining方法后不能在调用next方法
+        cursor = f;
+        // 从当前位置cursor开始遍历直到fence即tail为止
+        while (i != f) {
+            @SuppressWarnings("unchecked") E e = (E)a[i];
+            i = (i + 1) & m;
+            if (e == null)
+                throw new ConcurrentModificationException();
+            action.accept(e);
         }
-        // 循环数组不是连续的一段，tail在head前面:[0--tail--head--e.length-1]
-        else if (head > tail) {
-            // head到数组末端的长度
-            int headPortionLen = elements.length - head;
-            // 先复制head右边的元素head--length-1到数组a从0-headPortionLen-1
-            System.arraycopy(elements, head, a, 0, headPortionLen);
-            // 再复制tail左边的元素从elements的0--tail
-            System.arraycopy(elements, 0, a, headPortionLen, tail);
-        }
-        return a;
     }
+}
 ```
 
-#### 注意
+#### 坑
 
-- toArray()无参方法与其余实现一样，底层数组为Object[]，无法转换为原来的类型，应该尽量使用toArray(T[])，并且指定数组的大小推荐为deque.size()
+这里要说一个坑[delete](#delete源码)，由于方法`private boolean delete(int i)`返回一个boolean值，最初没有在意，以为表示是否删除成功，当我写看到注释`This method is called delete rather than remove to emphasize that its semantics differ from those of List.remove(int)`.什么叫强调与List.remove()不同，然后就忘记了这回事，等我写完循环数组的删除时，没什么感觉，脑壳昏，没有注意到`front<back`是返回false。
 
+然后在看迭代器时发现在remove()中`if(delete(lastRet))`，还能删除失败吗，回去看了一眼，卧槽，`front<back`居然返回false，但是不对啊，指定元素都已经被覆盖了，删除成功了啊，再回去看一下原来是表示右移，卧了个槽，还好还好，要是我当时看到返回false，我估计直接崩溃，为什么要返回false。。。
 
+[delete](#delete源码)的注释中可能是想说，这个方法语义和remove不同，即执行delete操作而已。
 
+### 转换数组toArray()
 
+toArray()无参方法与其余实现一样，底层数组为`Object[]`，无法转换为原来的类型，应该尽量使用`toArray(T[])`，并且指定数组的大小推荐为deque.size()
 
+```java
+@SuppressWarnings("unchecked")
+public <T> T[] toArray(T[] a) {
+    int size = size();
+    // 指定数组长度小于deque元素个数  创建长度为size的新数组
+    if (a.length < size)
+        a = (T[])java.lang.reflect.Array.newInstance(
+                a.getClass().getComponentType(), size);
+    copyElements(a);
+    // 指定数组长度过大，将a[size]置为null 后面的位置不影响
+    if (a.length > size)
+        a[size] = null;
+    return a;
+}
 
+/**
+ * Copies the elements from our element array into the specified array,
+ * in order (from first to last element in the deque).  It is assumed
+ * that the array is large enough to hold all elements in the deque.
+ *
+ * @return its argument
+ */
+// 复制elements数组到指定数组。需要指定数组长度至少为deque的元素个数
+private <T> T[] copyElements(T[] a) {
+    // 即删除head或tail到数组另一端
+    // 如果循环数组是连续的一段head在tail前:[0--head--tail--e.length-1]
+    if (head < tail) {
+        System.arraycopy(elements, head, a, 0, size());
+    }
+    // 循环数组不是连续的一段，tail在head前面:[0--tail--head--e.length-1]
+    else if (head > tail) {
+        // head到数组末端的长度
+        int headPortionLen = elements.length - head;
+        // 先复制head右边的元素head--length-1到数组a从0-headPortionLen-1
+        System.arraycopy(elements, head, a, 0, headPortionLen);
+        // 再复制tail左边的元素从elements的0--tail
+        System.arraycopy(elements, 0, a, headPortionLen, tail);
+    }
+    return a;
+}
+```
 
-参考：
+## 参考
 
-- ArrayDeque源码
+- [基于jdk8 ArrayDeque源码](ArrayDeque.java)
 - [https://github.com/CarpenterLee/JCFInternals/blob/master/markdown/4-Stack%20and%20Queue.md](https://github.com/CarpenterLee/JCFInternals/blob/master/markdown/4-Stack%20and%20Queue.md "Stack and Queue")
-)
-)
-)
-)
