@@ -157,8 +157,6 @@ public void addLast(E e) {
 }
 ```
 
-
-
 ### 扩容
 
 当`tail==head`时触发扩容操作。在插入数组最后一个空位时，相应指针会移动一位使得tail == head。
