@@ -128,6 +128,8 @@ windows防火墙开启入站规则或者直接关闭防火墙
 
 [wsl2-port-forwarding.ps1](../../assets/files/wsl2-port-forwarding.ps1)
 
+注意：尽量不要转发常用端口，如不能转发80端口，可能导致win10 共享等不能工作的异常
+
 ### 配置任务计划
 
 Go to search, search for task scheduler. In the actions menu on the right, click on create task.
