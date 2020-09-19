@@ -8,21 +8,21 @@
 
 如果key节点比两个key子节点（如果有）大或等于表示这个二叉树是堆有序的。（子节点间无序）
 
-![](images/priorityqueue_1.png)
+![](../../../assets/images/5a6aad91-3f5b-4953-b2b2-2712973198d0.png)
 
 ### 位置
 
 二叉堆使用完全二叉树在数组中实现，堆中节点的位置可以用数组下标很方便的表示：
 
-- **数组下标1开始**
+#### 数组下标1开始
 
-![](images/priorityqueue_2.png)
+![](../../../assets/images/32fbdbf9-4559-45e5-8f87-ff07ffce6620.png)
 
 一个节点的父节点：`k/2` 向下取整
 
 一个节点的两个子节点：左子节点`2*k`  右子节点`2*k+1`。
 
-- **数组下标0开始**
+#### 数组下标0开始
 
 父节点：`(k-1)/2` 向下取整
 
@@ -34,99 +34,138 @@
 
 ***PriorityQueue为下标0开始***
 
-### 插入 
+### 有序化
+
+#### 插入 
 
 当一个key被添加到有序的二叉堆时，此时会破坏堆的有序性，需要交换key使堆有序。假设使用最大优先队列即父节点大于或等于子节点
 
-####  上浮（siftUp）
+##### 上浮（siftUp）
 
-![](images/priorityqueue_3.png)
+![](../../../assets/images/5fd5dedd-8459-414c-ab9e-9914ecdf4923.png)
 
 过程很简单，即比较key与父节点p位置为`(k-1)/2`的大小：（针对最大优先队列，如果是最小优先，颠倒符号即可）
 
 - 如果key>p就交换两者的位置并与新的父节点继续比较
 - 如果key<=p排序完成
 
+##### siftUp源码
+
 下面是PriorityQueue的源码，注意是使用最小优先队列，如果时最大优先队列，只需要更该为`if (key.compareTo((E) e) <= 0)`
 
 ```java
-    // 使用指定位置k的节点x向上使堆有序
-    @SuppressWarnings("unchecked")
-    private void siftUpComparable(int k, E x) {
-        Comparable<? super E> key = (Comparable<? super E>) x;
-        // 找到key在堆中的位置  当key的位置k是根节点位置0时终止
-        while (k > 0) {
-            // k位置的父节点位置
-            int parent = (k - 1) >>> 1;
-            Object e = queue[parent];
-            // 如果key比父节点大或相等时 此时堆有序，不用交换了
-            
-                break;
-            // 将父节点移动到key的位置  交换key与父节点位置
-            queue[k] = e;
-            // key位置变为父节点位置
-            k = parent;
-        }
-        // 找到key在堆中的位置
-        queue[k] = key;
+// 使用指定位置k的节点x向上使堆有序
+@SuppressWarnings("unchecked")
+private void siftUpComparable(int k, E x) {
+    Comparable<? super E> key = (Comparable<? super E>) x;
+    // 找到key在堆中的位置  当key的位置k是根节点位置0时终止
+    while (k > 0) {
+        // k位置的父节点位置
+        int parent = (k - 1) >>> 1;
+        Object e = queue[parent];
+        // 如果key比父节点大或相等时 此时堆有序，不用交换了
+        if (key.compareTo((E) e) >= 0)
+            break;
+        // 将父节点移动到key的位置  交换key与父节点位置
+        queue[k] = e;
+        // key位置变为父节点位置
+        k = parent;
     }
+    // 找到key在堆中的位置
+    queue[k] = key;
+}
 ```
 
-### 移除
+#### 移除
 
 在堆中移除后，与二叉树的删除使用左右子树的最值子节点替换类似，对移除位置使用堆数组最后位置元素替换到移除位置上，然后重新平衡二叉堆。
 
 假设使用最大优先队列即父节点大于或等于子节点
 
-#### 下沉（siftDown）
+##### 下沉（siftDown）
 
 当数组最后一个元素被替换到删除位置时，这个叶子节点元素key必定小于删除位置的父节点p，所以需要与较大的子节点child比较
 
-![](images/priorityqueue_4.png)
+![](../../../assets/images/6542b390-b72e-459a-af2f-afaad81b52f9.png)
 
 - 如果节点key < 较大的子节点child，交换key与child的位置，并继续与新的较大子节点比较
 - 如果节点key >= 较大的子节点child，完成当前堆有序
+- 如果节点key交换到了叶子节点`k<half`即堆中第一个叶子节点为`half=(size/2)`（数组下标从0开始 1也一样），此时不再需要向下比较non-leaf为`(size/2) - 1`
 
-如果节点key交换到了叶子节点k<half即堆中最后一个父节点为half=size/2（数组下标从0开始 1也一样），此时不再需要向下比较
+##### siftDown源码
 
 下面是PriorityQueue的源码（最小优先队列为例，如果是最大优先队列需要交换符号）
 
+在向下筛选时，叶子节点不需要再向下比较筛选，所以比较完最后一个父节点size/2 -1后`(size/2)-1 < size/2）`，退出循环
+
 ```java
-    // 将指定元素在堆中位置为k的向下使堆有序
-    @SuppressWarnings("unchecked")
-    private void siftDownComparable(int k, E x) {
-        Comparable<? super E> key = (Comparable<? super E>)x;
-        //表示队列中最后一个元素的父节点的下一个节点如：4号左右分别9.10下标子节点。size=11 /2=5节点;
-        int half = size >>> 1;        // loop while a non-leaf
-        // 将指定位置节点循环到最后一个父节点(size/2)-1时为止，叶子节点不需要向下有序了
-        while (k < half) {
-        	// k的左子节点
-            int child = (k << 1) + 1; // assume left child is least
-            Object c = queue[child];
-            int right = child + 1;
-            // 取小的子节点
-            // 如果右子节点存在且比左子节点小就将右子节点更新为小的节点
-            if (right < size &&
-                ((Comparable<? super E>) c).compareTo((E) queue[right]) > 0)
-                c = queue[child = right];
-            // 如果key比子节点小或等于就退出
-            if (key.compareTo((E) c) <= 0)
-                break;
-            // 交换位置
-            queue[k] = c;
-            k = child;
-        }
-        queue[k] = key;
+// 将指定元素在堆中位置为k的向下使堆有序
+@SuppressWarnings("unchecked")
+private void siftDownComparable(int k, E x) {
+    Comparable<? super E> key = (Comparable<? super E>)x;
+    //表示队列中最后一个元素的父节点的下一个节点如：4号左右分别9.10下标子节点。half=size=11 /2=5节点;
+    int half = size >>> 1;        // loop while a non-leaf
+    // 将指定位置节点循环到最后一个父节点(size/2)-1时为止，叶子节点不需要向下有序了
+    while (k < half) {
+        // k的左子节点
+        int child = (k << 1) + 1; // assume left child is least
+        Object c = queue[child];
+        int right = child + 1;
+        // 取小的子节点
+        // 如果右子节点存在且比左子节点小就将右子节点更新为小的节点
+        if (right < size &&
+            ((Comparable<? super E>) c).compareTo((E) queue[right]) > 0)
+            c = queue[child = right];
+        // 如果key比子节点小或等于就退出
+        if (key.compareTo((E) c) <= 0)
+            break;
+        // 交换位置
+        queue[k] = c;
+        k = child;
     }
+    queue[k] = key;
+}
 ```
 
-#### 注意
+#### 堆有序构造
 
-- 在向下筛选时，叶子节点不需要再向下比较筛选，所以比较完最后一个父节点size/2 -1后`（(size/2)-1 < size/2）`，退出循环
+如何使无序数组堆有序化，对于只有3个节点堆，只要对根节点siftDown，将较大的子节点交换上来，此时这个堆有序。
 
-### 注意
+如果将数组看作一个个子堆，从有序子堆构造更大的子堆也只要对大子堆根节点siftDown较大的子节点交换上来，就使得整个堆有序了
 
-- 二叉堆有序的关键在于堆数组的元素的位置，在使堆有序的时候经常要使用父子节点和最后一个父节点的位置
+![](../../../assets/images/b49a5c19-cc6c-407b-91ec-4a8fc7884008.png)
+
+##### heapify源码
+
+```java
+// 将一个无序堆从最后的父节点开始向下筛选 直到根节点 使堆有序
+@SuppressWarnings("unchecked")
+private void heapify() {
+    // 从最后一个父节点(size/2)-1开始直到根节点0 进行向下筛选操作
+    for (int i = (size >>> 1) - 1; i >= 0; i--)
+        siftDown(i, (E) queue[i]);
+}
+```
+
+##### 堆排序
+
+堆构造不能使堆数组下标有序，只有根节点是最大，左右子节点顺序不定，如果能将最大的根节点放到数组最后，下一个第二大节点放到数组倒数第二，如此就可有序
+
+可以用与根交换上来的数组最后节点使重新对根节点构造即heapify siftDown，使新根节点在重新变成最大的（排除之前最大的）
+
+```
+    3           2               1
+   / \  =>     / \      =>     / \
+  1   2       1   3           2   3
+```
+
+```java
+void headSort(int[] a) {
+    for (int i = (size >>> 1) - 1; i >= 0; i--)
+        siftDown(i, (E) queue[i]);
+    // todo
+}
+```
 
 ## 构造器
 
@@ -136,121 +175,90 @@
 
 ### 一般初始化
 
-- PriorityQueue(int initialCapacity, Comparator<? super E> comparator)
+优先队列创建的堆数组最小为1，默认构造器创建的大小为1，在容量不够时自动扩容
 
 ```java
-    /**
-     * Creates a {@code PriorityQueue} with the specified initial capacity
-     * that orders its elements according to the specified comparator.
-     *
-     * @param  initialCapacity the initial capacity for this priority queue
-     * @param  comparator the comparator that will be used to order this
-     *         priority queue.  If {@code null}, the {@linkplain Comparable
-     *         natural ordering} of the elements will be used.
-     * @throws IllegalArgumentException if {@code initialCapacity} is
-     *         less than 1
-     */
-    public PriorityQueue(int initialCapacity,
-                         Comparator<? super E> comparator) {
-        // Note: This restriction of at least one is not actually needed,
-        // but continues for 1.5 compatibility
-    	//至少容量为1是为了兼容性
-        if (initialCapacity < 1)
-            throw new IllegalArgumentException();
-        this.queue = new Object[initialCapacity];
-        this.comparator = comparator;
-    }
+public PriorityQueue(int initialCapacity,
+                        Comparator<? super E> comparator) {
+    // Note: This restriction of at least one is not actually needed,
+    // but continues for 1.5 compatibility
+    //至少容量为1是为了兼容性
+    if (initialCapacity < 1)
+        throw new IllegalArgumentException();
+    this.queue = new Object[initialCapacity];
+    this.comparator = comparator;
+}
 ```
 
 ### 集合初始化
 
-- PriorityQueue(Collection<? extends E> c)
+通过集合初始化时需要考虑原来集合是否有序，如果原来集合有序，即保证堆有序，而下标0的元素一定是最值。
 
 ```java
-    /**
-     * Creates a {@code PriorityQueue} containing the elements in the
-     * specified collection.  If the specified collection is an instance of
-     * a {@link SortedSet} or is another {@code PriorityQueue}, this
-     * priority queue will be ordered according to the same ordering.
-     * Otherwise, this priority queue will be ordered according to the
-     * {@linkplain Comparable natural ordering} of its elements.
-     *
-     * @param  c the collection whose elements are to be placed
-     *         into this priority queue
-     * @throws ClassCastException if elements of the specified collection
-     *         cannot be compared to one another according to the priority
-     *         queue's ordering
-     * @throws NullPointerException if the specified collection or any
-     *         of its elements are null
-     */
-    // 根据指定集合的元素创建优先队列，如果指定的collection是SortedSet或优先队列，
-    // 则使用相同的顺序排序 否则使用自然顺序
-    @SuppressWarnings("unchecked")
-    public PriorityQueue(Collection<? extends E> c) {
-        // 如果是SortedSet
-        if (c instanceof SortedSet<?>) {
-            SortedSet<? extends E> ss = (SortedSet<? extends E>) c;
-            this.comparator = (Comparator<? super E>) ss.comparator();
-            // 从集合中初始化到堆数组中 检查集合元素是否存在null 由于本身是有序的 queue[0]一定是最值 不需要使堆完全有序
-            initElementsFromCollection(ss);
-        }
-        // 如果是优先队列
-        else if (c instanceof PriorityQueue<?>) {
-            PriorityQueue<? extends E> pq = (PriorityQueue<? extends E>) c;
-            this.comparator = (Comparator<? super E>) pq.comparator();
-            // 直接使用PriorityQueue.toArray的数组 堆完整有序 
-            initFromPriorityQueue(pq);
-        }
-        else {
-            this.comparator = null;
-            // 将指定的集合添加到priorityqueue中并使堆有序
-            initFromCollection(c);
-        }
+// 根据指定集合的元素创建优先队列，如果指定的collection是SortedSet或优先队列，
+// 则使用相同的顺序排序 否则使用自然顺序
+@SuppressWarnings("unchecked")
+public PriorityQueue(Collection<? extends E> c) {
+    // 如果是SortedSet
+    if (c instanceof SortedSet<?>) {
+        SortedSet<? extends E> ss = (SortedSet<? extends E>) c;
+        this.comparator = (Comparator<? super E>) ss.comparator();
+        // 从集合中初始化到堆数组中 检查集合元素是否存在null 由于本身是有序的 queue[0]一定是最值 不需要使堆完全有序
+        initElementsFromCollection(ss);
     }
-```
-
-通过集合初始化涉及到的私有方法实现：
-
-```java
-    // 从指定集合Collection中 初始化堆数组  此时堆数组无序
-    private void initElementsFromCollection(Collection<? extends E> c) {
-        Object[] a = c.toArray();
-        // If c.toArray incorrectly doesn't return Object[], copy it.
-        // 保证底层数组queue为Object[]类型
-        if (a.getClass() != Object[].class)
-            a = Arrays.copyOf(a, a.length, Object[].class);
-        int len = a.length;
-        // 如果有比较器 扫描容器数组中元素不含null元素
-        if (len == 1 || this.comparator != null)
-            for (int i = 0; i < len; i++)
-                if (a[i] == null)
-                    throw new NullPointerException();
-        this.queue = a;
-        this.size = a.length;
+    // 如果是优先队列
+    else if (c instanceof PriorityQueue<?>) {
+        PriorityQueue<? extends E> pq = (PriorityQueue<? extends E>) c;
+        this.comparator = (Comparator<? super E>) pq.comparator();
+        // 直接使用PriorityQueue.toArray的数组 堆完整有序 
+        initFromPriorityQueue(pq);
     }
-
-    /**
-     * Initializes queue array with elements from the given Collection.
-     *
-     * @param c the collection
-     */
-    // 将指定的集合添加到priorityqueue中并使堆有序
-    private void initFromCollection(Collection<? extends E> c) {
-        // 将集合元素初始化到优先队列queue中
-    	initElementsFromCollection(c);
-    	// 使堆有序 
-        heapify();
+    else {
+        this.comparator = null;
+        // 将指定的集合添加到priorityqueue中并使堆有序
+        initFromCollection(c);
     }
+}
 
-    // 如果是PriorityQueue就直接使用toArray的数组 否则调用initFromCollection
-    private void initFromPriorityQueue(PriorityQueue<? extends E> c) {
-        if (c.getClass() == PriorityQueue.class) {
-            this.queue = c.toArray();
-            this.size = c.size();
-        } else {
-            initFromCollection(c);
-        }
+// 从指定集合Collection中 初始化堆数组  此时堆数组无序
+private void initElementsFromCollection(Collection<? extends E> c) {
+    Object[] a = c.toArray();
+    // If c.toArray incorrectly doesn't return Object[], copy it.
+    // 保证底层数组queue为Object[]类型
+    if (a.getClass() != Object[].class)
+        a = Arrays.copyOf(a, a.length, Object[].class);
+    int len = a.length;
+    // 如果有比较器 扫描容器数组中元素不含null元素
+    if (len == 1 || this.comparator != null)
+        for (int i = 0; i < len; i++)
+            if (a[i] == null)
+                throw new NullPointerException();
+    this.queue = a;
+    this.size = a.length;
+}
+
+/**
+ * Initializes queue array with elements from the given Collection.
+ *
+ * @param c the collection
+ */
+// 将指定的集合添加到priorityqueue中并使堆有序
+private void initFromCollection(Collection<? extends E> c) {
+    // 将集合元素初始化到优先队列queue中
+    initElementsFromCollection(c);
+    // 使堆有序 
+    heapify();
+}
+
+// 如果是PriorityQueue就直接使用toArray的数组 否则调用initFromCollection
+private void initFromPriorityQueue(PriorityQueue<? extends E> c) {
+    if (c.getClass() == PriorityQueue.class) {
+        this.queue = c.toArray();
+        this.size = c.size();
+    } else {
+        initFromCollection(c);
     }
+}
 ```
 
 ### 注意
@@ -261,15 +269,16 @@
 下面使用一个有序集合构造为优先队列的示例说明 有序数组本就堆有序
 
 ```java
-    static void constructoraddAllTest() {
-        SortedSet<Integer> set = new TreeSet<>();
-        set.addAll(Arrays.asList(1, 3, 6, 7, 9, 12, 15));
-        PriorityQueue<Integer> queue = new PriorityQueue<Integer>(set);
-        System.out.println("before:" + Arrays.toString(queue.queue));
-        System.out.println("after:");
-        while (queue.poll() != null) {
-            System.out.println(Arrays.toString(queue.queue));
-        }
+static void constructoraddAllTest() {
+    SortedSet<Integer> set = new TreeSet<>();
+    set.addAll(Arrays.asList(1, 3, 6, 7, 9, 12, 15));
+    PriorityQueue<Integer> queue = new PriorityQueue<Integer>(set);
+    System.out.println("before:" + Arrays.toString(queue.queue));
+    System.out.println("after:");
+    while (queue.poll() != null) {
+        System.out.println(Arrays.toString(queue.queue));
+    }
+}
 /*输出：
 before:[1, 3, 6, 7, 9, 12, 15]
 after:
@@ -280,9 +289,7 @@ after:
 [12, 15, null, null, null, null, null]
 [15, null, null, null, null, null, null]
 [null, null, null, null, null, null, null]
-
 */
-    }
 ```
 
 下面是模拟堆数组第一次出队的步骤：
