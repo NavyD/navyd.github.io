@@ -36,11 +36,9 @@
 
 ### 有序化
 
-#### 插入 
+#### 上浮（siftUp）
 
 当一个key被添加到有序的二叉堆时，此时会破坏堆的有序性，需要交换key使堆有序。假设使用最大优先队列即父节点大于或等于子节点
-
-##### 上浮（siftUp）
 
 ![](../../../assets/images/5fd5dedd-8459-414c-ab9e-9914ecdf4923.png)
 
@@ -76,13 +74,11 @@ private void siftUpComparable(int k, E x) {
 }
 ```
 
-#### 移除
+#### 下沉（siftDown）
 
 在堆中移除后，与二叉树的删除使用左右子树的最值子节点替换类似，对移除位置使用堆数组最后位置元素替换到移除位置上，然后重新平衡二叉堆。
 
 假设使用最大优先队列即父节点大于或等于子节点
-
-##### 下沉（siftDown）
 
 当数组最后一个元素被替换到删除位置时，这个叶子节点元素key必定小于删除位置的父节点p，所以需要与较大的子节点child比较
 
@@ -127,7 +123,7 @@ private void siftDownComparable(int k, E x) {
 }
 ```
 
-#### 堆有序构造
+#### 堆有序构造heapify
 
 如何使无序数组堆有序化，对于只有3个节点堆，只要对根节点siftDown，将较大的子节点交换上来，此时这个堆有序。
 
@@ -147,7 +143,7 @@ private void heapify() {
 }
 ```
 
-##### 堆排序
+#### 堆排序
 
 堆构造不能使堆数组下标有序，只有根节点是最大，左右子节点顺序不定，如果能将最大的根节点放到数组最后，下一个第二大节点放到数组倒数第二，如此就可有序
 
@@ -159,11 +155,49 @@ private void heapify() {
   1   2       1   3           2   3
 ```
 
+##### 源码
+
+[Sort an Array](https://leetcode-cn.com/problems/sort-an-array/)
+
 ```java
-void headSort(int[] a) {
-    for (int i = (size >>> 1) - 1; i >= 0; i--)
-        siftDown(i, (E) queue[i]);
-    // todo
+public int[] sortArray(int[] nums) {
+    headSort(nums);
+    return nums;
+}
+
+public static void headSort(int[] a) {
+    // build max head
+    int len = a.length;
+    for (int i = (len / 2) - 1; i >= 0; i--) {
+    siftDown(a, i, len - 1);
+    }
+    // sort
+    while (--len > 0) {
+    swap(a, 0, len);
+    siftDown(a, 0, len - 1);
+    }
+}
+
+// max head
+private static void siftDown(int[] a, int start, int end) {
+    int child;
+    while ((child = 2 * start + 1) <= end) {
+    int rightChild = child + 1;
+    if (rightChild <= end && a[child] < a[rightChild]) {
+        child = rightChild;
+    }
+    if (a[child] <= a[start]) {
+        break;
+    }
+    swap(a, start, child);
+    start = child;
+    }
+}
+
+private static void swap(int[] a, int i, int j) {
+    int temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
 }
 ```
 
