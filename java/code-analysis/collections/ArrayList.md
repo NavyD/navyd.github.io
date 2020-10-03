@@ -1,47 +1,64 @@
 # ArrayList
+
 List 接口的大小可变数组的实现。实现了所有可选列表操作，并允许包括 null 在内的所有元素。
 
 size、isEmpty、get、set、iterator 和 listIterator 操作都以固定时间运行。add 操作以分摊的固定时间 运行，也就是说，添加 n 个元素需要 O(n) 时间。其他所有操作都以线性时间运行（大体上讲）。
 
-类结构：
-```java
-public class ArrayList<E> extends AbstractList<E> implements List<E>, RandomAccess, Cloneable, java.io.Serializable
+## 类结构
+
+![](../../../../../assets/images/7fe7721e-5363-40c8-8041-c71e5d402292.png)
+
+```
+AbstractList (java.util)
+    AbstractCollection (java.util)
+        Object (java.lang)
+        Collection (java.util)
+            Iterable (java.lang)
+    List (java.util)
+        Collection (java.util)
+            Iterable (java.lang)
+List (java.util)
+    Collection (java.util)
+        Iterable (java.lang)
+RandomAccess (java.util)
+Cloneable (java.lang)
+Serializable (java.io)
 ```
 
 ## 主要字段
 
 ```java
-    /**
-     * Default initial capacity.
-     */
-    private static final int DEFAULT_CAPACITY = 10;
-    /**
-     * Shared empty array instance used for empty instances.
-     */
-    // 用户显式指定list为空时使用的数组
-    private static final Object[] EMPTY_ELEMENTDATA = {};
-    /**
-     * Shared empty array instance used for default sized empty instances. We
-     * distinguish this from EMPTY_ELEMENTDATA to know how much to inflate when
-     * first element is added.
-     */
-    // 当使用默认无参构造器创建的空list数组，在扩容时会考虑使用默认的扩容方案DEFAULT_CAPACITY
-    private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
-    /**
-     * The array buffer into which the elements of the ArrayList are stored.
-     * The capacity of the ArrayList is the length of this array buffer. Any
-     * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
-     * will be expanded to DEFAULT_CAPACITY when the first element is added.
-     */
-    transient Object[] elementData; // non-private to simplify nested class access
-    /**
-     * The size of the ArrayList (the number of elements it contains).
-     * @serial
-     */
-    private int size;
+/**
+ * Default initial capacity.
+ */
+private static final int DEFAULT_CAPACITY = 10;
+/**
+ * Shared empty array instance used for empty instances.
+ */
+// 用户显式指定list为空时使用的数组
+private static final Object[] EMPTY_ELEMENTDATA = {};
+/**
+ * Shared empty array instance used for default sized empty instances. We
+ * distinguish this from EMPTY_ELEMENTDATA to know how much to inflate when
+ * first element is added.
+ */
+// 当使用默认无参构造器创建的空list数组，在扩容时会考虑使用默认的扩容方案DEFAULT_CAPACITY
+private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
+/**
+ * The array buffer into which the elements of the ArrayList are stored.
+ * The capacity of the ArrayList is the length of this array buffer. Any
+ * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
+ * will be expanded to DEFAULT_CAPACITY when the first element is added.
+ */
+transient Object[] elementData; // non-private to simplify nested class access
+/**
+ * The size of the ArrayList (the number of elements it contains).
+ * @serial
+ */
+private int size;
 ```
 
-## 构造器
+### 构造器
 
 ArrayList所有的构造器：
 
@@ -49,62 +66,125 @@ ArrayList所有的构造器：
 
 ArrayList提供了3个构造器，除了Collection集合标准中提供无参和Collection参数的两个构造器外，额外提供int参数用于数组容量的初始化
 
+#### 无参构造
+
+默认无参构造器会使用一个默认空的元素数组：`DEFAULTCAPACITY_EMPTY_ELEMENTDATA`，用于区别用户显式指定(通过另外两个构造器)为空的元素数组：EMPTY_ELEMENTDATA。
+
 ```java
-	/**
-	构造一个空列表。默认的初始容量grow时为10并不是在初始时就创建，而是在需要空间时初始化
-	*/
-    public ArrayList() {
-        this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
-    }
-	/**
-	构造一个使用指定 collection 并按其元素迭代的顺序排列的列表。 
-	*/
-    public ArrayList(Collection<? extends E> c) {
-      	// 集合c元素的object[]数组(不能确保一定为实际类型为object类型)
-        elementData = c.toArray();
-        if ((size = elementData.length) != 0) {
-            // c.toArray might (incorrectly) not return Object[] (see 6260652)	// 如果实际类型不是Object就复制到新Object数组中
-            if (elementData.getClass() != Object[].class)
-                elementData = Arrays.copyOf(elementData, size, Object[].class);
-        } 
-      // 传入是一个空的collection
-      else {
-            // replace with empty array.
-            this.elementData = EMPTY_ELEMENTDATA;
-        }
-    }
-	/**
-	构造一个具有指定初始容量并立即初始化分配空间的空列表。 
-	*/
-    public ArrayList(int initialCapacity) {
-        if (initialCapacity > 0) {
-            this.elementData = new Object[initialCapacity];
-        } else if (initialCapacity == 0) {
-            this.elementData = EMPTY_ELEMENTDATA;
-        } else {
-            throw new IllegalArgumentException("Illegal Capacity: "+
-                                               initialCapacity);
-        }
-    }
+/**
+构造一个空列表。默认的初始容量grow时为10并不是在初始时就创建，而是在需要空间时初始化
+*/
+public ArrayList() {
+    this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+}
 ```
 
-### 注意
+与初始容量构造方式区别在于：[首次扩容](#扩容)时oldCapacity==0无参构造会默认扩容为DEFAULT_CAPACITY=10
 
-- 默认无参构造器会使用一个默认空的元素数组：DEFAULTCAPACITY_EMPTY_ELEMENTDATA，用于区别用户显式指定(通过另外两个构造器)为空的元素数组：EMPTY_ELEMENTDATA。
+#### Collection构造
 
-在没有指定扩容容量时，区别在于首次自动扩容时前者会默认扩容为DEFAULT_CAPACITY=10，后者只会size+1即扩容容量为1
-
-- 对于参数为Collection的构造器应该少用Arrays.asList()将数组转化为ArrayList。
+对于参数为Collection的构造器应该少用Arrays.asList()将数组转化为ArrayList。
 
 由于Arrays.asList().toArray()的方法不能将原数组转化为Object[]，构造器会再次将数组复制为Object[]，造成Arrays.asList().toArray()这一个额外的开销(内部实现为`arr.clone()`)，如果数组过大将造成明显的性能损失
 
-- 创建ArrayList时应该显式指定list的容量，不应该指定容量为0
+```java
+/**
+构造一个使用指定 collection 并按其元素迭代的顺序排列的列表。 
+*/
+public ArrayList(Collection<? extends E> c) {
+    // 集合c元素的object[]数组(不能确保一定为实际类型为object类型)
+    elementData = c.toArray();
+    if ((size = elementData.length) != 0) {
+        // c.toArray might (incorrectly) not return Object[] (see 6260652)	// 如果实际类型不是Object就复制到新Object数组中
+        if (elementData.getClass() != Object[].class)
+            elementData = Arrays.copyOf(elementData, size, Object[].class);
+    } 
+    // 传入是一个空的collection
+    else {
+        // replace with empty array.
+        this.elementData = EMPTY_ELEMENTDATA;
+    }
+}
+```
+
+##### Bug: JDK-6260652
+
+###### JDK 8
+
+在JDK8源码中关于构造器`ArrayList(Collection<? extends E> c)`源代码中`c.toArray might (incorrectly) not return Object[] (see 6260652)`的看法
+
+```java
+static void toArrayTest() {
+    String[] strs = {"s", "t", "r"};
+    List<String> list = Arrays.asList(strs);
+    System.out.println(list.toArray());
+    System.out.println(list.toArray(new Object[strs.length]));
+    /*输出：
+    [Ljava.lang.String;@15db9742
+    [Ljava.lang.Object;@6d06d69c
+    */
+}
+```
+
+当使用Arrays.asList()将数组转化为List接口时，list.toArray()的行为不一致，导致直接将数组类型仍然为原数组类型String，下面是Arrays.asList()内部实现`ArrayList.toArray()`方法源码，；直接clone()，所以才保持原数组类型。
+
+```java
+@Override
+public Object[] toArray() {
+    return a.clone();
+}
+```
+
+可能在jdk 9已修复
+
+###### JDK 14
+
+在jdk 14中测试上面的`toArrayTest`方法，输出已修复与`java.util.List.toArray`语义一致：
+
+```java
+jshell> toArrayTest()
+[Ljava.lang.Object;@238e0d81
+[Ljava.lang.Object;@31221be2
+```
+
+`java.util.Arrays.ArrayList#toArray`方法：
+
+```java
+@Override
+public Object[] toArray() {
+    return Arrays.copyOf(a, a.length, Object[].class);
+}
+```
+
+#### 初始容量构造
+
+创建ArrayList时应该显式指定list的容量，不应该指定容量为0
 
 在add首次扩容时，指定容量为0的EMPTY_ELEMENTDATA的扩容为1，初始数组容量过小，造成频繁的扩容操作
 
-## 扩容
+```java
+/**
+构造一个具有指定初始容量并立即初始化分配空间的空列表。 
+*/
+public ArrayList(int initialCapacity) {
+    if (initialCapacity > 0) {
+        this.elementData = new Object[initialCapacity];
+    } else if (initialCapacity == 0) {
+        this.elementData = EMPTY_ELEMENTDATA;
+    } else {
+        throw new IllegalArgumentException("Illegal Capacity: "+
+                                            initialCapacity);
+    }
+}
+```
 
-- void ensureCapacity(int minCapacity)
+### 扩容
+
+通过无参构造器设置默认扩容为DEFAULT_CAPACITY=10，其余构造器默认扩容为0，对于默认构造的list实例，每次扩容都需要将指定容量与默认容量比较，选择较大的扩容
+
+如果指定的扩容容量小于当前数组长度，将不会发生实质的扩容操作
+
+每次实际扩容的容量至少在1.5倍旧容量或更大的指定容量，不会造成频繁的扩容操作
 
 ```java
 /**
@@ -186,12 +266,6 @@ ArrayList提供了3个构造器，除了Collection集合标准中提供无参和
             MAX_ARRAY_SIZE;
     }
 ```
-
-### 注意
-
-- 通过无参构造器设置默认扩容为DEFAULT_CAPACITY=10，其余构造器默认扩容为0，对于默认构造的list实例，每次扩容都需要将指定容量与默认容量比较，选择较大的扩容
-- 如果指定的扩容容量小于当前数组长度，将不会发生实质的扩容操作
-- 每次实际扩容的容量至少在1.5倍旧容量或更大的指定容量，不会造成频繁的扩容操作
 
 ## 查询
 
@@ -1028,39 +1102,7 @@ removeIf的实现使用BitSet记录满足条件的元素下标，并不会处理
 
 - 具体实现请参考AbstractList和源码，两者大同小异
 
+## 参考
 
-
-## 其他
-
-关于构造器`ArrayList(Collection<? extends E> c)`源代码中"c.toArray might (incorrectly) not return Object[] (see 6260652)"的看法
-
-```java
-    static void toArrayTest() {
-        String[] strs = {"s", "t", "r"};
-        List<String> list = Arrays.asList(strs);
-        System.out.println(list.toArray());
-        System.out.println(list.toArray(new Object[strs.length]));
-      /*输出：
-  	 	[Ljava.lang.String;@15db9742
-		[Ljava.lang.Object;@6d06d69c
-      */
-    }
-```
-
-当使用Arrays.asList()将数组转化为List接口时，list.toArray()的行为不一致，导致直接将数组类型仍然为原数组类型String，下面是Arrays.asList()内部实现ArrayList.toArray()方法源码，；直接clone()，所以才保持原数组类型。
-
-```java
-        @Override
-        public Object[] toArray() {
-            return a.clone();
-        }
-```
-
-这个bug应该在Java 9中已修复
-
-
-
-参考：[https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6260652](https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6260652 "JDK-6260652 : (coll) Arrays.asList(x).toArray().getClass() should be Object[].[class")
-
-
+- [https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6260652](https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6260652 "JDK-6260652 : (coll) Arrays.asList(x).toArray().getClass() should be Object[].[class")
 
