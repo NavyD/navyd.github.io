@@ -104,6 +104,8 @@ transaction-read-only = OFF
 
 ### 并发问题
 
+下面使用这个表进行测试
+
 ```SQL
 CREATE TABLE `t` (
   `id` int NOT NULL,
@@ -132,9 +134,7 @@ insert into t values(1,1);
 | 7    | select * from t; #(1,1)                                    |                                                            |
 | 8    | commit;                                                    |                                                            |
 
-在session B update前后rollback，session A 3次查询的结果都不同：`k=1,k=2,k=1`。
-
-A查询到的数据其实就是脏数据
+在session B update前后rollback，session A 3次查询的结果都不同：`k=1,k=2,k=1`，***存在脏读问题***
 
 #### NON-REPEATABLE READ
 
@@ -151,9 +151,9 @@ A查询到的数据其实就是脏数据
 | 7    | select * from t; #(1,2)                                  |                                                          |
 | 8    | commit;                                                  |                                                          |
 
-session B提交前session A不能查询到B已经更新的数据，***解决了脏读问题***
+session B提交前session A不能查询到B已经更新的数据，***使用READ COMMITTED解决了脏读问题***
 
-session B提交后session A查询结果与上一步不一致，***存在不可重复读的问题***
+session B提交后session A查询结果与上一步不一致，***使用READ COMMITTED存在不可重复读的问题***
 
 #### PHANTOM READ
 
@@ -197,6 +197,20 @@ session B提交后session A查询结果与上一步不一致，***存在不可�
 - [一文讲清楚MySQL事务隔离级别和实现原理，开发人员必备知识点](https://www.cnblogs.com/fengzheng/p/12557762.html)
 
 [[如何解决幻读.md]]
+
+## 事务隔离的实现
+
+### 多版本和快照隔离
+
+### 锁
+
+### 时间戳
+
+## 参考
+
+- [『浅入深出』MySQL 中事务的实现](https://draveness.me/mysql-transaction/)
+
+---
 
 #### 可见性异常
 
