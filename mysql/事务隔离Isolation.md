@@ -200,7 +200,11 @@ session B提交后session A查询结果与上一步不一致，***使用READ COM
 
 ## 事务隔离的实现
 
-### 多版本和快照隔离
+Isolation实现涉及多个方面，暂时不能找全，现在仅从MVCC讨论
+
+### MVCC
+
+[[MVCC.md]]
 
 ### 锁
 
@@ -210,7 +214,7 @@ session B提交后session A查询结果与上一步不一致，***使用READ COM
 
 - [『浅入深出』MySQL 中事务的实现](https://draveness.me/mysql-transaction/)
 
----
+--------------------------------
 
 #### 可见性异常
 
