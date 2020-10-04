@@ -115,6 +115,7 @@ $ pidof xfce4-session
 
 参考：
 
+- [16.2 工作管理 (job control)](http://linux.vbird.org/linux_basic/0440processcontrol.php#background)
 - [Exiting terminal running “nohup ./my_script &” => “You have running jobs”. OK to exit?](https://unix.stackexchange.com/questions/231316/exiting-terminal-running-nohup-my-script-you-have-running-jobs-ok-to)
 - [Exit zsh, but leave running jobs open?](https://stackoverflow.com/questions/19302913/exit-zsh-but-leave-running-jobs-open)
 - [linux后台运行和关闭、查看后台任务](https://www.cnblogs.com/qize/p/11392533.html)
