@@ -27,9 +27,9 @@ MVCC就是为了实现读-写冲突不加锁，而这个读指的就是快照读
 
 准确的说，MVCC多版本并发控制指的是 ***维持一个数据的多个版本，使得读写操作没有冲突*** 这么一个概念。仅仅是一个理想概念 而在MySQL中，实现这么一个MVCC理想概念，我们就需要MySQL提供具体的功能去实现它，而 ***快照读*** 就是MySQL为我们实现MVCC理想模型的其中一个具体非阻塞读功能。而相对而言，***当前读*** 就是悲观锁的具体功能实现 要说的再细致一些，快照读本身也是一个抽象概念，再深入研究。MVCC模型在MySQL中的具体实现则是由 3个隐式字段，undo日志 ，Read View 等去完成的，具体可以看下面的MVCC实现原理
 
-### 当前读
+### 当前读current read
 
-读取的是记录的最新版本，读取时还要保证其他并发事务不能修改当前记录，会对*读取的记录进行加锁*。当前读典型的sql语句：
+读取的是记录的最新版本，读取时还要保证其他并发事务不能修改当前记录，会对*读取的记录进行加锁*。事务更新数据的时候，只能用当前读。当前读典型的sql语句：
 
 - select lock in share mode(共享锁)
 - select for update
@@ -46,11 +46,71 @@ MVCC就是为了实现读-写冲突不加锁，而这个读指的就是快照读
 实现原理主要是依赖记录中的 3个隐式字段，undo日志 ，Read View 来实现的。所以我们先来看看这个三个point的概念
 
 ### 隐式字段
-
+<!-- todo -->
 ### undo日志
-
+<!-- todo -->
 ### Read View
+
+consistent read view就是在某一时刻给事务系统trx_sys打snapshot（快照），把当时trx_sys状态（包括活跃读写事务数组）记下来，之后的所有读操作根据其事务ID（即trx_id）与snapshot中的trx_sys的状态作比较，以此判断read view对于*事务的可见性*。
+
+#### 可见性
+
+数据版本的可见性规则，就是基于数据的 row trx_id 和事务系统状态对比结果得到的。
+
+![](../assets/images/baa9fb06-596a-4b47-b798-53ac22d1bb1e.png)
+
+对于 ***当前事务的启动瞬间*** 来说，一个数据版本的 row trx_id，有以下几种可能：
+
+1. 如果落在绿色部分，表示这个版本是已提交的事务或者是当前事务自己生成的，这个数据是可见的；
+2. 如果落在红色部分，表示这个版本是由将来启动的事务生成的，是肯定不可见的；
+3. 如果落在黄色部分，那就包括两种情况
+    a. 若 row trx_id 在数组中，表示这个版本是由还没提交的事务生成的，不可见；
+    b. 若 row trx_id 不在数组中，表示这个版本是已经提交了的事务生成的，可见。
+
+注意：
+
+> 落在黄色区域意味着是事务ID在低水位和高水位这个范围里面，而真正是是否可见，看黄色区域是否有这个值。如果黄色区域没有这个事务ID，则可见，如果有，则不可见。
+> 在这个范围里面并不意味这这个范围里有这个值，比如[1,2,3,5]，4在这个数组1-5的范围里，却没在这个数组里面。
+
+#### 实现：保留trx_sys事务系统状态
+
+在Repeatable Read级别下，一个事务启动的时候，能够看到所有已经提交的事务结果。但是之后，这个事务执行期间，其他事务的更新对它不可见。对于事务来说，需要根据版本号以及Undo Logs计算出他需要的版本对应的数据
+
+一个事务只需要在启动时记录trx_sys状态，之后的所有读操作根据其事务ID（即trx_id）与snapshot中的trx_sys的状态作比较，以此判断read view对于事务的可见性。
+
+- low_limit_id：high water mark，大于等于view->low_limit_id的事务对于view都是不可见的
+- up_limit_id：low water mark，小于view->up_limit_id的事务对于view一定是可见的
+- low_limit_no：trx_no小于view->low_limit_no的undo log对于view是可以purge的
+- rw_trx_ids：读写事务数组
+
+视图数组和高水位，就组成了当前事务的一致性视图（read-view）
+
+> Innodb 要保证这个规则：事务启动以前所有还没提交的事务，它都不可见。但是只存一个已经提交事务的最大值是不够的。 因为存在一个问题，那些比最大值小的事务，之后也可能更新（就是你说的98这个事务）所以事务启动的时候还要保存“现在正在执行的所有事物ID列表”，如果一个row trx_id在这列表中，也要不可见。
+
+#### RR和RC隔离级别的区别
+
+RC（Read Committed）和RR（Repeatable Read）隔离级别是利用consistent read view（一致读视图）方式支持的
+
+##### Gap锁
+
+<!-- todo -->
+
+##### 创建read view时机
+
+RC隔离级别是在语句开始时刻创建read view的。
+
+RR隔离级别是在事务开始时刻，确切地说是第一个读操作创建read view的；
+
+- begin/start transaction
+
+如果事务 A 是以 begin/start transaction 的方式启动的，那么此时，read-view 还没有创建，事务 A 中第一条读操作执行的时候，read-view 才会创建；此时，离 begin/start transaction 的执行已经过去一段时间，在这段时间中，会有新的事务被创建，这些新事务的 trx_id 都会比事务 A 的 trx_id 大；那么在这个数组中，事务 A 的 trx_id 就未必是数据中最后一个元素；这意味着，高水位线和事务 A 的 trx_id 之间有别的 trx_id。
+
+- start transaction with consistent snapshot
+
+如果事务 A 是以 start transaction with consistent snapshot 的方式开启事务，那么 read-view 在这一瞬间创建，事务 A 的 trx_id 就是数组中最后一个元素，高水位线就比事务 A 的 trx_id 大 1。
 
 ## 参考
 
 - [阿里面试问MVCC,原来是这么回答的](https://juejin.im/post/6847902218729816071)
+- [MySQL · 源码分析 · InnoDB的read view，回滚段和purge过程简介](http://mysql.taobao.org/monthly/2018/03/01/)
+- MySQL实战45讲
