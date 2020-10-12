@@ -1,4 +1,4 @@
-# 在rust analyzer中自动插入triple-slash `///`
+# rust analyzer中自动插入triple-slash `///`
 
 rust analyzer不能自动在`///`开始键入enter后连续插入`///`如：
 
