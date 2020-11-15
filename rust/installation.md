@@ -46,6 +46,8 @@ registry = "https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index"
 sudo apt install build-essential
 ```
 
+当使用async-std时，如果还不能正常编译，可以更换为cargo官方源重新编译
+
 参考：[How do I fix the Rust error “linker 'cc' not found” for Debian on Windows 10?](https://stackoverflow.com/questions/52445961/how-do-i-fix-the-rust-error-linker-cc-not-found-for-debian-on-windows-10)
 
 ### cargo: Blocking waiting for file lock on the registry index
