@@ -14,3 +14,16 @@
 [idea2020.2-激活](../assets/files/idea2020.2-激活.zip)
 
 参考：[【全平台】IntelliJ IDEA 2020.2 激活至2089新方式](https://www.52pojie.cn/thread-1264151-1-1.html)
+
+## 无限试用
+
+### Reset evaluation period of IntelliJ IDEA(Linux)
+
+参考：[Reset IntelliJ IDE evaluation period in linux](https://gist.github.com/dev-rijan/bb880cfd9279ce817faee42c69a45bab#file-gistfile1-md)
+
+```bash
+rm -rf ~/.config/JetBrains/IntelliJIdea*/eval
+rm -rf ~/.config/JetBrains/PyCharm*/options/other.xml (if exists)
+sed -i -E 's/<property name=\"evl.*\".*\/>//' ~/.config/JetBrains/IntelliJIdea*/options/other.xml
+rm -rf ~/.java/.userPrefs/jetbrains/idea
+```
