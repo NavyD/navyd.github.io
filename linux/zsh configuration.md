@@ -8,6 +8,8 @@
 curl -L git.io/antigen > antigen.zsh
 ```
 
+或者[Installation](https://github.com/zsh-users/antigen/wiki/Installation)
+
 简单配置在`$HOME/.zshrc`中
 
 ```zsh
