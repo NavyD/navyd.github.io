@@ -42,6 +42,32 @@ deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-security main restr
 
 * [Ubuntu 镜像使用帮助](https://mirror.tuna.tsinghua.edu.cn/help/ubuntu/)
 
+### 修改时间
+
+在系统的时间比实际时间慢了8小时
+
+```sh
+# 查看当前的时间信息
+$ timedatectl
+               Local time: Thu 2021-02-18 17:43:31 UTC
+           Universal time: Thu 2021-02-18 17:43:31 UTC
+                 RTC time: n/a
+                Time zone: Etc/UTC (UTC, +0000)
+System clock synchronized: yes
+              NTP service: active
+          RTC in local TZ: no
+
+# 查看可用的时区
+$ timedatectl list-timezones
+# ...
+Asia/Shanghai
+Asia/Singapore
+# ...
+
+# 修改时区
+$ sudo timedatectl set-timezone Asia/Shanghai
+```
+
 ### docker openwrt
 
 安装docker
