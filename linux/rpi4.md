@@ -221,19 +221,42 @@ docker update --restart=no openwrt
 
 ```yaml
 network:
-    ethernets:
-        eth0:
-            dhcp4: true
-            optional: true
-    version: 2
-
-    wifis:
-        wlan0:
-            dhcp4: true
-            access-points:
-                "wifi的ssid":
-                    password: "wifi密码"
+  ethernets:
+    eth0:
+      dhcp4: false
+      addresses:
+        - 192.168.93.243/24
+      gateway4: 192.168.93.1
+      optional: true
+      nameservers:
+        addresses:
+          - 192.168.93.2
+  version: 2
+  wifis:
+   wlan0:
+     access-points:
+        # wifi ssid
+        "hack_fast":
+          password: "147258369.0"
+          # 连接隐藏ssid的wifi
+          hidden: true
+          # 连接5g wifi
+          band: 5GHz
+     dhcp4: false
+     optional: true
+     addresses:
+       - 192.168.93.245/24
+     gateway4: 192.168.93.1
+     nameservers:
+       addresses:
+         - 192.168.93.2
+         - 192.168.93.1
 ```
+
+wifi配置参考：[netplan](https://netplan.io/reference/)
+
+注意：如果使用前面配置了docker network `macvlan` 对eth0配置，wlan0可能无法正确从docker openwrt中获取ip地址，wlan0是没法与docker内的网络通信的，暂时没有研究。rpi4的wifi网卡速度比较慢`135 Mbit/s, 40MHz`。如果做AP使用更慢，大概是7Mbit/s的样子，基本不可用
+
 
 #### 开启wifi ap热点
 
