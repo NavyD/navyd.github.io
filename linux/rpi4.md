@@ -257,8 +257,36 @@ wifi配置参考：[netplan](https://netplan.io/reference/)
 
 注意：如果使用前面配置了docker network `macvlan` 对eth0配置，wlan0可能无法正确从docker openwrt中获取ip地址，wlan0是没法与docker内的网络通信的，暂时没有研究。rpi4的wifi网卡速度比较慢`135 Mbit/s, 40MHz`。如果做AP使用更慢，大概是7Mbit/s的样子，基本不可用
 
-
 #### 开启wifi ap热点
 
 * [从零开始：树莓派共享 WiFi 秒变无线热点（树莓派路由器](https://zhuanlan.zhihu.com/p/102598741)
 * [Setting up a Raspberry Pi as a routed wireless access point](https://www.raspberrypi.org/documentation/configuration/wireless/access-point-routed.md)
+
+## 安装docker compose
+
+在docker官方文档中没有提到如何在arm上安装docker compose，而且在[docker compose仓库](https://github.com/docker/compose/releases)中也没有发布arm的release文件。但可使用pip安装
+
+```sh
+$ sudo apt-get install python3-pip
+
+# 检查pip安装
+$ pip3 --version
+pip 20.0.2 from /usr/lib/python3/dist-packages/pip (python 3.8)
+
+$ pip3 install docker-compose
+#...
+Installing collected packages: cached-property, python-dotenv, texttable, distro, docopt, websocket-client, dockerpty, pycparser, cffi, bcrypt, paramiko, docker, docker-compose
+  WARNING: The script dotenv is installed in '/home/navyd/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The script distro is installed in '/home/navyd/.local/bin' which is not on PATH.
+# ...
+
+$ docker-compose --version
+docker-compose version 1.28.4, build unknown
+```
+
+如果shell提示没有找到docker-compose，可能是docker-compose没有在环境变量中，可以检查`$HOME/.local/bin`
+
+参考：
+
+* [Alternative install options](https://docs.docker.com/compose/install/#alternative-install-options)
