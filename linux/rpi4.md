@@ -290,3 +290,7 @@ docker-compose version 1.28.4, build unknown
 参考：
 
 * [Alternative install options](https://docs.docker.com/compose/install/#alternative-install-options)
+
+## docker 路由器nginx反向代理
+
+<!-- todo -->
