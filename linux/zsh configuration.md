@@ -152,6 +152,14 @@ bindkey "^U" backward-kill-line
 
 [Which shortcut in Zsh does the same as Ctrl-U in Bash?](https://stackoverflow.com/questions/3483604/which-shortcut-in-zsh-does-the-same-as-ctrl-u-in-bash)
 
+### ctrl+backspace删除前一个单词
+
+```sh
+bindkey '^H' backward-kill-word
+```
+
+参考：[In zsh how do you bind Ctrl+backspace to delete the previous word?](https://stackoverflow.com/a/21252464)
+
 ## cowsay欢迎消息
 
 在shell启动时打印消息：
