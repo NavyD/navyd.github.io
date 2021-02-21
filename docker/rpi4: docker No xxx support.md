@@ -47,6 +47,12 @@ CONTAINER ID   NAME       CPU %     MEM USAGE / LIMIT     MEM %     NET I/O     
 17f588668ce6   openwrt    0.57%     283.6MiB / 320MiB     88.62%    1.32GB / 1.32GB   34.2MB / 168kB    80
 ```
 
+生效后即可对容器内存限制，注意要保证swap>=内存容量
+
+```sh
+docker update --memory=320M --memory-swap=320M openwrt
+```
+
 参考：
 
 * [How to build a Raspberry Pi Kubernetes cluster using MicroK8s](https://ubuntu.com/tutorials/how-to-kubernetes-cluster-on-raspberry-pi#4-installing-microk8s)
