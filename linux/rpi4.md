@@ -4,6 +4,29 @@
 
 ## 初始化ubuntu server 20.04
 
+### 修改用户名
+
+```bash
+# permit root ssh login
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+# sudo echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
+# -bash: /etc/ssh/sshd_config: Permission denied
+sudo sh -c 'echo PermitRootLogin yes >> /etc/ssh/sshd_config'
+
+# as root
+# killall 所有之前用户的进程
+ps -u navyd | awk 'NR>1{print $1}' | xargs kill -9
+# 修改用户名与组
+usermod -l navyd ubuntu
+usermod -d /home/navyd -m navyd
+groupmod -n navyd ubuntu
+```
+
+参考：
+
+* [How do I change my username?](https://askubuntu.com/questions/34074/how-do-i-change-my-username/34075#34075)
+* [sudo echo “something” >> /etc/privilegedFile doesn't work](https://stackoverflow.com/questions/84882/sudo-echo-something-etc-privilegedfile-doesnt-work)
+
 修改密码：
 
 ```bash
@@ -73,7 +96,7 @@ $ sudo timedatectl set-timezone Asia/Shanghai
 安装docker
 
 ```
-curl -fsSL https://get.docker.com -o get-docker.sh | sh -c
+curl -fsSL https://get.docker.com | sudo sh
 # 解决权限问题
 sudo usermod -aG docker navyd
 ```

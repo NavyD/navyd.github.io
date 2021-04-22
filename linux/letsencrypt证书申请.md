@@ -1,5 +1,9 @@
 # letsencrypt证书申请
+
 <!-- todo -->
+
+在使用ali dns验证时，注意使用子账号的key与sercet时存在无法创建的问题，可以使用主账号创建key与sercet
+
 参考：
 
 * [验证方式](https://letsencrypt.org/zh-cn/docs/challenge-types/)
