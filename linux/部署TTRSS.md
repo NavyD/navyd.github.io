@@ -8,6 +8,18 @@
 
 如：[关于 SELF_URL_PATH 错误的解决方案大合集](https://github.com/HenryQW/Awesome-TTRSS/issues/62)
 
+### 备份与恢复数据
+
+确保postgres容器正在运行，否则可能出现`Error response from daemon: Container xxx is not running`的问题
+
+```bash
+# rss为pg的用户名 如果没有配置则默认为postgres
+docker exec postgres pg_dumpall -c -U rss > backup.sql
+# docker-compose stop
+docker-compose up -d
+cat backup.sql | docker exec -i postgres psql -U rss
+```
+
 ### bilibili视频
 
 参考：[移除 iframe 上的 sandbox 属性](http://ttrss.henry.wang/zh/#remove-iframe-sandbox)
