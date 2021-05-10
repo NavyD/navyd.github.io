@@ -65,3 +65,27 @@ https://localhost:25500/sub?target=clash&url=https%3a%2f%2fnfnf.xyz%2flink%2fabc
 * [Clash TUN mode](https://lancellc.gitbook.io/clash/start-clash/clash-tun-mode)
 * [Kr328 的 Clash 配置脚本们](https://github.com/Kr328/kr328-clash-setup-scripts)
 * [Clash proxy-provider 搭配 subconverter 使用小记](https://10101.io/2020/02/12/use-clash-proxy-provider-with-subconverter)
+
+## docker部署
+
+在docker内启动时使用iptables操作，stop时清理iptables。[自用docker镜像](https://hub.docker.com/r/navyd/clash-premium-ui)
+
+实现参考：
+
+* [shellclash start.sh](https://github.com/juewuy/ShellClash/blob/master/scripts/start.sh)
+* [OpenClash openclash](https://github.com/vernesong/OpenClash/blob/master/luci-app-openclash/root/etc/init.d/openclash)
+* [clash-premium-installer setup-tun.sh](https://github.com/Kr328/clash-premium-installer/blob/master/scripts/setup-tun.sh)
+
+参考：
+
+* [How to check if a variable is set in Bash?](https://stackoverflow.com/a/17538964)
+* [clash本机做透明代理iptables规则请教](https://github.com/Dreamacro/clash/issues/555#issuecomment-595064646)
+* [Setup System stack in Fake-IP mode](https://lancellc.gitbook.io/clash/start-clash/clash-tun-mode/setup-system-stack-in-fake-ip-mode)
+* [Clash Premiun Installer](https://github.com/Kr328/clash-premium-installer)
+* [你的 docker stop，它优雅吗？](https://segmentfault.com/a/1190000022971054)
+* [Unable to trap signals in docker entrypoint script](https://stackoverflow.com/a/60699262)
+* [Linux 网络工具详解之 ip tuntap 和 tunctl 创建 tap/tun 设备](https://www.cnblogs.com/bakari/p/10449664.html)
+* [ShellClash](https://github.com/juewuy/ShellClash)
+* [在本地电脑使用clash的tun版本中的realip模式](https://www.xzcblog.com/post-293.html)
+* [浅谈在代理环境中的 DNS 解析行为](https://blog.skk.moe/post/what-happend-to-dns-in-proxy/)
+* [Real-IP Tun Example](https://comzyh.gitbook.io/clash/real-ip-tun-example)
