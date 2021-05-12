@@ -73,11 +73,104 @@ sudo apt-get install wsdd
 
 ## docker启动
 
-可以考虑使用docker同时启动samba与wsdd，但是没有直接使用的方法，可以参考下面的方法。默认的两个独立容器配置wsdd不能正常工作在samba容器间，没有测试过修改配置或放到同一个容器中
+在linux上使用host网络docker同时启动samba与wsdd
 
-<!-- todo -->
+```yml
+version: "3"
+services: 
+  samba-server:
+    image: dperson/samba
+    container_name: samba-server
+    environment: 
+      - TZ=Asia/Shanghai
+      - USERID=1000
+      - GROUPID=1000
+    command: >-
+      -p
+      -n
+      -u "user1;1234;"
+      -s "downloads;/share/downloads;yes;no;no;user1;user1;user1"
+      -G "downloads;acl allow execute always = True"
+      -g "netbios name = RASPI4"
+      -g "netbios aliases = RASPI4-D RASPI4-M RASPI4-B"
+    network_mode: host
+    mem_limit: 128M
+    restart: always
+    volumes: 
+      - type: bind
+        source: /mnt/share/Downloads
+        target: /share/downloads
+  wsdd:
+    build:
+      context: .
+      dockerfile: wsdd.Dockerfile
+    container_name: wsdd
+    network_mode: host
+    restart: always
+    depends_on: 
+      - samba-server
+```
+
+一个简单的docker wsdd镜像：
+
+```dockerfile
+FROM python:3-alpine
+
+WORKDIR /
+
+RUN wget https://raw.githubusercontent.com/christgau/wsdd/v0.6.4/src/wsdd.py -O wsdd.py \
+    && chmod +x wsdd.py
+
+ENTRYPOINT ["/wsdd.py"]
+```
 
 参考：
 
-* [JonasPed/wsdd-docker](https://github.com/JonasPed/wsdd-docker)
-* [dperson/docker-samba](https://github.com/dperson/samba)
+* [dperson/samba](https://hub.docker.com/r/dperson/samba)
+
+## win10无法连接多个samba用户到一台linux主机
+
+在win10上无法连接多个同一台linux主机上的samba
+
+![](../assets/images/a1f7de9a-d074-4f20-8bbe-595bb2affb57.png)
+
+### 解决方法
+
+#### 断开之前的连接
+
+```powershell
+PS C:\Users\navyd> net use
+New connections will be remembered.
+
+
+
+-------------------------------------------------------------------------------
+Disconnected           \\RASPI4\magics            Microsoft Windows Network
+The command completed successfully.
+
+PS C:\Users\navyd> net use /delete \\RASPI4\magics
+\\RASPI4\magics was deleted successfully.
+
+PS C:\Users\navyd> net use
+
+There are no entries in the list.
+```
+
+#### 配置samba服务器多个不同的名称
+
+配置
+
+```
+[global]
+    netbios name = RASPI4
+    netbios aliases = RASPI4-D RASPI4-M RASPI4-B
+# ...
+```
+
+在win10 中使用不同的名称来访问即可如`\\RASPI4-D\downloads, \\RASPI4-M\magics`
+
+参考：
+
+* [Samba+Windows: Allow multiple connections by different users?](https://superuser.com/a/498219)
+* [Windows: Fix ‘Multiple connections to a server or shared resource by the same user’ Error](https://www.technipages.com/fix-multiple-connections-to-a-server-or-shared-resource-by-the-same-user-error)
+* [Samba 4, shares, wsdd and Windows 10 – how to list Linux Samba servers in the Win 10 Explorer](https://linux-blog.anracom.com/2020/05/24/samba-4-shares-wsdd-and-windows-10-how-to-list-linux-samba-servers-in-the-win-10-explorer/)
