@@ -1,5 +1,15 @@
 # clash
 
+## Linux透明代理原理
+
+参考：
+
+* [Linux transparent proxy support](https://powerdns.org/tproxydoc/tproxy.md.html)
+* [Linux transparent proxy support github](https://github.com/ahupowerdns/tproxydoc/blob/master/tproxy.md)
+* [透明代理 UDP 为什么要用 TProxy？](https://www.codenong.com/js5393fb5e2c87/)
+* [透明代理的基本原理](https://github.com/lazytiger/trojan-rs/blob/master/PRINCIPLE.md)
+* [从 ss-redir 的实现到 Linux NAT](https://vvl.me/2018/06/from-ss-redir-to-linux-nat/)
+
 ## 订阅转换subconverter
 
 clash提供[Proxy Provider](https://lancellc.gitbook.io/clash/clash-config-file/proxy-provider)功能，可以方便的分离代理节点为单个url资源，自动更新订阅节点等如：
@@ -74,7 +84,7 @@ https://localhost:25500/sub?target=clash&url=https%3a%2f%2fnfnf.xyz%2flink%2fabc
 
 ### TCP redir + UDP TPROXY
 
-redir模式。对转发流量使用tcp redir, udp tproxy方式代理。本机仅代理tcp，支持docker内部代理。不支持fakeip因存在icmp无法回应的问题，tun-fakeip可以提供更好的服务。
+redir模式。对转发流量使用tcp redir, udp tproxy方式代理。本机仅代理tcp，支持docker内部代理。不支持fakeip因存在icmp无法回应的问题（tcp udp没有问题），tun-fakeip可以提供更好的服务。
 
 ```bash
 echo "setting up redir"
@@ -122,6 +132,8 @@ ip route add local default dev lo table $TABLE_ID
 
 * [Clash TProxy Mode](https://lancellc.gitbook.io/clash/start-clash/clash-udp-tproxy-support)
 * [clash本机做透明代理iptables规则请教](https://github.com/Dreamacro/clash/issues/555#issuecomment-595064646)
+* [Fake IP 模式如何直接转发icmp包（无法Ping任何网站）](https://github.com/Dreamacro/clash/issues/1047)
+* [iptables处理icmp转发](https://lev.shield.asia/index.php/Ops/31.html)
 
 ### TCP&UDP TPROXY
 
@@ -227,3 +239,9 @@ shell实现参考：
 * [浅谈在代理环境中的 DNS 解析行为](https://blog.skk.moe/post/what-happend-to-dns-in-proxy/)
 * [容器(docker)桥接(bridge)模式时的代理问题](https://github.com/springzfx/cgproxy/issues/10)
 * [Transparent Proxy powered by cgroup v2](https://github.com/springzfx/cgproxy/blob/aaa628a76b2911018fc93b2e3276c177e85e0861/readme.md#known-issues)
+
+相关项目：
+
+* [go Dreamacro/clash](https://github.com/Dreamacro/clash)
+* [go tun comzyh/clash](https://github.com/comzyh/clash)
+* [rust Trojan-rs](https://github.com/lazytiger/trojan-rs)
