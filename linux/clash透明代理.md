@@ -78,7 +78,10 @@ https://localhost:25500/sub?target=clash&url=https%3a%2f%2fnfnf.xyz%2flink%2fabc
 
 ## docker部署
 
-在docker内启动时使用iptables操作，stop时清理iptables。[自用docker镜像](https://hub.docker.com/r/navyd/clash-premium-ui)
+在docker内启动时使用iptables操作，stop时清理iptables。
+
+* [自用docker镜像](https://hub.docker.com/r/navyd/clash)
+* [NavyD/docker-clash](https://github.com/NavyD/docker-clash)
 
 ## 代理方式
 
