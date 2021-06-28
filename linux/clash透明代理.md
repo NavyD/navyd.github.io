@@ -84,10 +84,9 @@ https://localhost:25500/sub?target=clash&url=https%3a%2f%2fnfnf.xyz%2flink%2fabc
 
 ### TCP redir + UDP TPROXY
 
-redir模式。对转发流量使用tcp redir, udp tproxy方式代理。本机仅代理tcp，支持docker内部代理。不支持fakeip因存在icmp无法回应的问题（tcp udp没有问题），tun-fakeip可以提供更好的服务。
+redir模式。对转发流量使用tcp redir, udp tproxy方式代理。本机仅代理tcp，支持docker内部代理。支持fakeip但存在icmp无法回应的问题（tcp udp没有问题），tun-fakeip可以提供更好的服务。
 
 ```bash
-echo "setting up redir"
 # local 
 # 接管clash宿主机内部流量
 iptables -t nat -N CLASH
@@ -134,6 +133,7 @@ ip route add local default dev lo table $TABLE_ID
 * [clash本机做透明代理iptables规则请教](https://github.com/Dreamacro/clash/issues/555#issuecomment-595064646)
 * [Fake IP 模式如何直接转发icmp包（无法Ping任何网站）](https://github.com/Dreamacro/clash/issues/1047)
 * [iptables处理icmp转发](https://lev.shield.asia/index.php/Ops/31.html)
+* [使用 iptables 透明代理 TCP 与 UDP](https://blog.lilydjwg.me/2018/7/16/transparent-proxy-for-tcp-and-udp-with-iptables.213139.html)
 
 ### TCP&UDP TPROXY
 
@@ -177,39 +177,45 @@ iptables -t mangle -A PREROUTING -j clash
 
 适用于tun-redir,tun-fakeip，代理本机与外部流量。在iptables mangle中设置mark并过滤内部私有地址、过滤指定运行clash uid的流量防止循环。
 
-本机docker内部网络无法直接被代理，如果不`-s 172.16.0.0/12 -j RETURN`则docker内部无法ping到外部网络，可能是在mangle表后路由到tun设备后无法被iptables nat中的DOCKER链处理。
+~~本机docker内部网络无法直接被代理，如果不`-s 172.16.0.0/12 -j RETURN`则docker内部无法ping到外部网络，可能是在mangle表后路由到tun设备后无法被iptables nat中的DOCKER链处理。~~
+
+使用`-i "$TUN_NAME" -j RETURN`防止docker内部流量被mark循环到tun接口。具体可行原因未知`todo` <!-- todo -->
 
 ```bash
+# 代理本机与外部流量。在iptables mangle中设置mark并过滤内部私有地址、
+# 过滤指定运行clash uid的流量防止循环。允许本机与docker通过代理
+
 ## 接管clash宿主机内部流量
 iptables -t mangle -N CLASH
 iptables -t mangle -F CLASH
+# filter clash traffic running under uid 注意顺序 owner过滤 要在 set mark之前
+iptables -t mangle -A CLASH -m owner --uid-owner "$RUNNING_UID" -j RETURN
 # private
-setup_private mangle CLASH
-# docker internal 
-iptables -t mangle -A CLASH -s 172.16.0.0/12 -j RETURN
-# filter clash traffic running under uid 注意顺序 owner过滤 要在 CLASH之前
-iptables -t mangle -I CLASH -m owner --uid-owner $RUNNING_UID -j RETURN
+local_iptables mangle CLASH
 # mark
 iptables -t mangle -A CLASH -j MARK --set-xmark $MARK_ID
+
+iptables -t mangle -A OUTPUT -j CLASH
 
 ## 接管转发流量
 iptables -t mangle -N CLASH_EXTERNAL
 iptables -t mangle -F CLASH_EXTERNAL
 # private
-setup_private mangle CLASH_EXTERNAL
-# docker internal 
-iptables -t mangle -A CLASH_EXTERNAL -s 172.16.0.0/12 -j RETURN
+local_iptables mangle CLASH_EXTERNAL
+# avoid rerouting for local docker
+iptables -t mangle -A CLASH_EXTERNAL -i "$TUN_NAME" -j RETURN
 # mark
 iptables -t mangle -A CLASH_EXTERNAL -j MARK --set-xmark $MARK_ID
 
-# 本机流量
-iptables -t mangle -A OUTPUT -j CLASH
-# 代理
 iptables -t mangle -A PREROUTING -j CLASH_EXTERNAL
 
 # utun route table
 ip route replace default dev "$TUN_NAME" table "$TABLE_ID"
 ip rule add fwmark "$MARK_ID" lookup "$TABLE_ID"
+
+# 排除 rp_filter 的故障 反向路由
+sysctl -w net.ipv4.conf."$TUN_NAME".rp_filter=0 2> /dev/null
+sysctl -w net.ipv4.conf.all.rp_filter=0 2> /dev/null
 ```
 
 参考：
@@ -220,7 +226,7 @@ ip rule add fwmark "$MARK_ID" lookup "$TABLE_ID"
 ### 已知问题
 
 1. TPROXY 不能用于 OUTPUT 链，无法用于本机代理。在[v2ray 配置透明代理规则](https://guide.v2fly.org/app/tproxy.html#%E9%85%8D%E7%BD%AE%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86%E8%A7%84%E5%88%99)中可以通过标记重路由的方式代理本机，但是在clash要对clash源码在socket上标记`SO_MARK`。查看了openclash源码也没有对`UDP TPROXY`的解决方法，在使用TPROXY时只能代理本机tcp流量。尝试使用`--owner-uid`的方式过滤clash发出的流量，但是没有用，可能是与OUTPUT重路由到PREROUTING链不同，原理不清
-2. TUN方式在docker使用时bridge网络无法解析dns到外部网络，[容器(docker)桥接(bridge)模式时的代理问题](https://github.com/springzfx/cgproxy/issues/10)有相关讨论。fakeip直接启动时不设置只是作为dns网关使用时，docker bridge网络可以正常使用。`TCP TPROXY`的方式可以bridge网络可正常使用
+2. ~~TUN方式在docker使用时bridge网络无法解析dns到外部网络，[容器(docker)桥接(bridge)模式时的代理问题](https://github.com/springzfx/cgproxy/issues/10)有相关讨论。fakeip直接启动时不设置只是作为dns网关使用时，docker bridge网络可以正常使用。`TCP TPROXY`的方式可以bridge网络可正常使用~~
 
 shell实现参考：
 
