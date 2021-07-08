@@ -317,3 +317,74 @@ docker-compose version 1.28.4, build unknown
 ## docker 路由器nginx反向代理
 
 <!-- todo -->
+
+## 在ubuntu2004安装摄像头
+
+### 通过raspi-config启用摄像头
+
+启动摄像头需要用到官方的raspi-config配置程序[进入官网下载最新的deb程序](http://archive.raspberrypi.org/debian/pool/main/r/raspi-config/)
+
+```sh
+curl -sSLO http://archive.raspberrypi.org/debian/pool/main/r/raspi-config/raspi-config_20210604_all.deb
+sudo dpkg -i raspi-config_20210604_all.deb
+# 修复依赖报错
+sudo apt-get install -f
+
+# 启动raspi-config 在交互界面中选择 Interface Options -> Camera -> ok
+sudo raspi-config
+```
+
+如果出现固件过时的错误时`Your firmwave appears to be out of date (no start_x.elf). Please update`的解决方法：
+
+```sh
+# 查看boot分区所在的设备号，设备号可能是：/dev/mmcblk0p1
+df -h
+# 将该设备号挂载在/boot上
+mount /dev/mmcblk0p1 /boot
+
+# 重新配置
+sudo raspi-config
+# 树莓派重启
+sudo reboot
+
+# 重启后检查是否有摄像头设备
+$ ls -al /dev/ | grep video
+crw-rw----  1 root video   508,   0 May 27 23:16 media0
+crw-rw----  1 root video   508,   1 May 27 23:16 media1
+crw-rw----  1 root video   236,   0 May 27 23:16 vchiq
+crw-rw----  1 root video   240,   0 May 27 23:16 vcio
+crw-rw----  1 root video    81,   5 May 27 23:16 video0
+crw-rw----  1 root video    81,   0 May 27 23:16 video10
+crw-rw----  1 root video    81,   6 May 27 23:16 video11
+crw-rw----  1 root video    81,   7 May 27 23:16 video12
+crw-rw----  1 root video    81,   1 May 27 23:16 video13
+crw-rw----  1 root video    81,   2 May 27 23:16 video14
+crw-rw----  1 root video    81,   3 May 27 23:16 video15
+crw-rw----  1 root video    81,   4 May 27 23:16 video16
+```
+
+使用raspi lib命令判断摄像头是否激活
+
+```sh
+# 如果vcgencmd未找到时 安装
+sudo apt install libraspberrypi-bin
+# 如果安装后运行vcgencmd提示raspi init failed重启生效
+sudo reboot
+# 判断摄像头是否激活
+vcgencmd get_camera
+# supported=1 detected=1
+```
+
+### 测试拍照
+
+树莓派自带raspistill可以用来进行摄像头拍照功能，如下命令：
+
+```sh
+raspistill -v -o test.jpg
+```
+
+参考：
+
+* [树莓派raspberry4B指南part-7 摄像头使用及tensorflow lite实现目标检测](https://zhuanlan.zhihu.com/p/98523007)
+* [Ubuntu Server下给树莓派安装摄像头](https://blog.csdn.net/sinat_25259461/article/details/108353324)
+* [How to use the Raspberry Pi High Quality camera on Ubuntu Core](https://ubuntu.com/blog/how-to-stream-video-with-raspberry-pi-hq-camera-on-ubuntu-core)
