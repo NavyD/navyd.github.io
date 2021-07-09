@@ -388,3 +388,29 @@ raspistill -v -o test.jpg
 * [树莓派raspberry4B指南part-7 摄像头使用及tensorflow lite实现目标检测](https://zhuanlan.zhihu.com/p/98523007)
 * [Ubuntu Server下给树莓派安装摄像头](https://blog.csdn.net/sinat_25259461/article/details/108353324)
 * [How to use the Raspberry Pi High Quality camera on Ubuntu Core](https://ubuntu.com/blog/how-to-stream-video-with-raspberry-pi-hq-camera-on-ubuntu-core)
+
+## 启用swap
+
+安装dphys-swapfile
+
+```sh
+sudo apt install dphys-swapfile
+```
+
+编辑/etc/dphys-swapfile修改默认swap文件位置，sd卡速度太慢，使用usb硬盘：
+
+```properties
+# where we want the swapfile to be, this is the default /var/swap
+CONF_SWAPFILE=/mnt/share/swap
+```
+
+重启
+
+```sh
+sudo service dphys-swapfile restart
+```
+
+参考：
+
+* [How to set up swap space?](https://raspberrypi.stackexchange.com/questions/70/how-to-set-up-swap-space)
+* [Permanently disable swap on Raspbian Buster](https://www.raspberrypi.org/forums/viewtopic.php?t=244130)
