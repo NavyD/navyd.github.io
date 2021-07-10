@@ -6,10 +6,14 @@
 
 ## yaml文件编辑问题
 
-在yaml编辑时使用tab时默认缩进为8，不符合yaml文件格式，在使用下面的命令解决：
+在yaml编辑时使用tab时默认缩进为8，不符合yaml文件格式，且在`ctrl+v`多行插入`#`时可能出现自动缩进。在使用下面的命令解决：
 
 ```sh
-autocmd FileType yaml setlocal sw=2 ts=2 et ai
+# raspi4 `#`自动缩进 无法无效
+# autocmd FileType yaml setlocal sw=2 ts=2 et ai
+
+# 在raspi4 ubuntu20.04上/etc/vim/vimrc生效
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 ```
 
 在直接粘贴时也会导致格式混乱多缩进和空格，可以在vim中使用粘贴模式命令解决`:set paste`
@@ -61,3 +65,4 @@ autocmd FileType yaml setlocal sw=2 ts=2 et ai
 
 * [Vim 配置入门](http://www.ruanyifeng.com/blog/2018/09/vimrc.html)
 * [Vim入门级基础配置](https://segmentfault.com/a/1190000016330314)
+* [Wrong indentation when editing Yaml in Vim](https://stackoverflow.com/a/37488992)

@@ -240,47 +240,111 @@ docker update --restart=no openwrt
 
 * [树莓派 | Docker上运行 OpenWrt 做旁路由，超简单！](https://blog.sillyson.com/archives/7.html)
 
-#### 使用wifi连接网络
+## 使用wifi网络
 
-```yaml
-network:
-  ethernets:
-    eth0:
-      dhcp4: false
-      addresses:
-        - 192.168.93.243/24
-      gateway4: 192.168.93.1
-      optional: true
-      nameservers:
+1. 配置[netplan wifi](https://netplan.io/reference/) `/etc/netplan/50-cloud-init.yaml`
+
+    ```yaml
+    network:
+      ethernets:
+        eth0:
+          dhcp4: false
+          addresses:
+            - 192.168.93.243/24
+          gateway4: 192.168.93.1
+          optional: true
+          nameservers:
+            addresses:
+              - 192.168.93.2
+      version: 2
+      wifis:
+      wlan0:
+        access-points:
+            # wifi ssid
+            "your-ssid":
+              password: "your-password"
+              # 连接隐藏ssid的wifi
+              hidden: true
+        dhcp4: false
+        optional: true
         addresses:
-          - 192.168.93.2
-  version: 2
-  wifis:
-   wlan0:
-     access-points:
-        # wifi ssid
-        "hack_fast":
-          password: "147258369.0"
-          # 连接隐藏ssid的wifi
-          hidden: true
-          # 连接5g wifi
-          band: 5GHz
-     dhcp4: false
-     optional: true
-     addresses:
-       - 192.168.93.245/24
-     gateway4: 192.168.93.1
-     nameservers:
-       addresses:
-         - 192.168.93.2
-         - 192.168.93.1
+          - 192.168.93.245/24
+        gateway4: 192.168.93.1
+        nameservers:
+          addresses:
+            - 192.168.93.2
+            - 192.168.93.1
+    ```
+
+2. 修改country code将`/etc/default/crda`中替换为`REGDOMAIN=CN`
+
+    ```sh
+    # 查询REGDOMAIN对应代码
+    $ cat /usr/share/zoneinfo/zone.tab | grep Asia/Shanghai
+    CN      +3114+12128     Asia/Shanghai   Beijing Time
+    ```
+
+3. 应用配置
+
+    ```sh
+    sudo netplan try
+    # 如果出现这种错误可以忽略
+    # An error occurred: Command '['systemctl', 'stop', 'systemd-networkd.service', # 'netplan-wpa-*.service']' returned non-zero exit status 1.
+    # 
+    # Reverting.
+    # Warning: Stopping systemd-networkd.service, but it can still be activated by:
+    #   systemd-networkd.socket
+    sudo netplan generate
+    sudo netplan apply
+    # 可选 重启
+    sudo reboot
+    ```
+
+参考：
+
+* [Help: Unable to connect to 5G Wifi on raspberry pi 4 using ubuntu server 18.04](https://askubuntu.com/a/1264616)
+
+### wifi验证
+
+wifi扫描可用网络：
+
+```sh
+$ sudo iw dev wlan0 scan | grep SSID
+        SSID: ChinaNet-WkML
+        SSID: MERCURY_1232
+        SSID: 62-504
+        SSID: hack
+        SSID: CMCC-Q9RP
+        SSID: CMCC-JdD5
+        SSID: 0658
 ```
 
-wifi配置参考：[netplan](https://netplan.io/reference/)
+查看当前网络wifi连接：
 
-注意：如果使用前面配置了docker network `macvlan` 对eth0配置，wlan0可能无法正确从docker openwrt中获取ip地址，wlan0是没法与docker内的网络通信的，暂时没有研究。rpi4的wifi网卡速度比较慢`135 Mbit/s, 40MHz`。如果做AP使用更慢，大概是7Mbit/s的样子，基本不可用
+```sh
+$ iw wlan0 link
+Connected to fe:7c:02:43:c5:5a (on wlan0)
+        SSID: hack_fast
+        freq: 5745
+        RX: 1128953 bytes (6350 packets)
+        TX: 1048 bytes (10 packets)
+        signal: -39 dBm
+        rx bitrate: 150.0 MBit/s
+        tx bitrate: 24.0 MBit/s
 
-#### 开启wifi ap热点
+        bss flags:      short-preamble
+        dtim period:    1
+        beacon int:     100
+```
+
+参考：
+
+* [How can I display the list of available WiFi networks?](https://askubuntu.com/a/567021)
+* [Is there a tool to display WiFi information in console?](https://unix.stackexchange.com/a/489619)
+
+### 开启wifi ap热点
+
+注意：如果使用前面配置了docker network `macvlan` 对eth0配置，wlan0可能无法正确从docker openwrt中获取ip地址，wlan0是没法与docker内的网络通信的，暂时没有研究。rpi4的wifi网卡速度比较慢`150 Mbit/s, 40MHz`。如果做AP使用更慢，大概是7Mbit/s的样子，基本不可用
 
 * [从零开始：树莓派共享 WiFi 秒变无线热点（树莓派路由器](https://zhuanlan.zhihu.com/p/102598741)
 * [Setting up a Raspberry Pi as a routed wireless access point](https://www.raspberrypi.org/documentation/configuration/wireless/access-point-routed.md)
