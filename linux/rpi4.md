@@ -478,3 +478,87 @@ sudo service dphys-swapfile restart
 
 * [How to set up swap space?](https://raspberrypi.stackexchange.com/questions/70/how-to-set-up-swap-space)
 * [Permanently disable swap on Raspbian Buster](https://www.raspberrypi.org/forums/viewtopic.php?t=244130)
+
+## Raspberry Pi OS
+
+适用于raspbian 32bit系统
+
+### 启动配置
+
+在boot分区配置，不是在root分区的`/boot`
+
+* 开启ssh：添加`ssh`空文件
+
+* wifi连接
+
+  ```sh
+  ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+  update_config=1
+  country=<Insert 2 letter ISO 3166-1 country code here>
+
+  network={
+          scan_ssid=1
+          ssid="<Name of your wireless LAN>"
+          psk="<Password for your wireless LAN>"
+          proto=RSN
+          key_mgmt=WPA-PSK
+          pairwise=CCMP
+          auth_alg=OPEN
+  }
+  ```
+
+* static ip
+  * 如果使用的是网线，可以直接在`cmdline.txt`中添加ip：`ip=192.168.x.x`
+  * 如果使用的是wifi，需要手动挂载root分区编辑`/etc/dhcpcd.conf`：
+
+    ```sh
+    interface wlan0
+    static ip_address= 192.168.1.10/24
+    static routers=192.168.1.1
+    static domain_name_servers=1.1.1.1
+    ```
+
+参考：
+
+* [Setting up a Raspberry Pi headless](https://www.raspberrypi.org/documentation/configuration/wireless/headless.md)
+* [Setting a static IP address from SD card before boot](https://www.raspberrypi.org/forums/viewtopic.php?t=217629)
+* [Setting a Static IP from Boot Drive (headless static IP)](https://raspberrypi.stackexchange.com/questions/85747/setting-a-static-ip-from-boot-drive-headless-static-ip)
+
+## 备份
+
+todo
+
+### 系统迁移
+
+参考：
+
+* [把树莓派的系统迁移到U盘上](https://lyq.blogd.club/2017/02/11/pi-usb-boot/)
+* [树莓派学习笔记 篇四：树莓派4B 的系统备份方法大全（全卡+压缩备份）](https://post.smzdm.com/p/apzkgne7/)
+* [rpi-clone](https://github.com/billw2/rpi-clone)
+* [Move your existing Raspberry Pi 4 Ubuntu install from SD card to USB/SSD](https://medium.com/xster-tech/move-your-existing-raspberry-pi-4-ubuntu-install-from-sd-card-to-usb-ssd-52e99723f07b)
+
+## face_recognition
+
+```sh
+pi@raspberrypi:~/.local/bin $ face_recognition --help
+Traceback (most recent call last):
+  File "/home/pi/.local/bin/face_recognition", line 6, in <module>
+    from face_recognition.face_recognition_cli import main
+  File "/home/pi/.local/lib/python3.7/site-packages/face_recognition/__init__.py", line 7, in <module>
+    from .api import load_image_file, face_locations, batch_face_locations, face_landmarks, face_encodings, compare_faces, face_distance
+  File "/home/pi/.local/lib/python3.7/site-packages/face_recognition/api.py", line 3, in <module>
+    import PIL.Image
+  File "/home/pi/.local/lib/python3.7/site-packages/PIL/Image.py", line 114, in <module>
+    from . import _imaging as core
+ImportError: libopenjp2.so.7: cannot open shared object file: No such file or directory
+```
+
+libf77blas.so
+
+```sh
+sudo apt-get install libatlas-base-dev
+```
+
+参考：
+
+* [Numpy import error Python3 on Raspberry Pi?](https://stackoverflow.com/a/67043061)
