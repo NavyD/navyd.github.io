@@ -10,7 +10,21 @@
 * [透明代理的基本原理](https://github.com/lazytiger/trojan-rs/blob/master/PRINCIPLE.md)
 * [从 ss-redir 的实现到 Linux NAT](https://vvl.me/2018/06/from-ss-redir-to-linux-nat/)
 
-## 订阅转换subconverter
+## 相关工具
+
+### 配置文件
+
+* [fake-ip-filter规则](https://cdn.jsdelivr.net/gh/Hackl0us/SS-Rule-Snippet@master/LAZY_RULES/clash.yaml)
+* [ACL4SSR 分流规则](https://github.com/ACL4SSR/ACL4SSR/tree/master/Clash)
+* [clash-rules Clash Premium Provider可直接使用](https://github.com/Loyalsoldier/clash-rules)
+
+相关项目参考：
+
+* [SS-Rule-Snippet](https://github.com/Hackl0us/SS-Rule-Snippet)
+* [SSR去广告规则/GFWList规则/Clash规则碎片](https://github.com/ACL4SSR/ACL4SSR/tree/master)
+* [clash-rules](https://github.com/Loyalsoldier/clash-rules)
+
+### 订阅转换subconverter
 
 clash提供[Proxy Provider](https://lancellc.gitbook.io/clash/clash-config-file/proxy-provider)功能，可以方便的分离代理节点为单个url资源，自动更新订阅节点等如：
 
@@ -20,22 +34,22 @@ clash提供[Proxy Provider](https://lancellc.gitbook.io/clash/clash-config-file/
 # ...
 # proxy provider start here
 proxy-providers:
-	hk:
-		type: http
-		path: ./hk.yaml
-		url: http://remote.lancelinked.icu/files/hk.yaml
-		interval: 3600
-		health-check:
-			enable: true
-			url: http://www.gstatic.com/generate_204
-			interval: 300
-	us:
-		type: file
-		path: /home/lance/.clash/provider/us.yaml
-		health-check:
-			enable: true
-			url: http://www.gstatic.com/generate_204
-			interval: 300
+  hk:
+    type: http
+    path: ./hk.yaml
+    url: http://remote.lancelinked.icu/files/hk.yaml
+    interval: 3600
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+  us:
+    type: file
+    path: /home/lance/.clash/provider/us.yaml
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
 # proxy provider end
 
 #Proxy:
@@ -48,7 +62,7 @@ proxy-providers:
 
 在使用机场提供的clash文件时通常只会使用到其中的proxies，还有过滤节点等需求，clash不支持过滤节点。而[subconverter](https://github.com/tindy2013/subconverter/blob/master/README-cn.md#%E8%AF%B4%E6%98%8E%E7%9B%AE%E5%BD%95)提供了订阅转换与过滤等必要的功能
 
-### 部署
+#### docker部署
 
 使用docker安装
 
@@ -70,10 +84,6 @@ https://localhost:25500/sub?target=clash&url=https%3a%2f%2fnfnf.xyz%2flink%2fabc
 
 参考：
 
-* [[WIP]Tun](https://comzyh.gitbook.io/clash/)
-* [clash premium(2020.10.09) tun模式,无法代理本机,不知道哪出问题了 #1060](https://github.com/Dreamacro/clash/issues/1060)
-* [Clash TUN mode](https://lancellc.gitbook.io/clash/start-clash/clash-tun-mode)
-* [Kr328 的 Clash 配置脚本们](https://github.com/Kr328/kr328-clash-setup-scripts)
 * [Clash proxy-provider 搭配 subconverter 使用小记](https://10101.io/2020/02/12/use-clash-proxy-provider-with-subconverter)
 
 ## docker部署
