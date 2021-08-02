@@ -66,3 +66,4 @@ autocmd FileType yaml setlocal sw=2 ts=2 et ai
 * [Vim 配置入门](http://www.ruanyifeng.com/blog/2018/09/vimrc.html)
 * [Vim入门级基础配置](https://segmentfault.com/a/1190000016330314)
 * [Wrong indentation when editing Yaml in Vim](https://stackoverflow.com/a/37488992)
+* [Vim 从入门到精通](https://github.com/wsdjeg/vim-galore-zh_cn)
