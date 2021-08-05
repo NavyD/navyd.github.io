@@ -1,3 +1,8 @@
+---
+title: "myblog"
+date: 2021-08-06T00:36:35+08:00
+draft: false
+---
 # hugo blog
 
 开始使用hugo在github搭建静态博客。
