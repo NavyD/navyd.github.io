@@ -362,3 +362,17 @@ title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>
 - [Markdown pre-processing?](https://discourse.gohugo.io/t/markdown-pre-processing/27299)
 - [How to get the URL of the current page with the rel or relref function?](https://discourse.gohugo.io/t/how-to-get-the-url-of-the-current-page-with-the-rel-or-relref-function/29113/4)
 - [Functions Quick Reference](https://gohugo.io/functions/)
+
+### github pages部署
+
+在github上使用一个仓库`<username>.github.io`保存hugo博文与gh-pages。基本配置在[Host on GitHub](https://gohugo.io/hosting-and-deployment/hosting-on-github/#readout)一致。
+
+但是要注意[First Deployment with GITHUB_TOKEN](https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-first-deployment-with-github_token)，配置完github ations后需要主动创建`gh-pages`*空的分支*用于保存在hugo public/中的内容，并在repo settings中将其配置为GitHub Pages的source：
+
+![](myblog/2021-08-06-01-20-34.png)
+
+参考：
+
+- [GitHub Pages action](https://github.com/marketplace/actions/github-pages-action)
+- [hugo: Host on GitHub](https://gohugo.io/hosting-and-deployment/hosting-on-github/#types-of-github-pages)
+- [GitHub Action Hugo setup](https://github.com/marketplace/actions/hugo-setup)
