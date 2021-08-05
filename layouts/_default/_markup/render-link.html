@@ -1,0 +1,12 @@
+<a test=""
+{{$name := path.Base .Page.Permalink}}
+{{if (hasPrefix .Destination $name) }}
+    {{$size := len $name}}
+    {{$size = add $size 1}}
+    {{$destUrl := substr .Destination $size}}
+    href="{{substr .Destination $size}}"
+{{else}}
+    href="{{.Destination | safeURL}}"
+{{end}}
+{{ with .Title}}
+title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>
