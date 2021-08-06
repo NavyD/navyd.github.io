@@ -26,11 +26,11 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://navyd.github.io/post/misc/myblog/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2021-08-06T00:36:35+08:00">
-<meta property="article:modified_time" content="2021-08-06T23:46:08+08:00">
+<meta property="article:modified_time" content="2021-08-07T00:26:58+08:00">
 <meta itemprop=name content="myblog">
 <meta itemprop=description content="开始使用hugo在github搭建静态博客。 选型 可选类型 动态博客 比较知名的动态博客工具有下面几种： wordpress typecho 都是开源项目，wordpress(简称"><meta itemprop=datePublished content="2021-08-06T00:36:35+08:00">
-<meta itemprop=dateModified content="2021-08-06T23:46:08+08:00">
-<meta itemprop=wordCount content="3790">
+<meta itemprop=dateModified content="2021-08-07T00:26:58+08:00">
+<meta itemprop=wordCount content="4157">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="myblog">
 <meta name=twitter:description content="开始使用hugo在github搭建静态博客。 选型 可选类型 动态博客 比较知名的动态博客工具有下面几种： wordpress typecho 都是开源项目，wordpress(简称"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -87,8 +87,8 @@
 <h1 class=post-title>myblog</h1>
 <div class=post-meta>
 <span class=post-time> 2021-08-06 </span>
-<span class=more-meta> 约 3790 字 </span>
-<span class=more-meta> 预计阅读 8 分钟 </span>
+<span class=more-meta> 约 4157 字 </span>
+<span class=more-meta> 预计阅读 9 分钟 </span>
 </div>
 </header>
 <div class=post-toc id=post-toc>
@@ -109,6 +109,7 @@
 <li><a href=#markdown文件管理>markdown文件管理</a></li>
 <li><a href=#github-pages部署>github pages部署</a></li>
 <li><a href=#定制域名>定制域名</a></li>
+<li><a href=#even主题>even主题</a></li>
 </ul>
 </li>
 </ul>
@@ -674,6 +675,53 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
 <li><a test href=https://stackoverflow.com/a/9123911/8566831>Q: Custom domain for GitHub project pages</a></li>
 <li><a test href=https://stackoverflow.com/a/16455966/8566831>Can github pages CNAME file contain more than one domain?</a></li>
 </ul>
+<h3 id=even主题>even主题</h3>
+<h4 id=主题更改无效>主题更改无效</h4>
+<p>在<a test href=https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md#theme-color>Theme Color</a>中提到可以在evne目录中<code>/assets/sass/_variable.scss</code>文件修改主题</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-scss data-lang=scss><span class=c1>// ========== Theme Color ========== //
+</span><span class=c1>// Config here to change theme color
+</span><span class=c1>// Default | Mint Green | Cobalt Blue | Hot Pink | Dark Violet
+</span><span class=c1></span><span class=nv>$theme-color-config</span><span class=o>:</span> <span class=s1>&#39;Dark Violet&#39;</span><span class=p>;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果未生效可能是由于hugo不是extend版本，使用<code>--tags extended</code>重新编译</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ hugo version
+hugo v0.87.0 linux/amd64 <span class=nv>BuildDate</span><span class=o>=</span>unknown
+
+<span class=c1># 在hugo源码内重编译</span>
+$ <span class=nv>CGO_ENABLED</span><span class=o>=</span><span class=m>1</span> go install --tags extended
+
+$ hugo version
+hugo v0.87.0+extended linux/amd64 <span class=nv>BuildDate</span><span class=o>=</span>unknown
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><a test href=https://github.com/olOwOlo/hugo-theme-even/issues/350#issuecomment-857537169>怎么更该了主题/assets/sass/_variable.scss 颜色值没发生改变是怎么回事</a></li>
+<li><a test href=https://github.com/gohugoio/hugo#build-and-install-the-binaries-from-source-advanced-install>Build and Install the Binaries from Source (Advanced Install)</a></li>
+<li><a test href=https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md#installation>even Installation</a></li>
+</ul>
+<h4 id=submodule无法修改>submodule无法修改</h4>
+<p>由于使用了<code>git submodle</code>将even作为项目的子模块，现在要修改<code>/assets/sass/_variable.scss</code>文件，但是无法完成。如果之后无法找到解决方法，只有使用clone而不是作为submodule</p>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
@@ -683,8 +731,8 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
 <p class=copyright-item>
 <span class=item-title>上次更新</span>
 <span class=item-content>
-2021-08-06
-<a href=https://github.com/NavyD/navyd.github.io/commit/24feec22ea295910de8f94bd45c889eefa3db01b title="ignore vscode. add custom domain for myblog.">(24feec2)</a>
+2021-08-07
+<a href=https://github.com/NavyD/navyd.github.io/commit/a30ea67efb72183d0d696dc74d9677a98b784035 title=even主题问题>(a30ea67)</a>
 </span>
 </p>
 </div>
