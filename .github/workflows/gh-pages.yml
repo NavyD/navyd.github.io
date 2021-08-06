@@ -7,8 +7,19 @@ on:
   pull_request:
 
 jobs:
+  check:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@master
+      - name: Check file names with spaces
+        run: |
+          if s=$(find content/post | grep ' '); then
+            >&2 echo "found spaces in $s"
+            exit 1
+          fi
   deploy:
     runs-on: ubuntu-20.04
+    needs: check
     steps:
       - uses: actions/checkout@v2
         with:
