@@ -392,3 +392,39 @@ title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>
 - [About custom domains and GitHub Pages](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages)
 - [Q: Custom domain for GitHub project pages](https://stackoverflow.com/a/9123911/8566831)
 - [Can github pages CNAME file contain more than one domain?](https://stackoverflow.com/a/16455966/8566831)
+
+### even主题
+
+#### 主题更改无效
+
+在[Theme Color](https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md#theme-color)中提到可以在evne目录中`/assets/sass/_variable.scss`文件修改主题
+
+```scss
+// ========== Theme Color ========== //
+// Config here to change theme color
+// Default | Mint Green | Cobalt Blue | Hot Pink | Dark Violet
+$theme-color-config: 'Dark Violet';
+```
+
+如果未生效可能是由于hugo不是extend版本，使用`--tags extended`重新编译
+
+```sh
+$ hugo version
+hugo v0.87.0 linux/amd64 BuildDate=unknown
+
+# 在hugo源码内重编译
+$ CGO_ENABLED=1 go install --tags extended
+
+$ hugo version
+hugo v0.87.0+extended linux/amd64 BuildDate=unknown
+```
+
+- [怎么更该了主题/assets/sass/_variable.scss 颜色值没发生改变是怎么回事](https://github.com/olOwOlo/hugo-theme-even/issues/350#issuecomment-857537169)
+- [Build and Install the Binaries from Source (Advanced Install)](https://github.com/gohugoio/hugo#build-and-install-the-binaries-from-source-advanced-install)
+- [even Installation](https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md#installation)
+
+#### submodule无法修改
+
+由于使用了`git submodle`将even作为项目的子模块，现在要修改`/assets/sass/_variable.scss`文件，但是无法完成。如果之后无法找到解决方法，只有使用clone而不是作为submodule
+
+<!-- todo -->
