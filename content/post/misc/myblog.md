@@ -3,7 +3,6 @@ title: "myblog"
 date: 2021-08-06T00:36:35+08:00
 draft: false
 ---
-# hugo blog
 
 开始使用hugo在github搭建静态博客。
 
@@ -376,3 +375,20 @@ title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>
 - [GitHub Pages action](https://github.com/marketplace/actions/github-pages-action)
 - [hugo: Host on GitHub](https://gohugo.io/hosting-and-deployment/hosting-on-github/#types-of-github-pages)
 - [GitHub Action Hugo setup](https://github.com/marketplace/actions/hugo-setup)
+
+### 定制域名
+
+1. 在dns提供商添加cname解析到gh-pages的域名`navyd.github.io`。如[阿里云DNS解析控制台](https://dns.console.aliyun.com)
+  ![](myblog/2021-08-06-23-27-37.png)
+1. 添加域名`blog.navyd.xyz`内容到`static/CNAME`文件
+1. 根据[Configuring a subdomain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-a-subdomain)指导，在github仓库中添加子域名`blog.navyd.xyz`并启用https
+  ![](myblog/2021-08-06-23-19-29.png)
+
+注意：如果用浏览器打开新域名时提示不安全的证书，可能是缓存了以前使用过的域名证书，使用chrome无痕模式可以正常打开，等待chrome刷新缓存即可
+
+参考：
+
+- [hugo Use a Custom Domain](https://gohugo.io/hosting-and-deployment/hosting-on-github/#use-a-custom-domain)
+- [About custom domains and GitHub Pages](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages)
+- [Q: Custom domain for GitHub project pages](https://stackoverflow.com/a/9123911/8566831)
+- [Can github pages CNAME file contain more than one domain?](https://stackoverflow.com/a/16455966/8566831)
