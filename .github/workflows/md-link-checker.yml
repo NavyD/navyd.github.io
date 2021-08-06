@@ -18,4 +18,4 @@ jobs:
           use-quiet-mode: "yes"
           use-verbose-mode: "yes"
           # config-file: "mlc_config.json"
-          # folder-path: "docs/markdown_files"
+          folder-path: "content/post"
