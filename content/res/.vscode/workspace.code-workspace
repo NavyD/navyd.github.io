@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		// "pasteImage.path": "../assets/images",在remote wsl不可用`/`
+		"pasteImage.path": "${fileBasenameNoExtension}",
+		// showFilePathConfirmInputBox使用`\`绝对路径如`\home\navyd\...`，wsl中不可用
+		// "pasteImage.showFilePathConfirmInputBox": true
+	}
+}
