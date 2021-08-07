@@ -1,0 +1,238 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="git 这是一个git日常使用问题记录 常见问题 如何将本地仓库同步到github新的仓库中 方法1 1 2 3 4 5 6 7 8 9 10 # Create a bare clone of the repository. git clone --bare https://github.com/exampleuser/old-repository.git # Mirror-push to the"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/git/git_usages/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="git 这是一个git日常使用问题记录 常见问题 如何将本地仓库同步到github新的仓库中 方法1 1 2 3 4 5 6 7 8 9 10 # Create a bare clone of the repository. git clone --bare https://github.com/exampleuser/old-repository.git # Mirror-push to the">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/git/git_usages/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="git 这是一个git日常使用问题记录 常见问题 如何将本地仓库同步到github新的仓库中 方法1 1 2 3 4 5 6 7 8 9 10 # Create a bare clone of the repository. git clone --bare https://github.com/exampleuser/old-repository.git # Mirror-push to the">
+<meta itemprop=wordCount content="413">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="git 这是一个git日常使用问题记录 常见问题 如何将本地仓库同步到github新的仓库中 方法1 1 2 3 4 5 6 7 8 9 10 # Create a bare clone of the repository. git clone --bare https://github.com/exampleuser/old-repository.git # Mirror-push to the"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=git>git</h1>
+<p>这是一个git日常使用问题记录</p>
+<h2 id=常见问题>常见问题</h2>
+<h3 id=如何将本地仓库同步到github新的仓库中>如何将本地仓库同步到github新的仓库中</h3>
+<p>方法1</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># Create a bare clone of the repository.</span>
+git clone --bare https://github.com/exampleuser/old-repository.git
+
+<span class=c1># Mirror-push to the new repository.</span>
+<span class=nb>cd</span> old-repository.git
+git push --mirror https://github.com/exampleuser/new-repository.git
+
+<span class=c1># Remove the temporary local repository you created earlier.</span>
+<span class=nb>cd</span> ..
+rm -rf old-repository.git
+</code></pre></td></tr></table>
+</div>
+</div><p>方法2</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>git remote add origin git@github.com:NavyD/jvm-rust.git
+git branch -M master 
+git push -u origin master                       
+</code></pre></td></tr></table>
+</div>
+</div><p>参考</p>
+<ul>
+<li><a test href=https://help.github.com/en/github/creating-cloning-and-archiving-repositories/duplicating-a-repository>github: Duplicating a repository</a></li>
+<li><a test href=https://stackoverflow.com/q/5181845/8566831>Git push existing repo to a new and different remote repo server?</a></li>
+</ul>
+<h3 id=如何查看当前remote>如何查看当前remote</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>git remote -v
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=如何避免在git-push时输入密码>如何避免在git push时输入密码</h3>
+<p>原因：</p>
+<p>在push时使用的是https而不是ssh</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ git remote -v
+&gt; origin  https://github.com/USERNAME/REPOSITORY.git <span class=o>(</span>fetch<span class=o>)</span>
+&gt; origin  https://github.com/USERNAME/REPOSITORY.git <span class=o>(</span>push<span class=o>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>方法：</p>
+<p>使用ssh push</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ git remote set-url origin git@github.com:USERNAME/REPOSITORY.git
+<span class=c1># Verify new remote URL</span>
+$ git remote -v
+&gt; origin  git@github.com:USERNAME/REPOSITORY.git <span class=o>(</span>fetch<span class=o>)</span>
+&gt; origin  git@github.com:USERNAME/REPOSITORY.git <span class=o>(</span>push<span class=o>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://stackoverflow.com/q/6565357/8566831>Git push requires username and password</a></li>
+<li><a test href=https://help.github.com/en/github/using-git/changing-a-remotes-url#switching-remote-urls-from-https-to-ssh>github Switching remote URLs from HTTPS to SSH</a></li>
+</ul>
+<h3 id=git-push-warning-added-hosts>git push Warning added hosts</h3>
+<p>描述：</p>
+<p>当用<code>git push</code>时提示：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ git push
+Warning: Permanently added the RSA host key <span class=k>for</span> IP address <span class=s1>&#39;140.82.113.4&#39;</span> to the list of known hosts
+</code></pre></td></tr></table>
+</div>
+</div><p>原因：</p>
+<p>github有多个服务器，可能在使用ssh时对改变的ip时自动加入<code>~/.ssh/known_hosts</code></p>
+<p>解决：</p>
+<p>warnings后ip已添加到ssh hosts文件中，下次push时不会再warning</p>
+<p>参考：</p>
+<ul>
+<li><a test href=https://stackoverflow.com/a/18711834/8566831>Warning: Permanently added the RSA host key for IP address</a></li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

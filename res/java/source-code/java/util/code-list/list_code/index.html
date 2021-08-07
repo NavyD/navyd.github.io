@@ -1,0 +1,447 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="List 有序的 collection（也称为序列）。此接口的用户可以对列表中每个元素的插入位置进行精确地控制。用户可以根据元素的整数索引（在列表中的"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/java/source-code/java/util/code-list/list_code/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="List 有序的 collection（也称为序列）。此接口的用户可以对列表中每个元素的插入位置进行精确地控制。用户可以根据元素的整数索引（在列表中的">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/java/source-code/java/util/code-list/list_code/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="List 有序的 collection（也称为序列）。此接口的用户可以对列表中每个元素的插入位置进行精确地控制。用户可以根据元素的整数索引（在列表中的">
+<meta itemprop=wordCount content="2070">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="List 有序的 collection（也称为序列）。此接口的用户可以对列表中每个元素的插入位置进行精确地控制。用户可以根据元素的整数索引（在列表中的"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=list>List</h1>
+<p>有序的 collection（也称为序列）。此接口的用户可以对列表中每个元素的插入位置进行精确地控制。用户可以根据元素的整数索引（在列表中的位置）访问元素，并搜索列表中的元素。</p>
+<p>注意：</p>
+<ol>
+<li>
+<p>List允许重复元素，不应该允许插入重复元素时抛出运行时异常</p>
+</li>
+<li>
+<p>List提供特殊的迭代器ListIterator，允许元素插入和替换，以及双向访问。</p>
+</li>
+<li>
+<p>List对不合法元素操作时抛出异常或返回false由具体子类选择</p>
+</li>
+<li>
+<p>List 接口在 iterator、add、remove、equals 和 hashCode 方法的协定上加了一些其他约定</p>
+</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>interface</span> <span class=nc>List</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=kd>extends</span> <span class=n>Collection</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>方法概览：</p>
+<p><img src=images/list_1.png alt></p>
+<h2 id=添加>添加</h2>
+<ul>
+<li>boolean add(E e);</li>
+</ul>
+<p>向列表的尾部添加指定的元素（可选操作）。</p>
+<ul>
+<li>void add(int index, E element);</li>
+</ul>
+<p>在列表的指定位置插入指定元素（可选操作）。将当前处于该位置的元素（如果有的话）和所有后续元素向右移动（在其索引中加 1）。</p>
+<ul>
+<li>boolean addAll(Collection&lt;? extends E> c);</li>
+</ul>
+<p>添加指定 collection 的迭代器的顺序中的所有元素到此列表的结尾（可选操作）。</p>
+<ul>
+<li>boolean addAll(int index, Collection&lt;? extends E> c);</li>
+</ul>
+<p>将指定 collection 中的所有元素都插入到列表中的指定位置（可选操作）。</p>
+<h2 id=移除>移除</h2>
+<ul>
+<li>void clear();</li>
+</ul>
+<p>从列表中移除所有元素（可选操作）。此调用返回后该列表将是空的。</p>
+<ul>
+<li>E remove(int index);</li>
+</ul>
+<p>移除列表中指定位置的元素（可选操作）。将所有的后续元素向左移动（将其索引减 1）。返回从列表中移除的元素。</p>
+<ul>
+<li>boolean remove(Object o);</li>
+<li>boolean removeAll(Collection&lt;?> c)</li>
+<li>boolean retainAll(Collection&lt;?> c)</li>
+</ul>
+<h2 id=获取>获取</h2>
+<ul>
+<li>E get(int index);</li>
+</ul>
+<h2 id=替换>替换</h2>
+<ul>
+<li>E set(int index, E element);</li>
+</ul>
+<p>用指定元素替换列表中指定位置的元素（可选操作）。</p>
+<ul>
+<li>void replaceAll(UnaryOperator<e> operator)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=k>default</span> <span class=kt>void</span> <span class=nf>replaceAll</span><span class=o>(</span><span class=n>UnaryOperator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>operator</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>Objects</span><span class=o>.</span><span class=na>requireNonNull</span><span class=o>(</span><span class=n>operator</span><span class=o>);</span>
+        <span class=kd>final</span> <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>li</span> <span class=o>=</span> <span class=k>this</span><span class=o>.</span><span class=na>listIterator</span><span class=o>();</span>
+        <span class=k>while</span> <span class=o>(</span><span class=n>li</span><span class=o>.</span><span class=na>hasNext</span><span class=o>())</span> <span class=o>{</span>
+            <span class=n>li</span><span class=o>.</span><span class=na>set</span><span class=o>(</span><span class=n>operator</span><span class=o>.</span><span class=na>apply</span><span class=o>(</span><span class=n>li</span><span class=o>.</span><span class=na>next</span><span class=o>()));</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=比较与哈希>比较与哈希</h2>
+<ul>
+<li>int hashCode();</li>
+</ul>
+<p>返回列表的哈希码值。列表的哈希码定义为以下计算的结果：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>  <span class=kt>int</span> <span class=n>hashCode</span> <span class=o>=</span> <span class=n>1</span><span class=o>;</span>
+  <span class=n>Iterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>i</span> <span class=o>=</span> <span class=n>list</span><span class=o>.</span><span class=na>iterator</span><span class=o>();</span>
+  <span class=k>while</span> <span class=o>(</span><span class=n>i</span><span class=o>.</span><span class=na>hasNext</span><span class=o>())</span> <span class=o>{</span>
+      <span class=n>E</span> <span class=n>obj</span> <span class=o>=</span> <span class=n>i</span><span class=o>.</span><span class=na>next</span><span class=o>();</span>
+      <span class=n>hashCode</span> <span class=o>=</span> <span class=n>31</span><span class=o>*</span><span class=n>hashCode</span> <span class=o>+</span> <span class=o>(</span><span class=n>obj</span><span class=o>==</span><span class=kc>null</span> <span class=o>?</span> <span class=n>0</span> <span class=o>:</span> <span class=n>obj</span><span class=o>.</span><span class=na>hashCode</span><span class=o>());</span>
+  <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>boolean equals(Object o);</li>
+</ul>
+<p>比较指定的对象与列表是否相等。当且仅当 <em><strong>指定的对象也是一个列表、两个列表有相同的大小，并且两个列表中的所有相应的元素对相等</strong></em> 时才返回 true。即两个列表以相同的顺序包含相同的元素，那么它们是相等的</p>
+<h2 id=查询>查询</h2>
+<ul>
+<li>
+<p>int size();</p>
+</li>
+<li>
+<p>boolean isEmpty();</p>
+</li>
+<li>
+<p>boolean contains(Object o);</p>
+</li>
+<li>
+<p>boolean containsAll(Collection&lt;?> c)</p>
+</li>
+</ul>
+<h2 id=迭代>迭代</h2>
+<ul>
+<li>Iterator<e> iterator();</li>
+<li>ListIterator<e> listIterator()</li>
+<li>ListIterator<e> listIterator(int index)</li>
+</ul>
+<h3 id=并行迭代器>并行迭代器</h3>
+<ul>
+<li>Spliterator<e> spliterator()</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=nd>@Override</span>
+    <span class=k>default</span> <span class=n>Spliterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>spliterator</span><span class=o>()</span> <span class=o>{</span>
+        <span class=k>return</span> <span class=n>Spliterators</span><span class=o>.</span><span class=na>spliterator</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>Spliterator</span><span class=o>.</span><span class=na>ORDERED</span><span class=o>);</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=视图>视图</h2>
+<ul>
+<li>List<e> subList(int fromIndex, int toIndex);</li>
+</ul>
+<p>返回列表中指定的 fromIndex（包括 ）和 toIndex（不包括）之间的部分视图。（如果 fromIndex 和 toIndex 相等，则返回的列表为空）。返回的列表由此列表支持，因此<strong>返回列表中的非结构性更改将反映在此列表中</strong>，反之亦然。返回的列表支持此列表支持的所有可选列表操作。</p>
+<h2 id=转换数组>转换数组</h2>
+<ul>
+<li><t> T[] toArray(T[] a);</li>
+<li>Object[] toArray();</li>
+</ul>
+<h2 id=搜索>搜索</h2>
+<ul>
+<li>int indexOf(Object o);</li>
+</ul>
+<p>返回此列表中第一次出现的指定元素的索引；如果此列表不包含该元素，则返回 -1。</p>
+<ul>
+<li>int lastIndexOf(Object o);</li>
+</ul>
+<p>返回此列表中最后出现的指定元素的索引；如果列表不包含此元素，则返回 -1。</p>
+<h2 id=排序>排序</h2>
+<ul>
+<li>void sort(Comparator&lt;? super E> c);</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=nd>@SuppressWarnings</span><span class=o>({</span><span class=s>&#34;unchecked&#34;</span><span class=o>,</span> <span class=s>&#34;rawtypes&#34;</span><span class=o>})</span>
+    <span class=k>default</span> <span class=kt>void</span> <span class=nf>sort</span><span class=o>(</span><span class=n>Comparator</span><span class=o>&lt;?</span> <span class=kd>super</span> <span class=n>E</span><span class=o>&gt;</span> <span class=n>c</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>Object</span><span class=o>[]</span> <span class=n>a</span> <span class=o>=</span> <span class=k>this</span><span class=o>.</span><span class=na>toArray</span><span class=o>();</span>
+        <span class=n>Arrays</span><span class=o>.</span><span class=na>sort</span><span class=o>(</span><span class=n>a</span><span class=o>,</span> <span class=o>(</span><span class=n>Comparator</span><span class=o>)</span> <span class=n>c</span><span class=o>);</span>
+        <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>i</span> <span class=o>=</span> <span class=k>this</span><span class=o>.</span><span class=na>listIterator</span><span class=o>();</span>
+        <span class=k>for</span> <span class=o>(</span><span class=n>Object</span> <span class=n>e</span> <span class=o>:</span> <span class=n>a</span><span class=o>)</span> <span class=o>{</span>
+            <span class=n>i</span><span class=o>.</span><span class=na>next</span><span class=o>();</span>
+            <span class=n>i</span><span class=o>.</span><span class=na>set</span><span class=o>((</span><span class=n>E</span><span class=o>)</span> <span class=n>e</span><span class=o>);</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=其他>其他</h2>
+<ul>
+<li>List.remove(int index)和List.remove(Object o)对于int基本类型自动拆装箱时应该使用Integer保存，而不应该使用int保存变量。</li>
+</ul>
+<p>下面使用Integer示例：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kd>static</span> <span class=kt>void</span> <span class=nf>test</span><span class=o>()</span> <span class=o>{</span>
+        <span class=n>List</span><span class=o>&lt;</span><span class=n>Integer</span><span class=o>&gt;</span> <span class=n>list</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ArrayList</span><span class=o>&lt;&gt;(</span><span class=n>5</span><span class=o>);</span>
+        <span class=n>list</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>1</span><span class=o>);</span>
+        <span class=n>list</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>2</span><span class=o>);</span>
+        <span class=c1>// 抛出异常：java.lang.IndexOutOfBoundsException: Index: 2, Size: 2
+</span><span class=c1></span>        <span class=k>for</span> <span class=o>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>:</span> <span class=n>list</span><span class=o>)</span> <span class=o>{</span>
+            <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+            <span class=k>if</span> <span class=o>(</span><span class=n>i</span> <span class=o>==</span> <span class=n>2</span><span class=o>)</span>
+                <span class=c1>// 调用方法为：List.remove(int index)
+</span><span class=c1></span>                <span class=n>list</span><span class=o>.</span><span class=na>remove</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>该方法本意是测试在迭代时使用list.remove时的情况，但是在使用Int作为对象调用list.remove()移除对象时，默认调用的是<code>list.remove(int)</code>，这样删除的时int位置的对象，而不是int这一个对象，所以抛出越界异常，没有index=2的下标元素。</p>
+<p>应该将变量取出时使用Integer引用类型保存，才能正确调用<code>List.remove(Object)</code>。（下面的示例可以正确调用，但这是在测试迭代修改异常）</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kd>static</span> <span class=kt>void</span> <span class=nf>test</span><span class=o>()</span> <span class=o>{</span>
+        <span class=n>List</span><span class=o>&lt;</span><span class=n>Integer</span><span class=o>&gt;</span> <span class=n>list</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ArrayList</span><span class=o>&lt;&gt;(</span><span class=n>5</span><span class=o>);</span>
+        <span class=n>list</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>1</span><span class=o>);</span>
+        <span class=n>list</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>2</span><span class=o>);</span>
+        <span class=k>for</span> <span class=o>(</span><span class=n>Integer</span> <span class=n>i</span> <span class=o>:</span> <span class=n>list</span><span class=o>)</span> <span class=o>{</span>
+            <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+            <span class=k>if</span> <span class=o>(</span><span class=n>i</span> <span class=o>==</span> <span class=n>2</span><span class=o>)</span>
+                <span class=c1>// 调用方法为：List.remove(Object o)
+</span><span class=c1></span>                <span class=n>list</span><span class=o>.</span><span class=na>remove</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>在单线程下迭代调用List.remove会抛出线程修改异常</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kd>static</span> <span class=kt>void</span> <span class=nf>test</span><span class=o>()</span> <span class=o>{</span>
+        <span class=n>List</span><span class=o>&lt;</span><span class=n>Integer</span><span class=o>&gt;</span> <span class=n>list</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ArrayList</span><span class=o>&lt;&gt;(</span><span class=n>5</span><span class=o>);</span>
+        <span class=n>list</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>1</span><span class=o>);</span>
+        <span class=n>list</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>2</span><span class=o>);</span>
+        <span class=c1>// 在if (i==1)时仍然抛出异常
+</span><span class=c1>//        list.add(3);
+</span><span class=c1></span>        <span class=c1>// 抛出异常：java.util.ConcurrentModificationException
+</span><span class=c1></span>        <span class=k>for</span> <span class=o>(</span><span class=n>Integer</span> <span class=n>i</span> <span class=o>:</span> <span class=n>list</span><span class=o>)</span> <span class=o>{</span>
+            <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+            <span class=c1>// 删除正常，但是停止遍历
+</span><span class=c1>//            if (i == 1)
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>i</span> <span class=o>==</span> <span class=n>2</span><span class=o>)</span>
+                <span class=c1>// 调用方法为：List.remove(Object o)
+</span><span class=c1></span>                <span class=n>list</span><span class=o>.</span><span class=na>remove</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>由于具体实现为ArrayList，所以结合该实现说明。下面是ArrayList.Itr迭代器内部类Itr.hasNext的实现：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>        <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>hasNext</span><span class=o>()</span> <span class=o>{</span>
+            <span class=k>return</span> <span class=n>cursor</span> <span class=o>!=</span> <span class=n>size</span><span class=o>;</span>
+        <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>当调用List.remove后，更新了size字段，使得cursor>size，hasNext返回true，删除后允许再调用next()，该方法首先<code>checkForComodification();</code>发现除了迭代器存在其他的结构修改，即抛出异常<code>java.util.ConcurrentModificationException</code></p>
+<p>而当<code>if (i == 1)</code>不会抛出异常，但是会停止遍历。这是由于List.remove使得size减少一个即cursor==size，没有进入next()。而当<code>list.add(3)</code>时，即使删除一个cursor&lt;size，进入next()被检查线程修改，然后抛出异常</p>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

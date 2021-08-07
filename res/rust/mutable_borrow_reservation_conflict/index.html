@@ -1,0 +1,294 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="mutable_borrow_reservation_conflict 描述 用map.get获取的值再+1插入时出现warning 1 2 3 4 5 6 7 8 9 10 11 12 13 14 fn dfs_counts(root: Option&amp;lt;Rc&amp;lt;RefCell&amp;lt;TreeNode&amp;gt;&amp;gt;&amp;gt;,counts: &amp;amp;mutHashMap&amp;lt;i32,u32&amp;gt;){ifletSome(root)=root{letroot=root.borrow();matchcounts.get(&amp;amp;root.val){Some(old_counts)=&amp;gt;{// warning: cannot borrow `*counts` as mutable because it is also borrowed as immutable counts.insert(root.val,old_counts+1)}None=&amp;gt;counts.insert(root.val,1),};Self::dfs_counts(root.left.clone(),counts);Self::dfs_counts(root.right.clone(),counts);}} 1 2 3 4 5 6 7 8"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/rust/mutable_borrow_reservation_conflict/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="mutable_borrow_reservation_conflict 描述 用map.get获取的值再+1插入时出现warning 1 2 3 4 5 6 7 8 9 10 11 12 13 14 fn dfs_counts(root: Option<Rc<RefCell<TreeNode>>>,counts: &mutHashMap<i32,u32>){ifletSome(root)=root{letroot=root.borrow();matchcounts.get(&root.val){Some(old_counts)=>{// warning: cannot borrow `*counts` as mutable because it is also borrowed as immutable counts.insert(root.val,old_counts+1)}None=>counts.insert(root.val,1),};Self::dfs_counts(root.left.clone(),counts);Self::dfs_counts(root.right.clone(),counts);}} 1 2 3 4 5 6 7 8">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/rust/mutable_borrow_reservation_conflict/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="mutable_borrow_reservation_conflict 描述 用map.get获取的值再+1插入时出现warning 1 2 3 4 5 6 7 8 9 10 11 12 13 14 fn dfs_counts(root: Option<Rc<RefCell<TreeNode>>>,counts: &mutHashMap<i32,u32>){ifletSome(root)=root{letroot=root.borrow();matchcounts.get(&root.val){Some(old_counts)=>{// warning: cannot borrow `*counts` as mutable because it is also borrowed as immutable counts.insert(root.val,old_counts+1)}None=>counts.insert(root.val,1),};Self::dfs_counts(root.left.clone(),counts);Self::dfs_counts(root.right.clone(),counts);}} 1 2 3 4 5 6 7 8">
+<meta itemprop=wordCount content="307">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="mutable_borrow_reservation_conflict 描述 用map.get获取的值再+1插入时出现warning 1 2 3 4 5 6 7 8 9 10 11 12 13 14 fn dfs_counts(root: Option<Rc<RefCell<TreeNode>>>,counts: &mutHashMap<i32,u32>){ifletSome(root)=root{letroot=root.borrow();matchcounts.get(&root.val){Some(old_counts)=>{// warning: cannot borrow `*counts` as mutable because it is also borrowed as immutable counts.insert(root.val,old_counts+1)}None=>counts.insert(root.val,1),};Self::dfs_counts(root.left.clone(),counts);Self::dfs_counts(root.right.clone(),counts);}} 1 2 3 4 5 6 7 8"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=mutable_borrow_reservation_conflict>mutable_borrow_reservation_conflict</h1>
+<h2 id=描述>描述</h2>
+<p>用map.get获取的值再+1插入时出现warning</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=k>fn</span> <span class=nf>dfs_counts</span><span class=p>(</span><span class=n>root</span>: <span class=nb>Option</span><span class=o>&lt;</span><span class=n>Rc</span><span class=o>&lt;</span><span class=n>RefCell</span><span class=o>&lt;</span><span class=n>TreeNode</span><span class=o>&gt;&gt;&gt;</span><span class=p>,</span><span class=w> </span><span class=n>counts</span>: <span class=kp>&amp;</span><span class=nc>mut</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;</span><span class=kt>i32</span><span class=p>,</span><span class=w> </span><span class=kt>u32</span><span class=o>&gt;</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=k>if</span><span class=w> </span><span class=kd>let</span><span class=w> </span><span class=nb>Some</span><span class=p>(</span><span class=n>root</span><span class=p>)</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>root</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>        </span><span class=kd>let</span><span class=w> </span><span class=n>root</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>root</span><span class=p>.</span><span class=n>borrow</span><span class=p>();</span><span class=w>
+</span><span class=w>        </span><span class=k>match</span><span class=w> </span><span class=n>counts</span><span class=p>.</span><span class=n>get</span><span class=p>(</span><span class=o>&amp;</span><span class=n>root</span><span class=p>.</span><span class=n>val</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>            </span><span class=nb>Some</span><span class=p>(</span><span class=n>old_counts</span><span class=p>)</span><span class=w> </span><span class=o>=&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>                </span><span class=c1>// warning: cannot borrow `*counts` as mutable because it is also borrowed as immutable
+</span><span class=c1></span><span class=w>                </span><span class=n>counts</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>root</span><span class=p>.</span><span class=n>val</span><span class=p>,</span><span class=w> </span><span class=n>old_counts</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=mi>1</span><span class=p>)</span><span class=w>
+</span><span class=w>            </span><span class=p>}</span><span class=w>
+</span><span class=w>            </span><span class=nb>None</span><span class=w> </span><span class=o>=&gt;</span><span class=w> </span><span class=n>counts</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>root</span><span class=p>.</span><span class=n>val</span><span class=p>,</span><span class=w> </span><span class=mi>1</span><span class=p>),</span><span class=w>
+</span><span class=w>        </span><span class=p>};</span><span class=w>
+</span><span class=w>        </span><span class=n>Self</span>::<span class=n>dfs_counts</span><span class=p>(</span><span class=n>root</span><span class=p>.</span><span class=n>left</span><span class=p>.</span><span class=n>clone</span><span class=p>(),</span><span class=w> </span><span class=n>counts</span><span class=p>);</span><span class=w>
+</span><span class=w>        </span><span class=n>Self</span>::<span class=n>dfs_counts</span><span class=p>(</span><span class=n>root</span><span class=p>.</span><span class=n>right</span><span class=p>.</span><span class=n>clone</span><span class=p>(),</span><span class=w> </span><span class=n>counts</span><span class=p>);</span><span class=w>
+</span><span class=w>    </span><span class=p>}</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>warning: cannot borrow <span class=sb>`</span>*counts<span class=sb>`</span> as mutable because it is also borrowed as immutable
+  --&gt; src/find_mode_in_binary_search_tree.rs:50:25
+   <span class=p>|</span>
+<span class=m>47</span> <span class=p>|</span>                 match counts.get<span class=o>(</span><span class=p>&amp;</span>root.val<span class=o>)</span> <span class=o>{</span>
+   <span class=p>|</span>                       ------ immutable borrow occurs here
+...
+<span class=m>50</span> <span class=p>|</span>                         counts.insert<span class=o>(</span>root.val, old_counts + 1<span class=o>)</span>
+   <span class=p>|</span>                         ^^^^^^                  ---------- immutable borrow later used here
+   <span class=p>|</span>                         <span class=p>|</span>
+   <span class=p>|</span>                         mutable borrow occurs here
+   <span class=p>|</span>
+   <span class=o>=</span> note: <span class=sb>`</span><span class=c1>#[warn(mutable_borrow_reservation_conflict)]` on by default</span>
+   <span class=o>=</span> warning: this borrowing pattern was not meant to be accepted, and may become a hard error in the <span class=nv>future</span>
+   <span class=o>=</span> note: <span class=k>for</span> more information, see issue <span class=c1>#59159 &lt;https://github.com/rust-lang/rust/issues/59159&gt;</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=原因>原因</h2>
+<p>two-phase borrow</p>
+<p><a test href=https://github.com/rust-lang/rust/issues/59159>Tracking issue for <code>mutable_borrow_reservation_conflict</code> compatibility lint #59159</a></p>
+<h2 id=方法>方法</h2>
+<ul>
+<li>避免borrowed，Copy去除借用关系</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>v</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>vec</span><span class=o>!</span><span class=p>[</span><span class=s>&#34;&#34;</span><span class=p>.</span><span class=n>to_string</span><span class=p>()];</span><span class=w>
+</span><span class=w></span><span class=k>if</span><span class=w> </span><span class=kd>let</span><span class=w> </span><span class=nb>Some</span><span class=p>(</span><span class=n>val</span><span class=p>)</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>v</span><span class=p>.</span><span class=n>get</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>a</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>val</span><span class=p>.</span><span class=n>to_string</span><span class=p>()</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=s>&#34;new&#34;</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=n>v</span><span class=p>.</span><span class=n>push</span><span class=p>(</span><span class=n>a</span><span class=p>);</span><span class=w>
+</span><span class=w>    </span><span class=c1>// warning
+</span><span class=c1></span><span class=w>    </span><span class=c1>// v.push(val.to_string() + &#34;new&#34;);
+</span><span class=c1></span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=n>v</span><span class=p>.</span><span class=n>push</span><span class=p>(</span><span class=s>&#34;new&#34;</span><span class=p>.</span><span class=n>to_string</span><span class=p>());</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=k>fn</span> <span class=nf>dfs_counts</span><span class=p>(</span><span class=n>root</span>: <span class=nb>Option</span><span class=o>&lt;</span><span class=n>Rc</span><span class=o>&lt;</span><span class=n>RefCell</span><span class=o>&lt;</span><span class=n>TreeNode</span><span class=o>&gt;&gt;&gt;</span><span class=p>,</span><span class=w> </span><span class=n>counts</span>: <span class=kp>&amp;</span><span class=nc>mut</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;</span><span class=kt>i32</span><span class=p>,</span><span class=w> </span><span class=kt>u32</span><span class=o>&gt;</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=k>if</span><span class=w> </span><span class=kd>let</span><span class=w> </span><span class=nb>Some</span><span class=p>(</span><span class=n>root</span><span class=p>)</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>root</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>        </span><span class=kd>let</span><span class=w> </span><span class=n>root</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>root</span><span class=p>.</span><span class=n>borrow</span><span class=p>();</span><span class=w>
+</span><span class=w>        </span><span class=k>match</span><span class=w> </span><span class=n>counts</span><span class=p>.</span><span class=n>get</span><span class=p>(</span><span class=o>&amp;</span><span class=n>root</span><span class=p>.</span><span class=n>val</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>            </span><span class=nb>Some</span><span class=p>(</span><span class=n>old_counts</span><span class=p>)</span><span class=w> </span><span class=o>=&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>                </span><span class=c1>// // u32 is Copy so we copy it, new old_counts is not a reference owned by counts, so counts is not borrowed anymore
+</span><span class=c1></span><span class=w>                </span><span class=kd>let</span><span class=w> </span><span class=n>old_counts</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=o>*</span><span class=n>old_counts</span><span class=p>;</span><span class=w>
+</span><span class=w>                </span><span class=n>counts</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>root</span><span class=p>.</span><span class=n>val</span><span class=p>,</span><span class=w> </span><span class=n>old_counts</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=mi>1</span><span class=p>)</span><span class=w>
+</span><span class=w>            </span><span class=p>}</span><span class=w>
+</span><span class=w>            </span><span class=nb>None</span><span class=w> </span><span class=o>=&gt;</span><span class=w> </span><span class=n>counts</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>root</span><span class=p>.</span><span class=n>val</span><span class=p>,</span><span class=w> </span><span class=mi>1</span><span class=p>),</span><span class=w>
+</span><span class=w>        </span><span class=p>};</span><span class=w>
+</span><span class=w>        </span><span class=n>Self</span>::<span class=n>dfs_counts</span><span class=p>(</span><span class=n>root</span><span class=p>.</span><span class=n>left</span><span class=p>.</span><span class=n>clone</span><span class=p>(),</span><span class=w> </span><span class=n>counts</span><span class=p>);</span><span class=w>
+</span><span class=w>        </span><span class=n>Self</span>::<span class=n>dfs_counts</span><span class=p>(</span><span class=n>root</span><span class=p>.</span><span class=n>right</span><span class=p>.</span><span class=n>clone</span><span class=p>(),</span><span class=w> </span><span class=n>counts</span><span class=p>);</span><span class=w>
+</span><span class=w>    </span><span class=p>}</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>使用<a test href=https://doc.rust-lang.org/nightly/std/collections/hash_map/enum.Entry.html>Enty api</a></li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=k>fn</span> <span class=nf>dfs_counts</span><span class=p>(</span><span class=n>root</span>: <span class=nb>Option</span><span class=o>&lt;</span><span class=n>Rc</span><span class=o>&lt;</span><span class=n>RefCell</span><span class=o>&lt;</span><span class=n>TreeNode</span><span class=o>&gt;&gt;&gt;</span><span class=p>,</span><span class=w> </span><span class=n>counts</span>: <span class=kp>&amp;</span><span class=nc>mut</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;</span><span class=kt>i32</span><span class=p>,</span><span class=w> </span><span class=kt>u32</span><span class=o>&gt;</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=k>if</span><span class=w> </span><span class=kd>let</span><span class=w> </span><span class=nb>Some</span><span class=p>(</span><span class=n>root</span><span class=p>)</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>root</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>        </span><span class=kd>let</span><span class=w> </span><span class=n>root</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>root</span><span class=p>.</span><span class=n>borrow</span><span class=p>();</span><span class=w>
+</span><span class=w>        </span><span class=c1>// 封装match
+</span><span class=c1></span><span class=w>        </span><span class=o>*</span><span class=n>counts</span><span class=p>.</span><span class=n>entry</span><span class=p>(</span><span class=n>root</span><span class=p>.</span><span class=n>val</span><span class=p>).</span><span class=n>or_insert</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span><span class=w> </span><span class=o>+=</span><span class=w> </span><span class=mi>1</span><span class=p>;</span><span class=w>
+</span><span class=w>        </span><span class=n>Self</span>::<span class=n>dfs_counts</span><span class=p>(</span><span class=n>root</span><span class=p>.</span><span class=n>left</span><span class=p>.</span><span class=n>clone</span><span class=p>(),</span><span class=w> </span><span class=n>counts</span><span class=p>);</span><span class=w>
+</span><span class=w>        </span><span class=n>Self</span>::<span class=n>dfs_counts</span><span class=p>(</span><span class=n>root</span><span class=p>.</span><span class=n>right</span><span class=p>.</span><span class=n>clone</span><span class=p>(),</span><span class=w> </span><span class=n>counts</span><span class=p>);</span><span class=w>
+</span><span class=w>    </span><span class=p>}</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://stackoverflow.com/a/60663491/8566831>fold string to build hashmap char counter in rust, but gives two-phase borrow error
+</a></li>
+<li><a test href=https://github.com/rust-lang/rust/issues/59159>Tracking issue for <code>mutable_borrow_reservation_conflict</code> compatibility lint #59159</a></li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

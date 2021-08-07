@@ -1,0 +1,1275 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="AbstractList 此类提供 List 接口的骨干实现，以最大限度地减少实现“随机访问”数据存储（如数组）支持的该接口所需的工作。对于连续的访问数据（如链表），应优先使"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/java/source-code/java/util/code-abstractlist/abstractlist_code/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="AbstractList 此类提供 List 接口的骨干实现，以最大限度地减少实现“随机访问”数据存储（如数组）支持的该接口所需的工作。对于连续的访问数据（如链表），应优先使">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/java/source-code/java/util/code-abstractlist/abstractlist_code/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="AbstractList 此类提供 List 接口的骨干实现，以最大限度地减少实现“随机访问”数据存储（如数组）支持的该接口所需的工作。对于连续的访问数据（如链表），应优先使">
+<meta itemprop=wordCount content="5075">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="AbstractList 此类提供 List 接口的骨干实现，以最大限度地减少实现“随机访问”数据存储（如数组）支持的该接口所需的工作。对于连续的访问数据（如链表），应优先使"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=abstractlist>AbstractList</h1>
+<p>此类提供 List 接口的骨干实现，以最大限度地减少实现“随机访问”数据存储（如数组）支持的该接口所需的工作。对于连续的访问数据（如链表），应优先使用 AbstractSequentialList，而不是此类。</p>
+<p>类结构：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>abstract</span> <span class=kd>class</span> <span class=nc>AbstractList</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=kd>extends</span> <span class=n>AbstractCollection</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=kd>implements</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src=images/abstractlist_2.png alt></p>
+<p>注意：</p>
+<ul>
+<li>AbstractList用于实现随机访问数据的基类，连续访问应该使用AbstractSequentialList抽象类</li>
+<li>对于子类具体实现结构如数组支持快速随机访问的list应该考虑实现RandomAccess标记接口，而链表，树，图等连续访问结构不应该实现。</li>
+</ul>
+<p>对于该接口典型的应用在于使用for循环时<code>for (int i=0, n=list.size(); i &lt; n; i++)</code>明显快于iterator实现的循环</p>
+<p>类方法概览：</p>
+<p><img src=images/abstractlist_1.png alt></p>
+<h2 id=抽象方法>抽象方法</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kd>abstract</span> <span class=kd>public</span> <span class=n>E</span> <span class=nf>get</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=未支持unsupported方法>未支持(Unsupported)方法</h2>
+<h3 id=添加>添加</h3>
+<ul>
+<li>void add(int index, E element)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>add</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>,</span> <span class=n>E</span> <span class=n>element</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>throw</span> <span class=k>new</span> <span class=n>UnsupportedOperationException</span><span class=o>();</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=删除>删除</h3>
+<ul>
+<li>E remove(int index)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kd>public</span> <span class=n>E</span> <span class=nf>remove</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>throw</span> <span class=k>new</span> <span class=n>UnsupportedOperationException</span><span class=o>();</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=替换>替换</h3>
+<ul>
+<li>E set(int index, E element)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kd>public</span> <span class=n>E</span> <span class=nf>set</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>,</span> <span class=n>E</span> <span class=n>element</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>throw</span> <span class=k>new</span> <span class=n>UnsupportedOperationException</span><span class=o>();</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=未实现方法>未实现方法</h2>
+<ul>
+<li>int size():java.util.Collection</li>
+</ul>
+<h2 id=实现方法>实现方法</h2>
+<h3 id=添加-1>添加</h3>
+<ul>
+<li>boolean add(E e)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>    将指定的元素添加到此列表的尾部（可选操作）。
+</span><span class=cm>    此实现直接调用 add(size(), e)。若没有重写add(int, E)将抛出UnsupportedOperationException
+</span><span class=cm>    */</span>
+    <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>add</span><span class=o>(</span><span class=n>E</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>add</span><span class=o>(</span><span class=n>size</span><span class=o>(),</span> <span class=n>e</span><span class=o>);</span>
+        <span class=k>return</span> <span class=kc>true</span><span class=o>;</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>boolean addAll(int index, Collection&lt;? extends E> c)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>    将指定 collection 中的所有元素都插入到列表中的指定位置;
+</span><span class=cm>    此实现获取指定 collection 上的迭代器并使用 add(int, E) 插入此列表。为了提高效率，多数实现将重写此方法。
+</span><span class=cm>    */</span>
+    <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>addAll</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>,</span> <span class=n>Collection</span><span class=o>&lt;?</span> <span class=kd>extends</span> <span class=n>E</span><span class=o>&gt;</span> <span class=n>c</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>rangeCheckForAdd</span><span class=o>(</span><span class=n>index</span><span class=o>);</span>
+        <span class=kt>boolean</span> <span class=n>modified</span> <span class=o>=</span> <span class=kc>false</span><span class=o>;</span>
+        <span class=k>for</span> <span class=o>(</span><span class=n>E</span> <span class=n>e</span> <span class=o>:</span> <span class=n>c</span><span class=o>)</span> <span class=o>{</span>
+            <span class=n>add</span><span class=o>(</span><span class=n>index</span><span class=o>++,</span> <span class=n>e</span><span class=o>);</span>
+            <span class=n>modified</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
+        <span class=o>}</span>
+        <span class=k>return</span> <span class=n>modified</span><span class=o>;</span>
+    <span class=o>}</span>
+    <span class=c1>// 检查添加指定位置index是否合法
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kt>void</span> <span class=nf>rangeCheckForAdd</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>index</span> <span class=o>&lt;</span> <span class=n>0</span> <span class=o>||</span> <span class=n>index</span> <span class=o>&gt;</span> <span class=n>size</span><span class=o>())</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>IndexOutOfBoundsException</span><span class=o>(</span><span class=n>outOfBoundsMsg</span><span class=o>(</span><span class=n>index</span><span class=o>));</span>
+    <span class=o>}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=删除-1>删除</h3>
+<ul>
+<li>void clear()</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=c1>// 此实现调用 removeRange(0, size())。 
+</span><span class=c1></span>    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>clear</span><span class=o>()</span> <span class=o>{</span>
+        <span class=n>removeRange</span><span class=o>(</span><span class=n>0</span><span class=o>,</span> <span class=n>size</span><span class=o>());</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>protected void removeRange(int fromIndex, int toIndex)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>    从此列表中移除索引在 fromIndex（包括）和 toIndex（不包括）之间的所有元素。向左移动所有后续元素（减小其索引）。
+</span><span class=cm>    此实现获取一个位于 fromIndex 之前的ListIterator删除后续元素
+</span><span class=cm>    可以根据具体实现重写此方法改进性能
+</span><span class=cm>    */</span>
+    <span class=kd>protected</span> <span class=kt>void</span> <span class=nf>removeRange</span><span class=o>(</span><span class=kt>int</span> <span class=n>fromIndex</span><span class=o>,</span> <span class=kt>int</span> <span class=n>toIndex</span><span class=o>)</span> <span class=o>{</span>
+    	<span class=c1>// 返回ListIterator实现的实例， 从指定位置fromIndex开始
+</span><span class=c1></span>        <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>it</span> <span class=o>=</span> <span class=n>listIterator</span><span class=o>(</span><span class=n>fromIndex</span><span class=o>);</span>
+        <span class=k>for</span> <span class=o>(</span><span class=kt>int</span> <span class=n>i</span><span class=o>=</span><span class=n>0</span><span class=o>,</span> <span class=n>n</span><span class=o>=</span><span class=n>toIndex</span><span class=o>-</span><span class=n>fromIndex</span><span class=o>;</span> <span class=n>i</span><span class=o>&lt;</span><span class=n>n</span><span class=o>;</span> <span class=n>i</span><span class=o>++)</span> <span class=o>{</span>
+            <span class=n>it</span><span class=o>.</span><span class=na>next</span><span class=o>();</span>
+            <span class=n>it</span><span class=o>.</span><span class=na>remove</span><span class=o>();</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=比较和哈希>比较和哈希</h3>
+<ul>
+<li>boolean equals(Object o)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>    将指定的对象与此列表进行相等性比较。
+</span><span class=cm>    当且仅当指定的对象也是一个列表，两个列表具有相同的大小，而且两个列表中所有相应的元素对都相等 时，才返回 true。
+</span><span class=cm>    */</span>
+    <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>equals</span><span class=o>(</span><span class=n>Object</span> <span class=n>o</span><span class=o>)</span> <span class=o>{</span>
+    	<span class=c1>// 先检查指定对象是否为当前list
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(</span><span class=n>o</span> <span class=o>==</span> <span class=k>this</span><span class=o>)</span>
+            <span class=k>return</span> <span class=kc>true</span><span class=o>;</span>
+        <span class=c1>// 检查指定对象是否为List对象
+</span><span class=c1></span>        <span class=k>if</span> <span class=o>(!(</span><span class=n>o</span> <span class=k>instanceof</span> <span class=n>List</span><span class=o>))</span>
+            <span class=k>return</span> <span class=kc>false</span><span class=o>;</span>
+        <span class=c1>// 获取迭代器迭代两个list中对象并检查所有对象是否相等
+</span><span class=c1></span>        <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>e1</span> <span class=o>=</span> <span class=n>listIterator</span><span class=o>();</span>
+        <span class=n>ListIterator</span><span class=o>&lt;?&gt;</span> <span class=n>e2</span> <span class=o>=</span> <span class=o>((</span><span class=n>List</span><span class=o>&lt;?&gt;)</span> <span class=n>o</span><span class=o>).</span><span class=na>listIterator</span><span class=o>();</span>
+        <span class=k>while</span> <span class=o>(</span><span class=n>e1</span><span class=o>.</span><span class=na>hasNext</span><span class=o>()</span> <span class=o>&amp;&amp;</span> <span class=n>e2</span><span class=o>.</span><span class=na>hasNext</span><span class=o>())</span> <span class=o>{</span>
+        	<span class=c1>// 两个list的对象的顺序必须一致
+</span><span class=c1></span>            <span class=n>E</span> <span class=n>o1</span> <span class=o>=</span> <span class=n>e1</span><span class=o>.</span><span class=na>next</span><span class=o>();</span>
+            <span class=n>Object</span> <span class=n>o2</span> <span class=o>=</span> <span class=n>e2</span><span class=o>.</span><span class=na>next</span><span class=o>();</span>
+            <span class=k>if</span> <span class=o>(!(</span><span class=n>o1</span><span class=o>==</span><span class=kc>null</span> <span class=o>?</span> <span class=n>o2</span><span class=o>==</span><span class=kc>null</span> <span class=o>:</span> <span class=n>o1</span><span class=o>.</span><span class=na>equals</span><span class=o>(</span><span class=n>o2</span><span class=o>)))</span>
+                <span class=k>return</span> <span class=kc>false</span><span class=o>;</span>
+        <span class=o>}</span>
+        <span class=c1>// 检查当前相等的两个list是否某一个存在更多的元素
+</span><span class=c1></span>        <span class=k>return</span> <span class=o>!(</span><span class=n>e1</span><span class=o>.</span><span class=na>hasNext</span><span class=o>()</span> <span class=o>||</span> <span class=n>e2</span><span class=o>.</span><span class=na>hasNext</span><span class=o>());</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>int hashCode()</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=c1>// 此实现使用在 List.hashCode() 方法的文档中用于定义列表哈希函数的代码
+</span><span class=c1></span>    <span class=kd>public</span> <span class=kt>int</span> <span class=nf>hashCode</span><span class=o>()</span> <span class=o>{</span>
+        <span class=kt>int</span> <span class=n>hashCode</span> <span class=o>=</span> <span class=n>1</span><span class=o>;</span>
+        <span class=k>for</span> <span class=o>(</span><span class=n>E</span> <span class=n>e</span> <span class=o>:</span> <span class=k>this</span><span class=o>)</span>
+            <span class=n>hashCode</span> <span class=o>=</span> <span class=n>31</span><span class=o>*</span><span class=n>hashCode</span> <span class=o>+</span> <span class=o>(</span><span class=n>e</span><span class=o>==</span><span class=kc>null</span> <span class=o>?</span> <span class=n>0</span> <span class=o>:</span> <span class=n>e</span><span class=o>.</span><span class=na>hashCode</span><span class=o>());</span>
+        <span class=k>return</span> <span class=n>hashCode</span><span class=o>;</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=搜索>搜索</h3>
+<ul>
+<li>int indexOf(Object o)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>    返回此列表中第一次出现的指定元素的索引；如果此列表不包含该元素，则返回 -1.
+</span><span class=cm>    此实现首先获取一个列表迭代器（使用 listIterator()）。然后它迭代列表，直至找到指定的元素，或者到达列表的末尾。 
+</span><span class=cm>    */</span>
+    <span class=kd>public</span> <span class=kt>int</span> <span class=nf>indexOf</span><span class=o>(</span><span class=n>Object</span> <span class=n>o</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>it</span> <span class=o>=</span> <span class=n>listIterator</span><span class=o>();</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>o</span><span class=o>==</span><span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
+            <span class=k>while</span> <span class=o>(</span><span class=n>it</span><span class=o>.</span><span class=na>hasNext</span><span class=o>())</span>
+                <span class=k>if</span> <span class=o>(</span><span class=n>it</span><span class=o>.</span><span class=na>next</span><span class=o>()==</span><span class=kc>null</span><span class=o>)</span>
+                    <span class=k>return</span> <span class=n>it</span><span class=o>.</span><span class=na>previousIndex</span><span class=o>();</span>
+        <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+            <span class=k>while</span> <span class=o>(</span><span class=n>it</span><span class=o>.</span><span class=na>hasNext</span><span class=o>())</span>
+                <span class=k>if</span> <span class=o>(</span><span class=n>o</span><span class=o>.</span><span class=na>equals</span><span class=o>(</span><span class=n>it</span><span class=o>.</span><span class=na>next</span><span class=o>()))</span>
+                    <span class=k>return</span> <span class=n>it</span><span class=o>.</span><span class=na>previousIndex</span><span class=o>();</span>
+        <span class=o>}</span>
+        <span class=k>return</span> <span class=o>-</span><span class=n>1</span><span class=o>;</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>int lastIndexOf(Object o)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>    返回此列表中最后出现的指定元素的索引；如果列表不包含此元素，则返回 -1。
+</span><span class=cm>    此实现首先获取一个指向列表末尾的列表迭代器（使用 listIterator(size())）。然后它逆向迭代列表，直至找到指定的元素，或者到达列表的开头。 
+</span><span class=cm>    */</span>
+    <span class=kd>public</span> <span class=kt>int</span> <span class=nf>lastIndexOf</span><span class=o>(</span><span class=n>Object</span> <span class=n>o</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>it</span> <span class=o>=</span> <span class=n>listIterator</span><span class=o>(</span><span class=n>size</span><span class=o>());</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>o</span><span class=o>==</span><span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
+            <span class=k>while</span> <span class=o>(</span><span class=n>it</span><span class=o>.</span><span class=na>hasPrevious</span><span class=o>())</span>
+                <span class=k>if</span> <span class=o>(</span><span class=n>it</span><span class=o>.</span><span class=na>previous</span><span class=o>()==</span><span class=kc>null</span><span class=o>)</span>
+                    <span class=k>return</span> <span class=n>it</span><span class=o>.</span><span class=na>nextIndex</span><span class=o>();</span>
+        <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+            <span class=k>while</span> <span class=o>(</span><span class=n>it</span><span class=o>.</span><span class=na>hasPrevious</span><span class=o>())</span>
+                <span class=k>if</span> <span class=o>(</span><span class=n>o</span><span class=o>.</span><span class=na>equals</span><span class=o>(</span><span class=n>it</span><span class=o>.</span><span class=na>previous</span><span class=o>()))</span>
+                    <span class=k>return</span> <span class=n>it</span><span class=o>.</span><span class=na>nextIndex</span><span class=o>();</span>
+        <span class=o>}</span>
+        <span class=k>return</span> <span class=o>-</span><span class=n>1</span><span class=o>;</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=迭代器>迭代器</h3>
+<ul>
+<li>Iterator<e> iterator()</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kd>public</span> <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>listIterator</span><span class=o>()</span> <span class=o>{</span>
+        <span class=k>return</span> <span class=n>listIterator</span><span class=o>(</span><span class=n>0</span><span class=o>);</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>ListIterator<e> listIterator()</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kd>public</span> <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>listIterator</span><span class=o>()</span> <span class=o>{</span>
+        <span class=k>return</span> <span class=n>listIterator</span><span class=o>(</span><span class=n>0</span><span class=o>);</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>ListIterator<e> listIterator(final int index)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kd>public</span> <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>listIterator</span><span class=o>(</span><span class=kd>final</span> <span class=kt>int</span> <span class=n>index</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>rangeCheckForAdd</span><span class=o>(</span><span class=n>index</span><span class=o>);</span>
+
+        <span class=k>return</span> <span class=k>new</span> <span class=n>ListItr</span><span class=o>(</span><span class=n>index</span><span class=o>);</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Iterator和ListIterator实现：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=c1>// Iterator实现,此实现返回 iterator 接口的一个直接实现，具体取决于底层实现列表的 size()、get(int) 和 remove(int) 方法。 
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>class</span> <span class=nc>Itr</span> <span class=kd>implements</span> <span class=n>Iterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=o>{</span>
+        <span class=cm>/**
+</span><span class=cm>         * Index of element to be returned by subsequent call to next.
+</span><span class=cm>         */</span>
+        <span class=kt>int</span> <span class=n>cursor</span> <span class=o>=</span> <span class=n>0</span><span class=o>;</span>
+
+        <span class=cm>/**
+</span><span class=cm>         * Index of element returned by most recent call to next or
+</span><span class=cm>         * previous.  Reset to -1 if this element is deleted by a call
+</span><span class=cm>         * to remove.
+</span><span class=cm>         */</span>
+        <span class=c1>// 表示最近通过next或previous方法调用的元素下标，该元素已经被删除将置为-1
+</span><span class=c1></span>        <span class=kt>int</span> <span class=n>lastRet</span> <span class=o>=</span> <span class=o>-</span><span class=n>1</span><span class=o>;</span>
+
+        <span class=cm>/**
+</span><span class=cm>         * The modCount value that the iterator believes that the backing
+</span><span class=cm>         * List should have.  If this expectation is violated, the iterator
+</span><span class=cm>         * has detected concurrent modification.
+</span><span class=cm>         */</span>
+        <span class=c1>// 该值表示迭代器iterator相信其支持者List应该具有的值modCount。如果这个期望被违反，迭代器就会发现线程的修改
+</span><span class=c1></span>        <span class=kt>int</span> <span class=n>expectedModCount</span> <span class=o>=</span> <span class=n>modCount</span><span class=o>;</span>
+
+        <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>hasNext</span><span class=o>()</span> <span class=o>{</span>
+            <span class=k>return</span> <span class=n>cursor</span> <span class=o>!=</span> <span class=n>size</span><span class=o>();</span>
+        <span class=o>}</span>
+        <span class=c1>// 通过get下标获取元素，并设置lastRet为当前下标，cursor为下一个元素位置
+</span><span class=c1></span>        <span class=kd>public</span> <span class=n>E</span> <span class=nf>next</span><span class=o>()</span> <span class=o>{</span>
+            <span class=n>checkForComodification</span><span class=o>();</span>
+            <span class=k>try</span> <span class=o>{</span>
+                <span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=n>cursor</span><span class=o>;</span>
+                <span class=n>E</span> <span class=n>next</span> <span class=o>=</span> <span class=n>get</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+                <span class=n>lastRet</span> <span class=o>=</span> <span class=n>i</span><span class=o>;</span>
+                <span class=n>cursor</span> <span class=o>=</span> <span class=n>i</span> <span class=o>+</span> <span class=n>1</span><span class=o>;</span>
+                <span class=k>return</span> <span class=n>next</span><span class=o>;</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>IndexOutOfBoundsException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>checkForComodification</span><span class=o>();</span>
+                <span class=k>throw</span> <span class=k>new</span> <span class=n>NoSuchElementException</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+        <span class=c1>// 
+</span><span class=c1></span>        <span class=kd>public</span> <span class=kt>void</span> <span class=nf>remove</span><span class=o>()</span> <span class=o>{</span>
+        	<span class=c1>// 检查最近调用的元素是否已经被删除
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>lastRet</span> <span class=o>&lt;</span> <span class=n>0</span><span class=o>)</span>
+                <span class=k>throw</span> <span class=k>new</span> <span class=n>IllegalStateException</span><span class=o>();</span>
+            <span class=n>checkForComodification</span><span class=o>();</span>
+
+            <span class=k>try</span> <span class=o>{</span>
+            	<span class=c1>// 通过最近调用(next设置的下标)的索引删除元素
+</span><span class=c1></span>                <span class=n>AbstractList</span><span class=o>.</span><span class=na>this</span><span class=o>.</span><span class=na>remove</span><span class=o>(</span><span class=n>lastRet</span><span class=o>);</span>
+                <span class=c1>// 如果使用next调用就将cursor设置为上一个位置(上一个位置元素已经被后续元素占有，重新访问)
+</span><span class=c1></span>              	<span class=c1>//如果使用previous调用表示lastRet==cursor，不用设置
+</span><span class=c1></span>                <span class=k>if</span> <span class=o>(</span><span class=n>lastRet</span> <span class=o>&lt;</span> <span class=n>cursor</span><span class=o>)</span>
+                    <span class=n>cursor</span><span class=o>--;</span>
+                <span class=n>lastRet</span> <span class=o>=</span> <span class=o>-</span><span class=n>1</span><span class=o>;</span>
+                <span class=c1>// 将iterator.expectedModCount更新为list操作后更改的值
+</span><span class=c1></span>                <span class=n>expectedModCount</span> <span class=o>=</span> <span class=n>modCount</span><span class=o>;</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>IndexOutOfBoundsException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=k>throw</span> <span class=k>new</span> <span class=n>ConcurrentModificationException</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+        <span class=c1>// 如果iterator.expectedModCount和list.modCount不等即在迭代期间发生线程修改，抛出异常
+</span><span class=c1></span>        <span class=kd>final</span> <span class=kt>void</span> <span class=nf>checkForComodification</span><span class=o>()</span> <span class=o>{</span>
+            <span class=k>if</span> <span class=o>(</span><span class=n>modCount</span> <span class=o>!=</span> <span class=n>expectedModCount</span><span class=o>)</span>
+                <span class=k>throw</span> <span class=k>new</span> <span class=n>ConcurrentModificationException</span><span class=o>();</span>
+            
+        <span class=o>}</span>
+    <span class=o>}</span>
+
+    <span class=c1>// ListIterator实现，ListIterator 实现依赖于底层实现列表的 get(int)、set(int, E)、add(int, E) 和 remove(int) 方法。 
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>class</span> <span class=nc>ListItr</span> <span class=kd>extends</span> <span class=n>Itr</span> <span class=kd>implements</span> <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=o>{</span>
+        <span class=n>ListItr</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>)</span> <span class=o>{</span>
+            <span class=n>cursor</span> <span class=o>=</span> <span class=n>index</span><span class=o>;</span>
+        <span class=o>}</span>
+
+        <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>hasPrevious</span><span class=o>()</span> <span class=o>{</span>
+            <span class=k>return</span> <span class=n>cursor</span> <span class=o>!=</span> <span class=n>0</span><span class=o>;</span>
+        <span class=o>}</span>
+        <span class=c1>// 获取当前元素位置-1对应位置的元素
+</span><span class=c1></span>        <span class=kd>public</span> <span class=n>E</span> <span class=nf>previous</span><span class=o>()</span> <span class=o>{</span>
+            <span class=n>checkForComodification</span><span class=o>();</span>
+            <span class=k>try</span> <span class=o>{</span>
+                <span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=n>cursor</span> <span class=o>-</span> <span class=n>1</span><span class=o>;</span>
+                <span class=n>E</span> <span class=n>previous</span> <span class=o>=</span> <span class=n>get</span><span class=o>(</span><span class=n>i</span><span class=o>);</span>
+                <span class=n>lastRet</span> <span class=o>=</span> <span class=n>cursor</span> <span class=o>=</span> <span class=n>i</span><span class=o>;</span>
+                <span class=k>return</span> <span class=n>previous</span><span class=o>;</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>IndexOutOfBoundsException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>checkForComodification</span><span class=o>();</span>
+                <span class=k>throw</span> <span class=k>new</span> <span class=n>NoSuchElementException</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+
+        <span class=kd>public</span> <span class=kt>int</span> <span class=nf>nextIndex</span><span class=o>()</span> <span class=o>{</span>
+            <span class=k>return</span> <span class=n>cursor</span><span class=o>;</span>
+        <span class=o>}</span>
+
+        <span class=kd>public</span> <span class=kt>int</span> <span class=nf>previousIndex</span><span class=o>()</span> <span class=o>{</span>
+            <span class=k>return</span> <span class=n>cursor</span><span class=o>-</span><span class=n>1</span><span class=o>;</span>
+        <span class=o>}</span>
+        <span class=c1>// 使用指定元素替换当前next或previous返回的元素
+</span><span class=c1></span>        <span class=kd>public</span> <span class=kt>void</span> <span class=nf>set</span><span class=o>(</span><span class=n>E</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+        	<span class=c1>// 检查最近调用元素是否存在
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>lastRet</span> <span class=o>&lt;</span> <span class=n>0</span><span class=o>)</span>
+                <span class=k>throw</span> <span class=k>new</span> <span class=n>IllegalStateException</span><span class=o>();</span>
+            <span class=n>checkForComodification</span><span class=o>();</span>
+
+            <span class=k>try</span> <span class=o>{</span>
+                <span class=n>AbstractList</span><span class=o>.</span><span class=na>this</span><span class=o>.</span><span class=na>set</span><span class=o>(</span><span class=n>lastRet</span><span class=o>,</span> <span class=n>e</span><span class=o>);</span>
+                <span class=n>expectedModCount</span> <span class=o>=</span> <span class=n>modCount</span><span class=o>;</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>IndexOutOfBoundsException</span> <span class=n>ex</span><span class=o>)</span> <span class=o>{</span>
+                <span class=k>throw</span> <span class=k>new</span> <span class=n>ConcurrentModificationException</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+        <span class=c1>// 将指定元素e插入next()返回元素的后面或previous()返回元素的后面
+</span><span class=c1></span>        <span class=kd>public</span> <span class=kt>void</span> <span class=nf>add</span><span class=o>(</span><span class=n>E</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+            <span class=n>checkForComodification</span><span class=o>();</span>
+
+            <span class=k>try</span> <span class=o>{</span>
+                <span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=n>cursor</span><span class=o>;</span>
+                <span class=n>AbstractList</span><span class=o>.</span><span class=na>this</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>i</span><span class=o>,</span> <span class=n>e</span><span class=o>);</span>
+                <span class=n>lastRet</span> <span class=o>=</span> <span class=o>-</span><span class=n>1</span><span class=o>;</span>
+                <span class=c1>// next会跳过当前元素，previous会返回该元素
+</span><span class=c1></span>                <span class=n>cursor</span> <span class=o>=</span> <span class=n>i</span> <span class=o>+</span> <span class=n>1</span><span class=o>;</span>
+                <span class=n>expectedModCount</span> <span class=o>=</span> <span class=n>modCount</span><span class=o>;</span>
+            <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>IndexOutOfBoundsException</span> <span class=n>ex</span><span class=o>)</span> <span class=o>{</span>
+                <span class=k>throw</span> <span class=k>new</span> <span class=n>ConcurrentModificationException</span><span class=o>();</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h4 id=注意>注意</h4>
+<ul>
+<li>Iterator.remove()会将lastRet置-1，ListIterator.remove()和ListIterator.add()会将lastRet置-1， set()和remove()(检查)不允许lastRet为负数。</li>
+<li>迭代器根据光标cursor表示元素位置</li>
+<li>迭代器对应的操作仍然基于具体的List实现如add,remove,set,get等</li>
+</ul>
+<p><strong>关于"快速失败"线程安全的疑问？</strong></p>
+<p>List.iterator()是new Itr()对象，当前线程在迭代list时，另一个线程list.remove()使modCount++更改了modCount的值，但是由于modCount没有同步和设置volatile，另一个线程的修改不应该能马上看到，虽然快速失败确实不保证一定成功，但是仍然能大概率发生，修改应该看不到才对，这是为何？？？</p>
+<h3 id=sublist>subList</h3>
+<ul>
+<li>List<e> subList(int fromIndex, int toIndex)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>    返回列表中指定的 fromIndex（包括 ）和 toIndex（不包括）之间的部分视图。
+</span><span class=cm>    返回列表中的非结构性更改将反映在此列表中，反之亦然
+</span><span class=cm>    */</span>
+    <span class=kd>public</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>subList</span><span class=o>(</span><span class=kt>int</span> <span class=n>fromIndex</span><span class=o>,</span> <span class=kt>int</span> <span class=n>toIndex</span><span class=o>)</span> <span class=o>{</span>
+        <span class=c1>// 判断具体实现类是否支持快速随机访问如ArrayList，对于支持RandomAccess的实现for(int;size;i++)循环优于iterator实现的循环
+</span><span class=c1></span>        <span class=k>return</span> <span class=o>(</span><span class=k>this</span> <span class=k>instanceof</span> <span class=n>RandomAccess</span> <span class=o>?</span>
+                <span class=k>new</span> <span class=n>RandomAccessSubList</span><span class=o>&lt;&gt;(</span><span class=k>this</span><span class=o>,</span> <span class=n>fromIndex</span><span class=o>,</span> <span class=n>toIndex</span><span class=o>)</span> <span class=o>:</span>
+                <span class=k>new</span> <span class=n>SubList</span><span class=o>&lt;&gt;(</span><span class=k>this</span><span class=o>,</span> <span class=n>fromIndex</span><span class=o>,</span> <span class=n>toIndex</span><span class=o>));</span>
+    <span class=o>}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>SubList相关实现：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span><span class=lnt>159
+</span><span class=lnt>160
+</span><span class=lnt>161
+</span><span class=lnt>162
+</span><span class=lnt>163
+</span><span class=lnt>164
+</span><span class=lnt>165
+</span><span class=lnt>166
+</span><span class=lnt>167
+</span><span class=lnt>168
+</span><span class=lnt>169
+</span><span class=lnt>170
+</span><span class=lnt>171
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=cm>/**
+</span><span class=cm>此实现返回一个子类化 AbstractList 的列表。子类在 private 字段中存储底层实现列表中 subList 的偏移量、subList 的大小（随其生存期变化）以及底层实现列表的预期 modCount 值。
+</span><span class=cm>子类有两个变体，其中一个实现 RandomAccess。如果此列表实现 RandomAccess，则返回的列表将是实现 RandomAccess 的子类实例。 
+</span><span class=cm>*/</span>
+<span class=kd>class</span> <span class=nc>SubList</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=kd>extends</span> <span class=n>AbstractList</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=o>{</span>
+    <span class=c1>// 原来的list
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>final</span> <span class=n>AbstractList</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>l</span><span class=o>;</span>
+    <span class=c1>// 截取的偏移量
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>final</span> <span class=kt>int</span> <span class=n>offset</span><span class=o>;</span>
+    <span class=c1>// 可变的subList的长度
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kt>int</span> <span class=n>size</span><span class=o>;</span>
+
+    <span class=n>SubList</span><span class=o>(</span><span class=n>AbstractList</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>list</span><span class=o>,</span> <span class=kt>int</span> <span class=n>fromIndex</span><span class=o>,</span> <span class=kt>int</span> <span class=n>toIndex</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>fromIndex</span> <span class=o>&lt;</span> <span class=n>0</span><span class=o>)</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>IndexOutOfBoundsException</span><span class=o>(</span><span class=s>&#34;fromIndex = &#34;</span> <span class=o>+</span> <span class=n>fromIndex</span><span class=o>);</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>toIndex</span> <span class=o>&gt;</span> <span class=n>list</span><span class=o>.</span><span class=na>size</span><span class=o>())</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>IndexOutOfBoundsException</span><span class=o>(</span><span class=s>&#34;toIndex = &#34;</span> <span class=o>+</span> <span class=n>toIndex</span><span class=o>);</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>fromIndex</span> <span class=o>&gt;</span> <span class=n>toIndex</span><span class=o>)</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>IllegalArgumentException</span><span class=o>(</span><span class=s>&#34;fromIndex(&#34;</span> <span class=o>+</span> <span class=n>fromIndex</span> <span class=o>+</span>
+                                               <span class=s>&#34;) &gt; toIndex(&#34;</span> <span class=o>+</span> <span class=n>toIndex</span> <span class=o>+</span> <span class=s>&#34;)&#34;</span><span class=o>);</span>
+        <span class=n>l</span> <span class=o>=</span> <span class=n>list</span><span class=o>;</span>
+        <span class=n>offset</span> <span class=o>=</span> <span class=n>fromIndex</span><span class=o>;</span>
+        <span class=n>size</span> <span class=o>=</span> <span class=n>toIndex</span> <span class=o>-</span> <span class=n>fromIndex</span><span class=o>;</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>modCount</span> <span class=o>=</span> <span class=n>l</span><span class=o>.</span><span class=na>modCount</span><span class=o>;</span>
+    <span class=o>}</span>
+
+    <span class=kd>public</span> <span class=n>E</span> <span class=nf>set</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>,</span> <span class=n>E</span> <span class=n>element</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>rangeCheck</span><span class=o>(</span><span class=n>index</span><span class=o>);</span>
+        <span class=n>checkForComodification</span><span class=o>();</span>
+        <span class=k>return</span> <span class=n>l</span><span class=o>.</span><span class=na>set</span><span class=o>(</span><span class=n>index</span><span class=o>+</span><span class=n>offset</span><span class=o>,</span> <span class=n>element</span><span class=o>);</span>
+    <span class=o>}</span>
+
+    <span class=kd>public</span> <span class=n>E</span> <span class=nf>get</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>rangeCheck</span><span class=o>(</span><span class=n>index</span><span class=o>);</span>
+        <span class=n>checkForComodification</span><span class=o>();</span>
+        <span class=k>return</span> <span class=n>l</span><span class=o>.</span><span class=na>get</span><span class=o>(</span><span class=n>index</span><span class=o>+</span><span class=n>offset</span><span class=o>);</span>
+    <span class=o>}</span>
+
+    <span class=kd>public</span> <span class=kt>int</span> <span class=nf>size</span><span class=o>()</span> <span class=o>{</span>
+        <span class=n>checkForComodification</span><span class=o>();</span>
+        <span class=k>return</span> <span class=n>size</span><span class=o>;</span>
+    <span class=o>}</span>
+
+    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>add</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>,</span> <span class=n>E</span> <span class=n>element</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>rangeCheckForAdd</span><span class=o>(</span><span class=n>index</span><span class=o>);</span>
+        <span class=n>checkForComodification</span><span class=o>();</span>
+        <span class=n>l</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>index</span><span class=o>+</span><span class=n>offset</span><span class=o>,</span> <span class=n>element</span><span class=o>);</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>modCount</span> <span class=o>=</span> <span class=n>l</span><span class=o>.</span><span class=na>modCount</span><span class=o>;</span>
+        <span class=n>size</span><span class=o>++;</span>
+    <span class=o>}</span>
+
+    <span class=kd>public</span> <span class=n>E</span> <span class=nf>remove</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>rangeCheck</span><span class=o>(</span><span class=n>index</span><span class=o>);</span>
+        <span class=n>checkForComodification</span><span class=o>();</span>
+        <span class=c1>// index映射到原来的list中需要加上偏移量
+</span><span class=c1></span>        <span class=n>E</span> <span class=n>result</span> <span class=o>=</span> <span class=n>l</span><span class=o>.</span><span class=na>remove</span><span class=o>(</span><span class=n>index</span><span class=o>+</span><span class=n>offset</span><span class=o>);</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>modCount</span> <span class=o>=</span> <span class=n>l</span><span class=o>.</span><span class=na>modCount</span><span class=o>;</span>
+        <span class=n>size</span><span class=o>--;</span>
+        <span class=k>return</span> <span class=n>result</span><span class=o>;</span>
+    <span class=o>}</span>
+
+    <span class=kd>protected</span> <span class=kt>void</span> <span class=nf>removeRange</span><span class=o>(</span><span class=kt>int</span> <span class=n>fromIndex</span><span class=o>,</span> <span class=kt>int</span> <span class=n>toIndex</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>checkForComodification</span><span class=o>();</span>
+        <span class=n>l</span><span class=o>.</span><span class=na>removeRange</span><span class=o>(</span><span class=n>fromIndex</span><span class=o>+</span><span class=n>offset</span><span class=o>,</span> <span class=n>toIndex</span><span class=o>+</span><span class=n>offset</span><span class=o>);</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>modCount</span> <span class=o>=</span> <span class=n>l</span><span class=o>.</span><span class=na>modCount</span><span class=o>;</span>
+        <span class=n>size</span> <span class=o>-=</span> <span class=o>(</span><span class=n>toIndex</span><span class=o>-</span><span class=n>fromIndex</span><span class=o>);</span>
+    <span class=o>}</span>
+
+    <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>addAll</span><span class=o>(</span><span class=n>Collection</span><span class=o>&lt;?</span> <span class=kd>extends</span> <span class=n>E</span><span class=o>&gt;</span> <span class=n>c</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>return</span> <span class=n>addAll</span><span class=o>(</span><span class=n>size</span><span class=o>,</span> <span class=n>c</span><span class=o>);</span>
+    <span class=o>}</span>
+
+    <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>addAll</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>,</span> <span class=n>Collection</span><span class=o>&lt;?</span> <span class=kd>extends</span> <span class=n>E</span><span class=o>&gt;</span> <span class=n>c</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>rangeCheckForAdd</span><span class=o>(</span><span class=n>index</span><span class=o>);</span>
+        <span class=kt>int</span> <span class=n>cSize</span> <span class=o>=</span> <span class=n>c</span><span class=o>.</span><span class=na>size</span><span class=o>();</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>cSize</span><span class=o>==</span><span class=n>0</span><span class=o>)</span>
+            <span class=k>return</span> <span class=kc>false</span><span class=o>;</span>
+
+        <span class=n>checkForComodification</span><span class=o>();</span>
+        <span class=n>l</span><span class=o>.</span><span class=na>addAll</span><span class=o>(</span><span class=n>offset</span><span class=o>+</span><span class=n>index</span><span class=o>,</span> <span class=n>c</span><span class=o>);</span>
+        <span class=k>this</span><span class=o>.</span><span class=na>modCount</span> <span class=o>=</span> <span class=n>l</span><span class=o>.</span><span class=na>modCount</span><span class=o>;</span>
+        <span class=n>size</span> <span class=o>+=</span> <span class=n>cSize</span><span class=o>;</span>
+        <span class=k>return</span> <span class=kc>true</span><span class=o>;</span>
+    <span class=o>}</span>
+    <span class=c1>// 调用原list.listIterator()实现
+</span><span class=c1></span>    <span class=kd>public</span> <span class=n>Iterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>iterator</span><span class=o>()</span> <span class=o>{</span>
+        <span class=k>return</span> <span class=n>listIterator</span><span class=o>();</span>
+    <span class=o>}</span>
+
+    <span class=cm>/**
+</span><span class=cm>     * 调用原list.listIterator(index+offset)实现
+</span><span class=cm>     */</span>
+    <span class=kd>public</span> <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>listIterator</span><span class=o>(</span><span class=kd>final</span> <span class=kt>int</span> <span class=n>index</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>checkForComodification</span><span class=o>();</span>
+        <span class=n>rangeCheckForAdd</span><span class=o>(</span><span class=n>index</span><span class=o>);</span>
+
+        <span class=k>return</span> <span class=k>new</span> <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;()</span> <span class=o>{</span>
+            <span class=kd>private</span> <span class=kd>final</span> <span class=n>ListIterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>i</span> <span class=o>=</span> <span class=n>l</span><span class=o>.</span><span class=na>listIterator</span><span class=o>(</span><span class=n>index</span><span class=o>+</span><span class=n>offset</span><span class=o>);</span>
+
+            <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>hasNext</span><span class=o>()</span> <span class=o>{</span>
+                <span class=k>return</span> <span class=n>nextIndex</span><span class=o>()</span> <span class=o>&lt;</span> <span class=n>size</span><span class=o>;</span>
+            <span class=o>}</span>
+
+            <span class=kd>public</span> <span class=n>E</span> <span class=nf>next</span><span class=o>()</span> <span class=o>{</span>
+                <span class=k>if</span> <span class=o>(</span><span class=n>hasNext</span><span class=o>())</span>
+                    <span class=k>return</span> <span class=n>i</span><span class=o>.</span><span class=na>next</span><span class=o>();</span>
+                <span class=k>else</span>
+                    <span class=k>throw</span> <span class=k>new</span> <span class=n>NoSuchElementException</span><span class=o>();</span>
+            <span class=o>}</span>
+
+            <span class=kd>public</span> <span class=kt>boolean</span> <span class=nf>hasPrevious</span><span class=o>()</span> <span class=o>{</span>
+                <span class=k>return</span> <span class=n>previousIndex</span><span class=o>()</span> <span class=o>&gt;=</span> <span class=n>0</span><span class=o>;</span>
+            <span class=o>}</span>
+
+            <span class=kd>public</span> <span class=n>E</span> <span class=nf>previous</span><span class=o>()</span> <span class=o>{</span>
+                <span class=k>if</span> <span class=o>(</span><span class=n>hasPrevious</span><span class=o>())</span>
+                    <span class=k>return</span> <span class=n>i</span><span class=o>.</span><span class=na>previous</span><span class=o>();</span>
+                <span class=k>else</span>
+                    <span class=k>throw</span> <span class=k>new</span> <span class=n>NoSuchElementException</span><span class=o>();</span>
+            <span class=o>}</span>
+
+            <span class=kd>public</span> <span class=kt>int</span> <span class=nf>nextIndex</span><span class=o>()</span> <span class=o>{</span>
+                <span class=k>return</span> <span class=n>i</span><span class=o>.</span><span class=na>nextIndex</span><span class=o>()</span> <span class=o>-</span> <span class=n>offset</span><span class=o>;</span>
+            <span class=o>}</span>
+
+            <span class=kd>public</span> <span class=kt>int</span> <span class=nf>previousIndex</span><span class=o>()</span> <span class=o>{</span>
+                <span class=k>return</span> <span class=n>i</span><span class=o>.</span><span class=na>previousIndex</span><span class=o>()</span> <span class=o>-</span> <span class=n>offset</span><span class=o>;</span>
+            <span class=o>}</span>
+
+            <span class=kd>public</span> <span class=kt>void</span> <span class=nf>remove</span><span class=o>()</span> <span class=o>{</span>
+                <span class=n>i</span><span class=o>.</span><span class=na>remove</span><span class=o>();</span>
+                <span class=n>SubList</span><span class=o>.</span><span class=na>this</span><span class=o>.</span><span class=na>modCount</span> <span class=o>=</span> <span class=n>l</span><span class=o>.</span><span class=na>modCount</span><span class=o>;</span>
+                <span class=n>size</span><span class=o>--;</span>
+            <span class=o>}</span>
+
+            <span class=kd>public</span> <span class=kt>void</span> <span class=nf>set</span><span class=o>(</span><span class=n>E</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>i</span><span class=o>.</span><span class=na>set</span><span class=o>(</span><span class=n>e</span><span class=o>);</span>
+            <span class=o>}</span>
+
+            <span class=kd>public</span> <span class=kt>void</span> <span class=nf>add</span><span class=o>(</span><span class=n>E</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=n>i</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>e</span><span class=o>);</span>
+                <span class=n>SubList</span><span class=o>.</span><span class=na>this</span><span class=o>.</span><span class=na>modCount</span> <span class=o>=</span> <span class=n>l</span><span class=o>.</span><span class=na>modCount</span><span class=o>;</span>
+                <span class=n>size</span><span class=o>++;</span>
+            <span class=o>}</span>
+        <span class=o>};</span>
+    <span class=o>}</span>
+
+    <span class=kd>public</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>subList</span><span class=o>(</span><span class=kt>int</span> <span class=n>fromIndex</span><span class=o>,</span> <span class=kt>int</span> <span class=n>toIndex</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>return</span> <span class=k>new</span> <span class=n>SubList</span><span class=o>&lt;&gt;(</span><span class=k>this</span><span class=o>,</span> <span class=n>fromIndex</span><span class=o>,</span> <span class=n>toIndex</span><span class=o>);</span>
+    <span class=o>}</span>
+
+    <span class=c1>// 截取后的subList新的list，index从0开始size-1结束。所以范围0&lt;=index&lt;size
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kt>void</span> <span class=nf>rangeCheck</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>index</span> <span class=o>&lt;</span> <span class=n>0</span> <span class=o>||</span> <span class=n>index</span> <span class=o>&gt;=</span> <span class=n>size</span><span class=o>)</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>IndexOutOfBoundsException</span><span class=o>(</span><span class=n>outOfBoundsMsg</span><span class=o>(</span><span class=n>index</span><span class=o>));</span>
+    <span class=o>}</span>
+
+    <span class=kd>private</span> <span class=kt>void</span> <span class=nf>rangeCheckForAdd</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>index</span> <span class=o>&lt;</span> <span class=n>0</span> <span class=o>||</span> <span class=n>index</span> <span class=o>&gt;</span> <span class=n>size</span><span class=o>)</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>IndexOutOfBoundsException</span><span class=o>(</span><span class=n>outOfBoundsMsg</span><span class=o>(</span><span class=n>index</span><span class=o>));</span>
+    <span class=o>}</span>
+
+    <span class=kd>private</span> <span class=n>String</span> <span class=nf>outOfBoundsMsg</span><span class=o>(</span><span class=kt>int</span> <span class=n>index</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>return</span> <span class=s>&#34;Index: &#34;</span><span class=o>+</span><span class=n>index</span><span class=o>+</span><span class=s>&#34;, Size: &#34;</span><span class=o>+</span><span class=n>size</span><span class=o>;</span>
+    <span class=o>}</span>
+    <span class=c1>// 检查subList和原list的modCount是否一致
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kt>void</span> <span class=nf>checkForComodification</span><span class=o>()</span> <span class=o>{</span>
+        <span class=k>if</span> <span class=o>(</span><span class=k>this</span><span class=o>.</span><span class=na>modCount</span> <span class=o>!=</span> <span class=n>l</span><span class=o>.</span><span class=na>modCount</span><span class=o>)</span>
+            <span class=k>throw</span> <span class=k>new</span> <span class=n>ConcurrentModificationException</span><span class=o>();</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>RandomAccessSubList相关实现：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>class</span> <span class=nc>RandomAccessSubList</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=kd>extends</span> <span class=n>SubList</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=kd>implements</span> <span class=n>RandomAccess</span> <span class=o>{</span>
+    <span class=n>RandomAccessSubList</span><span class=o>(</span><span class=n>AbstractList</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>list</span><span class=o>,</span> <span class=kt>int</span> <span class=n>fromIndex</span><span class=o>,</span> <span class=kt>int</span> <span class=n>toIndex</span><span class=o>)</span> <span class=o>{</span>
+        <span class=kd>super</span><span class=o>(</span><span class=n>list</span><span class=o>,</span> <span class=n>fromIndex</span><span class=o>,</span> <span class=n>toIndex</span><span class=o>);</span>
+    <span class=o>}</span>
+
+    <span class=kd>public</span> <span class=n>List</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>subList</span><span class=o>(</span><span class=kt>int</span> <span class=n>fromIndex</span><span class=o>,</span> <span class=kt>int</span> <span class=n>toIndex</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>return</span> <span class=k>new</span> <span class=n>RandomAccessSubList</span><span class=o>&lt;&gt;(</span><span class=k>this</span><span class=o>,</span> <span class=n>fromIndex</span><span class=o>,</span> <span class=n>toIndex</span><span class=o>);</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id=注意-1>注意</h4>
+<ul>
+<li>返回的subList元素的操作将反映到原List中，<strong>对原List结构(元素个数)的操作将导致subList所有操作方法抛出异常</strong>ConcurrentModificationException，但是对两个list的元素修改替换等将会更新到另一个list</li>
+</ul>
+<p>如：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>        <span class=n>List</span><span class=o>&lt;</span><span class=n>Integer</span><span class=o>&gt;</span> <span class=n>list</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ArrayList</span><span class=o>&lt;&gt;();</span>
+        <span class=n>list</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>1</span><span class=o>);</span>
+        <span class=n>list</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>2</span><span class=o>);</span>
+        <span class=n>list</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>3</span><span class=o>);</span>
+        <span class=n>list</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>4</span><span class=o>);</span>
+        <span class=n>List</span><span class=o>&lt;</span><span class=n>Integer</span><span class=o>&gt;</span> <span class=n>subList</span> <span class=o>=</span> <span class=n>list</span><span class=o>.</span><span class=na>subList</span><span class=o>(</span><span class=n>2</span><span class=o>,</span> <span class=n>list</span><span class=o>.</span><span class=na>size</span><span class=o>());</span>
+        <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=s>&#34;subList.size:&#34;</span> <span class=o>+</span> <span class=n>subList</span><span class=o>.</span><span class=na>size</span><span class=o>());</span>
+        <span class=c1>// 原List的结构被更改
+</span><span class=c1>//      list.remove(3);
+</span><span class=c1></span>        <span class=n>list</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=n>11</span><span class=o>);</span>
+        <span class=c1>// 异常
+</span><span class=c1></span>        <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=s>&#34;subList.size:&#34;</span> <span class=o>+</span> <span class=n>subList</span><span class=o>.</span><span class=na>size</span><span class=o>());</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>上面的示例虽然在单线程下运行，但是仍然会抛出异常ConcurrentModificationException，这是由于subList的所有操作均会<code>checkForComodification()</code>，当创建了subList对象后，原来的List.remove/add更新了modCount，导致subList.size()发现<code>this.modCount != l.modCount</code>抛出异常。</p>
+<p>由于创建subList后不允许对原list的结构更改，所以subList.size()实现仅在初始化时将原list.size()读取到SubList.size变量中，就不会产生原list修改无法应用到subList中的错误，因为一旦修改再调用就直接异常</p>
+<ul>
+<li>subList检查修改checkForComodification()的方法为：
+<code>add(int index, E element)</code>, <code>addAll(int index, Collection&lt;? extends E> c)</code>, <code>get(int index)</code>, <code>remove(int index)</code>, <code>removeRange(int fromIndex, int toIndex)</code>, <code>set(int index, E element)</code>, <code>size()</code></li>
+</ul>
+<p>由于extends和implements的关系，想要完全弄清每个方法需要费一番功夫，这里仅仅将SubList中显式checkForComodification()的方法罗列出来，没有找到能显式子类所有方法并包含未覆盖父类的方法(eclipse的open type hierarchy会显示所有方法，每个类方法都显示一次 很烦)</p>
+<ul>
+<li>SubList本质是在偏移量offset的基础上通过原List操作，多数操作都是使用subList.index+offset的方式由原List操作</li>
+<li>注意实现类结构<code>class SubList&lt;E> extends AbstractList&lt;E></code>，不是某一特定List的实现类的子类</li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

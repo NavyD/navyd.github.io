@@ -1,0 +1,221 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="文件写入与Base64解码错误 记录一次在写入文件后取出再次解码base64时出现IllegalArgumentException:Input"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/java/%E6%96%87%E4%BB%B6%E5%86%99%E5%85%A5%E4%B8%8Ebase64%E8%A7%A3%E7%A0%81%E9%94%99%E8%AF%AF/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="文件写入与Base64解码错误 记录一次在写入文件后取出再次解码base64时出现IllegalArgumentException:Input">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/java/%E6%96%87%E4%BB%B6%E5%86%99%E5%85%A5%E4%B8%8Ebase64%E8%A7%A3%E7%A0%81%E9%94%99%E8%AF%AF/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="文件写入与Base64解码错误 记录一次在写入文件后取出再次解码base64时出现IllegalArgumentException:Input">
+<meta itemprop=wordCount content="957">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="文件写入与Base64解码错误 记录一次在写入文件后取出再次解码base64时出现IllegalArgumentException:Input"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=文件写入与base64解码错误>文件写入与Base64解码错误</h1>
+<p>记录一次在写入文件后取出再次解码base64时出现IllegalArgumentException:<code>Input byte array has incorrect ending byte at 92364</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=n>java</span><span class=o>.</span><span class=na>lang</span><span class=o>.</span><span class=na>IllegalArgumentException</span><span class=o>:</span> <span class=n>Input</span> <span class=kt>byte</span> <span class=n>array</span> <span class=n>has</span> <span class=n>incorrect</span> <span class=n>ending</span> <span class=kt>byte</span> <span class=n>at</span> <span class=n>92364</span>
+        <span class=n>at</span> <span class=n>java</span><span class=o>.</span><span class=na>base</span><span class=o>/</span><span class=n>java</span><span class=o>.</span><span class=na>util</span><span class=o>.</span><span class=na>Base64$Decoder</span><span class=o>.</span><span class=na>decode0</span><span class=o>(</span><span class=n>Base64</span><span class=o>.</span><span class=na>java</span><span class=o>:</span><span class=n>819</span><span class=o>)</span> <span class=o>~[</span><span class=n>na</span><span class=o>:</span><span class=n>na</span><span class=o>]</span>
+        <span class=n>at</span> <span class=n>java</span><span class=o>.</span><span class=na>base</span><span class=o>/</span><span class=n>java</span><span class=o>.</span><span class=na>util</span><span class=o>.</span><span class=na>Base64$Decoder</span><span class=o>.</span><span class=na>decode</span><span class=o>(</span><span class=n>Base64</span><span class=o>.</span><span class=na>java</span><span class=o>:</span><span class=n>567</span><span class=o>)</span> <span class=o>~[</span><span class=n>na</span><span class=o>:</span><span class=n>na</span><span class=o>]</span>
+        <span class=n>at</span> <span class=n>java</span><span class=o>.</span><span class=na>base</span><span class=o>/</span><span class=n>java</span><span class=o>.</span><span class=na>util</span><span class=o>.</span><span class=na>Base64$Decoder</span><span class=o>.</span><span class=na>decode</span><span class=o>(</span><span class=n>Base64</span><span class=o>.</span><span class=na>java</span><span class=o>:</span><span class=n>590</span><span class=o>)</span> <span class=o>~[</span><span class=n>na</span><span class=o>:</span><span class=n>na</span><span class=o>]</span>
+        <span class=n>at</span> <span class=n>xyz</span><span class=o>.</span><span class=na>navyd</span><span class=o>.</span><span class=na>util</span><span class=o>.</span><span class=na>V2rayUtils</span><span class=o>.</span><span class=na>parseV2rayNodesToBytes</span><span class=o>(</span><span class=n>V2rayUtils</span><span class=o>.</span><span class=na>java</span><span class=o>:</span><span class=n>207</span><span class=o>)</span> <span class=o>~[</span><span class=n>classes</span><span class=o>!/:</span><span class=n>0</span><span class=o>.</span><span class=na>1</span><span class=o>.</span><span class=na>0</span><span class=o>]</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=分析>分析</h2>
+<p>文件是直接在将base64编码的byte直接写入，取出时直接base64解码，没有任何中间转换。在debug时发现在<code>92364</code>后面确实存在一段：<code>=Z01TNDFlQ0I4SUU1R0lFSkNReUJEYUdGdU5DSXNJbkpsYldGeWF5...</code>。但这不是特殊字符，而且之前直接保存文件是可以正常取出解码的，说明不是编码的问题。又使用正常的内存读写，避免使用文件读写，真是找出问题了，在同一时间下，在内存中debug时base64编码的<code>byte[]</code>长度length=92364，但是之前在文件debug时长度是<code>95000</code>，明显是文件写入的问题，多出来未知的字节。</p>
+<p>重新检查文件写入的代码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=k>try</span> <span class=o>(</span><span class=n>var</span> <span class=n>fc</span> <span class=o>=</span> <span class=n>FileChannel</span><span class=o>.</span><span class=na>open</span><span class=o>(</span><span class=n>path</span><span class=o>,</span> <span class=n>StandardOpenOption</span><span class=o>.</span><span class=na>WRITE</span><span class=o>,</span> <span class=n>StandardOpenOption</span><span class=o>.</span><span class=na>CREATE</span><span class=o>))</span> <span class=o>{</span>
+    <span class=n>var</span> <span class=n>buf</span> <span class=o>=</span> <span class=n>ByteBuffer</span><span class=o>.</span><span class=na>wrap</span><span class=o>(</span><span class=n>bytes</span><span class=o>);</span>
+    <span class=n>var</span> <span class=n>len</span> <span class=o>=</span> <span class=n>0</span><span class=o>;</span>
+    <span class=k>while</span> <span class=o>(</span><span class=n>buf</span><span class=o>.</span><span class=na>hasRemaining</span><span class=o>())</span> <span class=o>{</span>
+        <span class=n>fc</span><span class=o>.</span><span class=na>write</span><span class=o>(</span><span class=n>buf</span><span class=o>);</span>
+    <span class=o>}</span>
+    <span class=n>fc</span><span class=o>.</span><span class=na>force</span><span class=o>(</span><span class=kc>true</span><span class=o>);</span>
+<span class=o>}</span> <span class=c1>// ...
+</span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到FileChannel使用的文件打开属性：<code>WRITE,CREATE</code>都没有提到对已存在的文件内容如何处理的，FileChannel的文档中提到是<code>The size of the file increases when bytes are written beyond its current size; the size of the file decreases when it is truncated.</code>，而我的需求是不停的更新文件内容，不要保持之前的内容。也就是说，如果当前写入的内容不如之前的文件内容多，则写入时后面的内容会同时保留，这就是为何出现文件长度会比在内存的长度大</p>
+<p>多说一句，base64不是可读的，但是可以使用vscode base64 de/encode插件直接转换，但是对不合法的地方没有错误提示，来回检查了好几次都是正常的，java这边又不停的出错，google又没有类似的问题，什么<code>trim</code>去除多余字符没用，windows -> linux编码也没有。还是debug靠谱</p>
+<h2 id=解决>解决</h2>
+<p>有两种方式：</p>
+<ul>
+<li>StandardOpenOption中提供了一个option<code>TRUNCATE_EXISTING</code>:<code>If the file already exists and it is opened for WRITE access, then its length is truncated to 0.</code>直接使用即可</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=k>try</span> <span class=o>(</span><span class=n>var</span> <span class=n>fc</span> <span class=o>=</span> <span class=n>FileChannel</span><span class=o>.</span><span class=na>open</span><span class=o>(</span><span class=n>path</span><span class=o>,</span> <span class=n>WRITE</span><span class=o>,</span> <span class=n>CREATE</span><span class=o>,</span> <span class=n>TRUNCATE_EXISTING</span><span class=o>))</span> <span class=o>{</span>
+    <span class=n>var</span> <span class=n>buf</span> <span class=o>=</span> <span class=n>ByteBuffer</span><span class=o>.</span><span class=na>wrap</span><span class=o>(</span><span class=n>bytes</span><span class=o>);</span>
+    <span class=n>var</span> <span class=n>len</span> <span class=o>=</span> <span class=n>0</span><span class=o>;</span>
+    <span class=k>while</span> <span class=o>(</span><span class=n>buf</span><span class=o>.</span><span class=na>hasRemaining</span><span class=o>())</span> <span class=o>{</span>
+        <span class=n>fc</span><span class=o>.</span><span class=na>write</span><span class=o>(</span><span class=n>buf</span><span class=o>);</span>
+    <span class=o>}</span>
+    <span class=n>fc</span><span class=o>.</span><span class=na>force</span><span class=o>(</span><span class=kc>true</span><span class=o>);</span>
+<span class=o>}</span> <span class=c1>// ...
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>使用<code>fc.truncate(0);</code>主动清空文件</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=k>try</span> <span class=o>(</span><span class=n>var</span> <span class=n>fc</span> <span class=o>=</span> <span class=n>FileChannel</span><span class=o>.</span><span class=na>open</span><span class=o>(</span><span class=n>path</span><span class=o>,</span> <span class=n>StandardOpenOption</span><span class=o>.</span><span class=na>WRITE</span><span class=o>,</span> <span class=n>StandardOpenOption</span><span class=o>.</span><span class=na>CREATE</span><span class=o>))</span> <span class=o>{</span>
+    <span class=n>fc</span><span class=o>.</span><span class=na>truncate</span><span class=o>(</span><span class=n>0</span><span class=o>);</span>
+    <span class=n>var</span> <span class=n>buf</span> <span class=o>=</span> <span class=n>ByteBuffer</span><span class=o>.</span><span class=na>wrap</span><span class=o>(</span><span class=n>bytes</span><span class=o>);</span>
+    <span class=n>var</span> <span class=n>len</span> <span class=o>=</span> <span class=n>0</span><span class=o>;</span>
+    <span class=k>while</span> <span class=o>(</span><span class=n>buf</span><span class=o>.</span><span class=na>hasRemaining</span><span class=o>())</span> <span class=o>{</span>
+        <span class=n>fc</span><span class=o>.</span><span class=na>write</span><span class=o>(</span><span class=n>buf</span><span class=o>);</span>
+    <span class=o>}</span>
+    <span class=n>fc</span><span class=o>.</span><span class=na>force</span><span class=o>(</span><span class=kc>true</span><span class=o>);</span>
+<span class=o>}</span> <span class=c1>// ...
+</span></code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

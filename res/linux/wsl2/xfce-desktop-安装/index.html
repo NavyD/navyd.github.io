@@ -1,0 +1,391 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="1. installation 1.1. source list 更新ubuntu ali国内更新源 1 sudo sed --in-place=.bak &amp;#34;s/archive.ubuntu.com/mirrors.aliyun.com/g&amp;#34; /etc/apt/sources.list 1.2. desktop environment 详细的安装步骤：wsl2-tutorial 也可参考： WSL WSL使用笔记 1.2.1. Install xfce desktop 1 $"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/linux/wsl2/xfce-desktop-%E5%AE%89%E8%A3%85/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="1. installation 1.1. source list 更新ubuntu ali国内更新源 1 sudo sed --in-place=.bak &#34;s/archive.ubuntu.com/mirrors.aliyun.com/g&#34; /etc/apt/sources.list 1.2. desktop environment 详细的安装步骤：wsl2-tutorial 也可参考： WSL WSL使用笔记 1.2.1. Install xfce desktop 1 $">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/linux/wsl2/xfce-desktop-%E5%AE%89%E8%A3%85/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="1. installation 1.1. source list 更新ubuntu ali国内更新源 1 sudo sed --in-place=.bak &#34;s/archive.ubuntu.com/mirrors.aliyun.com/g&#34; /etc/apt/sources.list 1.2. desktop environment 详细的安装步骤：wsl2-tutorial 也可参考： WSL WSL使用笔记 1.2.1. Install xfce desktop 1 $">
+<meta itemprop=wordCount content="1185">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="1. installation 1.1. source list 更新ubuntu ali国内更新源 1 sudo sed --in-place=.bak &#34;s/archive.ubuntu.com/mirrors.aliyun.com/g&#34; /etc/apt/sources.list 1.2. desktop environment 详细的安装步骤：wsl2-tutorial 也可参考： WSL WSL使用笔记 1.2.1. Install xfce desktop 1 $"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=1-installation>1. installation</h1>
+<h2 id=11-source-list>1.1. source list</h2>
+<p>更新ubuntu ali国内更新源</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo sed --in-place<span class=o>=</span>.bak <span class=s2>&#34;s/archive.ubuntu.com/mirrors.aliyun.com/g&#34;</span> /etc/apt/sources.list
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=12-desktop-environment>1.2. desktop environment</h2>
+<p>详细的安装步骤：<a test href=https://github.com/QMonkey/wsl-tutorial/blob/master/README.wsl2.md>wsl2-tutorial</a></p>
+<p>也可参考：</p>
+<ul>
+<li><a test href=https://wiki.ubuntu.com/WSL#Running_Graphical_Applications>WSL</a></li>
+<li><a test href=https://blog.faymek.com/2018/11/2018-11-03-wsl%E4%BD%BF%E7%94%A8%E7%AC%94%E8%AE%B0/>WSL使用笔记</a></li>
+</ul>
+<h3 id=121-install-xfce-desktop>1.2.1. Install xfce desktop</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ sudo apt-get install xfce4 xfce4-terminal
+</code></pre></td></tr></table>
+</div>
+</div><p>如果出现<code>Unable to fetch some archives</code>可修复后再install</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># 可能出现的问题：</span>
+<span class=c1># Get:598 http://mirrors.aliyun.com/ubuntu focal/main amd64 usb-modeswitch-data all 20191128-3 [32.3 kB]</span>
+<span class=c1># Get:599 http://mirrors.aliyun.com/ubuntu focal/main amd64 usb-modeswitch amd64 2.5.2+repack0-2ubuntu3 [53.1 kB]</span>
+<span class=c1># Fetched 189 MB in 1min 26s (2180 kB/s)</span>
+<span class=c1># E: Failed to fetch http://mirrors.aliyun.com/ubuntu/pool/main/i/isl/libisl22_0.22.1-1_amd64.deb  Undetermined Error [IP: 112.67.242.118 80]</span>
+<span class=c1># E: Failed to fetch http://mirrors.aliyun.com/ubuntu/pool/main/g/gnome-keyring/gnome-keyring_3.36.0-1ubuntu1_amd64.deb  Undetermined Error [IP: 112.67.242.118 80]</span>
+<span class=c1># E: Failed to fetch http://mirrors.aliyun.com/ubuntu/pool/main/g/gst-plugins-base1.0/gstreamer1.0-gl_1.16.2-4_amd64.deb  Undetermined Error [IP: 112.67.242.118 80]</span>
+<span class=c1># E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?</span>
+$ sudo apt-get update --fix-missing
+$ sudo apt-get install xfce4 xfce4-terminal
+</code></pre></td></tr></table>
+</div>
+</div><p>Configuring lightdm选择<code>lightdm</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>Package configuration
+
+
+
+
+ ┌──────────────────────────────────────────────┤ Configuring lightdm ├──────────────────────────────────────────────┐
+ │ A display manager is a program that provides graphical login capabilities <span class=k>for</span> the X Window System.                │
+ │                                                                                                                   │
+ │ Only one display manager can manage a given X server, but multiple display manager packages are installed.        │
+ │ Please <span class=k>select</span> which display manager should run by default.                                                        │
+ │                                                                                                                   │
+ │ Multiple display managers can run simultaneously <span class=k>if</span> they are configured to manage different servers<span class=p>;</span> to achieve   │
+ │ this, configure the display managers accordingly, edit each of their init scripts in /etc/init.d, and disable     │
+ │ the check <span class=k>for</span> a default display manager.                                                                          │
+ │                                                                                                                   │
+ │ Default display manager:                                                                                          │
+ │                                                                                                                   │
+ │                                                     gdm3                                                          │
+ │                                                     lightdm                                                       │
+ │                                                                                                                   │
+ │                                                                                                                   │
+ │                                                      &lt;Ok&gt;                                                         │
+ │                                                                                                                   │
+ └───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=122-configuration>1.2.2. configuration</h3>
+<p>写入shell环境中<code>$HOME/.bashrc</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># wsl2</span>
+<span class=nb>export</span> <span class=nv>DISPLAY</span><span class=o>=</span><span class=k>$(</span>awk <span class=s1>&#39;/nameserver / {print $2; exit}&#39;</span> /etc/resolv.conf 2&gt;/dev/null<span class=k>)</span>:0 <span class=c1># in WSL 2</span>
+<span class=nb>export</span> <span class=nv>LIBGL_ALWAYS_INDIRECT</span><span class=o>=</span><span class=m>1</span>
+
+<span class=c1># fcitx</span>
+<span class=nb>export</span> <span class=nv>XMODIFIERS</span><span class=o>=</span>@im<span class=o>=</span>fcitx
+<span class=nb>export</span> <span class=nv>GTK_IM_MODULE</span><span class=o>=</span>fcitx
+<span class=nb>export</span> <span class=nv>QT_IM_MODULE</span><span class=o>=</span>fcitx
+<span class=k>if</span> pidof fcitx &gt; /dev/null<span class=p>;</span> <span class=k>then</span>
+    <span class=nb>echo</span> <span class=s1>&#39;starting up fcitx&#39;</span>
+    fcitx -d
+<span class=k>fi</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=启动xfce>启动xfce</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>startxfce4
+</code></pre></td></tr></table>
+</div>
+</div><p>后台运行：[[在Shell后台运行任务.md]]</p>
+<h2 id=13-softwares>1.3. softwares</h2>
+<h3 id=131-fcitx中文输入法>1.3.1. fcitx中文输入法</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo apt-get install fcitx fcitx-pinyin
+</code></pre></td></tr></table>
+</div>
+</div><p>注意：</p>
+<ul>
+<li>如果输入法没有响应，可检查下列配置是否在shell环境中</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=nb>export</span> <span class=nv>XMODIFIERS</span><span class=o>=</span>@im<span class=o>=</span>fcitx
+<span class=nb>export</span> <span class=nv>GTK_IM_MODULE</span><span class=o>=</span>fcitx
+<span class=nb>export</span> <span class=nv>QT_IM_MODULE</span><span class=o>=</span>fcitx
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>如果切换快捷键没有反应，可以看下是不是设置与windows一样了，最好是不一样就好打开fcitx配置
+<code>input method configuration -> global config</code>:</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>trigger input method: CTRL+SHIFT+SPACE,
+extra key for trigger input method: L_SHIFT,
+enable hotkey to scroll between input method: checked
+</code></pre></td></tr></table>
+</div>
+</div><p><img src=../../assets/images/0c1c6c89-5dfb-4a5e-a4c5-6aac1b299b37.png alt></p>
+<h3 id=132-idea>1.3.2. Idea</h3>
+<p>移动idea文件夹到<code>/usr/local/bin/idea/</code>中，安装idea桌面快捷方式到<code>/usr/share/applications/intellij-idea.desktop</code>：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-toml data-lang=toml><span class=p>[</span><span class=nx>Desktop</span> <span class=nx>Entry</span><span class=p>]</span>
+<span class=nx>Version</span><span class=p>=</span><span class=mf>1.0</span>
+<span class=nx>Type</span><span class=p>=</span><span class=nx>Application</span>
+<span class=nx>Terminal</span><span class=p>=</span><span class=kc>false</span>
+<span class=nx>Icon</span><span class=p>=</span><span class=err>/</span><span class=nx>usr</span><span class=err>/</span><span class=nx>local</span><span class=err>/</span><span class=nx>bin</span><span class=err>/</span><span class=nx>idea</span><span class=err>/</span><span class=nx>idea-IU-201</span><span class=p>.</span><span class=mf>7846.76</span><span class=err>//</span><span class=nx>bin</span><span class=err>/</span><span class=nx>idea</span><span class=p>.</span><span class=nx>png</span>
+<span class=nx>Exec</span><span class=p>=</span><span class=s2>&#34;/usr/local/bin/idea/idea-IU-201.7846.76//bin/idea.sh %f&#34;</span>
+<span class=nx>Name</span><span class=p>=</span><span class=nx>IntelliJ</span> <span class=nx>Idea</span>
+<span class=nx>Categories</span><span class=p>=</span><span class=nx>Development</span><span class=err>;</span><span class=nx>IDE</span><span class=err>;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=133-chrome>1.3.3. Chrome</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo dpkg -i ./google-chrome-stable_current_amd64.deb
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=134-zsh配置>1.3.4. zsh配置</h3>
+<p>[[zsh configuration.md]]</p>
+<h4 id=1341-变量display无效问题>1.3.4.1. 变量<code>DISPLAY</code>无效问题</h4>
+<h5 id=13411-描述>1.3.4.1.1. 描述</h5>
+<p>当从bash先启动startxfce4，退出后加载的是zsh，则可能导致先前的变量<code>DISPLAY</code>无效：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ startxfce4
+/usr/lib/xorg/Xorg.wrap: Only console users are allowed to run the X server
+</code></pre></td></tr></table>
+</div>
+</div><p>修改文件<code>/etc/X11/Xwrapper.config</code>：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=nv>allowed_users</span> <span class=o>=</span> anybody
+</code></pre></td></tr></table>
+</div>
+</div><p>启动后依然出现error，这是由于<code>DISPLAY</code>无效导致</p>
+<h5 id=13412-解决方法>1.3.4.1.2. 解决方法</h5>
+<p>在<code>$HOME/.zshrc</code>中重设即可</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-zsh data-lang=zsh><span class=nv>DISPLAY</span><span class=o>=</span><span class=k>$(</span>awk <span class=s1>&#39;/nameserver / {print $2; exit}&#39;</span> /etc/resolv.conf 2&gt;/dev/null<span class=k>)</span>:0.0 <span class=c1># in WSL 2</span>
+<span class=nb>export</span> DISPLAY
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：<a test href=https://unix.stackexchange.com/a/529945>Error when trying to use Xorg: Only console users are allowed to run the X server?
+</a></p>
+<h3 id=135-docker安装>1.3.5. Docker安装</h3>
+<p>[[docker installation.md]]</p>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

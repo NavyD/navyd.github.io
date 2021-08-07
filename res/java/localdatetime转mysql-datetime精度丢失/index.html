@@ -1,0 +1,282 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="LocalDateTime转mysql datetime精度丢失 现象 在测试插入gmtCreate, gmtModified比较java中Loca"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/java/localdatetime%E8%BD%ACmysql-datetime%E7%B2%BE%E5%BA%A6%E4%B8%A2%E5%A4%B1/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="LocalDateTime转mysql datetime精度丢失 现象 在测试插入gmtCreate, gmtModified比较java中Loca">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/java/localdatetime%E8%BD%ACmysql-datetime%E7%B2%BE%E5%BA%A6%E4%B8%A2%E5%A4%B1/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="LocalDateTime转mysql datetime精度丢失 现象 在测试插入gmtCreate, gmtModified比较java中Loca">
+<meta itemprop=wordCount content="893">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="LocalDateTime转mysql datetime精度丢失 现象 在测试插入gmtCreate, gmtModified比较java中Loca"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=localdatetime转mysql-datetime精度丢失>LocalDateTime转mysql datetime精度丢失</h1>
+<h2 id=现象>现象</h2>
+<p>在测试插入gmtCreate, gmtModified比较java中<code>LocalDateTime.now()</code>的 <em><strong>纳秒</strong></em> 插入到mysql datetime，取出后的LocalDateTime只精确到秒</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sql data-lang=sql><span class=k>drop</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=k>if</span><span class=w> </span><span class=k>exists</span><span class=w> </span><span class=n>product_category</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=k>create</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=n>product_category</span><span class=p>(</span><span class=w>
+</span><span class=w>    </span><span class=n>id</span><span class=w> </span><span class=nb>int</span><span class=w> </span><span class=n>unsigned</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w> </span><span class=n>auto_increment</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>category_name</span><span class=w> </span><span class=nb>varchar</span><span class=p>(</span><span class=mi>64</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>gmt_create</span><span class=w> </span><span class=n>datetime</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w> </span><span class=k>default</span><span class=w> </span><span class=k>current_timestamp</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>gmt_modified</span><span class=w> </span><span class=n>datetime</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w> </span><span class=k>default</span><span class=w> </span><span class=k>current_timestamp</span><span class=w> </span><span class=k>on</span><span class=w> </span><span class=k>update</span><span class=w> </span><span class=k>current_timestamp</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=k>primary</span><span class=w> </span><span class=k>key</span><span class=p>(</span><span class=n>id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=p>);</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>在网上找到<a test href=https://www.jianshu.com/p/634a41503f42>使用LocalDateTime遇到的问题</a>，可能是mysql datetime入库时根据纳秒进行四舍五入</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kt>void</span> <span class=nf>insertGmtTime</span><span class=o>()</span> <span class=o>{</span>
+    <span class=n>var</span> <span class=n>insertObj</span> <span class=o>=</span> <span class=n>getNewObjects</span><span class=o>().</span><span class=na>get</span><span class=o>(</span><span class=n>0</span><span class=o>);</span>
+    <span class=n>var</span> <span class=n>mapper</span> <span class=o>=</span> <span class=n>getBaseMapper</span><span class=o>();</span>
+    <span class=n>assertThat</span><span class=o>(</span><span class=n>mapper</span><span class=o>.</span><span class=na>insert</span><span class=o>(</span><span class=n>insertObj</span><span class=o>)).</span><span class=na>isEqualTo</span><span class=o>(</span><span class=n>1</span><span class=o>);</span>
+
+    <span class=n>assertThat</span><span class=o>(</span><span class=n>mapper</span><span class=o>.</span><span class=na>selectById</span><span class=o>(</span><span class=n>insertObj</span><span class=o>.</span><span class=na>getId</span><span class=o>()))</span>
+            <span class=o>.</span><span class=na>isNotNull</span><span class=o>()</span>
+            <span class=c1>// withNano 舍去纳秒
+</span><span class=c1></span>            <span class=o>.</span><span class=na>matches</span><span class=o>(</span><span class=n>o</span> <span class=o>-&gt;</span> <span class=n>o</span><span class=o>.</span><span class=na>getGmtCreate</span><span class=o>().</span><span class=na>equals</span><span class=o>(</span><span class=n>insertObj</span><span class=o>.</span><span class=na>getGmtCreate</span><span class=o>().</span><span class=na>withNano</span><span class=o>(</span><span class=n>0</span><span class=o>))</span>
+                    <span class=o>&amp;&amp;</span> <span class=n>o</span><span class=o>.</span><span class=na>getGmtModified</span><span class=o>().</span><span class=na>equals</span><span class=o>(</span><span class=n>insertObj</span><span class=o>.</span><span class=na>getGmtModified</span><span class=o>().</span><span class=na>withNano</span><span class=o>(</span><span class=n>0</span><span class=o>)),</span>
+                    <span class=s>&#34;insert obj: &#34;</span> <span class=o>+</span> <span class=n>insertObj</span>
+            <span class=o>);</span>
+<span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在去除纳秒后出现四舍五入导致的秒进位不等错误：</p>
+<p>java now: <code>gmtCreate=2020-08-09T19:11:29.708034400, gmtModified=2020-08-09T19:11:29.708034400</code></p>
+<p>mysql datetime: <code>gmtCreate=2020-08-09T19:11:30, gmtModified=2020-08-09T19:11:30</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>java.lang.AssertionError: 
+Expecting:
+  &lt;ProductCategory(super=BaseEntity(id=3, gmtCreate=2020-08-09T19:11:30, gmtModified=2020-08-09T19:11:30), categoryName=新分类_101)&gt;
+to match &#39;insert obj: ProductCategory(super=BaseEntity(id=3, gmtCreate=2020-08-09T19:11:29.708034400, gmtModified=2020-08-09T19:11:29.708034400), categoryName=新分类_101)&#39; predicate.
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=原因>原因</h2>
+<p>开始以为是mybatis转换的问题，<a test href=https://www.cnblogs.com/sunzhenchao/archive/2013/04/09/3009431.html>Mybatis源代码分析之类型转换</a>中注意有<code>org.apache.ibatis.type.LocalDateTimeTypeHandler</code>，这个类可转换LocalDateTime与jdbc type ？？</p>
+<p>发现直接用jdbc处理，这样问题就可能出现在mysql中了</p>
+<p>对<code>product_category</code>插入记录时间<code>2020-08-09T19:11:29.708034400</code>，结果<code>2020-08-09 19:11:30</code>还是只到秒，纳秒丢失：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sql data-lang=sql><span class=k>insert</span><span class=w> </span><span class=k>into</span><span class=w> </span><span class=n>product_category</span><span class=p>(</span><span class=n>category_name</span><span class=p>,</span><span class=w> </span><span class=n>gmt_create</span><span class=p>)</span><span class=w> </span><span class=k>values</span><span class=p>(</span><span class=s1>&#39;test&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2020-08-09T19:11:29.708034400&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>select</span><span class=w> </span><span class=o>*</span><span class=w> </span><span class=k>from</span><span class=w> </span><span class=n>product_category</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=c1>-- test	2020-08-09 19:11:30	2020-08-09 20:01:41
+</span></code></pre></td></tr></table>
+</div>
+</div><p>调查后发现，如果创建表示字段类型为datetime或者timestamp时，默认精度是到秒的，也就是说如果想保存毫秒的精度，需要主动指定精度<code>datetime(6)</code>，最大到6</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sql data-lang=sql><span class=k>drop</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=k>if</span><span class=w> </span><span class=k>exists</span><span class=w> </span><span class=n>product_category</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=k>create</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=n>product_category</span><span class=p>(</span><span class=w>
+</span><span class=w>    </span><span class=n>id</span><span class=w> </span><span class=nb>int</span><span class=w> </span><span class=n>unsigned</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=w> </span><span class=n>auto_increment</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>category_name</span><span class=w> </span><span class=nb>varchar</span><span class=p>(</span><span class=mi>64</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>gmt_create</span><span class=w> </span><span class=n>datetime</span><span class=p>(</span><span class=mi>2</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=n>gmt_modified</span><span class=w> </span><span class=n>datetime</span><span class=p>(</span><span class=mi>6</span><span class=p>)</span><span class=w> </span><span class=k>not</span><span class=w> </span><span class=k>null</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=k>primary</span><span class=w> </span><span class=k>key</span><span class=p>(</span><span class=n>id</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>insert</span><span class=w> </span><span class=k>into</span><span class=w> </span><span class=n>product_category</span><span class=p>(</span><span class=n>category_name</span><span class=p>,</span><span class=w> </span><span class=n>gmt_create</span><span class=p>,</span><span class=w> </span><span class=n>gmt_modified</span><span class=p>)</span><span class=w> </span><span class=k>values</span><span class=p>(</span><span class=s1>&#39;test&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2020-08-09T19:11:29.708034400&#39;</span><span class=p>,</span><span class=w> </span><span class=s1>&#39;2020-08-09T19:11:29.708034400&#39;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>SELECT</span><span class=w> </span><span class=o>*</span><span class=w> </span><span class=k>FROM</span><span class=w> </span><span class=n>sell</span><span class=p>.</span><span class=n>product_category</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=c1>-- category_name    gmt_create  gmt_modified
+</span><span class=c1>-- test	2020-08-09 19:11:29.71	2020-08-09 19:11:29.708034
+</span></code></pre></td></tr></table>
+</div>
+</div><p>参考：<a test href=https://blog.csdn.net/sinat_29899265/article/details/91990485>mysql8.0.11 datetime精度丢失的问题</a></p>
+<h2 id=方法>方法</h2>
+<ul>
+<li>统一java LocalDateTime和 mysql datetime精度-</li>
+</ul>
+<p>插入时精度为秒不会有四舍五入：<code>LocalDateTime.withNano(0)</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kt>void</span> <span class=nf>insertGmtTime</span><span class=o>()</span> <span class=o>{</span>
+        <span class=n>var</span> <span class=n>insertObj</span> <span class=o>=</span> <span class=n>getNewObjects</span><span class=o>().</span><span class=na>get</span><span class=o>(</span><span class=n>0</span><span class=o>);</span>
+        <span class=n>insertObj</span><span class=o>.</span><span class=na>setGmtCreate</span><span class=o>(</span><span class=n>insertObj</span><span class=o>.</span><span class=na>getGmtCreate</span><span class=o>().</span><span class=na>withNano</span><span class=o>(</span><span class=n>0</span><span class=o>));</span>
+        <span class=n>insertObj</span><span class=o>.</span><span class=na>setGmtModified</span><span class=o>(</span><span class=n>insertObj</span><span class=o>.</span><span class=na>getGmtModified</span><span class=o>().</span><span class=na>withNano</span><span class=o>(</span><span class=n>0</span><span class=o>));</span>
+        <span class=n>var</span> <span class=n>mapper</span> <span class=o>=</span> <span class=n>getBaseMapper</span><span class=o>();</span>
+        <span class=n>assertThat</span><span class=o>(</span><span class=n>mapper</span><span class=o>.</span><span class=na>insert</span><span class=o>(</span><span class=n>insertObj</span><span class=o>)).</span><span class=na>isEqualTo</span><span class=o>(</span><span class=n>1</span><span class=o>);</span>
+        <span class=n>assertThat</span><span class=o>(</span><span class=n>mapper</span><span class=o>.</span><span class=na>selectById</span><span class=o>(</span><span class=n>insertObj</span><span class=o>.</span><span class=na>getId</span><span class=o>()))</span>
+                <span class=o>.</span><span class=na>isNotNull</span><span class=o>()</span>
+                <span class=o>.</span><span class=na>matches</span><span class=o>(</span><span class=n>o</span> <span class=o>-&gt;</span> <span class=n>o</span><span class=o>.</span><span class=na>getGmtCreate</span><span class=o>().</span><span class=na>equals</span><span class=o>(</span><span class=n>insertObj</span><span class=o>.</span><span class=na>getGmtCreate</span><span class=o>())</span>
+                        <span class=o>&amp;&amp;</span> <span class=n>o</span><span class=o>.</span><span class=na>getGmtModified</span><span class=o>().</span><span class=na>equals</span><span class=o>(</span><span class=n>insertObj</span><span class=o>.</span><span class=na>getGmtModified</span><span class=o>()),</span>
+                        <span class=s>&#34;insert obj: &#34;</span> <span class=o>+</span> <span class=n>insertObj</span>
+                <span class=o>);</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：<a test href=https://www.yht7.com/news/61725>LocalDateTime在项目中的使用（LocalDateTime对接前端通过时间戳互转、LocalDateTime对接数据库）</a></p>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

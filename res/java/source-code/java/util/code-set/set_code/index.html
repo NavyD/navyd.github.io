@@ -1,0 +1,881 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="Set 一个不包含重复元素的 collection，set 不包含满足 e1.equals(e2) 的元素对 e1 和 e2，并且最多包含一个 null 元素 注意： Set就是一个去重的Collec"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/java/source-code/java/util/code-set/set_code/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="Set 一个不包含重复元素的 collection，set 不包含满足 e1.equals(e2) 的元素对 e1 和 e2，并且最多包含一个 null 元素 注意： Set就是一个去重的Collec">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/java/source-code/java/util/code-set/set_code/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="Set 一个不包含重复元素的 collection，set 不包含满足 e1.equals(e2) 的元素对 e1 和 e2，并且最多包含一个 null 元素 注意： Set就是一个去重的Collec">
+<meta itemprop=wordCount content="3152">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="Set 一个不包含重复元素的 collection，set 不包含满足 e1.equals(e2) 的元素对 e1 和 e2，并且最多包含一个 null 元素 注意： Set就是一个去重的Collec"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=set>Set</h1>
+<p>一个不包含重复元素的 collection，set 不包含满足 <code>e1.equals(e2)</code> 的元素对 <code>e1</code> 和 <code>e2</code>，并且最多包含一个 null 元素</p>
+<p>注意：</p>
+<ul>
+<li>Set就是一个去重的Collection，就是collection的api，在构造方法以及 <code>add</code>、<code>equals</code> 和 <code>hashCode</code> 增加了对重复元素的限制</li>
+<li>Set判断两个元素是否相等：<code>o==null ? e==null : o.equals(e)</code></li>
+<li>Set通过构造方法和add方法保证Set元素的不重复性</li>
+<li>Set的元素应该是不可变对象</li>
+<li>Set可以限制包含的元素</li>
+</ul>
+<h2 id=查询>查询</h2>
+<ul>
+<li>int size();</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Returns the number of elements in this set (its cardinality).  If this
+</span><span class=cm>     * set contains more than &lt;tt&gt;Integer.MAX_VALUE&lt;/tt&gt; elements, returns
+</span><span class=cm>     * &lt;tt&gt;Integer.MAX_VALUE&lt;/tt&gt;.
+</span><span class=cm>     *
+</span><span class=cm>     * @return the number of elements in this set (its cardinality)
+</span><span class=cm>     */</span>
+    <span class=c1>// 返回set元素数量（set的基数）。
+</span><span class=c1></span>    <span class=c1>// 如果set元素数量多于Integer.MAX_VALUE将返回Integer.MAX_VALUE
+</span><span class=c1></span>    <span class=kt>int</span> <span class=nf>size</span><span class=o>();</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>boolean isEmpty()</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Returns &lt;tt&gt;true&lt;/tt&gt; if this set contains no elements.
+</span><span class=cm>     *
+</span><span class=cm>     * @return &lt;tt&gt;true&lt;/tt&gt; if this set contains no elements
+</span><span class=cm>     */</span>
+    <span class=kt>boolean</span> <span class=nf>isEmpty</span><span class=o>();</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>boolean contains(Object o)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Returns &lt;tt&gt;true&lt;/tt&gt; if this set contains the specified element.
+</span><span class=cm>     * More formally, returns &lt;tt&gt;true&lt;/tt&gt; if and only if this set
+</span><span class=cm>     * contains an element &lt;tt&gt;e&lt;/tt&gt; such that
+</span><span class=cm>     * &lt;tt&gt;(o==null&amp;nbsp;?&amp;nbsp;e==null&amp;nbsp;:&amp;nbsp;o.equals(e))&lt;/tt&gt;.
+</span><span class=cm>     *
+</span><span class=cm>     * @param o element whose presence in this set is to be tested
+</span><span class=cm>     * @return &lt;tt&gt;true&lt;/tt&gt; if this set contains the specified element
+</span><span class=cm>     * @throws ClassCastException if the type of the specified element
+</span><span class=cm>     *         is incompatible with this set
+</span><span class=cm>     * (&lt;a href=&#34;Collection.html#optional-restrictions&#34;&gt;optional&lt;/a&gt;)
+</span><span class=cm>     * @throws NullPointerException if the specified element is null and this
+</span><span class=cm>     *         set does not permit null elements
+</span><span class=cm>     * (&lt;a href=&#34;Collection.html#optional-restrictions&#34;&gt;optional&lt;/a&gt;)
+</span><span class=cm>     */</span>
+	<span class=c1>// 如果 set 包含指定的元素，则返回 true。
+</span><span class=c1></span>	<span class=c1>// 当且仅当 set 包含满足 (o==null ? e==null : o.equals(e)) 的元素 e 时返回 true。
+</span><span class=c1></span>    <span class=kt>boolean</span> <span class=nf>contains</span><span class=o>(</span><span class=n>Object</span> <span class=n>o</span><span class=o>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=迭代器>迭代器</h2>
+<ul>
+<li>Iterator<e> iterator()</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Returns an iterator over the elements in this set.  The elements are
+</span><span class=cm>     * returned in no particular order (unless this set is an instance of some
+</span><span class=cm>     * class that provides a guarantee).
+</span><span class=cm>     *
+</span><span class=cm>     * @return an iterator over the elements in this set
+</span><span class=cm>     */</span>
+    <span class=c1>// 返回在此 set 中的元素上进行迭代的迭代器。
+</span><span class=c1></span>    <span class=c1>// 返回的元素没有特定的顺序（除非此 set 是某个提供顺序保证的类的实例）。
+</span><span class=c1></span>    <span class=n>Iterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>iterator</span><span class=o>();</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Spliterator<e> spliterator()</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Creates a {@code Spliterator} over the elements in this set.
+</span><span class=cm>     *
+</span><span class=cm>     * &lt;p&gt;The {@code Spliterator} reports {@link Spliterator#DISTINCT}.
+</span><span class=cm>     * Implementations should document the reporting of additional
+</span><span class=cm>     * characteristic values.
+</span><span class=cm>     *
+</span><span class=cm>     * @implSpec
+</span><span class=cm>     * The default implementation creates a
+</span><span class=cm>     * &lt;em&gt;&lt;a href=&#34;Spliterator.html#binding&#34;&gt;late-binding&lt;/a&gt;&lt;/em&gt; spliterator
+</span><span class=cm>     * from the set&#39;s {@code Iterator}.  The spliterator inherits the
+</span><span class=cm>     * &lt;em&gt;fail-fast&lt;/em&gt; properties of the set&#39;s iterator.
+</span><span class=cm>     * &lt;p&gt;
+</span><span class=cm>     * The created {@code Spliterator} additionally reports
+</span><span class=cm>     * {@link Spliterator#SIZED}.
+</span><span class=cm>     *
+</span><span class=cm>     * @implNote
+</span><span class=cm>     * The created {@code Spliterator} additionally reports
+</span><span class=cm>     * {@link Spliterator#SUBSIZED}.
+</span><span class=cm>     *
+</span><span class=cm>     * @return a {@code Spliterator} over the elements in this set
+</span><span class=cm>     * @since 1.8
+</span><span class=cm>     */</span>
+    <span class=nd>@Override</span>
+    <span class=k>default</span> <span class=n>Spliterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>spliterator</span><span class=o>()</span> <span class=o>{</span>
+        <span class=k>return</span> <span class=n>Spliterators</span><span class=o>.</span><span class=na>spliterator</span><span class=o>(</span><span class=k>this</span><span class=o>,</span> <span class=n>Spliterator</span><span class=o>.</span><span class=na>DISTINCT</span><span class=o>);</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=转换数组>转换数组</h2>
+<ul>
+<li>Object[] toArray()</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Returns an array containing all of the elements in this set.
+</span><span class=cm>     * If this set makes any guarantees as to what order its elements
+</span><span class=cm>     * are returned by its iterator, this method must return the
+</span><span class=cm>     * elements in the same order.
+</span><span class=cm>     *
+</span><span class=cm>     * &lt;p&gt;The returned array will be &#34;safe&#34; in that no references to it
+</span><span class=cm>     * are maintained by this set.  (In other words, this method must
+</span><span class=cm>     * allocate a new array even if this set is backed by an array).
+</span><span class=cm>     * The caller is thus free to modify the returned array.
+</span><span class=cm>     *
+</span><span class=cm>     * &lt;p&gt;This method acts as bridge between array-based and collection-based
+</span><span class=cm>     * APIs.
+</span><span class=cm>     *
+</span><span class=cm>     * @return an array containing all the elements in this set
+</span><span class=cm>     */</span>
+	<span class=c1>// 返回一个包含 set 中所有元素的数组。
+</span><span class=c1></span>	<span class=c1>// 如果此 set 对其迭代器返回的元素的顺序作出了某些保证，那么此方法也必须按相同的顺序返回这些元素。
+</span><span class=c1></span>	<span class=c1>// 由于此 set 不维护对返回数组的任何引用，因而它是安全的
+</span><span class=c1></span>    <span class=n>Object</span><span class=o>[]</span> <span class=nf>toArray</span><span class=o>();</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><t> T[] toArray(T[] a)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Returns an array containing all of the elements in this set; the
+</span><span class=cm>     * runtime type of the returned array is that of the specified array.
+</span><span class=cm>     * If the set fits in the specified array, it is returned therein.
+</span><span class=cm>     * Otherwise, a new array is allocated with the runtime type of the
+</span><span class=cm>     * specified array and the size of this set.
+</span><span class=cm>     *
+</span><span class=cm>     * &lt;p&gt;If this set fits in the specified array with room to spare
+</span><span class=cm>     * (i.e., the array has more elements than this set), the element in
+</span><span class=cm>     * the array immediately following the end of the set is set to
+</span><span class=cm>     * &lt;tt&gt;null&lt;/tt&gt;.  (This is useful in determining the length of this
+</span><span class=cm>     * set &lt;i&gt;only&lt;/i&gt; if the caller knows that this set does not contain
+</span><span class=cm>     * any null elements.)
+</span><span class=cm>     *
+</span><span class=cm>     * &lt;p&gt;If this set makes any guarantees as to what order its elements
+</span><span class=cm>     * are returned by its iterator, this method must return the elements
+</span><span class=cm>     * in the same order.
+</span><span class=cm>     *
+</span><span class=cm>     * &lt;p&gt;Like the {@link #toArray()} method, this method acts as bridge between
+</span><span class=cm>     * array-based and collection-based APIs.  Further, this method allows
+</span><span class=cm>     * precise control over the runtime type of the output array, and may,
+</span><span class=cm>     * under certain circumstances, be used to save allocation costs.
+</span><span class=cm>     *
+</span><span class=cm>     * &lt;p&gt;Suppose &lt;tt&gt;x&lt;/tt&gt; is a set known to contain only strings.
+</span><span class=cm>     * The following code can be used to dump the set into a newly allocated
+</span><span class=cm>     * array of &lt;tt&gt;String&lt;/tt&gt;:
+</span><span class=cm>     *
+</span><span class=cm>     * &lt;pre&gt;
+</span><span class=cm>     *     String[] y = x.toArray(new String[0]);&lt;/pre&gt;
+</span><span class=cm>     *
+</span><span class=cm>     * Note that &lt;tt&gt;toArray(new Object[0])&lt;/tt&gt; is identical in function to
+</span><span class=cm>     * &lt;tt&gt;toArray()&lt;/tt&gt;.
+</span><span class=cm>     *
+</span><span class=cm>     * @param a the array into which the elements of this set are to be
+</span><span class=cm>     *        stored, if it is big enough; otherwise, a new array of the same
+</span><span class=cm>     *        runtime type is allocated for this purpose.
+</span><span class=cm>     * @return an array containing all the elements in this set
+</span><span class=cm>     * @throws ArrayStoreException if the runtime type of the specified array
+</span><span class=cm>     *         is not a supertype of the runtime type of every element in this
+</span><span class=cm>     *         set
+</span><span class=cm>     * @throws NullPointerException if the specified array is null
+</span><span class=cm>     */</span>
+    <span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>T</span><span class=o>[]</span> <span class=nf>toArray</span><span class=o>(</span><span class=n>T</span><span class=o>[]</span> <span class=n>a</span><span class=o>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=添加>添加</h2>
+<ul>
+<li>boolean add(E e)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Adds the specified element to this set if it is not already present
+</span><span class=cm>     * (optional operation).  More formally, adds the specified element
+</span><span class=cm>     * &lt;tt&gt;e&lt;/tt&gt; to this set if the set contains no element &lt;tt&gt;e2&lt;/tt&gt;
+</span><span class=cm>     * such that
+</span><span class=cm>     * &lt;tt&gt;(e==null&amp;nbsp;?&amp;nbsp;e2==null&amp;nbsp;:&amp;nbsp;e.equals(e2))&lt;/tt&gt;.
+</span><span class=cm>     * If this set already contains the element, the call leaves the set
+</span><span class=cm>     * unchanged and returns &lt;tt&gt;false&lt;/tt&gt;.  In combination with the
+</span><span class=cm>     * restriction on constructors, this ensures that sets never contain
+</span><span class=cm>     * duplicate elements.
+</span><span class=cm>     *
+</span><span class=cm>     * &lt;p&gt;The stipulation above does not imply that sets must accept all
+</span><span class=cm>     * elements; sets may refuse to add any particular element, including
+</span><span class=cm>     * &lt;tt&gt;null&lt;/tt&gt;, and throw an exception, as described in the
+</span><span class=cm>     * specification for {@link Collection#add Collection.add}.
+</span><span class=cm>     * Individual set implementations should clearly document any
+</span><span class=cm>     * restrictions on the elements that they may contain.
+</span><span class=cm>     *
+</span><span class=cm>     * @param e element to be added to this set
+</span><span class=cm>     * @return &lt;tt&gt;true&lt;/tt&gt; if this set did not already contain the specified
+</span><span class=cm>     *         element
+</span><span class=cm>     * @throws UnsupportedOperationException if the &lt;tt&gt;add&lt;/tt&gt; operation
+</span><span class=cm>     *         is not supported by this set
+</span><span class=cm>     * @throws ClassCastException if the class of the specified element
+</span><span class=cm>     *         prevents it from being added to this set
+</span><span class=cm>     * @throws NullPointerException if the specified element is null and this
+</span><span class=cm>     *         set does not permit null elements
+</span><span class=cm>     * @throws IllegalArgumentException if some property of the specified element
+</span><span class=cm>     *         prevents it from being added to this set
+</span><span class=cm>     */</span>
+	<span class=c1>// 如果 set 中尚未存在指定的元素，则添加此元素
+</span><span class=c1></span>	<span class=c1>// 如果此 set 已经包含该元素，则该调用不改变此 set 并返回 false。
+</span><span class=c1></span>	<span class=c1>// set 可以拒绝添加任意特定的元素，包括 null，并抛出异常
+</span><span class=c1></span>    <span class=kt>boolean</span> <span class=nf>add</span><span class=o>(</span><span class=n>E</span> <span class=n>e</span><span class=o>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>boolean addAll(Collection&lt;? extends E> c)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Adds all of the elements in the specified collection to this set if
+</span><span class=cm>     * they&#39;re not already present (optional operation).  If the specified
+</span><span class=cm>     * collection is also a set, the &lt;tt&gt;addAll&lt;/tt&gt; operation effectively
+</span><span class=cm>     * modifies this set so that its value is the &lt;i&gt;union&lt;/i&gt; of the two
+</span><span class=cm>     * sets.  The behavior of this operation is undefined if the specified
+</span><span class=cm>     * collection is modified while the operation is in progress.
+</span><span class=cm>     *
+</span><span class=cm>     * @param  c collection containing elements to be added to this set
+</span><span class=cm>     * @return &lt;tt&gt;true&lt;/tt&gt; if this set changed as a result of the call
+</span><span class=cm>     *
+</span><span class=cm>     * @throws UnsupportedOperationException if the &lt;tt&gt;addAll&lt;/tt&gt; operation
+</span><span class=cm>     *         is not supported by this set
+</span><span class=cm>     * @throws ClassCastException if the class of an element of the
+</span><span class=cm>     *         specified collection prevents it from being added to this set
+</span><span class=cm>     * @throws NullPointerException if the specified collection contains one
+</span><span class=cm>     *         or more null elements and this set does not permit null
+</span><span class=cm>     *         elements, or if the specified collection is null
+</span><span class=cm>     * @throws IllegalArgumentException if some property of an element of the
+</span><span class=cm>     *         specified collection prevents it from being added to this set
+</span><span class=cm>     * @see #add(Object)
+</span><span class=cm>     */</span>
+    <span class=cm>/*
+</span><span class=cm>     * 如果 set 中没有指定 collection 中的所有元素，则将其添加到此 set 中（可选操作）。如果指定的
+</span><span class=cm>     * collection 也是一个 set，则 addAll 操作会实际修改此 set，这样其值是两个 set 的一个
+</span><span class=cm>     * 并集。如果操作正在进行的同时修改了指定的 collection，则此操作的行为是不确定的。
+</span><span class=cm>     */</span>
+    <span class=kt>boolean</span> <span class=nf>addAll</span><span class=o>(</span><span class=n>Collection</span><span class=o>&lt;?</span> <span class=kd>extends</span> <span class=n>E</span><span class=o>&gt;</span> <span class=n>c</span><span class=o>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=移除>移除</h2>
+<ul>
+<li>boolean remove(Object o)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Removes the specified element from this set if it is present
+</span><span class=cm>     * (optional operation).  More formally, removes an element &lt;tt&gt;e&lt;/tt&gt;
+</span><span class=cm>     * such that
+</span><span class=cm>     * &lt;tt&gt;(o==null&amp;nbsp;?&amp;nbsp;e==null&amp;nbsp;:&amp;nbsp;o.equals(e))&lt;/tt&gt;, if
+</span><span class=cm>     * this set contains such an element.  Returns &lt;tt&gt;true&lt;/tt&gt; if this set
+</span><span class=cm>     * contained the element (or equivalently, if this set changed as a
+</span><span class=cm>     * result of the call).  (This set will not contain the element once the
+</span><span class=cm>     * call returns.)
+</span><span class=cm>     *
+</span><span class=cm>     * @param o object to be removed from this set, if present
+</span><span class=cm>     * @return &lt;tt&gt;true&lt;/tt&gt; if this set contained the specified element
+</span><span class=cm>     * @throws ClassCastException if the type of the specified element
+</span><span class=cm>     *         is incompatible with this set
+</span><span class=cm>     * (&lt;a href=&#34;Collection.html#optional-restrictions&#34;&gt;optional&lt;/a&gt;)
+</span><span class=cm>     * @throws NullPointerException if the specified element is null and this
+</span><span class=cm>     *         set does not permit null elements
+</span><span class=cm>     * (&lt;a href=&#34;Collection.html#optional-restrictions&#34;&gt;optional&lt;/a&gt;)
+</span><span class=cm>     * @throws UnsupportedOperationException if the &lt;tt&gt;remove&lt;/tt&gt; operation
+</span><span class=cm>     *         is not supported by this set
+</span><span class=cm>     */</span>
+	<span class=c1>// 如果 set 中存在指定的元素，则将其移除并返回true
+</span><span class=c1></span>    <span class=kt>boolean</span> <span class=nf>remove</span><span class=o>(</span><span class=n>Object</span> <span class=n>o</span><span class=o>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>boolean retainAll(Collection&lt;?> c)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Retains only the elements in this set that are contained in the
+</span><span class=cm>     * specified collection (optional operation).  In other words, removes
+</span><span class=cm>     * from this set all of its elements that are not contained in the
+</span><span class=cm>     * specified collection.  If the specified collection is also a set, this
+</span><span class=cm>     * operation effectively modifies this set so that its value is the
+</span><span class=cm>     * &lt;i&gt;intersection&lt;/i&gt; of the two sets.
+</span><span class=cm>     *
+</span><span class=cm>     * @param  c collection containing elements to be retained in this set
+</span><span class=cm>     * @return &lt;tt&gt;true&lt;/tt&gt; if this set changed as a result of the call
+</span><span class=cm>     * @throws UnsupportedOperationException if the &lt;tt&gt;retainAll&lt;/tt&gt; operation
+</span><span class=cm>     *         is not supported by this set
+</span><span class=cm>     * @throws ClassCastException if the class of an element of this set
+</span><span class=cm>     *         is incompatible with the specified collection
+</span><span class=cm>     * (&lt;a href=&#34;Collection.html#optional-restrictions&#34;&gt;optional&lt;/a&gt;)
+</span><span class=cm>     * @throws NullPointerException if this set contains a null element and the
+</span><span class=cm>     *         specified collection does not permit null elements
+</span><span class=cm>     *         (&lt;a href=&#34;Collection.html#optional-restrictions&#34;&gt;optional&lt;/a&gt;),
+</span><span class=cm>     *         or if the specified collection is null
+</span><span class=cm>     * @see #remove(Object)
+</span><span class=cm>     */</span>
+    <span class=cm>/*
+</span><span class=cm>     * 仅保留 set 中那些包含在指定 collection 中的元素（可选操作）。换句话说，移除此 set 中所有未包含在指定 collection
+</span><span class=cm>     * 中的元素。如果指定的 collection 也是一个 set，则此操作会实际修改此 set，这样其值是两个 set 的一个 交集。
+</span><span class=cm>     */</span>
+    <span class=kt>boolean</span> <span class=nf>retainAll</span><span class=o>(</span><span class=n>Collection</span><span class=o>&lt;?&gt;</span> <span class=n>c</span><span class=o>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>boolean removeAll(Collection&lt;?> c)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Removes from this set all of its elements that are contained in the
+</span><span class=cm>     * specified collection (optional operation).  If the specified
+</span><span class=cm>     * collection is also a set, this operation effectively modifies this
+</span><span class=cm>     * set so that its value is the &lt;i&gt;asymmetric set difference&lt;/i&gt; of
+</span><span class=cm>     * the two sets.
+</span><span class=cm>     *
+</span><span class=cm>     * @param  c collection containing elements to be removed from this set
+</span><span class=cm>     * @return &lt;tt&gt;true&lt;/tt&gt; if this set changed as a result of the call
+</span><span class=cm>     * @throws UnsupportedOperationException if the &lt;tt&gt;removeAll&lt;/tt&gt; operation
+</span><span class=cm>     *         is not supported by this set
+</span><span class=cm>     * @throws ClassCastException if the class of an element of this set
+</span><span class=cm>     *         is incompatible with the specified collection
+</span><span class=cm>     * (&lt;a href=&#34;Collection.html#optional-restrictions&#34;&gt;optional&lt;/a&gt;)
+</span><span class=cm>     * @throws NullPointerException if this set contains a null element and the
+</span><span class=cm>     *         specified collection does not permit null elements
+</span><span class=cm>     *         (&lt;a href=&#34;Collection.html#optional-restrictions&#34;&gt;optional&lt;/a&gt;),
+</span><span class=cm>     *         or if the specified collection is null
+</span><span class=cm>     * @see #remove(Object)
+</span><span class=cm>     * @see #contains(Object)
+</span><span class=cm>     */</span>
+    <span class=kt>boolean</span> <span class=nf>removeAll</span><span class=o>(</span><span class=n>Collection</span><span class=o>&lt;?&gt;</span> <span class=n>c</span><span class=o>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>void clear()</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Removes all of the elements from this set (optional operation).
+</span><span class=cm>     * The set will be empty after this call returns.
+</span><span class=cm>     *
+</span><span class=cm>     * @throws UnsupportedOperationException if the &lt;tt&gt;clear&lt;/tt&gt; method
+</span><span class=cm>     *         is not supported by this set
+</span><span class=cm>     */</span>
+    <span class=kt>void</span> <span class=nf>clear</span><span class=o>();</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=比较和哈希>比较和哈希</h2>
+<ul>
+<li>boolean equals(Object o)</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Compares the specified object with this set for equality.  Returns
+</span><span class=cm>     * &lt;tt&gt;true&lt;/tt&gt; if the specified object is also a set, the two sets
+</span><span class=cm>     * have the same size, and every member of the specified set is
+</span><span class=cm>     * contained in this set (or equivalently, every member of this set is
+</span><span class=cm>     * contained in the specified set).  This definition ensures that the
+</span><span class=cm>     * equals method works properly across different implementations of the
+</span><span class=cm>     * set interface.
+</span><span class=cm>     *
+</span><span class=cm>     * @param o object to be compared for equality with this set
+</span><span class=cm>     * @return &lt;tt&gt;true&lt;/tt&gt; if the specified object is equal to this set
+</span><span class=cm>     */</span>
+    <span class=c1>// 如果指定的对象也是一个 set，两个 set 的大小相同，并且指定 set 的所有成员都包含在此 set 中则返回true
+</span><span class=c1></span>    <span class=kt>boolean</span> <span class=nf>equals</span><span class=o>(</span><span class=n>Object</span> <span class=n>o</span><span class=o>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>int hashCode()</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=cm>/**
+</span><span class=cm>     * Returns the hash code value for this set.  The hash code of a set is
+</span><span class=cm>     * defined to be the sum of the hash codes of the elements in the set,
+</span><span class=cm>     * where the hash code of a &lt;tt&gt;null&lt;/tt&gt; element is defined to be zero.
+</span><span class=cm>     * This ensures that &lt;tt&gt;s1.equals(s2)&lt;/tt&gt; implies that
+</span><span class=cm>     * &lt;tt&gt;s1.hashCode()==s2.hashCode()&lt;/tt&gt; for any two sets &lt;tt&gt;s1&lt;/tt&gt;
+</span><span class=cm>     * and &lt;tt&gt;s2&lt;/tt&gt;, as required by the general contract of
+</span><span class=cm>     * {@link Object#hashCode}.
+</span><span class=cm>     *
+</span><span class=cm>     * @return the hash code value for this set
+</span><span class=cm>     * @see Object#equals(Object)
+</span><span class=cm>     * @see Set#equals(Object)
+</span><span class=cm>     */</span>
+    <span class=c1>// 一个 set 的哈希码定义为此 set 中所有元素的哈希码和，其中 null 元素的哈希码定义为零。
+</span><span class=c1></span>    <span class=kt>int</span> <span class=nf>hashCode</span><span class=o>();</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

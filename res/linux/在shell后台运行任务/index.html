@@ -1,0 +1,307 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="Shell后台运行任务 相关命令 &amp;amp;: 让进程在后台运行 jobs: 查看后台运行的进程 fg: 让后台运行的进程到前台来 bg: 让进程到后台去 ctrl+z: 将一个正在前台执行的命令放到"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/linux/%E5%9C%A8shell%E5%90%8E%E5%8F%B0%E8%BF%90%E8%A1%8C%E4%BB%BB%E5%8A%A1/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="Shell后台运行任务 相关命令 &: 让进程在后台运行 jobs: 查看后台运行的进程 fg: 让后台运行的进程到前台来 bg: 让进程到后台去 ctrl+z: 将一个正在前台执行的命令放到">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/linux/%E5%9C%A8shell%E5%90%8E%E5%8F%B0%E8%BF%90%E8%A1%8C%E4%BB%BB%E5%8A%A1/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="Shell后台运行任务 相关命令 &: 让进程在后台运行 jobs: 查看后台运行的进程 fg: 让后台运行的进程到前台来 bg: 让进程到后台去 ctrl+z: 将一个正在前台执行的命令放到">
+<meta itemprop=wordCount content="917">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="Shell后台运行任务 相关命令 &: 让进程在后台运行 jobs: 查看后台运行的进程 fg: 让后台运行的进程到前台来 bg: 让进程到后台去 ctrl+z: 将一个正在前台执行的命令放到"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=shell后台运行任务>Shell后台运行任务</h1>
+<h2 id=相关命令>相关命令</h2>
+<ul>
+<li><code>&</code>: 让进程在后台运行</li>
+<li>jobs: 查看后台运行的进程</li>
+<li>fg: 让后台运行的进程到前台来</li>
+<li>bg: 让进程到后台去</li>
+<li><code>ctrl+z</code>: 将一个正在前台执行的命令放到后台，并且暂停</li>
+</ul>
+<p>如果当前shell终止，这些后台进程都会终止，下面使用这几个命令在<code>zsh</code>命令行启动<code>idea</code>测试</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ ./bin/idea.sh            
+OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+2020-09-15 16:00:21,464 <span class=o>[</span>  12412<span class=o>]</span>   WARN - llij.ide.plugins.PluginManager - Problems found 
+<span class=c1># ctrl+z idea进程挂起暂停</span>
+^Z
+<span class=o>[</span>1<span class=o>]</span>  + <span class=m>14295</span> suspended  ./bin/idea.sh
+
+$ <span class=nb>jobs</span>  
+<span class=o>[</span>1<span class=o>]</span>  + suspended  ./bin/idea.sh
+<span class=c1># 切换到前台</span>
+$ <span class=nb>fg</span> %1
+<span class=o>[</span>1<span class=o>]</span>  + <span class=m>14295</span> continued  ./bin/idea.sh
+loading plugins:
+  The Gradle-Java <span class=o>(</span><span class=nv>id</span><span class=o>=</span>org.jetbrains.plugins.gradle, <span class=nv>path</span><span class=o>=</span>~/Desktop/idea/idea-IU-201.7846.76/
+<span class=c1># 出现idea加载gui, ctrl+z 挂起 如果此时退出terminal则idea进程终止</span>
+^Z
+<span class=o>[</span>1<span class=o>]</span>  + <span class=m>14295</span> suspended  ./bin/idea.sh
+<span class=c1># idea 后台运行 如果有输出就会到当前shell中出现</span>
+$ <span class=nb>bg</span> %1             
+  The Gradle-Maven <span class=o>(</span><span class=nv>id</span><span class=o>=</span>org.jetbrains.plugins.gradle.maven, <span class=nv>path</span><span class=o>=</span>~/Desktop/idea/idea-IU-201.7846.76/plugins/gradle-java-maven<span class=o>)</span> plugin Non-optional dependency plugin org.intellij.groovy is disabled 
+  <span class=c1>#....</span>
+$ <span class=nb>jobs</span>
+<span class=o>[</span>1<span class=o>]</span>  + running    ./bin/idea.sh
+<span class=c1># idea进程一起终止</span>
+$ <span class=nb>exit</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>那如何让一个普通的shell命令在shell terminal退出后还在后台运行？</p>
+<h3 id=disown>disown</h3>
+<p>Allow sub-processes to live beyond the shell that they are attached to.See also the jobs command</p>
+<p>这个命令可以在启动的shell退出后运行，以启动idea为例</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ ./bin/idea.sh 
+OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+<span class=c1># ctrl+z</span>
+^Z
+<span class=o>[</span>1<span class=o>]</span>  + <span class=m>17025</span> suspended  ./bin/idea.sh
+
+$ <span class=nb>bg</span> %1
+<span class=o>[</span>1<span class=o>]</span>  + <span class=m>17025</span> continued  ./bin/idea.sh
+2020-09-15 16:27:41,730 <span class=o>[</span>  31367<span class=o>]</span>   WARN - llij.ide.plugins.PluginManager - Problems found loading plugins:
+  The Gradle-Java <span class=o>(</span><span class=nv>id</span><span class=o>=</span>org.jetbrains.plugins.gradle, <span class=nv>path</span><span class=o>=</span>~/Desktop/idea/idea-IU-201.7846.76/plugins/gradle-java<span class=o>)</span> plugin Non-optional dependency plugin com.intellij.gradle is disabled
+  The Gradle-Maven <span class=o>(</span><span class=nv>id</span><span class=o>=</span>org.jetbrains.plugins.gradle.maven, <span class=nv>path</span><span class=o>=</span>~/Desktop/idea/idea-IU-201.7846.76/plugins/gradle-java-maven<span class=o>)</span> plugin Non-optional dependency plugin org.intellij.groovy is disabled 
+
+$ <span class=nb>jobs</span>
+<span class=o>[</span>1<span class=o>]</span>  + running    ./bin/idea.sh
+$ <span class=nb>disown</span> %1    
+$ <span class=nb>jobs</span> 
+<span class=c1># 没有输出        </span>
+
+<span class=c1># idea 不会退出</span>
+$ <span class=nb>exit</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=nohub>nohub</h3>
+<p>Allows for a process to live when the terminal gets killed</p>
+<p>目前看来还是要用disown配合</p>
+<p>在wsl2中启动xfce4桌面用命令<code>startxfce4</code>，只要退出shell就终止进程</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ startxfce4 2&gt;/dev/null <span class=p>&amp;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>即使用了这个<code>&</code>也在shell退出后就终止，退出时提示：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>zsh: you have running <span class=nb>jobs</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>jobs</code>可查看到当前shell运行的进程</p>
+<h3 id=方法>方法</h3>
+<p><code>nohup</code>和<code>builds-in disown</code>命令</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=cp>#!/bin/bash
+</span><span class=cp></span><span class=k>if</span> ! pidof xfce4-session &gt; /dev/null<span class=p>;</span> <span class=k>then</span>
+    <span class=nb>echo</span> <span class=s1>&#39;starting xfce4 desktop&#39;</span>
+    <span class=c1># 统一输入到一个文件中，不指定则会到启动时目录中&#34;$(PWD)/nohup.out&#34;</span>
+    nohup startxfce4 &gt;&gt; <span class=s2>&#34;</span><span class=nv>$HOME</span><span class=s2>/nohup.out&#34;</span> <span class=p>&amp;</span> <span class=nb>disown</span>
+<span class=k>fi</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>当shell退出后还可以运行，可以通过ps,pidof查看</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ ps -aux <span class=p>|</span> grep xfce4-session
+navyd       <span class=m>90</span>  0.0  0.0 <span class=m>271844</span> <span class=m>24700</span> pts/0    SNl  17:44   0:00 xfce4-session
+navyd      <span class=m>689</span>  0.0  0.0   <span class=m>7252</span>  <span class=m>2392</span> pts/0    SN   17:44   0:00 /usr/bin/dbus-launch --sh-syntax --exit-with-session xfce4-session
+
+$ pidof xfce4-session
+<span class=m>90</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=http://linux.vbird.org/linux_basic/0440processcontrol.php#background>16.2 工作管理 (job control)</a></li>
+<li><a test href=https://unix.stackexchange.com/questions/231316/exiting-terminal-running-nohup-my-script-you-have-running-jobs-ok-to>Exiting terminal running “nohup ./my_script &” => “You have running jobs”. OK to exit?</a></li>
+<li><a test href=https://stackoverflow.com/questions/19302913/exit-zsh-but-leave-running-jobs-open>Exit zsh, but leave running jobs open?</a></li>
+<li><a test href=https://www.cnblogs.com/qize/p/11392533.html>linux后台运行和关闭、查看后台任务</a></li>
+<li><a test href=https://www.jianshu.com/p/48a65d33760d>Linux 后台运行程序的几种方法</a></li>
+<li><a test href=https://tldr.sh>tldr</a></li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

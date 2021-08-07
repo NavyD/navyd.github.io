@@ -1,0 +1,306 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="线程安全性 编写并发程序时 先使代码正确运行，再提高代码速度 线程安全的类可通过 面向对象的设计、不可修改性、不变性规范 帮助实现 在类中通常定义不变性"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/java/source-code/java/util/concurrent/concurrent_pragraming/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="线程安全性 编写并发程序时 先使代码正确运行，再提高代码速度 线程安全的类可通过 面向对象的设计、不可修改性、不变性规范 帮助实现 在类中通常定义不变性">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/java/source-code/java/util/concurrent/concurrent_pragraming/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="线程安全性 编写并发程序时 先使代码正确运行，再提高代码速度 线程安全的类可通过 面向对象的设计、不可修改性、不变性规范 帮助实现 在类中通常定义不变性">
+<meta itemprop=wordCount content="1719">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="线程安全性 编写并发程序时 先使代码正确运行，再提高代码速度 线程安全的类可通过 面向对象的设计、不可修改性、不变性规范 帮助实现 在类中通常定义不变性"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h2 id=线程安全性>线程安全性</h2>
+<p>编写并发程序时</p>
+<ul>
+<li>先使代码正确运行，再提高代码速度</li>
+<li>线程安全的类可通过 面向对象的设计、不可修改性、不变性规范 帮助实现</li>
+<li>在类中通常定义不变性条件约束对象状态（如变量的范围），定义后验条件描述对象操作的结果</li>
+<li>尽可能使用已有的线程安全对象管理类的状态</li>
+<li>内置锁的锁对象应该使用私有构造锁，不推荐使用默认<code>this</code>作为锁对象。减少JVM在对象大小和加锁性能之间的权衡</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kd>private</span> <span class=kd>final</span> <span class=n>Object</span> <span class=n>lock</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Object</span><span class=o>();</span>
+    
+    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>test</span><span class=o>()</span> <span class=o>{</span>
+        <span class=c1>// 使用私有构造锁作为监视对象
+</span><span class=c1></span>        <span class=kd>synchronized</span> <span class=o>(</span><span class=n>lock</span><span class=o>)</span> <span class=o>{</span>
+            <span class=c1>// do sth
+</span><span class=c1></span>        <span class=o>}</span>
+<span class=c1>//        // 不应该使用默认当前对象作为锁对象
+</span><span class=c1>//        synchronized (this) {
+</span><span class=c1>//            // do sth
+</span><span class=c1>//        }
+</span><span class=c1></span>    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>合理缩小同步块的范围以提高性能。判断范围需要考虑安全性，简单性，性能</li>
+<li>无法快速完成的操作（如长时间的计算，网络I/O等）不要持有锁</li>
+</ul>
+<p>线程安全性：当多个线程访问某个类时，该类始终都能表现出正确的行为</p>
+<p>竟态条件（Race Condition）：当某个计算的正确性由于不恰当的线程执行时序而出现不正确的结果</p>
+<ul>
+<li>先检查后执行（Check-Then-Act）</li>
+</ul>
+<p>可以使用同步避免竟态条件的发生</p>
+<p>数据竞争（Data Race）：在访问共享的非final类型的域时没有采用同步进行协同就会出现数据竞争</p>
+<p>复合操作必须以原子方式保证线程安全性</p>
+<p>可重入内置锁，锁的操作粒度时线程，而不是调用（POSIX以调用为粒度）</p>
+<h2 id=线程的共享>线程的共享</h2>
+<p>关键字<code>synchronized</code>可用于实现原子性和内存可见性</p>
+<p>失效数据，在缺乏同步时可能产生错误结果的一种情况</p>
+<p>失效数据可能不会同时出现：一个线程可能获取到某个变量的最新值，而另一个线程则获取到该变量的失效值</p>
+<p>可使用volatile声明或锁保护</p>
+<p>volatile变量不会被重排序</p>
+<p>编写并发程序时</p>
+<ul>
+<li>对于非volatile 64位数值变量(double,long)的读写操作在不同线程操作时需要<em><strong>使用关键字volatile或加锁保护</strong></em>，避免读取到<em>随机值</em>。其他类型的变量至少可以读取到<em>失效值</em>，不可能读取到随机值</li>
+</ul>
+<p>**非原子的64位操作(double,long)**被分解为两个32位操作，读写操作在不同的线程执行时可能会读取到某个值的高32位和另一个值的低32位，即64位变量可能被读取到随机值（而不像其他类型获取的为失效值）。而其他类型在读写时均为原子操作</p>
+<ul>
+<li>volatile 类型的变量不会被重排序优化，只能保证内存可见性，通常用作某状态的标志。</li>
+<li>注意不要使对象内部可变状态和this引用的溢出，常见为在构造函数中启动一个线程，不应该在构造函数中立即启动一个线程</li>
+</ul>
+<p>下面是错误的样例：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=c1>// 对象内部可变状态 溢出
+</span><span class=c1></span><span class=kd>class</span> <span class=nc>PublishEscape</span> <span class=o>{</span>
+    <span class=kd>private</span> <span class=n>String</span><span class=o>[]</span> <span class=n>states</span> <span class=o>=</span> <span class=k>new</span> <span class=n>String</span><span class=o>[]</span> <span class=o>{</span><span class=s>&#34;a&#34;</span><span class=o>,</span> <span class=s>&#34;ab&#34;</span><span class=o>};</span>
+    <span class=c1>// 使得内部可变状态的数组溢出，导致数组可能随时被更改
+</span><span class=c1></span>    <span class=kd>public</span> <span class=n>String</span><span class=o>[]</span> <span class=nf>getStates</span><span class=o>()</span> <span class=o>{</span>
+        <span class=k>return</span> <span class=n>states</span><span class=o>;</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+
+<span class=c1>// this溢出的样例
+</span><span class=c1></span><span class=kd>class</span> <span class=nc>ThisEscape</span> <span class=o>{</span>
+    <span class=kd>private</span> <span class=kt>int</span> <span class=n>count</span><span class=o>;</span>
+    <span class=c1>// 
+</span><span class=c1></span>    <span class=kd>public</span> <span class=nf>ThisEscape</span><span class=o>(</span><span class=n>EventSource</span> <span class=n>source</span><span class=o>)</span> <span class=o>{</span>
+        <span class=c1>// 外部线程可能随时会触发EventSource注册对象EventListener.onEvent()的调用
+</span><span class=c1></span>        <span class=n>source</span><span class=o>.</span><span class=na>registerListener</span><span class=o>(</span><span class=k>new</span> <span class=n>EventListener</span><span class=o>()</span> <span class=o>{</span>
+            <span class=nd>@Override</span>
+            <span class=kd>public</span> <span class=kt>void</span> <span class=nf>onEvent</span><span class=o>(</span><span class=n>Event</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+                <span class=c1>// 向外发布了未构造完成的this实例
+</span><span class=c1></span>                <span class=n>doSomething</span><span class=o>(</span><span class=n>e</span><span class=o>);</span>
+            <span class=o>}</span>
+        <span class=o>});</span>
+        <span class=c1>// 在注册后才初始化，可能导致外部线程调用doSomething()时count还未完成初始化
+</span><span class=c1></span>        <span class=n>count</span> <span class=o>=</span> <span class=n>111</span><span class=o>;</span>
+    <span class=o>}</span>
+    <span class=kt>void</span> <span class=nf>doSomething</span><span class=o>(</span><span class=n>Event</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=n>count</span><span class=o>);</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p>线程封闭即在单线程中访问数据可以避免同步。常用的线程封闭技术有栈封闭，ThreadLocal类。</p>
+</li>
+<li>
+<p>使用不可变对象避免同步，通常配合volatile发布不可变对象。创建不可变对象的条件：</p>
+<ul>
+<li>对象创建后状态不能被修改（即不向外提供修改对象状态的方法）</li>
+<li>对象的所有域类型都是final（final域保证安全初始化）</li>
+<li>对象是正确创建的（没有this引用溢出）</li>
+</ul>
+</li>
+<li>
+<p>安全发布可变对象和事实不可变对象使其对其他线程可见，有以下方式：</p>
+<ul>
+<li>在静态初始化函数中初始化对象引用。静态引用将由JVM保持线程安全</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>class</span> <span class=nc>ConcurrentTest</span> <span class=o>{</span>
+    <span class=c1>// 由jvm保证线程安全 (非final也允许)
+</span><span class=c1></span>    <span class=kd>private</span> <span class=kd>final</span> <span class=kd>static</span> <span class=n>String</span> <span class=n>s</span><span class=o>;</span>
+    <span class=kd>static</span> <span class=o>{</span>
+        <span class=n>s</span> <span class=o>=</span> <span class=s>&#34;test static field&#34;</span><span class=o>;</span>
+<span class=c1>//        System.out.println(s);
+</span><span class=c1></span>    <span class=o>}</span>
+<span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>保存到volatile域或AtomicReference对象中</li>
+<li>保存到某个正确构造对象的final域中</li>
+<li>保存到由锁保护的域中。</li>
+</ul>
+<p>通常将对象保存在线程安全容器中，其他线程可以看到该对象，但是该对象中的状态是否可见仍然需要该对象负责</p>
+</li>
+</ul>
+<p>可变对象必须是线程安全的</p>
+<h2 id=对象的组合>对象的组合</h2>
+<ul>
+<li>设计线程安全的类，具体设计还是慢慢来。。。</li>
+<li>实例封闭，将数据封装到对象内部，将数据的访问限制限制在对象的方法上</li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

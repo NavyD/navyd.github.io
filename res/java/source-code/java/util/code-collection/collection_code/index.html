@@ -1,0 +1,428 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="interface Collection 1 public interface Collection&amp;lt;E&amp;gt; extends Iterable&amp;lt;E&amp;gt; Collection 层次结构 中的根接口。Collection 表示一组对象，这些对象也称为 collection 的元素。 注意： 包 (bag) 或多集合 (multiset)（可能"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/java/source-code/java/util/code-collection/collection_code/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="interface Collection 1 public interface Collection<E> extends Iterable<E> Collection 层次结构 中的根接口。Collection 表示一组对象，这些对象也称为 collection 的元素。 注意： 包 (bag) 或多集合 (multiset)（可能">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/java/source-code/java/util/code-collection/collection_code/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="interface Collection 1 public interface Collection<E> extends Iterable<E> Collection 层次结构 中的根接口。Collection 表示一组对象，这些对象也称为 collection 的元素。 注意： 包 (bag) 或多集合 (multiset)（可能">
+<meta itemprop=wordCount content="1395">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="interface Collection 1 public interface Collection<E> extends Iterable<E> Collection 层次结构 中的根接口。Collection 表示一组对象，这些对象也称为 collection 的元素。 注意： 包 (bag) 或多集合 (multiset)（可能"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=interface-collection>interface Collection</h1>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>interface</span> <span class=nc>Collection</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=kd>extends</span> <span class=n>Iterable</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Collection 层次结构 中的根接口。Collection 表示一组对象，这些对象也称为 collection 的元素。</p>
+<p>注意：</p>
+<ul>
+<li>包 (bag) 或多集合 (multiset)（可能包含重复元素的无序 collection）应该直接实现此接口。 (可以直接extends AbstractCollection 抽象类)</li>
+<li>所有实现类应该提供两个“标准”构造方法：</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=nf>CollectionXXX</span><span class=o>()</span> 
+<span class=c1>// 允许用户复制任何 collection，以生成所需实现类型的一个等效 collection
+</span><span class=c1></span><span class=kd>public</span> <span class=nf>CollectionXXX</span><span class=o>(</span><span class=n>Collection</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>c</span><span class=o>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>未支持的操作可能会抛出UnsupportedOperationException</li>
+<li>collection不保证线程安全</li>
+<li>collection中的对象应该重写equals()和hashCode()</li>
+<li>Colleciton没有定义获取元素的方法</li>
+</ul>
+<p>所有方法概览：</p>
+<p><img src=images/collection_1.png alt></p>
+<p>常用集合类布局图：</p>
+<p><img src=images/collection-all_1.png alt=collection-all_1></p>
+<h2 id=添加>添加</h2>
+<p>2个全为可选操作</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=cm>/**
+</span><span class=cm>确保此 collection 包含指定的元素（可选操作）。
+</span><span class=cm>如果此 collection 由于调用而发生更改，则返回 true。
+</span><span class=cm>（如果此 collection 不允许有重复元素，并且已经包含了指定的元素，则返回 false。）
+</span><span class=cm>*/</span>
+<span class=kt>boolean</span> <span class=nf>add</span><span class=o>(</span><span class=n>E</span> <span class=n>e</span><span class=o>);</span>
+
+<span class=cm>/**
+</span><span class=cm>将指定 collection 中的所有元素都添加到此 collection 中（可选操作）。
+</span><span class=cm>如果在进行此操作的同时修改指定的 collection，那么此操作行为是不确定的。
+</span><span class=cm>(this.addAll(this)可能会造成未知错误)
+</span><span class=cm>*/</span>
+<span class=kt>boolean</span> <span class=nf>addAll</span><span class=o>(</span><span class=n>Collection</span><span class=o>&lt;?</span> <span class=kd>extends</span> <span class=n>E</span><span class=o>&gt;</span> <span class=n>c</span><span class=o>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=删除>删除</h2>
+<p>5个中有4个为可选操作，1.8添加的方法调用remove()也算是可选操作</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=cm>/**
+</span><span class=cm>移除此 collection 中的所有元素（可选操作）。
+</span><span class=cm>*/</span>
+<span class=kt>void</span> <span class=nf>clear</span><span class=o>();</span>
+
+<span class=cm>/**
+</span><span class=cm>从此 collection 中移除指定元素的单个实例，如果存在的话（可选操作）。
+</span><span class=cm>如果此 collection 包含一个或多个满足 (o==null ? e==null : o.equals(e)) 的元素 e，则移除这样的元素。
+</span><span class=cm>如果此 collection 包含指定的元素（或者此 collection 由于调用而发生更改），则返回 true 。 
+</span><span class=cm>*/</span>
+<span class=kt>boolean</span> <span class=nf>remove</span><span class=o>(</span><span class=n>Object</span> <span class=n>o</span><span class=o>);</span>
+
+<span class=cm>/**
+</span><span class=cm>移除此 collection 中那些也包含在指定 collection 中的所有元素（可选操作）。
+</span><span class=cm>此调用返回后，collection 中将不包含任何与指定 collection 相同的元素。 
+</span><span class=cm>*/</span>
+<span class=kt>boolean</span> <span class=nf>removeAll</span><span class=o>(</span><span class=n>Collection</span><span class=o>&lt;?&gt;</span> <span class=n>c</span><span class=o>);</span>
+
+<span class=cm>/**
+</span><span class=cm>移除collection中所有满足指定predicate条件的元素。
+</span><span class=cm>在迭代期间或predicate中抛出的错误或运行时异常将传递给调用者。
+</span><span class=cm>@since 1.8
+</span><span class=cm>*/</span>
+<span class=k>default</span> <span class=kt>boolean</span> <span class=nf>removeIf</span><span class=o>(</span><span class=n>Predicate</span><span class=o>&lt;?</span> <span class=kd>super</span> <span class=n>E</span><span class=o>&gt;</span> <span class=n>filter</span><span class=o>)</span> <span class=o>{</span>
+        <span class=c1>// 判断filter是否为空
+</span><span class=c1></span>        <span class=n>Objects</span><span class=o>.</span><span class=na>requireNonNull</span><span class=o>(</span><span class=n>filter</span><span class=o>);</span>
+        <span class=kt>boolean</span> <span class=n>removed</span> <span class=o>=</span> <span class=kc>false</span><span class=o>;</span>
+        <span class=c1>// 遍历collection
+</span><span class=c1></span>        <span class=kd>final</span> <span class=n>Iterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=n>each</span> <span class=o>=</span> <span class=n>iterator</span><span class=o>();</span>
+        <span class=k>while</span> <span class=o>(</span><span class=n>each</span><span class=o>.</span><span class=na>hasNext</span><span class=o>())</span> <span class=o>{</span>
+            <span class=c1>// 判断每一个元素是否满足filter条件
+</span><span class=c1></span>            <span class=k>if</span> <span class=o>(</span><span class=n>filter</span><span class=o>.</span><span class=na>test</span><span class=o>(</span><span class=n>each</span><span class=o>.</span><span class=na>next</span><span class=o>()))</span> <span class=o>{</span>
+                <span class=n>each</span><span class=o>.</span><span class=na>remove</span><span class=o>();</span>
+                <span class=n>removed</span> <span class=o>=</span> <span class=kc>true</span><span class=o>;</span>
+            <span class=o>}</span>
+        <span class=o>}</span>
+        <span class=c1>// 只要有一个符合filter条件就返回true
+</span><span class=c1></span>        <span class=k>return</span> <span class=n>removed</span><span class=o>;</span>
+<span class=o>}</span>
+
+<span class=cm>/**
+</span><span class=cm>仅保留此 collection 中那些也包含在指定 collection 的元素（可选操作）。
+</span><span class=cm>即移除此 collection 中未包含在指定 collection 中的所有元素。 
+</span><span class=cm>*/</span>
+<span class=kt>boolean</span> <span class=nf>retainAll</span><span class=o>(</span><span class=n>Collection</span><span class=o>&lt;?&gt;</span> <span class=n>c</span><span class=o>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=查询>查询</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=cm>/**
+</span><span class=cm>如果此 collection 包含指定的元素，则返回 true。
+</span><span class=cm>当且仅当此 collection 至少包含一个满足 (o==null ? e==null : o.equals(e)) 的元素 e 时，返回 true。 
+</span><span class=cm>*/</span>
+<span class=kt>boolean</span> <span class=nf>contains</span><span class=o>(</span><span class=n>Object</span> <span class=n>o</span><span class=o>);</span>
+
+<span class=cm>/**
+</span><span class=cm>如果此 collection 包含指定 collection 中的所有元素，则返回 true。
+</span><span class=cm>*/</span>
+<span class=kt>boolean</span> <span class=nf>containsAll</span><span class=o>(</span><span class=n>Collection</span><span class=o>&lt;?&gt;</span> <span class=n>c</span><span class=o>);</span>
+
+<span class=kt>boolean</span> <span class=nf>isEmpty</span><span class=o>();</span>
+
+<span class=kt>int</span> <span class=nf>size</span><span class=o>();</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=比较和哈希>比较和哈希</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=cm>/**
+</span><span class=cm>没有必要重写collection的equals()，应该使用默认的引用比较
+</span><span class=cm>*/</span>
+<span class=kt>boolean</span> <span class=nf>equals</span><span class=o>(</span><span class=n>Object</span> <span class=n>o</span><span class=o>);</span>
+
+<span class=kt>int</span> <span class=nf>hashCode</span><span class=o>();</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=迭代器>迭代器</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=cm>/**
+</span><span class=cm>返回在此 collection 的元素上进行迭代的迭代器。
+</span><span class=cm>关于元素返回的顺序没有任何保证（除非此 collection 是某个能提供保证顺序的类实例）。 
+</span><span class=cm>*/</span>
+<span class=n>Iterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>iterator</span><span class=o>()</span>
+
+<span class=cm>/**
+</span><span class=cm>并发用迭代器
+</span><span class=cm>没用过
+</span><span class=cm>@since 1.8
+</span><span class=cm>*/</span>
+<span class=k>default</span> <span class=n>Spliterator</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>spliterator</span><span class=o>();</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=转换数组>转换数组</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=n>Object</span><span class=o>[]</span> <span class=nf>toArray</span><span class=o>();</span>
+
+<span class=cm>/**
+</span><span class=cm>返回包含此 collection 中所有元素的指定类型的数组；
+</span><span class=cm>如果指定的数组能容纳该 collection，则返回包含此 collection 元素的数组。
+</span><span class=cm>否则，将分配一个具有指定数组的运行时类型和此 collection 大小的新数组。 
+</span><span class=cm>*/</span>
+<span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>T</span><span class=o>[]</span> <span class=nf>toArray</span><span class=o>(</span><span class=n>T</span><span class=o>[]</span> <span class=n>a</span><span class=o>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=流>流</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=cm>/**
+</span><span class=cm>没用过
+</span><span class=cm>@since 1.8
+</span><span class=cm>*/</span>
+<span class=k>default</span> <span class=n>Stream</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>parallelStream</span><span class=o>();</span>
+
+<span class=cm>/**
+</span><span class=cm>没用过
+</span><span class=cm>@since 1.8
+</span><span class=cm>*/</span>
+<span class=k>default</span> <span class=n>Stream</span><span class=o>&lt;</span><span class=n>E</span><span class=o>&gt;</span> <span class=nf>stream</span><span class=o>();</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

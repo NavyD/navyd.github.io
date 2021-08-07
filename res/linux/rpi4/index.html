@@ -1,0 +1,997 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="pi 安装 初始化ubuntu server 20.04 修改用户名 1 2 3 4 5 6 7 8 9 10 11 12 13 # permit root ssh login sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak # sudo echo &amp;#39;PermitRootLogin yes&amp;#39; &amp;gt;&amp;gt; /etc/ssh/sshd_config # -bash: /etc/ssh/sshd_config: Permission denied sudo sh -c &amp;#39;echo PermitRootLogin yes &amp;gt;&amp;gt; /etc/ssh/sshd_config&amp;#39; # as root # killall 所有之前"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/linux/rpi4/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="pi 安装 初始化ubuntu server 20.04 修改用户名 1 2 3 4 5 6 7 8 9 10 11 12 13 # permit root ssh login sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak # sudo echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config # -bash: /etc/ssh/sshd_config: Permission denied sudo sh -c 'echo PermitRootLogin yes >> /etc/ssh/sshd_config' # as root # killall 所有之前">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/linux/rpi4/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="pi 安装 初始化ubuntu server 20.04 修改用户名 1 2 3 4 5 6 7 8 9 10 11 12 13 # permit root ssh login sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak # sudo echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config # -bash: /etc/ssh/sshd_config: Permission denied sudo sh -c 'echo PermitRootLogin yes >> /etc/ssh/sshd_config' # as root # killall 所有之前">
+<meta itemprop=wordCount content="3916">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="pi 安装 初始化ubuntu server 20.04 修改用户名 1 2 3 4 5 6 7 8 9 10 11 12 13 # permit root ssh login sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak # sudo echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config # -bash: /etc/ssh/sshd_config: Permission denied sudo sh -c 'echo PermitRootLogin yes >> /etc/ssh/sshd_config' # as root # killall 所有之前"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=pi>pi</h1>
+<h2 id=安装>安装</h2>
+<h2 id=初始化ubuntu-server-2004>初始化ubuntu server 20.04</h2>
+<h3 id=修改用户名>修改用户名</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># permit root ssh login</span>
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+<span class=c1># sudo echo &#39;PermitRootLogin yes&#39; &gt;&gt; /etc/ssh/sshd_config</span>
+<span class=c1># -bash: /etc/ssh/sshd_config: Permission denied</span>
+sudo sh -c <span class=s1>&#39;echo PermitRootLogin yes &gt;&gt; /etc/ssh/sshd_config&#39;</span>
+
+<span class=c1># as root</span>
+<span class=c1># killall 所有之前用户的进程</span>
+ps -u navyd <span class=p>|</span> awk <span class=s1>&#39;NR&gt;1{print $1}&#39;</span> <span class=p>|</span> xargs <span class=nb>kill</span> -9
+<span class=c1># 修改用户名与组</span>
+usermod -l navyd ubuntu
+usermod -d /home/navyd -m navyd
+groupmod -n navyd ubuntu
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://askubuntu.com/questions/34074/how-do-i-change-my-username/34075#34075>How do I change my username?</a></li>
+<li><a test href=https://stackoverflow.com/questions/84882/sudo-echo-something-etc-privilegedfile-doesnt-work>sudo echo “something” &#187; /etc/privilegedFile doesn&rsquo;t work</a></li>
+</ul>
+<p>修改密码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo passwd ubuntu
+<span class=c1># 添加用户</span>
+sudo adduser navyd
+<span class=c1># 复制ubuntu 的默认权限</span>
+sudo usermod -a -G sudo,adm,dialout,cdrom,floppy,sudo,audio,dip,video,plugdev,netdev,lxd navyd
+
+<span class=c1># 安装zsh</span>
+sudo apt-get install zsh zsh-antigen
+<span class=c1># 修改用户默认shell</span>
+chsh -s /bin/zsh navyd
+
+<span class=c1># 修改hostname</span>
+sudo hostnamectl set-hostname <span class=s1>&#39;rpi4-ubuntu&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>修改source.list</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback># 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-updates main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-updates main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-backports main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-backports main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-security main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-security main restricted universe multiverse
+
+# 预发布软件源，不建议启用
+# deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-proposed main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-proposed main restricted universe multiverse
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><a test href=https://mirror.tuna.tsinghua.edu.cn/help/ubuntu/>Ubuntu 镜像使用帮助</a></li>
+</ul>
+<h3 id=修改时间>修改时间</h3>
+<p>在系统的时间比实际时间慢了8小时</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># 查看当前的时间信息</span>
+$ timedatectl
+               Local time: Thu 2021-02-18 17:43:31 UTC
+           Universal time: Thu 2021-02-18 17:43:31 UTC
+                 RTC time: n/a
+                Time zone: Etc/UTC <span class=o>(</span>UTC, +0000<span class=o>)</span>
+System clock synchronized: yes
+              NTP service: active
+          RTC in <span class=nb>local</span> TZ: no
+
+<span class=c1># 查看可用的时区</span>
+$ timedatectl list-timezones
+<span class=c1># ...</span>
+Asia/Shanghai
+Asia/Singapore
+<span class=c1># ...</span>
+
+<span class=c1># 修改时区</span>
+$ sudo timedatectl set-timezone Asia/Shanghai
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=docker-openwrt>docker openwrt</h3>
+<p>安装docker</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>curl -fsSL https://get.docker.com | sudo sh
+# 解决权限问题
+sudo usermod -aG docker navyd
+</code></pre></td></tr></table>
+</div>
+</div><p>混杂模式（英语：promiscuous mode）是电脑网络中的术语。是指一台机器的网卡能够接收所有经过它的数据流，而不论其目的地址是否是它。</p>
+<p>一般计算机网卡都工作在非混杂模式下，此时网卡只接受来自网络端口的目的地址指向自己的数据。当网卡工作在混杂模式下时，网卡将来自接口的所有数据都捕获并交给相应的驱动程序。网卡的混杂模式一般在网络管理员分析网络数据作为网络故障诊断手段时用到，同时这个模式也被网络黑客利用来作为网络数据窃听的入口。在Linux操作系统中设置网卡混杂模式时需要管理员权限。在Windows操作系统和Linux操作系统中都有使用混杂模式的抓包工具，比如著名的开源软件Wireshark。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo ip link <span class=nb>set</span> eth0 promisc on
+
+<span class=c1># 下载启动openwrt</span>
+docker run --restart always --name openwrt -d --network openwrtnet --privileged registry.cn-shanghai.aliyuncs.com/suling/openwrt:rpi4 /sbin/init
+</code></pre></td></tr></table>
+</div>
+</div><h4 id=旁路由模式>旁路由模式</h4>
+<p>采用<code>主路由关DHCP，openwrt开唯一DHCP</code>，一旦openwrt连接到主路由会自动获取ip</p>
+<p>如果连接主路由wifi时无法获取ip，可以使用固定ip的方式连接；</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>network</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>ethernets</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>eth0</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>dhcp4</span><span class=p>:</span><span class=w> </span><span class=kc>false</span><span class=w>
+</span><span class=w>      </span><span class=nt>addresses</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span>- <span class=m>192.168.93.243</span><span class=l>/24</span><span class=w>
+</span><span class=w>      </span><span class=nt>gateway4</span><span class=p>:</span><span class=w> </span><span class=m>192.168.93.1</span><span class=w>
+</span><span class=w>        </span><span class=c># 防止网上无法连接 开机时等待</span><span class=w>
+</span><span class=w>      </span><span class=nt>optional</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w>      </span><span class=nt>nameservers</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>addresses</span><span class=p>:</span><span class=w>
+</span><span class=w>          </span>- <span class=m>192.168.93.2</span><span class=w>
+</span><span class=w>  </span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=m>2</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>使用netplan设置dns使ip生效</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo netplan generate
+sudo netplan apply
+</code></pre></td></tr></table>
+</div>
+</div><p>可能会出现下面的问题<code>systemd-networkd.socket</code>直接重启快点</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ sudo netplan try
+Job <span class=k>for</span> netplan-wpa-wlan0.service canceled.
+
+An error occurred: Command <span class=s1>&#39;[&#39;</span>systemctl<span class=s1>&#39;, &#39;</span>stop<span class=s1>&#39;, &#39;</span>systemd-networkd.service<span class=s1>&#39;, &#39;</span>netplan-wpa-*.service<span class=s1>&#39;]&#39;</span> returned non-zero <span class=nb>exit</span> status 1.
+
+Reverting.
+Warning: Stopping systemd-networkd.service, but it can still be activated by:
+  systemd-networkd.socket
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://www.right.com.cn/forum/thread-4035785-1-1.html>[N1盒子] N1网关模式(旁路由)详细设置指南-搭配主路由华为AX3Pro</a></li>
+<li><a test href=https://mlapp.cn/376.html>在Docker 中运行 OpenWrt 旁路网关</a></li>
+<li><a test href=https://github.com/SuLingGG/OpenWrt-Rpi-Docker>OpenWrt-Rpi-Docker 镜像</a></li>
+<li><a test href=https://netplan.io/examples/#configuration>Netplan configuration examples</a></li>
+</ul>
+<h5 id=rpi4主机通过ip访问openwrt>rpi4主机通过ip访问openwrt</h5>
+<p>在主机上无法直接通过ip访问openwrt.</p>
+<p>基本方式是使用创建虚拟网上通过<code>macvlan</code>docker接口互通</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=cp>#!/bin/sh
+</span><span class=cp></span><span class=nv>ifname</span><span class=o>=</span><span class=s2>&#34;openwrt&#34;</span>
+<span class=nv>openwrt_ip</span><span class=o>=</span><span class=s2>&#34;192.168.93.2&#34;</span>
+<span class=nv>ifip</span><span class=o>=</span><span class=s2>&#34;192.168.93.202/24&#34;</span>
+
+ip link delete <span class=nv>$ifname</span>
+ip link add <span class=nv>$ifname</span> link eth0 <span class=nb>type</span> macvlan mode bridge <span class=c1># 在 eth0 接口下添加一个 macvlan 虚拟接口</span>
+ip addr add <span class=nv>$ifip</span> dev <span class=nv>$ifname</span> <span class=c1># 为 $ifname 分配 ip 地址</span>
+ip link <span class=nb>set</span> <span class=nv>$ifname</span> up <span class=c1># 启动ifname</span>
+ip route add <span class=nv>$openwrt_ip</span> dev <span class=nv>$ifname</span> <span class=c1># 可以ping通</span>
+ip route del default
+ip route add default via <span class=nv>$openwrt_ip</span> dev <span class=nv>$ifname</span> <span class=c1>#  设置静态路由</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://rehtt.com/index.php/archives/236/>【Docker】macvlan网络模式下容器与宿主机互通</a></li>
+<li><a test href=https://github.com/lisaac/openwrt-in-docker>docker 中运行 openwrt</a></li>
+<li><a test href=https://zhuanlan.zhihu.com/p/113664215>Openwrt 下 Docker 网络食用方法</a></li>
+</ul>
+<p>可以将上面的sh脚本写成systemd service，在将下面的内容写入<code>/etc/systemd/system/myinit.service</code>文件中</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>[Unit]
+Description=My init services
+
+[Service]
+ExecStart=/home/navyd/config-openwrt-net.sh
+Type=oneshot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+</code></pre></td></tr></table>
+</div>
+</div><p>使用<code>systemctl</code>工具：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo systemctl daemon-reload
+sudo systemctl <span class=nb>enable</span> myinit.service
+sudo systemctl status myinit.service
+sudo systemctl restart myinit.service
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：<a test href=https://askubuntu.com/a/719157>How to run scripts on start up?</a></p>
+<h5 id=安装openwrt后win10无法通过ssh访问rpi4主机名>安装openwrt后win10无法通过ssh访问rpi4主机名</h5>
+<p>在路由器上无法找到rpi4的ip地址。必须在openwrt上主动解析出主机名。可以通过openwrt中dns设置固定主机新增的网卡ip</p>
+<h4 id=docker无法停止openwrt>docker无法停止openwrt</h4>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>docker update --restart<span class=o>=</span>no openwrt
+</code></pre></td></tr></table>
+</div>
+</div><h4 id=启动v2ray无法访问国内网络>启动v2ray无法访问国内网络</h4>
+<p>在使用ShadowSocksR Plus+启动后, 只能访问外网，切换iptables防火墙全局模式才可以访问国内网络</p>
+<p>解决方法：接口 - LAN网络里面，物理设置，取消桥接接口，应用即可</p>
+<p>这个问题可能只出现在当前日期<code>20210209</code>的openwrt: <code>registry.cn-shanghai.aliyuncs.com/suling/openwrt:latest</code></p>
+<p>参考：<a test href=https://github.com/SuLingGG/OpenWrt-Rpi-Docker/issues/15>Xray以后版本为什么国内网站无法访问</a></p>
+<h4 id=多开openwrt>多开openwrt</h4>
+<p>修改mac地址</p>
+<ul>
+<li><a test href=https://blog.sillyson.com/archives/7.html>树莓派 | Docker上运行 OpenWrt 做旁路由，超简单！</a></li>
+</ul>
+<h2 id=使用wifi网络>使用wifi网络</h2>
+<ol>
+<li>
+<p>配置<a test href=https://netplan.io/reference/>netplan wifi</a> <code>/etc/netplan/50-cloud-init.yaml</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>network</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>ethernets</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>eth0</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>dhcp4</span><span class=p>:</span><span class=w> </span><span class=kc>false</span><span class=w>
+</span><span class=w>      </span><span class=nt>addresses</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span>- <span class=m>192.168.93.243</span><span class=l>/24</span><span class=w>
+</span><span class=w>      </span><span class=nt>gateway4</span><span class=p>:</span><span class=w> </span><span class=m>192.168.93.1</span><span class=w>
+</span><span class=w>      </span><span class=nt>optional</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w>      </span><span class=nt>nameservers</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>addresses</span><span class=p>:</span><span class=w>
+</span><span class=w>          </span>- <span class=m>192.168.93.2</span><span class=w>
+</span><span class=w>  </span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=m>2</span><span class=w>
+</span><span class=w>  </span><span class=nt>wifis</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>wlan0</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>access-points</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=c># wifi ssid</span><span class=w>
+</span><span class=w>        </span><span class=s2>&#34;your-ssid&#34;</span><span class=p>:</span><span class=w>
+</span><span class=w>          </span><span class=nt>password</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;your-password&#34;</span><span class=w>
+</span><span class=w>          </span><span class=c># 连接隐藏ssid的wifi</span><span class=w>
+</span><span class=w>          </span><span class=nt>hidden</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w>    </span><span class=nt>dhcp4</span><span class=p>:</span><span class=w> </span><span class=kc>false</span><span class=w>
+</span><span class=w>    </span><span class=nt>optional</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w>    </span><span class=nt>addresses</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=m>192.168.93.245</span><span class=l>/24</span><span class=w>
+</span><span class=w>    </span><span class=nt>gateway4</span><span class=p>:</span><span class=w> </span><span class=m>192.168.93.1</span><span class=w>
+</span><span class=w>    </span><span class=nt>nameservers</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>addresses</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span>- <span class=m>192.168.93.2</span><span class=w>
+</span><span class=w>        </span>- <span class=m>192.168.93.1</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>修改country code将<code>/etc/default/crda</code>中替换为<code>REGDOMAIN=CN</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># 查询REGDOMAIN对应代码</span>
+$ cat /usr/share/zoneinfo/zone.tab <span class=p>|</span> grep Asia/Shanghai
+CN      +3114+12128     Asia/Shanghai   Beijing Time
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>应用配置</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>sudo netplan try
+<span class=c1># 如果出现这种错误可以忽略</span>
+<span class=c1># An error occurred: Command &#39;[&#39;systemctl&#39;, &#39;stop&#39;, &#39;systemd-networkd.service&#39;, # &#39;netplan-wpa-*.service&#39;]&#39; returned non-zero exit status 1.</span>
+<span class=c1># </span>
+<span class=c1># Reverting.</span>
+<span class=c1># Warning: Stopping systemd-networkd.service, but it can still be activated by:</span>
+<span class=c1>#   systemd-networkd.socket</span>
+sudo netplan generate
+sudo netplan apply
+<span class=c1># 可选 重启</span>
+sudo reboot
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<p>参考：</p>
+<ul>
+<li><a test href=https://askubuntu.com/a/1264616>Help: Unable to connect to 5G Wifi on raspberry pi 4 using ubuntu server 18.04</a></li>
+</ul>
+<h3 id=wifi验证>wifi验证</h3>
+<p>wifi扫描可用网络：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ sudo iw dev wlan0 scan <span class=p>|</span> grep SSID
+        SSID: ChinaNet-WkML
+        SSID: MERCURY_1232
+        SSID: 62-504
+        SSID: hack
+        SSID: CMCC-Q9RP
+        SSID: CMCC-JdD5
+        SSID: <span class=m>0658</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>查看当前网络wifi连接：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ iw wlan0 link
+Connected to fe:7c:02:43:c5:5a <span class=o>(</span>on wlan0<span class=o>)</span>
+        SSID: hack_fast
+        freq: <span class=m>5745</span>
+        RX: <span class=m>1128953</span> bytes <span class=o>(</span><span class=m>6350</span> packets<span class=o>)</span>
+        TX: <span class=m>1048</span> bytes <span class=o>(</span><span class=m>10</span> packets<span class=o>)</span>
+        signal: -39 dBm
+        rx bitrate: 150.0 MBit/s
+        tx bitrate: 24.0 MBit/s
+
+        bss flags:      short-preamble
+        dtim period:    <span class=m>1</span>
+        beacon int:     <span class=m>100</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://askubuntu.com/a/567021>How can I display the list of available WiFi networks?</a></li>
+<li><a test href=https://unix.stackexchange.com/a/489619>Is there a tool to display WiFi information in console?</a></li>
+</ul>
+<h3 id=开启wifi-ap热点>开启wifi ap热点</h3>
+<p>注意：如果使用前面配置了docker network <code>macvlan</code> 对eth0配置，wlan0可能无法正确从docker openwrt中获取ip地址，wlan0是没法与docker内的网络通信的，暂时没有研究。rpi4的wifi网卡速度比较慢<code>150 Mbit/s, 40MHz</code>。如果做AP使用更慢，大概是7Mbit/s的样子，基本不可用</p>
+<ul>
+<li><a test href=https://zhuanlan.zhihu.com/p/102598741>从零开始：树莓派共享 WiFi 秒变无线热点（树莓派路由器</a></li>
+<li><a test href=https://www.raspberrypi.org/documentation/configuration/wireless/access-point-routed.md>Setting up a Raspberry Pi as a routed wireless access point</a></li>
+</ul>
+<h2 id=安装docker-compose>安装docker compose</h2>
+<p>在docker官方文档中没有提到如何在arm上安装docker compose，而且在<a test href=https://github.com/docker/compose/releases>docker compose仓库</a>中也没有发布arm的release文件。但可使用pip安装</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ sudo apt-get install python3-pip
+
+<span class=c1># 检查pip安装</span>
+$ pip3 --version
+pip 20.0.2 from /usr/lib/python3/dist-packages/pip <span class=o>(</span>python 3.8<span class=o>)</span>
+
+$ pip3 install docker-compose
+<span class=c1>#...</span>
+Installing collected packages: cached-property, python-dotenv, texttable, distro, docopt, websocket-client, dockerpty, pycparser, cffi, bcrypt, paramiko, docker, docker-compose
+  WARNING: The script dotenv is installed in <span class=s1>&#39;/home/navyd/.local/bin&#39;</span> which is not on PATH.
+  Consider adding this directory to PATH or, <span class=k>if</span> you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The script distro is installed in <span class=s1>&#39;/home/navyd/.local/bin&#39;</span> which is not on PATH.
+<span class=c1># ...</span>
+
+$ docker-compose --version
+docker-compose version 1.28.4, build unknown
+</code></pre></td></tr></table>
+</div>
+</div><p>如果shell提示没有找到docker-compose，可能是docker-compose没有在环境变量中，可以检查<code>$HOME/.local/bin</code></p>
+<p>参考：</p>
+<ul>
+<li><a test href=https://docs.docker.com/compose/install/#alternative-install-options>Alternative install options</a></li>
+</ul>
+<h2 id=docker-路由器nginx反向代理>docker 路由器nginx反向代理</h2>
+<h2 id=在ubuntu2004安装摄像头>在ubuntu2004安装摄像头</h2>
+<h3 id=通过raspi-config启用摄像头>通过raspi-config启用摄像头</h3>
+<p>启动摄像头需要用到官方的raspi-config配置程序<a test href=http://archive.raspberrypi.org/debian/pool/main/r/raspi-config/>进入官网下载最新的deb程序</a></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>curl -sSLO http://archive.raspberrypi.org/debian/pool/main/r/raspi-config/raspi-config_20210604_all.deb
+sudo dpkg -i raspi-config_20210604_all.deb
+<span class=c1># 修复依赖报错</span>
+sudo apt-get install -f
+
+<span class=c1># 启动raspi-config 在交互界面中选择 Interface Options -&gt; Camera -&gt; ok</span>
+sudo raspi-config
+</code></pre></td></tr></table>
+</div>
+</div><p>如果出现固件过时的错误时<code>Your firmwave appears to be out of date (no start_x.elf). Please update</code>的解决方法：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># 查看boot分区所在的设备号，设备号可能是：/dev/mmcblk0p1</span>
+df -h
+<span class=c1># 将该设备号挂载在/boot上</span>
+mount /dev/mmcblk0p1 /boot
+
+<span class=c1># 重新配置</span>
+sudo raspi-config
+<span class=c1># 树莓派重启</span>
+sudo reboot
+
+<span class=c1># 重启后检查是否有摄像头设备</span>
+$ ls -al /dev/ <span class=p>|</span> grep video
+crw-rw----  <span class=m>1</span> root video   508,   <span class=m>0</span> May <span class=m>27</span> 23:16 media0
+crw-rw----  <span class=m>1</span> root video   508,   <span class=m>1</span> May <span class=m>27</span> 23:16 media1
+crw-rw----  <span class=m>1</span> root video   236,   <span class=m>0</span> May <span class=m>27</span> 23:16 vchiq
+crw-rw----  <span class=m>1</span> root video   240,   <span class=m>0</span> May <span class=m>27</span> 23:16 vcio
+crw-rw----  <span class=m>1</span> root video    81,   <span class=m>5</span> May <span class=m>27</span> 23:16 video0
+crw-rw----  <span class=m>1</span> root video    81,   <span class=m>0</span> May <span class=m>27</span> 23:16 video10
+crw-rw----  <span class=m>1</span> root video    81,   <span class=m>6</span> May <span class=m>27</span> 23:16 video11
+crw-rw----  <span class=m>1</span> root video    81,   <span class=m>7</span> May <span class=m>27</span> 23:16 video12
+crw-rw----  <span class=m>1</span> root video    81,   <span class=m>1</span> May <span class=m>27</span> 23:16 video13
+crw-rw----  <span class=m>1</span> root video    81,   <span class=m>2</span> May <span class=m>27</span> 23:16 video14
+crw-rw----  <span class=m>1</span> root video    81,   <span class=m>3</span> May <span class=m>27</span> 23:16 video15
+crw-rw----  <span class=m>1</span> root video    81,   <span class=m>4</span> May <span class=m>27</span> 23:16 video16
+</code></pre></td></tr></table>
+</div>
+</div><p>使用raspi lib命令判断摄像头是否激活</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># 如果vcgencmd未找到时 安装</span>
+sudo apt install libraspberrypi-bin
+<span class=c1># 如果安装后运行vcgencmd提示raspi init failed重启生效</span>
+sudo reboot
+<span class=c1># 判断摄像头是否激活</span>
+vcgencmd get_camera
+<span class=c1># supported=1 detected=1</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=测试拍照>测试拍照</h3>
+<p>树莓派自带raspistill可以用来进行摄像头拍照功能，如下命令：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>raspistill -v -o test.jpg
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://zhuanlan.zhihu.com/p/98523007>树莓派raspberry4B指南part-7 摄像头使用及tensorflow lite实现目标检测</a></li>
+<li><a test href=https://blog.csdn.net/sinat_25259461/article/details/108353324>Ubuntu Server下给树莓派安装摄像头</a></li>
+<li><a test href=https://ubuntu.com/blog/how-to-stream-video-with-raspberry-pi-hq-camera-on-ubuntu-core>How to use the Raspberry Pi High Quality camera on Ubuntu Core</a></li>
+</ul>
+<h2 id=启用swap>启用swap</h2>
+<p>安装dphys-swapfile</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>sudo apt install dphys-swapfile
+</code></pre></td></tr></table>
+</div>
+</div><p>编辑/etc/dphys-swapfile修改默认swap文件位置，sd卡速度太慢，使用usb硬盘：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback># where we want the swapfile to be, this is the default /var/swap
+CONF_SWAPFILE=/mnt/share/swap
+</code></pre></td></tr></table>
+</div>
+</div><p>重启</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>sudo service dphys-swapfile restart
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://raspberrypi.stackexchange.com/questions/70/how-to-set-up-swap-space>How to set up swap space?</a></li>
+<li><a test href="https://www.raspberrypi.org/forums/viewtopic.php?t=244130">Permanently disable swap on Raspbian Buster</a></li>
+</ul>
+<h2 id=raspberry-pi-os>Raspberry Pi OS</h2>
+<p>适用于raspbian 32bit系统</p>
+<h3 id=启动配置>启动配置</h3>
+<p>在boot分区配置，不是在root分区的<code>/boot</code></p>
+<ul>
+<li>
+<p>开启ssh：添加<code>ssh</code>空文件</p>
+</li>
+<li>
+<p>wifi连接</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=nv>ctrl_interface</span><span class=o>=</span><span class=nv>DIR</span><span class=o>=</span>/var/run/wpa_supplicant <span class=nv>GROUP</span><span class=o>=</span>netdev
+<span class=nv>update_config</span><span class=o>=</span><span class=m>1</span>
+<span class=nv>country</span><span class=o>=</span>&lt;Insert <span class=m>2</span> letter ISO 3166-1 country code here&gt;
+
+<span class=nv>network</span><span class=o>={</span>
+        <span class=nv>scan_ssid</span><span class=o>=</span><span class=m>1</span>
+        <span class=nv>ssid</span><span class=o>=</span><span class=s2>&#34;&lt;Name of your wireless LAN&gt;&#34;</span>
+        <span class=nv>psk</span><span class=o>=</span><span class=s2>&#34;&lt;Password for your wireless LAN&gt;&#34;</span>
+        <span class=nv>proto</span><span class=o>=</span>RSN
+        <span class=nv>key_mgmt</span><span class=o>=</span>WPA-PSK
+        <span class=nv>pairwise</span><span class=o>=</span>CCMP
+        <span class=nv>auth_alg</span><span class=o>=</span>OPEN
+<span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>static ip</p>
+<ul>
+<li>
+<p>如果使用的是网线，可以直接在<code>cmdline.txt</code>中添加ip：<code>ip=192.168.x.x</code></p>
+</li>
+<li>
+<p>如果使用的是wifi，需要手动挂载root分区编辑<code>/etc/dhcpcd.conf</code>：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>interface wlan0
+static <span class=nv>ip_address</span><span class=o>=</span> 192.168.1.10/24
+static <span class=nv>routers</span><span class=o>=</span>192.168.1.1
+static <span class=nv>domain_name_servers</span><span class=o>=</span>1.1.1.1
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+</ul>
+<p>参考：</p>
+<ul>
+<li><a test href=https://www.raspberrypi.org/documentation/configuration/wireless/headless.md>Setting up a Raspberry Pi headless</a></li>
+<li><a test href="https://www.raspberrypi.org/forums/viewtopic.php?t=217629">Setting a static IP address from SD card before boot</a></li>
+<li><a test href=https://raspberrypi.stackexchange.com/questions/85747/setting-a-static-ip-from-boot-drive-headless-static-ip>Setting a Static IP from Boot Drive (headless static IP)</a></li>
+</ul>
+<h2 id=备份>备份</h2>
+<p>todo</p>
+<h3 id=系统迁移>系统迁移</h3>
+<p>参考：</p>
+<ul>
+<li><a test href=https://lyq.blogd.club/2017/02/11/pi-usb-boot/>把树莓派的系统迁移到U盘上</a></li>
+<li><a test href=https://post.smzdm.com/p/apzkgne7/>树莓派学习笔记 篇四：树莓派4B 的系统备份方法大全（全卡+压缩备份）</a></li>
+<li><a test href=https://github.com/billw2/rpi-clone>rpi-clone</a></li>
+<li><a test href=https://medium.com/xster-tech/move-your-existing-raspberry-pi-4-ubuntu-install-from-sd-card-to-usb-ssd-52e99723f07b>Move your existing Raspberry Pi 4 Ubuntu install from SD card to USB/SSD</a></li>
+</ul>
+<h2 id=face_recognition>face_recognition</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>pi@raspberrypi:~/.local/bin $ face_recognition --help
+Traceback <span class=o>(</span>most recent call last<span class=o>)</span>:
+  File <span class=s2>&#34;/home/pi/.local/bin/face_recognition&#34;</span>, line 6, in &lt;module&gt;
+    from face_recognition.face_recognition_cli import main
+  File <span class=s2>&#34;/home/pi/.local/lib/python3.7/site-packages/face_recognition/__init__.py&#34;</span>, line 7, in &lt;module&gt;
+    from .api import load_image_file, face_locations, batch_face_locations, face_landmarks, face_encodings, compare_faces, face_distance
+  File <span class=s2>&#34;/home/pi/.local/lib/python3.7/site-packages/face_recognition/api.py&#34;</span>, line 3, in &lt;module&gt;
+    import PIL.Image
+  File <span class=s2>&#34;/home/pi/.local/lib/python3.7/site-packages/PIL/Image.py&#34;</span>, line 114, in &lt;module&gt;
+    from . import _imaging as core
+ImportError: libopenjp2.so.7: cannot open shared object file: No such file or directory
+</code></pre></td></tr></table>
+</div>
+</div><p>libf77blas.so</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>sudo apt-get install libatlas-base-dev
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://stackoverflow.com/a/67043061>Numpy import error Python3 on Raspberry Pi?</a></li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

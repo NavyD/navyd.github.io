@@ -1,0 +1,233 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="vim配置 sudo无法使用配置 在使用sudo vim时配置无效 yaml文件编辑问题 在yaml编辑时使用tab时默认缩进为8，不符合yaml文件"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/linux/vim%E9%85%8D%E7%BD%AE/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="vim配置 sudo无法使用配置 在使用sudo vim时配置无效 yaml文件编辑问题 在yaml编辑时使用tab时默认缩进为8，不符合yaml文件">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/linux/vim%E9%85%8D%E7%BD%AE/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="vim配置 sudo无法使用配置 在使用sudo vim时配置无效 yaml文件编辑问题 在yaml编辑时使用tab时默认缩进为8，不符合yaml文件">
+<meta itemprop=wordCount content="717">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="vim配置 sudo无法使用配置 在使用sudo vim时配置无效 yaml文件编辑问题 在yaml编辑时使用tab时默认缩进为8，不符合yaml文件"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=vim配置>vim配置</h1>
+<h2 id=sudo无法使用配置>sudo无法使用配置</h2>
+<p>在使用<code>sudo vim</code>时配置无效</p>
+<h2 id=yaml文件编辑问题>yaml文件编辑问题</h2>
+<p>在yaml编辑时使用tab时默认缩进为8，不符合yaml文件格式，且在<code>ctrl+v</code>多行插入<code>#</code>时可能出现自动缩进。在使用下面的命令解决：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># raspi4 `#`自动缩进 无法无效</span>
+<span class=c1># autocmd FileType yaml setlocal sw=2 ts=2 et ai</span>
+
+<span class=c1># 在raspi4 ubuntu20.04上/etc/vim/vimrc生效</span>
+autocmd FileType yaml setlocal <span class=nv>ts</span><span class=o>=</span><span class=m>2</span> <span class=nv>sts</span><span class=o>=</span><span class=m>2</span> <span class=nv>sw</span><span class=o>=</span><span class=m>2</span> expandtab
+</code></pre></td></tr></table>
+</div>
+</div><p>在直接粘贴时也会导致格式混乱多缩进和空格，可以在vim中使用粘贴模式命令解决<code>:set paste</code></p>
+<h2 id=完整配置>完整配置</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=s2>&#34;--外观--&#34;</span>
+
+<span class=s2>&#34;显示行号&#34;</span>
+<span class=nb>set</span> number
+<span class=s2>&#34;set relativenumber
+</span><span class=s2>&#34;</span>光标所在的当前行高亮
+<span class=nb>set</span> cursorline
+<span class=s2>&#34;设置行宽，即一行显示多少个字符&#34;</span>
+<span class=nb>set</span> <span class=nv>textwidth</span><span class=o>=</span><span class=m>80</span>
+<span class=s2>&#34;显示括号匹配&#34;</span>
+<span class=nb>set</span> showmatch
+<span class=s2>&#34;自动折行，即太长的行分成几行显示。&#34;</span>
+<span class=nb>set</span> wrap
+<span class=s2>&#34;只有遇到指定的符号（比如空格、连词号和其他标点符号），才发生折行。也就是说，不会在单词内部折行。&#34;</span>
+<span class=nb>set</span> linebreak
+<span class=s2>&#34;使用 utf-8 编码。&#34;</span>
+<span class=nb>set</span> <span class=nv>encoding</span><span class=o>=</span>utf-8  
+
+<span class=s2>&#34;语法高亮&#34;</span>
+syntax on
+<span class=s2>&#34;在底部显示，当前处于命令模式还是插入模式&#34;</span>
+<span class=nb>set</span> showmode
+<span class=s2>&#34;命令模式下，在底部显示，当前键入的指令&#34;</span>
+<span class=nb>set</span> showcmd
+<span class=s2>&#34;开启文件类型检查，并且载入与该类型对应的缩进规则&#34;</span>
+filetype indent on
+
+<span class=s2>&#34;--缩进--&#34;</span>
+
+<span class=s2>&#34;自动缩进&#34;</span>
+<span class=nb>set</span> autoindent
+<span class=s2>&#34;按下 Tab 键时，Vim 显示的空格数。&#34;</span>
+<span class=nb>set</span> <span class=nv>tabstop</span><span class=o>=</span><span class=m>4</span>
+<span class=s2>&#34;将tab转成空格&#34;</span>
+<span class=nb>set</span> expandtab
+<span class=s2>&#34;Tab 转为多少个空格&#34;</span>
+<span class=nb>set</span> <span class=nv>softtabstop</span><span class=o>=</span><span class=m>4</span>
+autocmd FileType yaml setlocal <span class=nv>sw</span><span class=o>=</span><span class=m>2</span> <span class=nv>ts</span><span class=o>=</span><span class=m>2</span> et ai
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=http://www.ruanyifeng.com/blog/2018/09/vimrc.html>Vim 配置入门</a></li>
+<li><a test href=https://segmentfault.com/a/1190000016330314>Vim入门级基础配置</a></li>
+<li><a test href=https://stackoverflow.com/a/37488992>Wrong indentation when editing Yaml in Vim</a></li>
+<li><a test href=https://github.com/wsdjeg/vim-galore-zh_cn>Vim 从入门到精通</a></li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

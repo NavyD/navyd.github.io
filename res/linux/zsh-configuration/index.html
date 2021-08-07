@@ -1,0 +1,437 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="zsh配置 使用zsh包管理器 antigen 比ohmyzsh更方便 安装 1 curl -L git.io/antigen &amp;gt; antigen.zsh 或者Installation 简单配置在$HOME/.zshrc中 1 2 3 4"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/linux/zsh-configuration/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="zsh配置 使用zsh包管理器 antigen 比ohmyzsh更方便 安装 1 curl -L git.io/antigen > antigen.zsh 或者Installation 简单配置在$HOME/.zshrc中 1 2 3 4">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/linux/zsh-configuration/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="zsh配置 使用zsh包管理器 antigen 比ohmyzsh更方便 安装 1 curl -L git.io/antigen > antigen.zsh 或者Installation 简单配置在$HOME/.zshrc中 1 2 3 4">
+<meta itemprop=wordCount content="799">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="zsh配置 使用zsh包管理器 antigen 比ohmyzsh更方便 安装 1 curl -L git.io/antigen > antigen.zsh 或者Installation 简单配置在$HOME/.zshrc中 1 2 3 4"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=zsh配置>zsh配置</h1>
+<p>使用zsh包管理器 <a test href=https://github.com/zsh-users/antigen>antigen</a> 比ohmyzsh更方便</p>
+<h2 id=安装>安装</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>curl -L git.io/antigen &gt; antigen.zsh
+</code></pre></td></tr></table>
+</div>
+</div><p>或者<a test href=https://github.com/zsh-users/antigen/wiki/Installation>Installation</a></p>
+<p>简单配置在<code>$HOME/.zshrc</code>中</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-zsh data-lang=zsh><span class=nb>source</span> /path-to-antigen/antigen.zsh
+
+<span class=c1># Load the oh-my-zsh&#39;s library.</span>
+antigen use oh-my-zsh
+
+<span class=c1># Bundles from the default repo (robbyrussell&#39;s oh-my-zsh).</span>
+antigen bundle git
+antigen bundle heroku
+antigen bundle pip
+antigen bundle lein
+antigen bundle command-not-found
+
+<span class=c1># Syntax highlighting bundle.</span>
+antigen bundle zsh-users/zsh-syntax-highlighting
+
+<span class=c1># Load the theme.</span>
+antigen theme robbyrussell
+
+<span class=c1># Tell Antigen that you&#39;re done.</span>
+antigen apply
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=alias>alias</h2>
+<p>查看当前alias</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ <span class=nb>alias</span>
+-<span class=o>=</span><span class=s1>&#39;cd -&#39;</span>
+...<span class=o>=</span>../..
+....<span class=o>=</span>../../..
+.....<span class=o>=</span>../../../..
+......<span class=o>=</span>../../../../..
+<span class=nv>1</span><span class=o>=</span><span class=s1>&#39;cd -&#39;</span>
+<span class=nv>2</span><span class=o>=</span><span class=s1>&#39;cd -2&#39;</span>
+<span class=c1># ...</span>
+
+$ <span class=nb>alias</span> <span class=p>|</span> grep -E <span class=s2>&#34;&#39;ls&#34;</span>
+<span class=nv>l</span><span class=o>=</span><span class=s1>&#39;ls -lah&#39;</span>
+<span class=nv>la</span><span class=o>=</span><span class=s1>&#39;ls -lAh&#39;</span>
+<span class=nv>ll</span><span class=o>=</span><span class=s1>&#39;ls -lh&#39;</span>
+<span class=nv>ls</span><span class=o>=</span><span class=s1>&#39;ls --color=tty&#39;</span>
+<span class=nv>lsa</span><span class=o>=</span><span class=s1>&#39;ls -lah&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：<a test href=https://github.com/ohmyzsh/ohmyzsh/wiki/Cheatsheet>Cheatsheet</a></p>
+<h2 id=plugins>plugins</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>antigen bundles <span class=s>&lt;&lt;EOBUNDLES
+</span><span class=s>    # Bundles from the default repo (robbyrussell&#39;s oh-my-zsh).
+</span><span class=s>    # antigen bundle git
+</span><span class=s>    git
+</span><span class=s>    heroku
+</span><span class=s>    pip
+</span><span class=s>    lein
+</span><span class=s>    command-not-found
+</span><span class=s>    zsh-users/zsh-syntax-highlighting
+</span><span class=s>    # custom
+</span><span class=s>    zsh-users/zsh-autosuggestions
+</span><span class=s>    z
+</span><span class=s>    extract
+</span><span class=s>    mvn
+</span><span class=s>    docker
+</span><span class=s>    colorize
+</span><span class=s>    safe-paste
+</span><span class=s>    gitignore
+</span><span class=s>    rustup
+</span><span class=s>    cargo
+</span><span class=s>    colored-man-pages
+</span><span class=s>    cp
+</span><span class=s>    ubuntu
+</span><span class=s>    alias-finder
+</span><span class=s>EOBUNDLES</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><a test href=https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git>git</a></li>
+</ul>
+<p>The git plugin provides many aliases and a few useful functions.</p>
+<ul>
+<li><a test href=https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/cp>cp</a></li>
+</ul>
+<p>提供一个 cpv 命令，这个命令使用 rsync 实现带进度条的复制功能。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-zsh data-lang=zsh>$ cpv nohup.out Desktop/
+sending incremental file list
+nohup.out
+         18.99K 100%    0.00kB/s    0:00:00 <span class=o>(</span>xfr#1, to-chk<span class=o>=</span>0/1<span class=o>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=bindkey>bindkey</h2>
+<p>terminal快捷键控制</p>
+<p>列出当前关联所有的key</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ bindkey
+<span class=s2>&#34;^@&#34;</span> set-mark-command
+<span class=s2>&#34;^A&#34;</span> beginning-of-line
+<span class=s2>&#34;^B&#34;</span> backward-char
+<span class=c1># ...</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=homeend响应修复>home/end响应修复</h3>
+<p>写入shell环境：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-zsh data-lang=zsh>bindkey  <span class=s2>&#34;^[[H&#34;</span>   beginning-of-line
+bindkey  <span class=s2>&#34;^[[F&#34;</span>   end-of-line
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：<a test href=https://stackoverflow.com/questions/8638012/fix-key-settings-home-end-insert-delete-in-zshrc-when-running-zsh-in-terminat>Fix key settings (Home/End/Insert/Delete) in .zshrc when running Zsh in Terminator Terminal Emulator</a></p>
+<h3 id=updown上下前缀历史搜索>up/down上下前缀历史搜索</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-zsh data-lang=zsh>bindkey <span class=s2>&#34;^[[A&#34;</span> history-beginning-search-backward
+bindkey <span class=s2>&#34;^[[B&#34;</span> history-beginning-search-forward
+</code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-zsh data-lang=zsh>bindkey <span class=s1>&#39;^[[A&#39;</span> up-line-or-search
+bindkey <span class=s1>&#39;^[[B&#39;</span> down-line-or-search
+</code></pre></td></tr></table>
+</div>
+</div><p><a test href=https://unix.stackexchange.com/a/100860>ZSH: search history on up and down keys?</a></p>
+<h3 id=ctrlu删除光标前字符>ctrl+U删除光标前字符</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-zsh data-lang=zsh>bindkey <span class=s2>&#34;^U&#34;</span> backward-kill-line
+</code></pre></td></tr></table>
+</div>
+</div><p><a test href=https://stackoverflow.com/questions/3483604/which-shortcut-in-zsh-does-the-same-as-ctrl-u-in-bash>Which shortcut in Zsh does the same as Ctrl-U in Bash?</a></p>
+<h3 id=ctrlbackspace删除前一个单词>ctrl+backspace删除前一个单词</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>bindkey <span class=s1>&#39;^H&#39;</span> backward-kill-word
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：<a test href=https://stackoverflow.com/a/21252464>In zsh how do you bind Ctrl+backspace to delete the previous word?</a></p>
+<h2 id=cowsay欢迎消息>cowsay欢迎消息</h2>
+<p>在shell启动时打印消息：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-zsh data-lang=zsh> ____________________________
+&lt; Just to have it is enough. &gt;
+ ----------------------------
+        <span class=se>\ </span>  ^__^
+         <span class=se>\ </span> <span class=o>(</span>oo<span class=o>)</span><span class=se>\_</span>______
+            <span class=o>(</span>__<span class=o>)</span><span class=se>\ </span>      <span class=o>)</span><span class=se>\/\
+</span><span class=se></span>                <span class=o>||</span>----w <span class=p>|</span>
+                <span class=o>||</span>     <span class=o>||</span>
+
+<span class=c1># navyd @ desktop-navyd in ~/Workspaces/projects/blog-resources on git:master x [17:44:33] </span>
+$ 
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=fortune>fortune</h3>
+<p>安装<code>fortune</code>和<code>cowsay</code>后在<code>$HOME/.zshrc</code>最后加入：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-zsh data-lang=zsh><span class=c1># 显示随机名言</span>
+fortune <span class=p>|</span> cowsay -f <span class=s2>&#34;</span><span class=k>$(</span>find /usr/share/cowsay/cows/ <span class=p>|</span> shuf -n 1<span class=k>)</span><span class=s2>&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：<a test href=https://askubuntu.com/a/514134>cowsay command line with random cowfile</a></p>
+<h3 id=rand-quote-plugin>rand-quote plugin</h3>
+<p>zsh 内置插件<code>rand-quote</code>：Displays a random quote taken from quotationspage.com。在<code>$HOME/.zshrc</code>中加入</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-zsh data-lang=zsh>antigen bundle rand-quote
+</code></pre></td></tr></table>
+</div>
+</div><p>由于quote要从网络中加载，速度有点慢，影响shell加载速度，可放到后台运行，在<code>$HOME/.zshrc</code>最后加入：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-zsh data-lang=zsh>quote <span class=p>|</span> cowsay <span class=p>&amp;</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

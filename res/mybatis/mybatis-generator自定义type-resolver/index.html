@@ -1,0 +1,314 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="Mybatis Generator自定义type resolver 描述 在使用MBG时，mysql中的is前缀的列转换为Byte类型，与需求使用Boolean不符合 版本信息"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/mybatis/mybatis-generator%E8%87%AA%E5%AE%9A%E4%B9%89type-resolver/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="Mybatis Generator自定义type resolver 描述 在使用MBG时，mysql中的is前缀的列转换为Byte类型，与需求使用Boolean不符合 版本信息">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/mybatis/mybatis-generator%E8%87%AA%E5%AE%9A%E4%B9%89type-resolver/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="Mybatis Generator自定义type resolver 描述 在使用MBG时，mysql中的is前缀的列转换为Byte类型，与需求使用Boolean不符合 版本信息">
+<meta itemprop=wordCount content="1505">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="Mybatis Generator自定义type resolver 描述 在使用MBG时，mysql中的is前缀的列转换为Byte类型，与需求使用Boolean不符合 版本信息"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=mybatis-generator自定义type-resolver>Mybatis Generator自定义type resolver</h1>
+<h2 id=描述>描述</h2>
+<p>在使用MBG时，mysql中的is前缀的列转换为Byte类型，与需求使用Boolean不符合</p>
+<p>版本信息：<code>mysql 8.0.21, jdbc mysql cj: 8.0.21</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sql data-lang=sql><span class=k>CREATE</span><span class=w> </span><span class=k>TABLE</span><span class=w> </span><span class=o>`</span><span class=n>share_info</span><span class=o>`</span><span class=w> </span><span class=p>(</span><span class=w>
+</span><span class=w>  </span><span class=o>`</span><span class=n>id</span><span class=o>`</span><span class=w> </span><span class=nb>bigint</span><span class=w> </span><span class=k>NOT</span><span class=w> </span><span class=k>NULL</span><span class=w> </span><span class=n>AUTO_INCREMENT</span><span class=w> </span><span class=k>COMMENT</span><span class=w> </span><span class=s1>&#39;id&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>  </span><span class=o>#</span><span class=p>...</span><span class=w>
+</span><span class=w>  </span><span class=o>`</span><span class=n>is_original</span><span class=o>`</span><span class=w> </span><span class=n>tinyint</span><span class=w> </span><span class=n>unsigned</span><span class=w> </span><span class=k>NOT</span><span class=w> </span><span class=k>NULL</span><span class=w> </span><span class=k>COMMENT</span><span class=w> </span><span class=s1>&#39;是否原创 0:否 1:是&#39;</span><span class=p>,</span><span class=w>
+</span><span class=w>  </span><span class=k>PRIMARY</span><span class=w> </span><span class=k>KEY</span><span class=w> </span><span class=p>(</span><span class=o>`</span><span class=n>id</span><span class=o>`</span><span class=p>)</span><span class=w>
+</span><span class=w></span><span class=p>)</span><span class=w> </span><span class=n>ENGINE</span><span class=o>=</span><span class=n>InnoDB</span><span class=w> </span><span class=n>AUTO_INCREMENT</span><span class=o>=</span><span class=mi>3</span><span class=w> </span><span class=k>DEFAULT</span><span class=w> </span><span class=n>CHARSET</span><span class=o>=</span><span class=n>utf8mb4</span><span class=w> </span><span class=k>COLLATE</span><span class=o>=</span><span class=n>utf8mb4_0900_ai_ci</span><span class=w> </span><span class=k>COMMENT</span><span class=o>=</span><span class=s1>&#39;分享表&#39;</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>class</span> <span class=nc>ShareInfo</span> <span class=kd>extends</span> <span class=n>BaseEntity</span> <span class=kd>implements</span> <span class=n>Serializable</span> <span class=o>{</span>
+    <span class=cm>/**
+</span><span class=cm>     * 是否原创 0:否 1:是
+</span><span class=cm>     *
+</span><span class=cm>     * @mbg.generated
+</span><span class=cm>     */</span>
+    <span class=kd>private</span> <span class=n>Byte</span> <span class=n>original</span><span class=o>;</span>
+    <span class=c1>//...
+</span><span class=c1></span><span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=原因>原因</h2>
+<p>MBG配置通过<code>javaTypeResolver</code>标签解析，对应<code>org.mybatis.generator.api.JavaTypeResolver</code>接口与实现<code>JavaTypeResolverDefaultImpl</code>。</p>
+<p><code>JavaTypeResolverDefaultImpl</code>在构造器中对jdbc与java type做了type mapping：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=nf>JavaTypeResolverDefaultImpl</span><span class=o>()</span> <span class=o>{</span>
+    <span class=kd>super</span><span class=o>();</span>
+    <span class=n>properties</span> <span class=o>=</span> <span class=k>new</span> <span class=n>Properties</span><span class=o>();</span>
+    <span class=n>typeMap</span> <span class=o>=</span> <span class=k>new</span> <span class=n>HashMap</span><span class=o>&lt;&gt;();</span>
+    <span class=c1>// bit to boolean
+</span><span class=c1></span>    <span class=n>typeMap</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=n>Types</span><span class=o>.</span><span class=na>BIT</span><span class=o>,</span> <span class=k>new</span> <span class=n>JdbcTypeInformation</span><span class=o>(</span><span class=s>&#34;BIT&#34;</span><span class=o>,</span> <span class=c1>//$NON-NLS-1$
+</span><span class=c1></span>            <span class=k>new</span> <span class=n>FullyQualifiedJavaType</span><span class=o>(</span><span class=n>Boolean</span><span class=o>.</span><span class=na>class</span><span class=o>.</span><span class=na>getName</span><span class=o>())));</span>
+    <span class=c1>// ...  
+</span><span class=c1></span>    <span class=c1>// tinyint to byte
+</span><span class=c1></span>    <span class=n>typeMap</span><span class=o>.</span><span class=na>put</span><span class=o>(</span><span class=n>Types</span><span class=o>.</span><span class=na>TINYINT</span><span class=o>,</span> <span class=k>new</span> <span class=n>JdbcTypeInformation</span><span class=o>(</span><span class=s>&#34;TINYINT&#34;</span><span class=o>,</span> <span class=c1>//$NON-NLS-1$
+</span><span class=c1></span>            <span class=k>new</span> <span class=n>FullyQualifiedJavaType</span><span class=o>(</span><span class=n>Byte</span><span class=o>.</span><span class=na>class</span><span class=o>.</span><span class=na>getName</span><span class=o>())));</span>
+    <span class=c1>// ...
+</span><span class=c1></span><span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在<code>calculateJavaType</code>方法中计算jdbc对应java type，使用默认type mapping和可能覆盖的<code>overrideDefaultType</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=n>FullyQualifiedJavaType</span> <span class=nf>calculateJavaType</span><span class=o>(</span>
+        <span class=n>IntrospectedColumn</span> <span class=n>introspectedColumn</span><span class=o>)</span> <span class=o>{</span> <span class=c1>// column: is_original
+</span><span class=c1></span>    <span class=c1>// ...
+</span><span class=c1></span>    <span class=n>JdbcTypeInformation</span> <span class=n>jdbcTypeInformation</span> <span class=o>=</span> <span class=n>typeMap</span>
+            <span class=o>.</span><span class=na>get</span><span class=o>(</span><span class=n>introspectedColumn</span><span class=o>.</span><span class=na>getJdbcType</span><span class=o>());</span><span class=c1>// jdbcType: TINYINT
+</span><span class=c1></span>
+    <span class=k>if</span> <span class=o>(</span><span class=n>jdbcTypeInformation</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
+        <span class=n>answer</span> <span class=o>=</span> <span class=n>jdbcTypeInformation</span><span class=o>.</span><span class=na>getFullyQualifiedJavaType</span><span class=o>();</span> <span class=c1>// Byte
+</span><span class=c1></span>        <span class=n>answer</span> <span class=o>=</span> <span class=n>overrideDefaultType</span><span class=o>(</span><span class=n>introspectedColumn</span><span class=o>,</span> <span class=n>answer</span><span class=o>);</span> <span class=c1>// Byte
+</span><span class=c1></span>    <span class=o>}</span>
+    <span class=c1>// ...
+</span><span class=c1></span><span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>jdbc解析为column is_original为tinyint类型，导致sql column <code>share_info.is_original</code>进来时作为Byte处理</p>
+<p><em><strong>注意</strong></em> ：由<code>DatabaseIntrospector</code>解析jdbc ResultSet创建<code>introspectedColumn</code>。如果column定义是<code>is_original tinyint(1) not null</code>，则会被jdbc解析为<code>BIT</code>类型，通过type mapping对应到java type: Boolean</p>
+<p>至此，知道了是对列<code>TINYINT</code>解析的问题。</p>
+<p>不能直接对所有tinyint转boolean，可尝试用<code>tinyint(1)</code>列定义转换为boolean类型。修改列定义并查看是否有效</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sql data-lang=sql><span class=k>alter</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=n>share_info</span><span class=w> </span><span class=k>modify</span><span class=w> </span><span class=k>column</span><span class=w> </span><span class=n>is_original</span><span class=w> </span><span class=n>tinyint</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span><span class=w> </span><span class=n>unsigned</span><span class=w> </span><span class=k>NOT</span><span class=w> </span><span class=k>NULL</span><span class=w> </span><span class=k>COMMENT</span><span class=w> </span><span class=s1>&#39;是否原创 0:否 1:是&#39;</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=o>#</span><span class=w> </span><span class=n>Query</span><span class=w> </span><span class=n>OK</span><span class=p>,</span><span class=w> </span><span class=mi>2</span><span class=w> </span><span class=k>rows</span><span class=w> </span><span class=n>affected</span><span class=w>
+</span><span class=w></span><span class=k>show</span><span class=w> </span><span class=k>create</span><span class=w> </span><span class=k>table</span><span class=w> </span><span class=n>share_info</span><span class=err>\</span><span class=k>G</span><span class=w>
+</span><span class=w></span><span class=cm>/*
+</span><span class=cm>***************************[ 1. row ]***************************
+</span><span class=cm>Table        | share_info
+</span><span class=cm>Create Table | CREATE TABLE `share_info` (
+</span><span class=cm>#...
+</span><span class=cm>  `is_original` tinyint unsigned NOT NULL COMMENT &#39;是否原创 0:否 1:是&#39;,
+</span><span class=cm>#...
+</span><span class=cm>) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT=&#39;分享表&#39;
+</span><span class=cm>*/</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到并没有生效，在MBG debug发现<code>introspectedColumn.length==3</code>，而不是当<code>is_original tinyint(1) NOT NULL</code>时<code>length==1</code>，这应该是mysql 8.x的坑</p>
+<p>转换思路，可以只转换<code>is_</code>前缀的列到<code>Boolean</code>就行，不需要修改列定义，这样还更精确</p>
+<h2 id=解决方案>解决方案</h2>
+<p>通过column name转换<code>is_</code>前缀的列到<code>Boolean</code>，并在MBG配置文件中配置<code>javaTypeResolver</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>class</span> <span class=nc>MyJavaTypeResolver</span> <span class=kd>extends</span> <span class=n>JavaTypeResolverDefaultImpl</span> <span class=o>{</span>
+    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=n>String</span> <span class=n>BOOLEAN_PREFIX</span> <span class=o>=</span> <span class=s>&#34;is_&#34;</span><span class=o>;</span>
+    <span class=nd>@Override</span>
+    <span class=kd>public</span> <span class=n>FullyQualifiedJavaType</span> <span class=nf>calculateJavaType</span><span class=o>(</span><span class=n>IntrospectedColumn</span> <span class=n>introspectedColumn</span><span class=o>)</span> <span class=o>{</span>
+        <span class=k>if</span> <span class=o>(</span><span class=n>introspectedColumn</span><span class=o>.</span><span class=na>getActualColumnName</span><span class=o>().</span><span class=na>startsWith</span><span class=o>(</span><span class=n>BOOLEAN_PREFIX</span><span class=o>))</span> <span class=o>{</span>
+            <span class=k>return</span> <span class=k>new</span> <span class=n>FullyQualifiedJavaType</span><span class=o>(</span><span class=n>Boolean</span><span class=o>.</span><span class=na>class</span><span class=o>.</span><span class=na>getName</span><span class=o>());</span>
+        <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+            <span class=k>return</span> <span class=kd>super</span><span class=o>.</span><span class=na>calculateJavaType</span><span class=o>(</span><span class=n>introspectedColumn</span><span class=o>);</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;javaTypeResolver</span> <span class=na>type=</span><span class=s>&#34;xyz.navyd.mbg.MyJavaTypeResolver&#34;</span><span class=nt>&gt;</span>
+    <span class=nt>&lt;property</span> <span class=na>name=</span><span class=s>&#34;forceBigDecimals&#34;</span> <span class=na>value=</span><span class=s>&#34;false&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;property</span> <span class=na>name=</span><span class=s>&#34;useJSR310Types&#34;</span> <span class=na>value=</span><span class=s>&#34;true&#34;</span> <span class=nt>/&gt;</span>
+<span class=nt>&lt;/javaTypeResolver&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

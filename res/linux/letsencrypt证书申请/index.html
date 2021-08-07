@@ -1,0 +1,383 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="letsencrypt证书申请 在使用ali dns验证时，注意使用子账号的key与sercet时存在无法创建的问题，可以使用主账号创建key与"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/linux/letsencrypt%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="letsencrypt证书申请 在使用ali dns验证时，注意使用子账号的key与sercet时存在无法创建的问题，可以使用主账号创建key与">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/linux/letsencrypt%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="letsencrypt证书申请 在使用ali dns验证时，注意使用子账号的key与sercet时存在无法创建的问题，可以使用主账号创建key与">
+<meta itemprop=wordCount content="1355">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="letsencrypt证书申请 在使用ali dns验证时，注意使用子账号的key与sercet时存在无法创建的问题，可以使用主账号创建key与"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=letsencrypt证书申请>letsencrypt证书申请</h1>
+<p>在使用ali dns验证时，注意使用子账号的key与sercet时存在无法创建的问题，可以使用主账号创建key与sercet</p>
+<h2 id=docker部署>docker部署</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ docker <span class=nb>exec</span> acme.sh --issue --dns dns_ali -d <span class=s1>&#39;*.navyd.xyz&#39;</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:30:37 UTC 2021<span class=o>]</span> Using CA: https://acme.zerossl.com/v2/DV90
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:30:37 UTC 2021<span class=o>]</span> Create account key ok.
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:30:37 UTC 2021<span class=o>]</span> No EAB credentials found <span class=k>for</span> ZeroSSL, let<span class=s1>&#39;s get one
+</span><span class=s1>[Sat Jul 17 11:30:37 UTC 2021] acme.sh is using ZeroSSL as default CA now.
+</span><span class=s1>[Sat Jul 17 11:30:37 UTC 2021] Please update your account with an email address first.
+</span><span class=s1>[Sat Jul 17 11:30:37 UTC 2021] acme.sh --register-account -m my@example.com
+</span><span class=s1>[Sat Jul 17 11:30:37 UTC 2021] See: https://github.com/acmesh-official/acme.sh/wiki/ZeroSSL.com-CA
+</span><span class=s1>[Sat Jul 17 11:30:37 UTC 2021] Please add &#39;</span>--debug<span class=s1>&#39; or &#39;</span>--log<span class=s1>&#39; to check more details.
+</span><span class=s1>[Sat Jul 17 11:30:37 UTC 2021] See: https://github.com/acmesh-official/acme.sh/wiki/How-to-debug-acme.sh
+</span><span class=s1>
+</span><span class=s1># 如果提示注册zerossl
+</span><span class=s1>$ docker exec acme.sh --register-account -m dhjnavyd@gmail.com --server zerossl
+</span><span class=s1>[Sat Jul 17 11:39:35 UTC 2021] No EAB credentials found for ZeroSSL, let&#39;</span>s get one
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:36 UTC 2021<span class=o>]</span> Registering account: https://acme.zerossl.com/v2/DV90
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:39 UTC 2021<span class=o>]</span> Registered
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:39 UTC 2021<span class=o>]</span> <span class=nv>ACCOUNT_THUMBPRINT</span><span class=o>=</span><span class=s1>&#39;HrxyOm4LPXQgLrhsTObh2GJoCLtcN09qclO3xndmNDg&#39;</span>
+
+<span class=c1># 使用ali dns 获取证书</span>
+$ docker <span class=nb>exec</span> acme.sh --issue --dns dns_ali -d <span class=s1>&#39;*.navyd.xyz&#39;</span>
+<span class=c1># ...</span>
+<span class=nv>pJnYcdwi5sY</span><span class=o>=</span>
+-----END CERTIFICATE-----
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:35:08 UTC 2021<span class=o>]</span> Your cert is in  /acme.sh/*.navyd.xyz/*.navyd.xyz.cer
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:35:08 UTC 2021<span class=o>]</span> Your cert key is in  /acme.sh/*.navyd.xyz/*.navyd.xyz.key
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:35:08 UTC 2021<span class=o>]</span> The intermediate CA cert is in  /acme.sh/*.navyd.xyz/ca.cer
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:35:08 UTC 2021<span class=o>]</span> And the full chain certs is there:  /acme.sh/*.navyd.xyz/fullchain.cer
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:35:08 UTC 2021<span class=o>]</span> _on_issue_success
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:35:08 UTC 2021<span class=o>]</span> <span class=s1>&#39;&#39;</span> does not contain <span class=s1>&#39;dns&#39;</span>
+
+<span class=c1># 部署到nginx容器</span>
+$ docker <span class=nb>exec</span> acme.sh --deploy -d <span class=s1>&#39;*.navyd.xyz&#39;</span> --deploy-hook docker
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:45:18 UTC 2021<span class=o>]</span> Container id: 987317fdd05604d0214f8b370230b4efd2445677d31fc54664251daa8126078a
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:45:18 UTC 2021<span class=o>]</span> Copying file from /acme.sh/*.navyd.xyz/*.navyd.xyz.key to /etc/nginx/ssl/*.navyd.xyz/key.pem
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:45:19 UTC 2021<span class=o>]</span> Copying file from /acme.sh/*.navyd.xyz/*.navyd.xyz.cer to /etc/nginx/ssl/*.navyd.xyz/cert.pem
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:45:20 UTC 2021<span class=o>]</span> Copying file from /acme.sh/*.navyd.xyz/ca.cer to /etc/nginx/ssl/*.navyd.xyz/ca.pem
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:45:20 UTC 2021<span class=o>]</span> Copying file from /acme.sh/*.navyd.xyz/fullchain.cer to /etc/nginx/ssl/*.navyd.xyz/full.pem
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:45:21 UTC 2021<span class=o>]</span> Reloading: service nginx force-reload
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:45:21 UTC 2021<span class=o>]</span> Success
+
+<span class=c1># 查看acme.sh crontab 任务</span>
+$ docker <span class=nb>exec</span> -it acme.sh crontab -l
+<span class=m>10</span> <span class=m>0</span> * * * <span class=s2>&#34;/root/.acme.sh&#34;</span>/acme.sh --cron --home <span class=s2>&#34;/root/.acme.sh&#34;</span> --config-home <span class=s2>&#34;/acme.sh&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果需要为多个域名签发证书，在部署的时候无法使用<code>DEPLOY_DOCKER_CONTAINER_</code>变量对多个域名部署，可以使用&ndash;deploy运行多次</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>docker  <span class=nb>exec</span> <span class=se>\
+</span><span class=se></span>    -e <span class=nv>DEPLOY_DOCKER_CONTAINER_LABEL</span><span class=o>=</span>sh.acme.autoload.domain<span class=o>=</span>example.com <span class=se>\
+</span><span class=se></span>    -e <span class=nv>DEPLOY_DOCKER_CONTAINER_KEY_FILE</span><span class=o>=</span>/etc/nginx/ssl/example.com/key.pem <span class=se>\
+</span><span class=se></span>    -e <span class=nv>DEPLOY_DOCKER_CONTAINER_CERT_FILE</span><span class=o>=</span><span class=s2>&#34;/etc/nginx/ssl/example.com/cert.pem&#34;</span> <span class=se>\
+</span><span class=se></span>    -e <span class=nv>DEPLOY_DOCKER_CONTAINER_CA_FILE</span><span class=o>=</span><span class=s2>&#34;/etc/nginx/ssl/example.com/ca.pem&#34;</span> <span class=se>\
+</span><span class=se></span>    -e <span class=nv>DEPLOY_DOCKER_CONTAINER_FULLCHAIN_FILE</span><span class=o>=</span><span class=s2>&#34;/etc/nginx/ssl/example.com/full.pem&#34;</span> <span class=se>\
+</span><span class=se></span>    -e <span class=nv>DEPLOY_DOCKER_CONTAINER_RELOAD_CMD</span><span class=o>=</span><span class=s2>&#34;service nginx force-reload&#34;</span> <span class=se>\
+</span><span class=se></span>    acme.sh --deploy -d example.com  --deploy-hook docker
+</code></pre></td></tr></table>
+</div>
+</div><p>docker-compose.yml</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.4&#39;</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>web</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span><span class=w>    </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>sh.acme.autoload.domain=example.com</span><span class=w>
+</span><span class=w>
+</span><span class=w>  </span><span class=nt>acme.sh</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>neilpang/acme.sh</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>acme.sh    </span><span class=w>
+</span><span class=w>    </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=l>daemon</span><span class=w>
+</span><span class=w>    </span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>./acmeout:/acme.sh</span><span class=w>
+</span><span class=w>      </span>- <span class=l>/var/run/docker.sock:/var/run/docker.sock </span><span class=w>
+</span><span class=w>    </span><span class=nt>environment</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>DEPLOY_DOCKER_CONTAINER_LABEL=sh.acme.autoload.domain=example.com</span><span class=w>
+</span><span class=w>      </span>- <span class=l>DEPLOY_DOCKER_CONTAINER_KEY_FILE=/etc/nginx/ssl/example.com/key.pem</span><span class=w>
+</span><span class=w>      </span>- <span class=l>DEPLOY_DOCKER_CONTAINER_CERT_FILE=&#34;/etc/nginx/ssl/example.com/cert.pem&#34;</span><span class=w>
+</span><span class=w>      </span>- <span class=l>DEPLOY_DOCKER_CONTAINER_CA_FILE=&#34;/etc/nginx/ssl/example.com/ca.pem&#34;</span><span class=w>
+</span><span class=w>      </span>- <span class=l>DEPLOY_DOCKER_CONTAINER_FULLCHAIN_FILE=&#34;/etc/nginx/ssl/example.com/full.pem&#34;</span><span class=w>
+</span><span class=w>      </span>- <span class=l>DEPLOY_DOCKER_CONTAINER_RELOAD_CMD=&#34;service nginx force-reload&#34;</span><span class=w>
+</span><span class=w>  
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id=ali-dns-invalidaccesskeyid>ali dns: InvalidAccessKeyId</h3>
+<p>在使用ali dns注册<code>*.xxx</code>时失败<code>Error add txt for domain:_acme-challenge.navyd.xyz</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ docker <span class=nb>exec</span> acme.sh --issue --dns dns_ali -d <span class=s1>&#39;*.navyd.xyz&#39;</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:48 UTC 2021<span class=o>]</span> Using CA: https://acme.zerossl.com/v2/DV90
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:48 UTC 2021<span class=o>]</span> Creating domain key
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:49 UTC 2021<span class=o>]</span> The domain key is here: /acme.sh/*.navyd.xyz/*.navyd.xyz.key
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:49 UTC 2021<span class=o>]</span> Single <span class=nv>domain</span><span class=o>=</span><span class=s1>&#39;*.navyd.xyz&#39;</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:49 UTC 2021<span class=o>]</span> Getting domain auth token <span class=k>for</span> each domain
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:53 UTC 2021<span class=o>]</span> Getting webroot <span class=k>for</span> <span class=nv>domain</span><span class=o>=</span><span class=s1>&#39;*.navyd.xyz&#39;</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:53 UTC 2021<span class=o>]</span> Adding txt value: A36LeLO16XvRaJRWgL81sge5vcSJxBln5V7mpiz5nIQ <span class=k>for</span> domain:  _acme-challenge.navyd.xyz
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:56 UTC 2021<span class=o>]</span> Error add txt <span class=k>for</span> domain:_acme-challenge.navyd.xyz
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:56 UTC 2021<span class=o>]</span> Please add <span class=s1>&#39;--debug&#39;</span> or <span class=s1>&#39;--log&#39;</span> to check more details.
+<span class=o>[</span>Sat Jul <span class=m>17</span> 11:39:56 UTC 2021<span class=o>]</span> See: https://github.com/acmesh-official/acme.sh/wiki/How-to-debug-acme.sh
+</code></pre></td></tr></table>
+</div>
+</div><p>使用<code>--debug 2</code>重新运行查看原因：ali dns出现<code>code: InvalidAccessKeyId</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ docker <span class=nb>exec</span> acme.sh --issue --dns dns_ali -d <span class=s1>&#39;*.navyd.xyz&#39;</span> --debug <span class=m>2</span>
+<span class=c1># ...</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:44 UTC 2021<span class=o>]</span> Adding txt value: iav8uptGBR1yz4E0okSDvsIIqyNSszYpvlB6wS1y_hw <span class=k>for</span> domain:  _acme-challenge.navyd.xyz
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:44 UTC 2021<span class=o>]</span> First detect the root zone
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:46 UTC 2021<span class=o>]</span> GET
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:46 UTC 2021<span class=o>]</span> <span class=nv>url</span><span class=o>=</span><span class=s1>&#39;https://alidns.aliyuncs.com/?AccessKeyId=&#34;LTAI5tS1eJSg1AeXo1uGTWq5&#34;&amp;Action=DescribeDomainRecords&amp;DomainName=navyd.xyz&amp;Format=json&amp;SignatureMethod=HMAC-SHA1&amp;SignatureNonce=1626524264907657673&amp;SignatureVersion=1.0&amp;Timestamp=2021-07-17T12%3A17%3A44Z&amp;Version=2015-01-09&amp;Signature=YTzU4GXGSJjiqQ3PPiIvJr%2FfteE%3D&#39;</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:46 UTC 2021<span class=o>]</span> <span class=nv>timeout</span><span class=o>=</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:46 UTC 2021<span class=o>]</span> Http already initialized.
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:46 UTC 2021<span class=o>]</span> <span class=nv>_CURL</span><span class=o>=</span><span class=s1>&#39;curl --silent --dump-header /acme.sh/http.header  -L  --trace-ascii /tmp/tmp.nlM15sEwYp &#39;</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:46 UTC 2021<span class=o>]</span> <span class=nv>ret</span><span class=o>=</span><span class=s1>&#39;0&#39;</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:46 UTC 2021<span class=o>]</span> <span class=nv>response</span><span class=o>=</span><span class=s1>&#39;{&#34;RequestId&#34;:&#34;887141F2-5E35-4086-A684-37C9C0C2345F&#34;,&#34;Message&#34;:&#34;Specified access key is not found or invalid.&#34;,&#34;Recommend&#34;:&#34;https://error-center.aliyun.com/status/search?Keyword=InvalidAccessKeyId&amp;source=PopGw&#34;,&#34;HostId&#34;:&#34;alidns.aliyuncs.com&#34;,&#34;Code&#34;:&#34;InvalidAccessKeyId&#34;}&#39;</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:47 UTC 2021<span class=o>]</span> GET
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:47 UTC 2021<span class=o>]</span> <span class=nv>url</span><span class=o>=</span><span class=s1>&#39;https://alidns.aliyuncs.com/?AccessKeyId=&#34;LTAI5tS1eJSg1AeXo1uGTWq5&#34;&amp;Action=DescribeDomainRecords&amp;DomainName=xyz&amp;Format=json&amp;SignatureMethod=HMAC-SHA1&amp;SignatureNonce=1626524266842536109&amp;SignatureVersion=1.0&amp;Timestamp=2021-07-17T12%3A17%3A46Z&amp;Version=2015-01-09&amp;Signature=fASHrOjwsI4bsuII7Bqi9mrM%2Fvs%3D&#39;</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:47 UTC 2021<span class=o>]</span> <span class=nv>timeout</span><span class=o>=</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:47 UTC 2021<span class=o>]</span> Http already initialized.
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:47 UTC 2021<span class=o>]</span> <span class=nv>_CURL</span><span class=o>=</span><span class=s1>&#39;curl --silent --dump-header /acme.sh/http.header  -L  --trace-ascii /tmp/tmp.nlM15sEwYp &#39;</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:48 UTC 2021<span class=o>]</span> <span class=nv>ret</span><span class=o>=</span><span class=s1>&#39;0&#39;</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:48 UTC 2021<span class=o>]</span> <span class=nv>response</span><span class=o>=</span><span class=s1>&#39;{&#34;RequestId&#34;:&#34;8BA571D2-F3AB-4081-9E42-8511597D661C&#34;,&#34;Message&#34;:&#34;Specified access key is not found or invalid.&#34;,&#34;Recommend&#34;:&#34;https://error-center.aliyun.com/status/search?Keyword=InvalidAccessKeyId&amp;source=PopGw&#34;,&#34;HostId&#34;:&#34;alidns.aliyuncs.com&#34;,&#34;Code&#34;:&#34;InvalidAccessKeyId&#34;}&#39;</span>
+<span class=o>[</span>Sat Jul <span class=m>17</span> 12:17:48 UTC 2021<span class=o>]</span> Error add txt <span class=k>for</span> domain:_acme-challenge.navyd.xyz
+<span class=c1># ...</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>问题出现在使用了非法的AccessKey ID和AccessKey Secret，我这个是使用了主账户的ak，可能因为安全问题不能使用。</p>
+<p><img src=../assets/images/e748d22d-82be-41d4-9e60-2dd4d29a9e42.png alt=不要使用云账号AccessKey></p>
+<p>尝试使用子账户的ak，并给予在整个云账号范围内：<code>AliyunHTTPDNSFullAccess,AliyunDNSFullAccess,AliyunPubDNSFullAccess</code>权限（这里是不清楚要多大权限，只能将dns管理权限都给上）。在这里可以管理<a test href=https://ram.console.aliyun.com/users/>RAM 访问控制/用户</a></p>
+<p><img src=../assets/images/5ee35819-d496-4c01-8f4f-91ea0509e7fa.png alt></p>
+<p>参考：</p>
+<ul>
+<li><a test href=https://letsencrypt.org/zh-cn/docs/challenge-types/>验证方式</a></li>
+<li><a test href=https://github.com/acmesh-official/acme.sh/wiki/dnsapi>How to use DNS API</a></li>
+<li><a test href=https://www.jianshu.com/p/1a792f87b6fe>Let&rsquo;s Encrypt 证书申请及配置</a></li>
+<li><a test href=https://www.vpslala.com/t/514>acme.sh使用某云dns申请Let&rsquo;sEncrypt证书时遇到的大坑 关闭域名DNSSEC</a></li>
+<li><a test href=https://dns.console.aliyun.com/#/dns/dnssec/navyd.xyz>DNS安全 DNSSEC</a></li>
+<li><a test href=https://github.com/acmesh-official/acme.sh/wiki/deploy-to-docker-containers>deploy to docker containers</a></li>
+<li><a test href=https://github.com/acmesh-official/acme.sh/wiki/Run-acme.sh-in-docker>Run acme.sh in docker</a></li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="samba服务 安装 1 2 3 sudo usermod -aG sambashare navyd sudo chown navyd:sambashare /mnt/share sudo smbpasswd -a navyd 参考： How to Install and Configure Samba on Ubuntu 18.04 启用win10自动发现 wsdd 安装wsdd 1 2 3 sudo sh -c &amp;#39;echo deb https://pkg.ltec.ch/public/ focal main &amp;gt; /etc/apt/sources.list.d/wsdd.list&amp;#39; sudo apt-key"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/linux/samba%E6%9C%8D%E5%8A%A1/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="samba服务 安装 1 2 3 sudo usermod -aG sambashare navyd sudo chown navyd:sambashare /mnt/share sudo smbpasswd -a navyd 参考： How to Install and Configure Samba on Ubuntu 18.04 启用win10自动发现 wsdd 安装wsdd 1 2 3 sudo sh -c 'echo deb https://pkg.ltec.ch/public/ focal main > /etc/apt/sources.list.d/wsdd.list' sudo apt-key">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/linux/samba%E6%9C%8D%E5%8A%A1/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="samba服务 安装 1 2 3 sudo usermod -aG sambashare navyd sudo chown navyd:sambashare /mnt/share sudo smbpasswd -a navyd 参考： How to Install and Configure Samba on Ubuntu 18.04 启用win10自动发现 wsdd 安装wsdd 1 2 3 sudo sh -c 'echo deb https://pkg.ltec.ch/public/ focal main > /etc/apt/sources.list.d/wsdd.list' sudo apt-key">
+<meta itemprop=wordCount content="928">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="samba服务 安装 1 2 3 sudo usermod -aG sambashare navyd sudo chown navyd:sambashare /mnt/share sudo smbpasswd -a navyd 参考： How to Install and Configure Samba on Ubuntu 18.04 启用win10自动发现 wsdd 安装wsdd 1 2 3 sudo sh -c 'echo deb https://pkg.ltec.ch/public/ focal main > /etc/apt/sources.list.d/wsdd.list' sudo apt-key"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=samba服务>samba服务</h1>
+<h2 id=安装>安装</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo usermod -aG sambashare navyd
+sudo chown navyd:sambashare /mnt/share
+sudo smbpasswd -a navyd
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://linuxize.com/post/how-to-install-and-configure-samba-on-ubuntu-18-04/>How to Install and Configure Samba on Ubuntu 18.04</a></li>
+</ul>
+<h2 id=启用win10自动发现-wsdd>启用win10自动发现 wsdd</h2>
+<p>安装wsdd</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo sh -c <span class=s1>&#39;echo deb https://pkg.ltec.ch/public/ focal main &gt; /etc/apt/sources.list.d/wsdd.list&#39;</span>
+sudo apt-key adv --fetch-keys https://pkg.ltec.ch/public/conf/ltec-ag.gpg.key
+sudo apt-get install wsdd
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://zhuanlan.zhihu.com/p/339975385>解决 Linux samba 主机不能被windows 10 发现的问题</a></li>
+<li><a test href=https://github.com/christgau/wsdd>wsdd</a></li>
+</ul>
+<h2 id=win10-samba共享密码无法登陆>win10 samba共享密码无法登陆</h2>
+<p>在修改win10 登陆当前帐户密码后，不能用新密码登入samba共享，经过重启和注销多次测试，samba还工作在原密码上，可用原密码可正常登入samba中</p>
+<p>测试用一个新帐户share，用它做samba分享，测试其它设备可用samba，说明只是帐户密码问题</p>
+<h3 id=原因>原因</h3>
+<p>在多次重启和注销中，都使用的是windows hello或PIN登录，没有将新密码同步到系统，可使用新密码登入win10系统</p>
+<h3 id=解决方案>解决方案</h3>
+<p><code>选择PIN登录 --> 忘记PIN --> 输入帐户密码 --> 是否确定PIN忘记 --> 否 --> 成功登录</code></p>
+<p>现在新密码在samba中可用</p>
+<h2 id=win10-samba挂载无法执行exe文件>win10 samba挂载无法执行exe文件</h2>
+<p>点击exe文件时无法直接执行，提示没有权限访问文件</p>
+<p><img src=../assets/images/4a6a52ee-e75b-479c-90af-8d77784f651b.png alt></p>
+<h3 id=解决方法>解决方法</h3>
+<p>在<code>/etc/samba/smb.conf</code>中<code>[global]</code>或自定义组下添加<code>acl allow execute always = True</code>：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-ini data-lang=ini><span class=c1># ...</span>
+<span class=k>[your-share]</span>
+    <span class=na>path</span> <span class=o>=</span> <span class=s>/mnt/share
+</span><span class=s>    browseable = yes
+</span><span class=s>    read only = no
+</span><span class=s>    writeable = yes
+</span><span class=s>    force create mode = 0660
+</span><span class=s>    force directory mode = 2770
+</span><span class=s>    valid users = user, @sambashare
+</span><span class=s>    # fix Execute a .exe on a samba share error
+</span><span class=s>    acl allow execute always = True</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://unix.stackexchange.com/questions/188721/execute-a-exe-on-a-samba-share>Execute a .exe on a samba share</a></li>
+</ul>
+<h2 id=docker启动>docker启动</h2>
+<p>在linux上使用host网络docker同时启动samba与wsdd</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3&#34;</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w> 
+</span><span class=w>  </span><span class=nt>samba-server</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>dperson/samba</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>samba-server</span><span class=w>
+</span><span class=w>    </span><span class=nt>environment</span><span class=p>:</span><span class=w> 
+</span><span class=w>      </span>- <span class=l>TZ=Asia/Shanghai</span><span class=w>
+</span><span class=w>      </span>- <span class=l>USERID=1000</span><span class=w>
+</span><span class=w>      </span>- <span class=l>GROUPID=1000</span><span class=w>
+</span><span class=w>    </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>&gt;-</span><span class=sd>
+</span><span class=sd>      -p
+</span><span class=sd>      -n
+</span><span class=sd>      -u &#34;user1;1234;&#34;
+</span><span class=sd>      -s &#34;downloads;/share/downloads;yes;no;no;user1;user1;user1&#34;
+</span><span class=sd>      -G &#34;downloads;acl allow execute always = True&#34;
+</span><span class=sd>      -g &#34;netbios name = RASPI4&#34;
+</span><span class=sd>      -g &#34;netbios aliases = RASPI4-D RASPI4-M RASPI4-B&#34;</span><span class=w>      
+</span><span class=w>    </span><span class=nt>network_mode</span><span class=p>:</span><span class=w> </span><span class=l>host</span><span class=w>
+</span><span class=w>    </span><span class=nt>mem_limit</span><span class=p>:</span><span class=w> </span><span class=l>128M</span><span class=w>
+</span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>always</span><span class=w>
+</span><span class=w>    </span><span class=nt>volumes</span><span class=p>:</span><span class=w> 
+</span><span class=w>      </span>- <span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>bind</span><span class=w>
+</span><span class=w>        </span><span class=nt>source</span><span class=p>:</span><span class=w> </span><span class=l>/mnt/share/Downloads</span><span class=w>
+</span><span class=w>        </span><span class=nt>target</span><span class=p>:</span><span class=w> </span><span class=l>/share/downloads</span><span class=w>
+</span><span class=w>  </span><span class=nt>wsdd</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>build</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>context</span><span class=p>:</span><span class=w> </span><span class=l>.</span><span class=w>
+</span><span class=w>      </span><span class=nt>dockerfile</span><span class=p>:</span><span class=w> </span><span class=l>wsdd.Dockerfile</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>wsdd</span><span class=w>
+</span><span class=w>    </span><span class=nt>network_mode</span><span class=p>:</span><span class=w> </span><span class=l>host</span><span class=w>
+</span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>always</span><span class=w>
+</span><span class=w>    </span><span class=nt>depends_on</span><span class=p>:</span><span class=w> 
+</span><span class=w>      </span>- <span class=l>samba-server</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>一个简单的docker wsdd镜像：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-dockerfile data-lang=dockerfile><span class=k>FROM</span><span class=s> python:3-alpine</span><span class=err>
+</span><span class=err>
+</span><span class=err></span><span class=k>WORKDIR</span><span class=s> /</span><span class=err>
+</span><span class=err>
+</span><span class=err></span><span class=k>RUN</span> wget https://raw.githubusercontent.com/christgau/wsdd/v0.6.4/src/wsdd.py -O wsdd.py <span class=se>\
+</span><span class=se></span>    <span class=o>&amp;&amp;</span> chmod +x wsdd.py<span class=err>
+</span><span class=err>
+</span><span class=err></span><span class=k>ENTRYPOINT</span> <span class=p>[</span><span class=s2>&#34;/wsdd.py&#34;</span><span class=p>]</span><span class=err>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://hub.docker.com/r/dperson/samba>dperson/samba</a></li>
+</ul>
+<h2 id=win10无法连接多个samba用户到一台linux主机>win10无法连接多个samba用户到一台linux主机</h2>
+<p>在win10上无法连接多个同一台linux主机上的samba</p>
+<p><img src=../assets/images/a1f7de9a-d074-4f20-8bbe-595bb2affb57.png alt></p>
+<h3 id=解决方法-1>解决方法</h3>
+<h4 id=断开之前的连接>断开之前的连接</h4>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=nb>PS </span><span class=n>C:</span><span class=p>\</span><span class=n>Users</span><span class=p>\</span><span class=n>navyd</span><span class=p>&gt;</span> <span class=n>net</span> <span class=n>use</span>
+<span class=n>New</span> <span class=n>connections</span> <span class=n>will</span> <span class=n>be</span> <span class=n>remembered</span><span class=p>.</span>
+
+
+
+<span class=p>-------------------------------------------------------------------------------</span>
+<span class=n>Disconnected</span>           <span class=p>\\</span><span class=n>RASPI4</span><span class=p>\</span><span class=n>magics</span>            <span class=n>Microsoft</span> <span class=n>Windows</span> <span class=n>Network</span>
+<span class=n>The</span> <span class=n>command</span> <span class=n>completed</span> <span class=n>successfully</span><span class=p>.</span>
+
+<span class=nb>PS </span><span class=n>C:</span><span class=p>\</span><span class=n>Users</span><span class=p>\</span><span class=n>navyd</span><span class=p>&gt;</span> <span class=n>net</span> <span class=n>use</span> <span class=p>/</span><span class=n>delete</span> <span class=p>\\</span><span class=n>RASPI4</span><span class=p>\</span><span class=n>magics</span>
+<span class=p>\\</span><span class=n>RASPI4</span><span class=p>\</span><span class=n>magics</span> <span class=n>was</span> <span class=n>deleted</span> <span class=n>successfully</span><span class=p>.</span>
+
+<span class=nb>PS </span><span class=n>C:</span><span class=p>\</span><span class=n>Users</span><span class=p>\</span><span class=n>navyd</span><span class=p>&gt;</span> <span class=n>net</span> <span class=n>use</span>
+
+<span class=n>There</span> <span class=n>are</span> <span class=n>no</span> <span class=n>entries</span> <span class=k>in</span> <span class=n>the</span> <span class=n>list</span><span class=p>.</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id=配置samba服务器多个不同的名称>配置samba服务器多个不同的名称</h4>
+<p>配置</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>[global]
+    netbios name = RASPI4
+    netbios aliases = RASPI4-D RASPI4-M RASPI4-B
+# ...
+</code></pre></td></tr></table>
+</div>
+</div><p>在win10 中使用不同的名称来访问即可如<code>\\RASPI4-D\downloads, \\RASPI4-M\magics</code></p>
+<p>参考：</p>
+<ul>
+<li><a test href=https://superuser.com/a/498219>Samba+Windows: Allow multiple connections by different users?</a></li>
+<li><a test href=https://www.technipages.com/fix-multiple-connections-to-a-server-or-shared-resource-by-the-same-user-error>Windows: Fix ‘Multiple connections to a server or shared resource by the same user’ Error</a></li>
+<li><a test href=https://linux-blog.anracom.com/2020/05/24/samba-4-shares-wsdd-and-windows-10-how-to-list-linux-samba-servers-in-the-win-10-explorer/>Samba 4, shares, wsdd and Windows 10 – how to list Linux Samba servers in the Win 10 Explorer</a></li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

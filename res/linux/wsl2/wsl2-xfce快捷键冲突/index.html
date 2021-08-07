@@ -1,0 +1,199 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="wsl2 xfce快捷键冲突 修改快捷键 wsl2 xfce中修改快捷键 xml 用xml的方式修改~/.config/xfce4/xfconf/xfce-percha"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/linux/wsl2/wsl2-xfce%E5%BF%AB%E6%8D%B7%E9%94%AE%E5%86%B2%E7%AA%81/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="wsl2 xfce快捷键冲突 修改快捷键 wsl2 xfce中修改快捷键 xml 用xml的方式修改~/.config/xfce4/xfconf/xfce-percha">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/linux/wsl2/wsl2-xfce%E5%BF%AB%E6%8D%B7%E9%94%AE%E5%86%B2%E7%AA%81/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="wsl2 xfce快捷键冲突 修改快捷键 wsl2 xfce中修改快捷键 xml 用xml的方式修改~/.config/xfce4/xfconf/xfce-percha">
+<meta itemprop=wordCount content="648">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="wsl2 xfce快捷键冲突 修改快捷键 wsl2 xfce中修改快捷键 xml 用xml的方式修改~/.config/xfce4/xfconf/xfce-percha"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=wsl2-xfce快捷键冲突>wsl2 xfce快捷键冲突</h1>
+<h2 id=修改快捷键>修改快捷键</h2>
+<p>wsl2 xfce中修改快捷键</p>
+<h3 id=xml>xml</h3>
+<p>用xml的方式修改<code>~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ cat ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml <span class=p>|</span> grep -i insert
+      &lt;property <span class=nv>name</span><span class=o>=</span><span class=s2>&#34;&amp;lt;Alt&amp;gt;Insert&#34;</span> <span class=nv>type</span><span class=o>=</span><span class=s2>&#34;string&#34;</span> <span class=nv>value</span><span class=o>=</span><span class=s2>&#34;&#34;</span>/&gt;
+</code></pre></td></tr></table>
+</div>
+</div><p>将对应的<code>property.value</code>置为空即可</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ cat ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml <span class=p>|</span> grep -i f12
+      &lt;property <span class=nv>name</span><span class=o>=</span><span class=s2>&#34;&amp;lt;Alt&amp;gt;F12&#34;</span> <span class=nv>type</span><span class=o>=</span><span class=s2>&#34;empty&#34;</span>/&gt;
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://yuchi.blog.csdn.net/article/details/77433901>pycharm在ubuntu xfce下面Alt+insert快捷键冲突解决</a></li>
+</ul>
+<h3 id=editor>editor</h3>
+<p>在settings editor中找<code>xfce4-keyboard-shortcuts</code>中对应的快捷键，删除<code>property.value</code>置为空</p>
+<p>注意：在<code>xfce4-settings-manager -> keyboard</code>中快捷键不全</p>
+<p><img src=../../assets/images/a249bcd7-371d-44e9-b23d-4b1af5e5757f.png alt></p>
+<p>参考：<a test href="https://unix.stackexchange.com/questions/44643/change-global-keyboard-shortcuts#:~:text=Go%20to%20Menu%20%E2%86%92%20Settings,Xfce4%2C%20though%20not%20user%20friendly.">Change global keyboard shortcuts</a></p>
+<h2 id=ctrlaltb快捷键冲突><code>ctrl+alt+b</code>快捷键冲突</h2>
+<h3 id=描述>描述</h3>
+<p>在idea中使用<code>ctrl+alt+b</code>时出现这个虚拟键盘</p>
+<p><img src=../../assets/images/e318a901-dda3-45f4-bd17-3efda62a0823.png alt></p>
+<h3 id=原因>原因</h3>
+<p>Fcitx “虚拟键盘”的快捷键</p>
+<h3 id=方法>方法</h3>
+<h4 id=gui关闭>gui关闭</h4>
+<ol>
+<li>打开fcitx设置，选择Addon选项卡，取消选择虚拟键盘</li>
+<li>重启fcitx或logout</li>
+</ol>
+<p><img src=../../assets/images/09dbe5c7-951c-4fb0-b9c4-a92a5056eb7f.png alt></p>
+<p>参考：<a test href=https://www.cnblogs.com/drizzlewithwind/p/5997369.html>Ubuntu ctrl+alt+b快捷键冲突</a></p>
+<h4 id=cli>cli</h4>
+<ol>
+<li>编辑<code>/usr/share/fcitx/addon/fcitx-vk.conf</code>属性<code>Enabled=false</code></li>
+<li>重启fcitx或logout</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-zsh data-lang=zsh><span class=c1># 查看是否启用</span>
+$ ccat /usr/share/fcitx/addon/fcitx-vk.conf <span class=p>|</span> grep -i <span class=nb>enable</span>
+<span class=nv>Enabled</span><span class=o>=</span>True
+<span class=c1># 编辑Enabled=false</span>
+sudo vim /usr/share/fcitx/addon/fcitx-vk.conf
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：<a test href=https://askubuntu.com/a/884288>Weird on screen keyboard appearing when pressing ctrl+alt+b</a></p>
+<h2 id=通用冲突>通用冲突</h2>
+<h3 id=描述-1>描述</h3>
+<ul>
+<li><code>alt+f12</code>在idea中打开terminal时不可用</li>
+<li><code>alt+insert</code>idea不可用</li>
+<li><code>ctrl+alt+l</code>为xfce锁屏，idea格式化不可用</li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

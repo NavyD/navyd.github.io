@@ -1,0 +1,210 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="Could not autowire. No beans of &amp;lsquo;ProductCategoryMapper&amp;rsquo; type found 描述 springboot整合mybatis mapper注入时显示could not autowire的错误，不影响使用. idea iu 2020.1.2 方案"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/idea/could-not-autowire.-no-beans-of-productcategorymapper-type-found/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="Could not autowire. No beans of &lsquo;ProductCategoryMapper&rsquo; type found 描述 springboot整合mybatis mapper注入时显示could not autowire的错误，不影响使用. idea iu 2020.1.2 方案">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/idea/could-not-autowire.-no-beans-of-productcategorymapper-type-found/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="Could not autowire. No beans of &lsquo;ProductCategoryMapper&rsquo; type found 描述 springboot整合mybatis mapper注入时显示could not autowire的错误，不影响使用. idea iu 2020.1.2 方案">
+<meta itemprop=wordCount content="715">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="Could not autowire. No beans of &lsquo;ProductCategoryMapper&rsquo; type found 描述 springboot整合mybatis mapper注入时显示could not autowire的错误，不影响使用. idea iu 2020.1.2 方案"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=could-not-autowire-no-beans-of-productcategorymapper-type-found>Could not autowire. No beans of &lsquo;ProductCategoryMapper&rsquo; type found</h1>
+<h2 id=描述>描述</h2>
+<p>springboot整合mybatis mapper注入时显示could not autowire的错误，不影响使用. <code>idea iu 2020.1.2</code></p>
+<p><img src=../assets/images/0dc0cc3d-5057-47e8-9620-25b90ce05686.png alt></p>
+<h2 id=方案>方案</h2>
+<ul>
+<li>直接关掉IDEA的警告提示</li>
+</ul>
+<p>修改idea配置，将spring 的severity的值设置为"warning", 如下：</p>
+<p><img src=../assets/images/5abca38d-d976-4deb-86a3-dfe9f824858f.jpg alt></p>
+<ul>
+<li>@Autowried注解设置required=false</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=nd>@Autowired</span><span class=o>(</span><span class=n>required</span> <span class=o>=</span> <span class=kc>false</span><span class=o>)</span>
+<span class=kd>private</span> <span class=n>CarUserMapper</span> <span class=n>carUserMapper</span><span class=o>;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这样就不会警告了。因为此时 @Autowried 不会再去校验 Mapper 接口是否为空。</p>
+<p>缺点：每引入一个Mapper接口都需要设置上required=false，相当的麻烦，而且容易给别人造成误解：这个Mapper接口真的不需一定存在。</p>
+<ul>
+<li>@Autowried替换为@Resource</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=nd>@Resource</span>
+<span class=kd>private</span> <span class=n>CarUserMapper</span> <span class=n>carUserMapper</span><span class=o>;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>此时也不会给红色警告了。@Resource 注解是 J2EE 提供的，而 @Autowried 注解是 Spring 提供的，他们如果感兴趣可以去看一下他们的区别。</p>
+<ul>
+<li>在Mapper接口上加@Component</li>
+</ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=nd>@Mapper</span>
+<span class=nd>@Component</span>
+<span class=kd>public</span> <span class=n>inteface</span> <span class=n>CarUserMapper</span><span class=o>{}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>加这个注解呢，主要是为了让欺骗IEDA，让它以为CarUserMapper也是一个Spring管理的Bean，这样子使用@Autowired注解注入也不会报错了。</p>
+<ul>
+<li>使用构造函数注入（Spring4.x推荐）</li>
+</ul>
+<p>相信大家都有使用Lombok这个神器了，我们可以利用他的注解@RequiredArgsConstructor来直接构建构造函数即可，不过我尝试过单单使用@AllArgsConstructor也是没问题的。</p>
+<p>当然了，大家如果注入的依赖比较少或者闲得蛋疼，还是可以自己来写构造函数的。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=nd>@Service</span>
+<span class=nd>@RequiredArgsConstructor</span><span class=o>(</span><span class=n>onConstructor</span> <span class=o>=</span> <span class=nd>@__</span><span class=o>(</span><span class=nd>@Autowired</span><span class=o>))</span>
+<span class=c1>//@AllArgsConstructor
+</span><span class=c1></span><span class=kd>public</span> <span class=kd>class</span> <span class=nc>ChargeServiceImpl</span> <span class=kd>implements</span> <span class=n>ChargeService</span> <span class=o>{</span>
+
+    <span class=kd>private</span> <span class=kd>final</span> <span class=n>RedisTemplate</span><span class=o>&lt;</span><span class=n>String</span><span class=o>,</span> <span class=n>Object</span><span class=o>&gt;</span> <span class=n>redisTemplate</span><span class=o>;</span>
+    <span class=kd>private</span> <span class=kd>final</span> <span class=n>CarUserMapper</span> <span class=n>carUserMapper</span><span class=o>;</span>
+    <span class=kd>private</span> <span class=kd>final</span> <span class=n>ChargingMapper</span> <span class=n>chargingMapper</span><span class=o>;</span>
+<span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://www.cnblogs.com/Howinfun/p/11731826.html>IDEA提示找不到Mapper接口：Could not autowire.No beans of &lsquo;xxxMapper&rsquo; type found</a></li>
+<li><a test href=https://www.cnblogs.com/cristin/p/7771817.html>mybatis+spring boot, mapper 提示Could not autowire. No beans of … type found</a></li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

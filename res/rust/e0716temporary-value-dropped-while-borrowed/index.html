@@ -1,0 +1,247 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="E0716: temporary value dropped while borrowed 在使用chianed链式调用时通常出现E0716借用编译错误。如 1 2 3 4 pubfn max_depth(root: Option&amp;lt;Rc&amp;lt;RefCell&amp;lt;TreeNode&amp;gt;&amp;gt;&amp;gt;)-&amp;gt; i32 {// compile failed: temporary value dropped while borrowed letroot=queue.pop_front().unwrap().borrow();} 编译上面代码错误： 1 2 3 4 5 6"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/rust/e0716temporary-value-dropped-while-borrowed/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="E0716: temporary value dropped while borrowed 在使用chianed链式调用时通常出现E0716借用编译错误。如 1 2 3 4 pubfn max_depth(root: Option<Rc<RefCell<TreeNode>>>)-> i32 {// compile failed: temporary value dropped while borrowed letroot=queue.pop_front().unwrap().borrow();} 编译上面代码错误： 1 2 3 4 5 6">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/rust/e0716temporary-value-dropped-while-borrowed/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="E0716: temporary value dropped while borrowed 在使用chianed链式调用时通常出现E0716借用编译错误。如 1 2 3 4 pubfn max_depth(root: Option<Rc<RefCell<TreeNode>>>)-> i32 {// compile failed: temporary value dropped while borrowed letroot=queue.pop_front().unwrap().borrow();} 编译上面代码错误： 1 2 3 4 5 6">
+<meta itemprop=wordCount content="463">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="E0716: temporary value dropped while borrowed 在使用chianed链式调用时通常出现E0716借用编译错误。如 1 2 3 4 pubfn max_depth(root: Option<Rc<RefCell<TreeNode>>>)-> i32 {// compile failed: temporary value dropped while borrowed letroot=queue.pop_front().unwrap().borrow();} 编译上面代码错误： 1 2 3 4 5 6"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=e0716-temporary-value-dropped-while-borrowed>E0716: temporary value dropped while borrowed</h1>
+<p>在使用<code>chianed</code>链式调用时通常出现<code>E0716</code>借用编译错误。如</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=k>pub</span><span class=w> </span><span class=k>fn</span> <span class=nf>max_depth</span><span class=p>(</span><span class=n>root</span>: <span class=nb>Option</span><span class=o>&lt;</span><span class=n>Rc</span><span class=o>&lt;</span><span class=n>RefCell</span><span class=o>&lt;</span><span class=n>TreeNode</span><span class=o>&gt;&gt;&gt;</span><span class=p>)</span><span class=w> </span>-&gt; <span class=kt>i32</span> <span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=c1>// compile failed: temporary value dropped while borrowed
+</span><span class=c1></span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>root</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>queue</span><span class=p>.</span><span class=n>pop_front</span><span class=p>().</span><span class=n>unwrap</span><span class=p>().</span><span class=n>borrow</span><span class=p>();</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>编译上面代码错误：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ cargo c          
+    Checking leetcode-rust v0.1.0 <span class=o>(</span>/home/navyd/Workspaces/projects/leetcode-rust<span class=o>)</span>
+error<span class=o>[</span>E0716<span class=o>]</span>: temporary value dropped <span class=k>while</span> borrowed
+  --&gt; src/maximum_depth_of_binary_tree.rs:82:36
+   <span class=p>|</span>
+<span class=m>82</span> <span class=p>|</span>                         <span class=nb>let</span> <span class=nv>root</span> <span class=o>=</span> queue.pop_front<span class=o>()</span>.unwrap<span class=o>()</span>.borrow<span class=o>()</span><span class=p>;</span>
+   <span class=p>|</span>                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^         - temporary value is freed at the end of this statement
+   <span class=p>|</span>                                    <span class=p>|</span>
+   <span class=p>|</span>                                    creates a temporary which is freed <span class=k>while</span> still in use
+<span class=m>83</span> <span class=p>|</span>                         // <span class=nb>let</span> <span class=nv>root</span> <span class=o>=</span> root.borrow<span class=o>()</span><span class=p>;</span>
+<span class=m>84</span> <span class=p>|</span>                         <span class=k>if</span> <span class=nb>let</span> Some<span class=o>(</span>left<span class=o>)</span> <span class=o>=</span> root.left.clone<span class=o>()</span> <span class=o>{</span>
+   <span class=p>|</span>                                             ---- borrow later used here
+   <span class=p>|</span>
+   <span class=o>=</span> note: consider using a <span class=sb>`</span><span class=nb>let</span><span class=sb>`</span> binding to create a longer lived value
+
+error: aborting due to previous error
+
+For more information about this error, try <span class=sb>`</span>rustc --explain E0716<span class=sb>`</span>.
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=原因>原因</h2>
+<p>以下面这段代码为例</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=c1>// compile failed: temporary value dropped while borrowed
+</span><span class=c1></span><span class=kd>let</span><span class=w> </span><span class=n>foo</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;FooBar&#34;</span><span class=p>.</span><span class=n>to_string</span><span class=p>().</span><span class=n>as_mut_str</span><span class=p>();</span><span class=w>
+</span><span class=w></span><span class=n>println</span><span class=o>!</span><span class=p>(</span><span class=s>&#34;{}&#34;</span><span class=p>,</span><span class=w> </span><span class=n>foo</span><span class=p>)</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>链式调用语法<code>desugar</code>后：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=kd>let</span><span class=w> </span><span class=n>foo</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>__temp</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;FooBar&#34;</span><span class=p>.</span><span class=n>to_string</span><span class=p>();</span><span class=w>
+</span><span class=w>    </span><span class=n>__temp</span><span class=p>.</span><span class=n>as_mut_str</span><span class=p>()</span><span class=w>
+</span><span class=w></span><span class=p>};</span><span class=w>
+</span><span class=w></span><span class=n>println</span><span class=o>!</span><span class=p>(</span><span class=s>&#34;{}&#34;</span><span class=p>,</span><span class=w> </span><span class=n>foo</span><span class=p>);</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p><code>__temp</code>在let scope后就不生效了drop，而<code>String::as_mut_str&lt;'a>(&'a mut self) -> &'a mut str)</code>可变借用是依赖<code>__temp</code>的，如果rust允许foo存活，则foo就变成空指针了</p>
+<p>如果要foo正常使用，则应该将<code>__temp</code>至少提升到foo一个scope上。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>foo</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;FooBar&#34;</span><span class=p>.</span><span class=n>to_string</span><span class=p>();</span><span class=w>
+</span><span class=w></span><span class=kd>let</span><span class=w> </span><span class=n>foo</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>foo</span><span class=p>.</span><span class=n>as_mut_str</span><span class=p>();</span><span class=w>
+</span><span class=w></span><span class=n>println</span><span class=o>!</span><span class=p>(</span><span class=s>&#34;{}&#34;</span><span class=p>,</span><span class=w> </span><span class=n>foo</span><span class=p>);</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id=解法>解法</h2>
+<p>分析原因后，只要改变scope即可：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=k>pub</span><span class=w> </span><span class=k>fn</span> <span class=nf>max_depth</span><span class=p>(</span><span class=n>root</span>: <span class=nb>Option</span><span class=o>&lt;</span><span class=n>Rc</span><span class=o>&lt;</span><span class=n>RefCell</span><span class=o>&lt;</span><span class=n>TreeNode</span><span class=o>&gt;&gt;&gt;</span><span class=p>)</span><span class=w> </span>-&gt; <span class=kt>i32</span> <span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>root</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>queue</span><span class=p>.</span><span class=n>pop_front</span><span class=p>().</span><span class=n>unwrap</span><span class=p>();</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>root</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>root</span><span class=p>.</span><span class=n>borrow</span><span class=p>();</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id=参考>参考</h2>
+<ul>
+<li><a test href=https://users.rust-lang.org/t/can-not-understand-temporary-value-dropped-while-borrowed/23279/7>Can not understand: “temporary value dropped while borrowed”</a></li>
+<li><a test href=https://users.rust-lang.org/t/why-option-t-will-cause-temporary-value-dropped-while-borrowed/25581/3>Why <code>Option&lt;&T></code> will cause “temporary value dropped while borrowed”?</a></li>
+<li><a test href=https://doc.rust-lang.org/error-index.html#E0716>E0716</a></li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

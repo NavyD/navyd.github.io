@@ -1,0 +1,677 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="红黑树是一种近似平衡的二叉查找树，它能够确保任何一个节点的左右子树的高度差不会超过二者中较低那个的一陪。具体来说，红黑树是满足如下条件的二叉"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/java/source-code/datastructure/treemap%E7%BA%A2%E9%BB%91%E6%A0%91%E5%88%86%E6%9E%90/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="红黑树是一种近似平衡的二叉查找树，它能够确保任何一个节点的左右子树的高度差不会超过二者中较低那个的一陪。具体来说，红黑树是满足如下条件的二叉">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/java/source-code/datastructure/treemap%E7%BA%A2%E9%BB%91%E6%A0%91%E5%88%86%E6%9E%90/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="红黑树是一种近似平衡的二叉查找树，它能够确保任何一个节点的左右子树的高度差不会超过二者中较低那个的一陪。具体来说，红黑树是满足如下条件的二叉">
+<meta itemprop=wordCount content="6008">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="红黑树是一种近似平衡的二叉查找树，它能够确保任何一个节点的左右子树的高度差不会超过二者中较低那个的一陪。具体来说，红黑树是满足如下条件的二叉"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<p>红黑树是一种近似平衡的二叉查找树，它能够确保任何一个节点的左右子树的高度差不会超过二者中较低那个的一陪。具体来说，红黑树是满足如下条件的二叉查找树（binary search tree）：</p>
+<ol>
+<li>每个节点要么是红色，要么是黑色。</li>
+<li>根节点必须是黑色</li>
+<li>红色节点不能连续（也即是，红色节点的孩子和父亲都不能是红色）。</li>
+<li>对于每个节点，从该点至null（树尾端）的任何路径，都含有相同个数的黑色节点。</li>
+</ol>
+<p>在树的结构发生改变时（插入或者删除操作），往往会破坏上述条件3或条件4，需要通过调整使得查找树重新满足红黑树的约束条件。</p>
+<p>下面结合Java.util.TreeMap的代码解释。</p>
+<p>左旋：左旋操作用于将一个向右倾斜的红色链接旋转为向左链接。即父节点对着右子节点旋转</p>
+<p><img src="http://img.blog.csdn.net/20171015125136318?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=左旋转></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>	 /**
+     * 左旋转后，除了p的key value没有改变，p变为左孩子节点的位置，p本来的右孩子节点变为p的位置
+     */
+    private void rotateLeft(Entry&lt;K,V&gt; p) {
+        if (p != null) {
+            Entry&lt;K,V&gt; r = p.right;
+            p.right = r.left;
+            if (r.left != null)
+                r.left.parent = p;
+            r.parent = p.parent;
+            if (p.parent == null)
+                root = r;
+            else if (p.parent.left == p)
+                p.parent.left = r;
+            else
+                p.parent.right = r;
+            r.left = p;
+            p.parent = r;
+        }
+    }
+</code></pre></td></tr></table>
+</div>
+</div><p>右旋：即父节点对着左子节点旋转
+<img src="http://img.blog.csdn.net/20171015125633973?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=右旋转></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>	/**
+     * 右旋转后，除了p的key value没有改变，p变为右孩子节点的位置，p本来的左孩子节点变为p的位置
+     */
+    private void rotateRight(Entry&lt;K,V&gt; p) {
+        if (p != null) {
+            Entry&lt;K,V&gt; l = p.left;
+            p.left = l.right;
+            if (l.right != null) l.right.parent = p;
+            l.parent = p.parent;
+            // 父节点连接方式
+            if (p.parent == null)
+                root = l;
+            else if (p.parent.right == p)
+                p.parent.right = l;
+            else p.parent.left = l;
+            l.right = p;
+            p.parent = l;
+        }
+    }
+</code></pre></td></tr></table>
+</div>
+</div><p>RBTree的插入操作
+RBTree的插入与BST的插入方式是一致的，只不过是在插入过后，可能会导致树的不平衡，这时就需要对树进行旋转操作和颜色修复（在这里简称插入修复），使得它符合RBTree的定义。
+新插入的节点是一定红色的，插入修复时如果父节点的颜色为黑终止修复操作。即只有在<em><strong>父节点为红色节点</strong></em>的时候是需要插入修复操作的。
+插入修复操作分为以下的三种情况，而且新插入的节点的父节点都是红色的：</p>
+<ol>
+<li>x的父亲节点与x的叔父节点都为红色</li>
+<li>x是父节点的右孩子，x的父亲节点为红色，且x的叔父节点是黑色</li>
+<li>x是父节点的左孩子。x的父亲节点为红色，且x的叔父节点是黑色</li>
+</ol>
+<p>插入操作-1：x的父亲节点与x的叔父节点都为红色
+1的操作是将<strong>祖父节点变为红，父亲和叔父节点变黑</strong>。即维持了高度的平衡，修复后颜色也符合RBTree定义的第三条和第四条。<strong>操作完成后G(祖父节点)节点变成了新的节点。如果G节点的父节点是红色的话，则继续做修复操作</strong>。如下图：
+<img src="http://img.blog.csdn.net/20171015131457124?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述>
+祖父节点变为红，父亲和叔父节点变黑后。新节点n为原祖父节点，n的父节点为红，继续修复：
+<img src="http://img.blog.csdn.net/20171015131626045?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述></p>
+<p>插入操作-2：x是父节点的右孩子，x的父亲节点为红色，且x的叔父节点是黑色
+2的操作是将<strong>x节点的父节点进行右旋操作，转换为插入操作-3</strong>。如下图</p>
+<p><img src="http://img.blog.csdn.net/20171015132349643?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述>
+将x节点的父节点进行右旋操作后：
+<img src="http://img.blog.csdn.net/20171015133205915?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述></p>
+<p>插入操作-3：x是父节点的左孩子。x的父亲节点为红色，且x的叔父节点是黑色
+3的操作是将<strong>x的父节点变为黑色，x的祖父节点变为红色，把x的祖父节点右旋</strong>。如下图</p>
+<p><img src="http://img.blog.csdn.net/20171015133653134?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述>
+x的父节点变为黑色，x的祖父节点变为红色，把x的祖父节点右旋
+<img src="http://img.blog.csdn.net/20171015133940350?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述></p>
+<p>插入操作总结：
+插入是一个向上修复的操作。让所有节点符合红黑树的定义，由于x节点和其父节点都是红色，必然要将父节点变黑，但是增加一个黑色节点必然不符合定义4，那么就需要向上将某个黑色节点变红，但是有可能不符合定义3，出现连续的两个红色节点，必须向上不断修复。
+所以<em><strong>插入操作是对x节点的父节点，叔父节点，祖父节点向上的节点不断修复</strong></em>，直到x的节点符合定义为止</p>
+<p>treemap的修复插入代码：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>    /**
+     * 修复插入大概分三种情况：
+     * 0.x的父节点是黑色就不用修复
+     * 1.x的父亲节点与x的叔父节点都为红色，只需将x的父亲和叔父都变为黑色。x的祖父变为红色
+     * 2.x是父节点的右孩子，x的父亲节点为红色，且x的叔父节点是黑色， 将x的父节点左旋转成为一边连续的两个红节点 变为 情况3
+     * 3.x是父节点的左孩子。x的父亲节点为红色，且x的叔父节点是黑色，将x的父节点变为黑色，x的祖父节点变为红色。
+     * 将x的祖父节点右旋转。将x原来的祖父节点变为x的兄弟节点，3完成后一定退出循环，x的父节点为黑，祖父节点也为黑
+     *
+     * x的父节点是祖父节点的左 右孩子需要分开处理，这是对称的
+     * @param x
+     * @author Navy D
+     * @date 20171007143615
+     */
+    private void fixAfterInsertion(Entry&lt;K,V&gt; x) {
+    	// 将新节点作为红色节点
+        x.color = RED;
+        // 新插入的结点都是红色的。如果其父结点是黑色的，那就什么都不用做
+        while (x != null &amp;&amp; x != root &amp;&amp; x.parent.color == RED) {
+        	// 如果x的父亲是x的祖父的左孩子	x与其父节点p都是红节点。且x的叔父节点是红色
+            if (parentOf(x) == leftOf(parentOf(parentOf(x)))) {
+            	// x的父亲的兄弟节点  叔父节点
+                Entry&lt;K,V&gt; y = rightOf(parentOf(parentOf(x)));
+                // 1.如果x的父亲节点与x的叔父节点都为红色。将x的父亲和叔父都变为黑色。x的祖父变为红色
+                if (colorOf(y) == RED) {
+                    setColor(parentOf(x), BLACK);
+                    setColor(y, BLACK);
+                    setColor(parentOf(parentOf(x)), RED);
+                    x = parentOf(parentOf(x));
+                }
+                // 如果x的父亲节点是红色，叔父节点是黑色
+                else {
+                	/**
+                	 *  2.x是父节点的右孩子，x的父亲节点为红色，且x的叔父节点是黑色，
+                	 *  将x的父节点左旋转成为左边连续的两个红节点 变为 情况3
+                	 */
+                    if (x == rightOf(parentOf(x))) {
+                        x = parentOf(x);
+                       // 注意x变为父节点后旋转又成为孩子节点
+                        rotateLeft(x);
+                    }
+
+                    /**
+                     *  3.x是父节点的左孩子。x的父亲节点为红色，且x的叔父节点是黑色，将x的父节点变为黑色，
+                     *  x的祖父节点变为红色。将x的祖父节点右旋转。将x原来的祖父节点变为x的兄弟节点
+                     */
+                    setColor(parentOf(x), BLACK);
+                    setColor(parentOf(parentOf(x)), RED);
+                    rotateRight(parentOf(parentOf(x)));
+                }
+            }
+            // 如果x的父亲节点是祖父的右孩子
+            else {
+            	// x的叔父节点
+                Entry&lt;K,V&gt; y = leftOf(parentOf(parentOf(x)));
+                /**
+                 * 4.如果x的父亲节点与叔父节点都是红色，就将x的父亲节点与叔父节点变黑，祖父节点变红
+                 */
+                if (colorOf(y) == RED) {
+                    setColor(parentOf(x), BLACK);
+                    setColor(y, BLACK);
+                    setColor(parentOf(parentOf(x)), RED);
+                    x = parentOf(parentOf(x));
+                } else {
+                	/**
+                	 * 5.如果x是父亲节点的左孩子，且父亲节点是红色，叔父节点是黑色，就将父节点右旋转
+                	 * 变为右边连续的两个红节点 转变为情况6
+                	 */
+                    if (x == leftOf(parentOf(x))) {
+                        x = parentOf(x);
+                        rotateRight(x);
+                    }
+                    /**
+                     * 6.如果x是父亲的右孩子，且父亲节点是红色，叔父节点是黑色，将x的父节点变为黑色，
+                     *  x的祖父节点变为红色。将x的祖父节点左旋转。将x原来的祖父节点变为x的兄弟节点
+                     */
+                    setColor(parentOf(x), BLACK);
+                    setColor(parentOf(parentOf(x)), RED);
+                    rotateLeft(parentOf(parentOf(x)));
+                }
+            }
+        }
+        // root节点保持为黑色
+        root.color = BLACK;
+    }
+</code></pre></td></tr></table>
+</div>
+</div><p>删除操作：
+删除操作首先需要做的也是BST的删除操作，**删除操作会删除对应的节点，如果是叶子节点就直接删除，如果是非叶子节点，使用左子树中的最大节点替换这个删除节点的位置，如果左子树为空，就使用右子树中最小节点替换这个删除节点。**删除后就需要做删除修复操作，使的树符合红黑树的定义，符合定义的红黑树高度是平衡的。</p>
+<p>修复操作：
+删除操作的总体思想是从兄弟节点借调黑色节点使树保持局部的平衡，如果局部的平衡达到了，就看整体的树是否是平衡的，如果不平衡就接着向上追溯调整。
+<strong>如果删除节点x是红色节点就不用修复。故x一定是黑色节点</strong>
+删除修复操作分为四种情况(删除黑节点后)：
+注意这个针对x是用父节点左孩子，x是右孩子的情况是左孩子的映射。</p>
+<ol>
+<li>x节点的兄弟节点是红色的节点。</li>
+<li>x节点的兄弟节点是黑色的节点，且兄弟节点的子节点都是黑色的。</li>
+<li>x的兄弟节点是黑色，且x的兄弟节点中左孩子为红色，右孩子为黑色
+4.x的兄弟节点是黑色，且x的兄弟节点中左孩子为任意颜色，右孩子为红色</li>
+</ol>
+<p>删除操作-1：x节点的兄弟节点是红色的节点。
+<strong>将x的兄弟节点变黑，x的父节点变红，左旋转父节点使新的兄弟节点变为黑色</strong>，转换为情况234。由于兄弟节点是红色节点的时候，无法借调黑节点，所以需要将兄弟节点提升到父节点，由于兄弟节点是红色的，根据RBTree的定义，兄弟节点的子节点是黑色的，就可以从它的子节点借调了。镜像结构的树只需要做对应的右旋操作即可。
+之所以要做1操作是因为兄弟节点是红色的，无法借到一个黑节点来填补删除的黑节点。如下图：
+<img src="http://img.blog.csdn.net/20171015142450918?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述>
+将x的兄弟节点变黑，x的父节点变红，左旋转父节点使新的兄弟节点变为黑色：
+<img src="http://img.blog.csdn.net/20171015142546854?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述></p>
+<p>删除操作-2：x节点的兄弟节点是黑色的节点，且兄弟节点的子节点都是黑色的。
+<strong>将x的兄弟节点变红色即可，将父节点变成新的x节点，继续向上调整</strong>。2的删除操作是由于兄弟节点可以消除一个黑色节点，(删除的节点为黑色，故删除这一边少一个黑色节点，需要兄弟那边也少一个黑色节点平衡)因为兄弟节点和兄弟节点的子节点都是黑色的，所以可以将兄弟节点变红，这样就可以保证树的局部的颜色符合定义了。这个时候需要<em>将父节点A变成新的节点，继续向上调整</em>，直到整颗树的颜色符合RBTree的定义为止。
+case 2这种情况下之所以要将兄弟节点变红，是因为如果把兄弟节点借调过来，会导致兄弟的结构不符合RBTree的定义，这样的情况下只能是将兄弟节点也变成红色来达到颜色的平衡。当将兄弟节点也变红之后，达到了局部的平衡了，但是对于祖父节点来说是不符合定义4的。这样就需要回溯到父节点，接着进行修复操作。
+注意：treemap中当由情况1进入情况2时，删除节点x的父节点为红，兄弟节点也为红，向上调整x = parentOf(x)后x为红色，必定退出循环，最后setColor(x, BLACK)。也就是说删除操作2修复后如果父节点为红色就说明左右子节点黑色节点数已经平衡(删除节点一边少一个黑色节点，修复变红后使兄弟节点一边同样少一个黑节点)，只需要将父节点变黑就能是整个树黑色节点树平衡。如果父节点为黑色就无法确定祖父节点是否平衡
+<img src="http://img.blog.csdn.net/20171015151619276?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述>
+将x的兄弟节点变红色即可，将父节点变成新的x节点
+<img src="http://img.blog.csdn.net/20171015151725403?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述>
+注意：这两个图不标准，B不可能为根节点，即b上边还有节点，根节点不可能为红色</p>
+<p>删除操作-3：x的兄弟节点是黑色，且x的兄弟节点中左孩子为红色，右孩子为黑色
+<strong>将兄弟节点的左孩子为黑色，兄弟节点变为红色，右旋转兄弟节点</strong>，新的兄弟节点还为黑色 ，其右孩子为红色****，3的删除操作是一个中间步骤，它的目的是将左边的红色节点借调过来使右边节点为红色，这样就可以转换成4状态了，通过将两个节点变成黑色来保证红黑树的整体平衡。
+之所以说3是一个中间状态，是因为根据红黑树的定义来说，下图并不是平衡的，他是*通过2操作完后向上回溯出现的状态*。之所以会出现3和后面的4的情况，是因为可以通过借用侄子节点的红色，变成黑色来符合红黑树定义4.
+<img src="http://img.blog.csdn.net/20171015153049034?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述>
+兄弟节点的左孩子为黑色，兄弟节点变为红色，右旋转兄弟节点
+<img src="http://img.blog.csdn.net/20171015153120207?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述></p>
+<p>删除操作-4：x的兄弟节点是黑色，且x的兄弟节点中左孩子为任意颜色，右孩子为红色
+<strong>将x的兄弟节点变为父节点的颜色，兄弟节点的右子节点变黑，x的父节点变为黑色，并左旋转父节点</strong>
+4的操作是真正的节点借调操作，通过将兄弟节点以及兄弟节点的右节点借调过来，并将兄弟节点的右子节点变成红色来达到借调两个黑节点的目的，这样的话，整棵树还是符合RBTree的定义的。
+4这种情况的发生只有在待删除的节点的兄弟节点为黑，且子节点不全部为黑，才有可能借调到两个节点来做黑节点使用，从而保持整棵树都符合红黑树的定义。
+<img src="http://img.blog.csdn.net/20171015155359516?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述>
+将x的兄弟节点变为父节点的颜色，兄弟节点的右子节点变黑，x的父节点变为黑色，并左旋转父节点
+<img src="http://img.blog.csdn.net/20171015155418494?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvTmF2eV9EVA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=这里写图片描述></p>
+<p>删除总结：
+红黑树的删除操作是最复杂的操作，复杂的地方就在于当删除了黑色节点的时候，如何从兄弟节点去借调节点，以保证树的颜色符合定义。由于红色的兄弟节点是没法借调出黑节点的，这样只能通过选择操作让他上升到父节点，而由于它是红节点，所以它的子节点就是黑的，可以借调。</p>
+<p>对于兄弟节点是黑色节点的可以分成3种情况来处理，当所以的兄弟节点的子节点都是黑色节点时，可以直接将兄弟节点变红，这样局部的红黑树颜色是符合定义的。但是整颗树不一定是符合红黑树定义的，需要往上追溯继续调整。</p>
+<p>对于兄弟节点的子节点为左红右黑或者 (全部为红，右红左黑)这两种情况，可以先将前面的情况通过选择转换为后一种情况，在后一种情况下，因为兄弟节点为黑，兄弟节点的右节点为红，可以借调出两个节点出来做黑节点，这样就可以保证删除了黑节点，整棵树还是符合红黑树的定义的，因为黑色节点的个数没有改变。</p>
+<p>红黑树的删除操作是遇到删除的节点为红色，或者追溯调整到了root节点，这时删除的修复操作完毕。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span><span class=lnt>85
+</span><span class=lnt>86
+</span><span class=lnt>87
+</span><span class=lnt>88
+</span><span class=lnt>89
+</span><span class=lnt>90
+</span><span class=lnt>91
+</span><span class=lnt>92
+</span><span class=lnt>93
+</span><span class=lnt>94
+</span><span class=lnt>95
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>/**
+     * x节点分为父节点左孩子与右孩
+     * 删除修复重点在于将删除节点的兄弟节点变为黑色，和兄弟节点的孩子的颜色需要符合规则
+     * 0.x如果是红色节点就不用修复。故x一定是黑色节点
+     *
+     * 1.如果x的兄弟节点是红色(父节点为黑色，兄弟其原孩子节点必为黑)，就将父节点变为红色左旋转使新的兄弟节点变为黑色
+     * 转变为兄弟节点为黑色的情况(可以进入234)
+     * 2.如果x的兄弟节点是黑色，且x的兄弟节点的两个孩子都是黑色，就改变这个兄弟节点为红色 (进入2就不会进入3。4情况)
+     * 3.如果x的兄弟节点是黑色，且x的兄弟节点中左孩子为红色，右孩子为黑色，改变兄弟节点左孩子为黑色，兄弟节点变为红色
+     * 并右旋转兄弟节点，新的兄弟节点还为黑色 ，其右孩子为红色(如果进入3必然进入4)
+     * 4.如果x的兄弟节点是黑色，且x的兄弟节点中左孩子为任意颜色，右孩子为红色，就兄弟节点变为父节点的颜色，父节点变黑，
+     * 兄弟节点的右孩子变黑，左旋父节点
+     */
+    private void fixAfterDeletion(Entry&lt;K,V&gt; x) {
+        while (x != root &amp;&amp; colorOf(x) == BLACK) {
+        	// 如果x节点是父亲节点的左孩子
+            if (x == leftOf(parentOf(x))) {
+            	// x节点的兄弟节点
+                Entry&lt;K,V&gt; sib = rightOf(parentOf(x));
+                /**
+                 * 1.如果x的兄弟节点为红色，父亲节点一定为黑色(不能连续两个红)，将x的兄弟节点变黑，父节点变红，将父节点左旋转
+                 * 降级为原右孩子节点(成为x的叔父节点)的左孩子节点。x的兄弟节点变为x的祖父节点。不平衡
+                 * x的新兄弟节点一定为黑色(原兄弟节点为红，两个子节点必定为黑，旋转后左子节点变为新的兄弟节点)
+                 */
+                if (colorOf(sib) == RED) {
+                    setColor(sib, BLACK);
+                    setColor(parentOf(x), RED);
+                    rotateLeft(parentOf(x));
+                    // 新的兄弟节点
+                    sib = rightOf(parentOf(x));
+                }
+                /**
+                 * 2.如果x的兄弟节点的左右孩子为黑色就将这个兄弟节点变为红色
+                 */
+                if (colorOf(leftOf(sib))  == BLACK &amp;&amp;
+                    colorOf(rightOf(sib)) == BLACK) {
+                    setColor(sib, RED);
+                    // 向上寻找 如果是1开始到2一定会退出循环（因为x原本的兄弟节点两孩子为黑色，左孩子为x的新兄弟节点）
+                    // 即x的兄弟节点为黑色(改变后为红色)，两个孩子为黑色，x的父节点是左旋后的红色父节点
+                    x = parentOf(x);
+                }
+                // 如果x的兄弟节点的孩子中含有红色节点
+                else {
+                	/**
+                	 * 3.如果x的兄弟节点的右孩子是黑色，左孩子是红色，将x的兄弟的左孩子变为黑色，x的兄弟变为红色，
+                	 * 右旋转x的兄弟节点
+                	 */
+                    if (colorOf(rightOf(sib)) == BLACK) {
+                        setColor(leftOf(sib), BLACK);
+                        setColor(sib, RED);
+                        rotateRight(sib);
+                        // 旋转后新的兄弟节点
+                        sib = rightOf(parentOf(x));
+                    }
+                    /**
+                     * 4：当前节点是黑色的，且兄弟节点是黑色的，且兄弟节点的右子节点是红色，左子节点任意颜色
+                     */
+                    setColor(sib, colorOf(parentOf(x)));
+                    setColor(parentOf(x), BLACK);
+                    setColor(rightOf(sib), BLACK);
+                    rotateLeft(parentOf(x));
+                    x = root;
+                }
+            } else { // symmetric
+                Entry&lt;K,V&gt; sib = leftOf(parentOf(x));
+
+                if (colorOf(sib) == RED) {
+                    setColor(sib, BLACK);
+                    setColor(parentOf(x), RED);
+                    rotateRight(parentOf(x));
+                    sib = leftOf(parentOf(x));
+                }
+
+                if (colorOf(rightOf(sib)) == BLACK &amp;&amp;
+                    colorOf(leftOf(sib)) == BLACK) {
+                    setColor(sib, RED);
+                    x = parentOf(x);
+                } else {
+                    if (colorOf(leftOf(sib)) == BLACK) {
+                        setColor(rightOf(sib), BLACK);
+                        setColor(sib, RED);
+                        rotateLeft(sib);
+                        sib = leftOf(parentOf(x));
+                    }
+                    setColor(sib, colorOf(parentOf(x)));
+                    setColor(parentOf(x), BLACK);
+                    setColor(leftOf(sib), BLACK);
+                    rotateRight(parentOf(x));
+                    x = root;
+                }
+            }
+        }
+
+        setColor(x, BLACK);
+    }
+</code></pre></td></tr></table>
+</div>
+</div><hr>
+<p>参考：</p>
+<ul>
+<li><a test href=http://blog.csdn.net/eson_15/article/details/51144079>【数据结构和算法05】 红-黑树（看完包懂~）</a></li>
+<li><a test href=http://blog.csdn.net/v_JULY_v/article/details/6105630>教你初步了解红黑树</a></li>
+<li><a test href=https://zhuanlan.zhihu.com/p/24367771>红黑树深入剖析及Java实现</a></li>
+<li><a test href=https://github.com/CarpenterLee/JCFInternals/blob/master/markdown/5-TreeSet%20and%20TreeMap.md>TreeSet and TreeMap</a></li>
+</ul>
+<hr>
+<p>这是本人第一篇文章，整理这篇文章的动机在于红黑树有些复杂，尽管当时能够理解，可是过了一段时间后就忘记的差不多了，我不求能够有多少作用，只要能让我再看懂就行了</p>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

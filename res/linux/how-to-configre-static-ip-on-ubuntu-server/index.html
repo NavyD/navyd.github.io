@@ -1,0 +1,230 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="how to configure static ip 为什么会存在static ip的需求？ 经常变化的ip对于开发很不友好 ubuntu server 18.04 修改ip使用netplan 1 vim /etc/netplan/50-cloud-init.yaml 原文件： 1 2 3 4 5 network:ethernets:eth0:dhcp4:trueversion:2 改为s"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/linux/how-to-configre-static-ip-on-ubuntu-server/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="how to configure static ip 为什么会存在static ip的需求？ 经常变化的ip对于开发很不友好 ubuntu server 18.04 修改ip使用netplan 1 vim /etc/netplan/50-cloud-init.yaml 原文件： 1 2 3 4 5 network:ethernets:eth0:dhcp4:trueversion:2 改为s">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/linux/how-to-configre-static-ip-on-ubuntu-server/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="how to configure static ip 为什么会存在static ip的需求？ 经常变化的ip对于开发很不友好 ubuntu server 18.04 修改ip使用netplan 1 vim /etc/netplan/50-cloud-init.yaml 原文件： 1 2 3 4 5 network:ethernets:eth0:dhcp4:trueversion:2 改为s">
+<meta itemprop=wordCount content="246">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="how to configure static ip 为什么会存在static ip的需求？ 经常变化的ip对于开发很不友好 ubuntu server 18.04 修改ip使用netplan 1 vim /etc/netplan/50-cloud-init.yaml 原文件： 1 2 3 4 5 network:ethernets:eth0:dhcp4:trueversion:2 改为s"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=how-to-configure-static-ip>how to configure static ip</h1>
+<p>为什么会存在static ip的需求？</p>
+<p>经常变化的ip对于开发很不友好</p>
+<h2 id=ubuntu-server-1804>ubuntu server 18.04</h2>
+<ol>
+<li>修改ip使用<code>netplan</code></li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>vim /etc/netplan/50-cloud-init.yaml
+</code></pre></td></tr></table>
+</div>
+</div><p>原文件：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>network</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>ethernets</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>eth0</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span><span class=nt>dhcp4</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w>    </span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=m>2</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><ol start=2>
+<li>改为static ip=192.168.0.10</li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>network</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>ethernets</span><span class=p>:</span><span class=w>
+</span><span class=w>        </span><span class=nt>eth0</span><span class=p>:</span><span class=w>
+</span><span class=w>            </span><span class=nt>dhcp4</span><span class=p>:</span><span class=w> </span><span class=kc>no</span><span class=w>
+</span><span class=w>            </span><span class=c># ip</span><span class=w>
+</span><span class=w>            </span><span class=nt>addresses</span><span class=p>:</span><span class=w>
+</span><span class=w>              </span>- <span class=m>192.168.0.10</span><span class=l>/24</span><span class=w>
+</span><span class=w>            </span><span class=c># 网关</span><span class=w>
+</span><span class=w>            </span><span class=nt>gateway4</span><span class=p>:</span><span class=w> </span><span class=m>192.168.0.1</span><span class=w>
+</span><span class=w>            </span><span class=c># DNS</span><span class=w>
+</span><span class=w>            </span><span class=nt>nameservers</span><span class=p>:</span><span class=w>
+</span><span class=w>              </span><span class=nt>addresses</span><span class=p>:</span><span class=w>
+</span><span class=w>                </span>- <span class=m>223.5.5.5</span><span class=w>
+</span><span class=w>    </span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=m>2</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><ol start=3>
+<li><code>sudo netplan apply</code></li>
+</ol>
+<p>参考：</p>
+<p><a test href=https://help.ubuntu.com/lts/serverguide/network-configuration.html>Network Configuration</a></p>
+<h3 id=如何查看网关>如何查看网关</h3>
+<ol>
+<li><code>route -n</code> 或 <code>netstat -rn</code></li>
+</ol>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>~$ route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         192.168.0.1     0.0.0.0         UG    <span class=m>0</span>      <span class=m>0</span>        <span class=m>0</span> eth0
+192.168.0.0     0.0.0.0         255.255.255.0   U     <span class=m>0</span>      <span class=m>0</span>        <span class=m>0</span> eth0
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=hyper-v>hyper-v</h2>
+<p>配置使主机与vm同一LAN</p>
+<ol>
+<li>创建<code>internal switch</code></li>
+</ol>
+<p><img src=images/internal_switch.png alt></p>
+<h3 id=如何共享主机网络>如何共享主机网络</h3>
+<h4 id=sharing>sharing</h4>
+<p>使用正常工作的网卡sharing</p>
+<p><img src=images/internet_sharing.png alt></p>
+<p>缺点：</p>
+<p>只能对一个网络</p>
+<h4 id=bridge>bridge</h4>
+<p>多个网络组成bridge</p>
+<p><img src=images/bridge.png alt></p>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

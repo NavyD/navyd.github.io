@@ -1,0 +1,207 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="Queue 在处理元素前用于保存元素的 collection。除了基本的 Collection 操作外，队列还提供其他的插入、提取和检查操作。每个方法都存在两种形式： 一种抛出"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/java/source-code/java/util/queue/queue_code/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="Queue 在处理元素前用于保存元素的 collection。除了基本的 Collection 操作外，队列还提供其他的插入、提取和检查操作。每个方法都存在两种形式： 一种抛出">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/java/source-code/java/util/queue/queue_code/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="Queue 在处理元素前用于保存元素的 collection。除了基本的 Collection 操作外，队列还提供其他的插入、提取和检查操作。每个方法都存在两种形式： 一种抛出">
+<meta itemprop=wordCount content="751">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="Queue 在处理元素前用于保存元素的 collection。除了基本的 Collection 操作外，队列还提供其他的插入、提取和检查操作。每个方法都存在两种形式： 一种抛出"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=queue>Queue</h1>
+<p>在处理元素前用于保存元素的 collection。除了基本的 Collection 操作外，队列还提供其他的插入、提取和检查操作。每个方法都存在两种形式：</p>
+<ul>
+<li>一种抛出异常（操作失败时）</li>
+<li>另一种返回一个特殊值（null 或 false，具体取决于操作）</li>
+</ul>
+<p>插入操作的后一种形式是用于专门为有容量限制的 Queue 实现设计的；在大多数实现中，插入操作不会失败。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><em>Throws exception</em></th>
+<th style=text-align:left><em>Returns special value</em></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Insert</strong></td>
+<td><code>add(e)</code></td>
+<td style=text-align:left><code>offer(e)</code></td>
+</tr>
+<tr>
+<td><strong>Remove</strong></td>
+<td><code>remove()</code></td>
+<td style=text-align:left><code>poll()</code></td>
+</tr>
+<tr>
+<td><strong>Examine</strong></td>
+<td><code>element()</code></td>
+<td style=text-align:left><code>peek()</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id=类方法>类方法</h3>
+<p><img src=images/queue_1.png alt></p>
+<p>Queue在Collection的基础上新增了６个(其实不包含add和remove只有４个)方法，分别为添加，删除，获取；每种提供两个方法</p>
+<p>注意：</p>
+<ul>
+<li>add(即Collection.add)和offer都是插入元素到队列，区别是当前无可用空间时(如达到Queue的容量限制时)前者抛出异常，后者返回false</li>
+<li>remove(即Collection.remove)和poll都是移除并返回队列的头部元素，区别是队列为空时前者抛出异常，后者返回null</li>
+<li>element和peek都是返回但不移除队列的头部元素，区别是前者在队列为空时抛出异常，后者返回null</li>
+</ul>
+<h2 id=总结>总结</h2>
+<ul>
+<li>队列的元素排序方法由具体实现指定</li>
+<li>Queue通常不允许插入null元素，即使某些具体实现允许插入null，也不应该插入null</li>
+</ul>
+<p>由于移除方法poll()和获取方法peek()通过返回null表明队列为空，操作失败。如果在Queue中插入null就会造成混乱。如：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-java data-lang=java>    <span class=kd>static</span> <span class=kt>void</span> <span class=nf>addNullForQueueTest</span><span class=o>()</span> <span class=o>{</span>
+        <span class=c1>// LinkedList实现允许插入null元素
+</span><span class=c1></span>        <span class=n>Queue</span><span class=o>&lt;</span><span class=n>String</span><span class=o>&gt;</span> <span class=n>queue</span> <span class=o>=</span> <span class=k>new</span> <span class=n>LinkedList</span><span class=o>&lt;&gt;();</span>
+        <span class=n>queue</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=s>&#34;a&#34;</span><span class=o>);</span>
+        <span class=n>queue</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=kc>null</span><span class=o>);</span>
+        <span class=n>queue</span><span class=o>.</span><span class=na>add</span><span class=o>(</span><span class=s>&#34;abc&#34;</span><span class=o>);</span>
+        <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=n>queue</span><span class=o>);</span>
+        <span class=n>String</span> <span class=n>s</span> <span class=o>=</span> <span class=kc>null</span><span class=o>;</span>
+        <span class=c1>// 插入null使后面的元素&#39;abc&#39;无法被读取
+</span><span class=c1></span>      	<span class=c1>// 输出：a
+</span><span class=c1></span>        <span class=k>while</span> <span class=o>((</span><span class=n>s</span> <span class=o>=</span> <span class=n>queue</span><span class=o>.</span><span class=na>poll</span><span class=o>())</span> <span class=o>!=</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
+            <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=n>s</span><span class=o>);</span>
+        <span class=o>}</span>
+    <span class=o>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Queue未定义阻塞队列方法，如果需要可以使用BlockingQueue接口</li>
+<li>Queue的equals和hashCode方法应该使用Object的默认实现</li>
+</ul>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

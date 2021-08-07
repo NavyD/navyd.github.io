@@ -1,0 +1,371 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="LinkedHashMap LinkedHashMap是HashMap的直接子类，二者唯一的区别是LinkedHashMap在HashMap的基础上，采用双向链表（d"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/java/source-code/datastructure/linkedhashmap/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="LinkedHashMap LinkedHashMap是HashMap的直接子类，二者唯一的区别是LinkedHashMap在HashMap的基础上，采用双向链表（d">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/java/source-code/datastructure/linkedhashmap/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="LinkedHashMap LinkedHashMap是HashMap的直接子类，二者唯一的区别是LinkedHashMap在HashMap的基础上，采用双向链表（d">
+<meta itemprop=wordCount content="2762">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="LinkedHashMap LinkedHashMap是HashMap的直接子类，二者唯一的区别是LinkedHashMap在HashMap的基础上，采用双向链表（d"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=linkedhashmap>LinkedHashMap</h1>
+<p>LinkedHashMap是HashMap的直接子类，二者唯一的区别是LinkedHashMap在HashMap的基础上，采用双向链表（doubly-linked list）的形式将所有entry连接起来，这样是为保证元素的迭代顺序跟插入顺序相同。下面给出了LinkedHashMap的结构图，主体部分跟HashMap完全一样，多了header指向双向链表的头部（是一个哑元），该双向链表的迭代顺序就是entry的插入顺序。</p>
+<p>这种结构还有一个好处：<strong>迭代LinkedHashMap时不需要像HashMap那样遍历整个table</strong>，而只需要<strong>直接遍历header指向的双向链表</strong>即可，也就是说LinkedHashMap的迭代时间就只跟entry的个数相关，而跟table的大小无关。</p>
+<p>LinkedHashMap可以用来实现LRU算法，由于不怎么了解，暂时不怎么写关于accessorder的问题，但是遍历的问题还是能写写的</p>
+<p><img src=https://github.com/CarpenterLee/JCFInternals/raw/master/PNGFigures/LinkedHashMap_base.png alt></p>
+<p>继承结构：</p>
+<pre><code>public class LinkedHashMap&lt;K,V&gt;
+extends HashMap&lt;K,V&gt;
+implements Map&lt;K,V&gt;
+</code></pre>
+<p>linkedhashmap大部分实现来自hashmap，所以需要结合hashmap分析源代码。</p>
+<p>链表结构：</p>
+<pre><code> static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; {
+	// 保存插入顺序的前后链接
+    Entry&lt;K,V&gt; before, after;
+    Entry(int hash, K key, V value, Node&lt;K,V&gt; next) {
+        super(hash, key, value, next);
+    }
+}
+</code></pre>
+<p>主要字段：</p>
+<pre><code>/**
+ * true for access-order,false for insertion-order.
+ * 所有默认未指定accessOrder字段构造器都默认使用false遍历使用插入顺序
+ */
+final boolean accessOrder;
+
+/**
+ * The head (eldest) of the doubly linked list.
+ */
+// 双向链表的头结点
+transient LinkedHashMap.Entry&lt;K,V&gt; head;
+
+/**
+ * The tail (youngest) of the doubly linked list.
+ */
+// 双向链表的尾节点
+transient LinkedHashMap.Entry&lt;K,V&gt; tail;
+</code></pre>
+<p>可以注意到，源码注释上有eldest，yougest的字样，这就与accessorder这个字段有关系，如果accessorder=true，那么linkedhashmap就会<strong>使用访问次序来保持双向链表的顺序</strong>，最近访问的会保持在链表的尾部。对于LRU算法实现是一个很好的方式(其实我不怎么懂这个算法).</p>
+<p>关键方法：</p>
+<p>hashMap中有几个专门对于linkedhashmap的方法签名：</p>
+<pre><code> // Callbacks to allow LinkedHashMap post-actions
+void afterNodeAccess(Node&lt;K,V&gt; p) { }
+void afterNodeInsertion(boolean evict) { }
+void afterNodeRemoval(Node&lt;K,V&gt; p) { }
+</code></pre>
+<p>这些方法体现在hashmap的方法中被调用。</p>
+<p>如putVal 调用afterNodeAccess afterNodeInsertion
+putVal中只有当插入相同的键key更新关联值时调用afterNodeAccess，使访问到的节点被置于双向链表的尾部。
+由于afterNodeInsertion默认没有作用，不讨论</p>
+<p>replace 调用afterNodeAccess</p>
+<p>computeIfAbsent 调用 afterNodeAccess afterNodeInsertion
+虽然不知道有什么用，还是暂时贴出来吧</p>
+<p>linkedhashmap重写版本：</p>
+<pre><code> /**
+ * 双向链表中删除e节点   当在hash数组和单向链表或树中删除节点e后，需要这个
+ */
+void afterNodeRemoval(Node&lt;K,V&gt; e) { // unlink
+    LinkedHashMap.Entry&lt;K,V&gt; p =
+        (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;
+    p.before = p.after = null;
+    // p为双向链表头节点 使用下一个节点作为头结点
+    if (b == null)
+        head = a;
+    // p不为头结点 将上一个节点的下一个连接改为p.after
+    else
+        b.after = a;
+    // p是尾节点， 使用上一个节点作为尾部节点
+    if (a == null)
+        tail = b;
+    // p不是尾部节点
+    else
+        a.before = b;
+}
+
+/**
+ * 默认不会在插入后产生副作用(删除节点)
+ * 新节点插入之后回调 ， 根据evict(hashmap中默认true)和   判断是否需要删除最老插入的节点(需要自己实现)。
+ * 如果实现LruCache ？？？？？？会用到这个方法。
+ */
+void afterNodeInsertion(boolean evict) { // possibly remove eldest
+    LinkedHashMap.Entry&lt;K,V&gt; first;
+    // 双向链表不为空  removeEldestEntry()方法实现为返回false 即插入不会删除节点
+    if (evict &amp;&amp; (first = head) != null &amp;&amp; removeEldestEntry(first)) {
+        K key = first.key;
+        removeNode(hash(key), key, null, false, true);
+    }
+}
+
+/**
+ * 将节点e移动到链表的尾部。在newNode时已经连接head与tail
+ */
+void afterNodeAccess(Node&lt;K,V&gt; e) { // move node to last
+    LinkedHashMap.Entry&lt;K,V&gt; last;
+    // 使用原始访问顺序 和 节点e不是原来的尾节点 (tail不可能为空 newNode时指定连接到tail)
+    if (accessOrder &amp;&amp; (last = tail) != e) {
+        LinkedHashMap.Entry&lt;K,V&gt; p =
+            (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;
+        // 删除节点p(e)
+        p.after = null;
+        // p就是头结点  将头结点链接到p的下一个节点a
+        if (b == null)
+            head = a;
+        // p不是头结点，使用p的下一个节点a应该连接到p的上一个节点
+        else
+            b.after = a;
+        // p不是尾节点  使用p的下一个节点a前连接b
+        if (a != null)
+            a.before = b;
+        // p是尾节点 使用p的上一个节点b作为新的尾节点
+        else
+            last = b;
+        // 链表中只有一个节点 (a==null&amp;&amp;b==null才使last==null)
+        if (last == null)
+            head = p;
+        // 链表有多个节点 将p连接到尾部
+        else {
+            p.before = last;
+            last.after = p;
+        }
+        // 更新尾部指针
+        tail = p;
+        // 改变了链表的迭代顺序，需要快速失败检查
+        ++modCount;
+    }
+}
+</code></pre>
+<p>还重写了get方法：</p>
+<pre><code>/**
+ * 返回指定键关联的值。注意若accessorder=true会使成功访问的键被修改到链表的尾部
+ */
+public V get(Object key) {
+    Node&lt;K,V&gt; e;
+    if ((e = getNode(hash(key), key)) == null)
+        return null;
+	// 提供访问顺序的修改
+    if (accessOrder)
+        afterNodeAccess(e);
+    return e.value;
+}
+</code></pre>
+<p>双向链表相关：</p>
+<pre><code> /**
+ * 新建一个节点并连接到双向链表的尾部
+ */
+Node&lt;K,V&gt; newNode(int hash, K key, V value, Node&lt;K,V&gt; e) {
+    LinkedHashMap.Entry&lt;K,V&gt; p =
+        new LinkedHashMap.Entry&lt;K,V&gt;(hash, key, value, e);
+    // 将p节点链接到链表尾部
+    linkNodeLast(p);
+    return p;
+}
+
+/**
+ * 新建一个红黑树节点并连接到双向链表的尾部
+ */
+TreeNode&lt;K,V&gt; newTreeNode(int hash, K key, V value, Node&lt;K,V&gt; next) {
+    TreeNode&lt;K,V&gt; p = new TreeNode&lt;K,V&gt;(hash, key, value, next);
+    linkNodeLast(p);
+    return p;
+}
+</code></pre>
+<p>还有一些方法没有写出来，都是覆盖hashmap中的方法以供hashmap中调用产生双向链表</p>
+<p>迭代：
+linkedHashMap很重要的一点就是迭代的方式和性能比hashmap强大不少，</p>
+<p>containsValue:</p>
+<pre><code> /**
+ * 重写hashmap中的方法，由于双向链表的作用，复杂度从平方级别到O(n)线性级别
+ */
+public boolean containsValue(Object value) {
+    for (LinkedHashMap.Entry&lt;K,V&gt; e = head; e != null; e = e.after) {
+        V v = e.value;
+        if (v == value || (value != null &amp;&amp; value.equals(v)))
+            return true;
+    }
+    return false;
+}
+</code></pre>
+<p>为什么没有用双向链表重写containsKey方法呢！因为containsKey使用getNode(hash(key), key) != null判断，getNode使用散列查找自然比遍历整个链表快的多</p>
+<p>迭代器：</p>
+<pre><code>final class LinkedEntryIterator extends LinkedHashIterator
+    implements Iterator&lt;Map.Entry&lt;K,V&gt;&gt; {
+    public final Map.Entry&lt;K,V&gt; next() { return nextNode(); }
+}
+
+abstract class LinkedHashIterator {
+    //下一个节点
+    LinkedHashMap.Entry&lt;K,V&gt; next;
+    //当前节点
+    LinkedHashMap.Entry&lt;K,V&gt; current;
+    int expectedModCount;
+
+    LinkedHashIterator() {
+        //初始化时，next 为 LinkedHashMap内部维护的双向链表的扁头
+        next = head;
+        //记录当前modCount，以满足fail-fast
+        expectedModCount = modCount;
+        //当前节点为null
+        current = null;
+    }
+    //判断是否还有next
+    public final boolean hasNext() {
+        //就是判断next是否为null，默认next是head  表头
+        return next != null;
+    }
+    //nextNode() 就是迭代器里的next()方法 。
+    //该方法的实现可以看出，迭代LinkedHashMap，就是从内部维护的双链表的表头开始循环输出。
+    final LinkedHashMap.Entry&lt;K,V&gt; nextNode() {
+        //记录要返回的e。
+        LinkedHashMap.Entry&lt;K,V&gt; e = next;
+        //判断fail-fast
+        if (modCount != expectedModCount)
+            throw new ConcurrentModificationException();
+        //如果要返回的节点是null，异常
+        if (e == null)
+            throw new NoSuchElementException();
+        //更新当前节点为e
+        current = e;
+        //更新下一个节点是e的后置节点
+        next = e.after;
+        //返回e
+        return e;
+    }
+    //删除方法 最终还是调用了HashMap的removeNode方法
+    public final void remove() {
+        Node&lt;K,V&gt; p = current;
+        if (p == null)
+            throw new IllegalStateException();
+        if (modCount != expectedModCount)
+            throw new ConcurrentModificationException();
+        current = null;
+        K key = p.key;
+        removeNode(hash(key), key, null, false, false);
+        expectedModCount = modCount;
+    }
+}
+</code></pre>
+<hr>
+<p><strong>参考：</strong></p>
+<ul>
+<li><a test href=https://github.com/CarpenterLee/JCFInternals/blob/master/markdown/7-LinkedHashSet%20and%20LinkedHashMap.md title="LinkedHashSet and LinkedHashMap">https://github.com/CarpenterLee/JCFInternals/blob/master/markdown/7-LinkedHashSet%20and%20LinkedHashMap.md</a></li>
+<li><a test href=http://blog.csdn.net/zxt0601/article/details/77429150 title=面试必备：LinkedHashMap源码解析（JDK8）>http://blog.csdn.net/zxt0601/article/details/77429150</a></li>
+<li><a test href=http://blog.csdn.net/ns_code/article/details/37867985 title=【Java集合源码剖析】LinkedHashmap源码剖析>http://blog.csdn.net/ns_code/article/details/37867985</a></li>
+</ul>
+<hr>
+<p>10/17/2017 12:17:23 PM</p>
+<p>暂时停止阅读源码，必须要换个花样了，现在比较烦躁，看源码确实是一件枯燥的事，在没有动力前不会更新，先换个方式转移下注意力</p>
+<p>10/17/2017 3:08:59 PM</p>
+<p>说是停止转移注意力，还是没忍住，不想看来一半的代码丢掉，坚持了下发现看懂了许多开始蛮有趣的，也许最难的不是开头和结束，而是中间那一段枯燥没有坚持罢了。</p>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>

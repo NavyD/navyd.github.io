@@ -1,0 +1,347 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title> - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="部署TTRSS 通过 docker-compose 部署 基本可以参考：通过 docker-compose 部署 部分问题可以在github issues找到 如：关于 SELF_URL_PATH 错误的解决方案大合集 备份与恢复数据 确保p"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://navyd.github.io/res/linux/%E9%83%A8%E7%BD%B2ttrss/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content>
+<meta property="og:description" content="部署TTRSS 通过 docker-compose 部署 基本可以参考：通过 docker-compose 部署 部分问题可以在github issues找到 如：关于 SELF_URL_PATH 错误的解决方案大合集 备份与恢复数据 确保p">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://navyd.github.io/res/linux/%E9%83%A8%E7%BD%B2ttrss/"><meta property="article:section" content="res">
+<meta itemprop=name content>
+<meta itemprop=description content="部署TTRSS 通过 docker-compose 部署 基本可以参考：通过 docker-compose 部署 部分问题可以在github issues找到 如：关于 SELF_URL_PATH 错误的解决方案大合集 备份与恢复数据 确保p">
+<meta itemprop=wordCount content="850">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content>
+<meta name=twitter:description content="部署TTRSS 通过 docker-compose 部署 基本可以参考：通过 docker-compose 部署 部分问题可以在github issues找到 如：关于 SELF_URL_PATH 错误的解决方案大合集 备份与恢复数据 确保p"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<div class=post-content>
+<h1 id=部署ttrss>部署TTRSS</h1>
+<h2 id=通过-docker-compose-部署>通过 docker-compose 部署</h2>
+<p>基本可以参考：<a test href=http://ttrss.henry.wang/zh/#%E9%80%9A%E8%BF%87-docker-compose-%E9%83%A8%E7%BD%B2>通过 docker-compose 部署</a></p>
+<p>部分问题可以在<a test href=https://github.com/HenryQW/Awesome-TTRSS/issues>github issues</a>找到</p>
+<p>如：<a test href=https://github.com/HenryQW/Awesome-TTRSS/issues/62>关于 SELF_URL_PATH 错误的解决方案大合集</a></p>
+<h3 id=备份与恢复数据>备份与恢复数据</h3>
+<p>确保postgres容器正在运行，否则可能出现<code>Error response from daemon: Container xxx is not running</code>的问题</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># rss为pg的用户名 如果没有配置则默认为postgres</span>
+docker <span class=nb>exec</span> postgres pg_dumpall -c -U rss &gt; backup.sql
+<span class=c1># docker-compose stop</span>
+docker-compose up -d
+cat backup.sql <span class=p>|</span> docker <span class=nb>exec</span> -i postgres psql -U rss
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=bilibili视频>bilibili视频</h3>
+<p>参考：<a test href=http://ttrss.henry.wang/zh/#remove-iframe-sandbox>移除 iframe 上的 sandbox 属性</a></p>
+<h3 id=docker-nginx反向代理https>docker nginx反向代理https</h3>
+<h3 id=申请域名>申请域名</h3>
+<p>在aliyun和tencent中选择一个域名注册</p>
+<h3 id=子域名申请ssl证书>子域名申请ssl证书</h3>
+<p>在ali和tencent有免费的ssl DV证书，还有<a test href=letsencrypt%e8%af%81%e4%b9%a6%e7%94%b3%e8%af%b7.md><code>let's encrypt</code>免费证书</a></p>
+<p>需要注意的是当前<code>20210221</code>ali的免费证书申请改变到<a test href="https://common-buy.aliyun.com/?spm=5176.14113079.commonbuy2container.4.5d4656a7XqSDJp&commodityCode=cas_dv_public_cn&request=%7B%22ord_time%22:%221:Year%22,%22order_num%22:1,%22product%22:%22free_product%22,%22certCount%22:%2220%22%7D">证书资源包领取</a></p>
+<p>在<a test href="https://dns.console.aliyun.com/?spm=5176.12818093.Operation--ali--widget-home-product-recent.dre2.75e316d0gVoDxB#/dns/setting/navyd.xyz">域名解析页面</a>可以添加记录</p>
+<h3 id=nginx反向代理>nginx反向代理</h3>
+<p>将上面的ssl证书下载后，配置nginx-default.conf</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>upstream ttrssdev {
+    server ttrss:80;
+}
+
+server {
+    listen 80;
+    server_name  rss.navyd.xyz;
+    return 301 https://rss.navyd.xyz$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    gzip on;
+    server_name  rss.navyd.xyz;
+
+    ssl_certificate /etc/nginx/certs/rss.navyd.xyz.pem;
+    ssl_certificate_key /etc/nginx/certs/rss.navyd.xyz.key;
+
+    access_log /var/log/nginx/ttrssdev_access.log combined;
+    error_log  /var/log/nginx/ttrssdev_error.log;
+
+    location / {
+        proxy_redirect off;
+        proxy_pass http://ttrssdev;
+
+        proxy_set_header  Host                $http_host;
+        proxy_set_header  X-Real-IP           $remote_addr;
+        proxy_set_header  X-Forwarded-Ssl     on;
+        proxy_set_header  X-Forwarded-For     $proxy_add_x_forwarded_for;
+        proxy_set_header  X-Forwarded-Proto   $scheme;
+        proxy_set_header  X-Frame-Options     SAMEORIGIN;
+
+        client_max_body_size        100m;
+        client_body_buffer_size     128k;
+
+        proxy_buffer_size           4k;
+        proxy_buffers               4 32k;
+        proxy_busy_buffers_size     64k;
+        proxy_temp_file_write_size  64k;
+    }
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>配置docker compose，更多的内容参考<a test href=http://ttrss.henry.wang/zh/#%E9%80%9A%E8%BF%87-docker-compose-%E9%83%A8%E7%BD%B2>通过 docker-compose 部署</a></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3&#34;</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>service.nginx</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx:alpine</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>rssnginx</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=c># - 9090:80</span><span class=w>
+</span><span class=w>      </span>- <span class=m>9090</span><span class=p>:</span><span class=m>443</span><span class=w>
+</span><span class=w>      </span>- <span class=m>443</span><span class=p>:</span><span class=m>443</span><span class=w>
+</span><span class=w>    </span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>bind</span><span class=w>
+</span><span class=w>        </span><span class=nt>source</span><span class=p>:</span><span class=w> </span><span class=l>$PWD/certs</span><span class=w>
+</span><span class=w>        </span><span class=nt>target</span><span class=p>:</span><span class=w> </span><span class=l>/etc/nginx/certs</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>bind</span><span class=w>
+</span><span class=w>        </span><span class=nt>source</span><span class=p>:</span><span class=w> </span><span class=l>$PWD/nginx-default.conf</span><span class=w>
+</span><span class=w>        </span><span class=nt>target</span><span class=p>:</span><span class=w> </span><span class=l>/etc/nginx/conf.d/default.conf</span><span class=w>
+</span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>always</span><span class=w>
+</span><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>public_access</span><span class=w>
+</span><span class=w></span><span class=c># ...</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id=https穿透>https穿透</h2>
+<p><a test href=https://doc.natfrp.com/#/frpc/usage/linux>Linux 系统使用 frpc</a></p>
+<p>参考：<a test href=https://doc.natfrp.com/#/>SakuraFrp 帮助文档</a></p>
+<p>注意在使用systemd启动frpc时配置<code>/lib/systemd/system/frpc.service</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>[Unit]
+Description=Sakura Frp Client Service
+After=network.target syslog.target
+Wants=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/local/frp/frpc_linux_arm64 -f auhgl7erobqywz96:990364
+
+[Install]
+WantedBy=multi-user.target
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=内外网切换>内外网切换</h3>
+<p>当在内网时使用路由器dns劫持避免访问外网，在使用子域名时会出现url不一致的情况。如外网url<code>rss.navyd.xyz</code>在内网的服务：<code>192.168.93.202:9090</code>，就算劫持了dns，<code>rss.navyd.xyz</code> -> <code>192.168.93.202</code>，也不能避免写端口号<code>rss.navyd.xyz:9090</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>rssnginx</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=c># - 9090:80</span><span class=w>
+</span><span class=w>      </span>- <span class=m>9090</span><span class=p>:</span><span class=m>443</span><span class=w>
+</span><span class=w>      </span><span class=c># 代理rss.navyd.xyz到容器</span><span class=w>
+</span><span class=w>      </span>- <span class=m>443</span><span class=p>:</span><span class=m>443</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://navyd.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>
