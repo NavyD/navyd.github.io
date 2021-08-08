@@ -140,8 +140,8 @@ clientId = ""     # Your client ID
 clientSecret = "" # Your client secret
 
 [params.utterances] # https://utteranc.es/
-owner = "" # Your GitHub ID
-repo = ""  # The repo to store comments
+owner = "navyd" # Your GitHub ID
+repo = "navyd.github.io"  # The repo to store comments
 
 [params.gitalk] # Gitalk is a comment system based on GitHub issues. see https://github.com/gitalk/gitalk
 owner = ""        # Your GitHub ID
@@ -171,7 +171,7 @@ enable = false
 options = ""   # default: "{theme: 'simple'}"
 
 [params.busuanzi] # count web traffic by busuanzi                             # 是否使用不蒜子统计站点访问量
-enable = false
+enable = true
 siteUV = true
 sitePV = true
 pagePV = true
