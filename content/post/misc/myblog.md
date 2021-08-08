@@ -1,10 +1,10 @@
 ---
-title: "myblog"
+title: "my hugo blog"
 date: 2021-08-06T00:36:35+08:00
 draft: false
 ---
 
-开始使用hugo在github搭建静态博客。
+使用hugo在github搭建静态博客。
 
 ## 选型
 
@@ -428,3 +428,49 @@ hugo v0.87.0+extended linux/amd64 BuildDate=unknown
 由于使用了`git submodle`将even作为项目的子模块，现在要修改`/assets/sass/_variable.scss`文件，但是无法完成。如果之后无法找到解决方法，只有使用clone而不是作为submodule
 
 <!-- todo -->
+
+#### 启用点击统计
+
+even支持不蒜子统计站点访问量
+
+```toml
+[params.busuanzi] # count web traffic by busuanzi                             # 是否使用不蒜子统计站点访问量
+enable = true
+siteUV = true
+sitePV = true
+pagePV = true
+```
+
+主站统计
+
+![](myblog/2021-08-08-14-34-15.png)
+
+文章访问统计
+
+![](myblog/2021-08-08-14-34-54.png)
+
+#### 启用utterances评论
+
+utterances 是依托于 github repository 的 issues 建立的评论功能
+
+1. 点击[GitHub App utterances](https://github.com/apps/utterances)为github pages仓库`navyd.github.io`安装
+  ![](myblog/2021-08-08-14-03-17.png)
+2. 选择使用utterances评论的仓库
+  ![](myblog/2021-08-08-14-19-00.png)
+  ![](myblog/2021-08-08-14-03-08.png)
+3. 在even配置中启用utterances
+
+    ```toml
+    [params.utterances] # https://utteranc.es/
+    owner = "navyd" # Your GitHub ID
+    repo = "navyd.github.io"  # The repo to store comments
+    ```
+
+4. 启动`hugo server -D`本地查看效果
+  ![](myblog/2021-08-08-14-23-26.png)
+
+参考：
+
+- [hugo博客使用 utterances 作为评论系统](https://blog.51cto.com/xdr630/2797532)
+- [utterances](https://utteranc.es/)
+- [Hugo 主题 Even 的自定义配置](https://blog.dontjudge.cn/post/hugo-%E4%B8%BB%E9%A2%98-even-%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E9%85%8D%E7%BD%AE/)
