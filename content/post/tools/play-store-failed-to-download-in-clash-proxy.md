@@ -74,7 +74,6 @@ rules:
 
 ![](play-store-failed-to-download-in-clash-proxy/2021-08-09-18-44-36.png)
 
-
 参考：
 
 - [Loyalsoldier/clash-rules](https://github.com/Loyalsoldier/clash-rules)
