@@ -209,6 +209,7 @@ privacyEnhanced = true
 [markup]
 [markup.tableOfContents]
 startLevel = 1
+endLevel = 6
 [markup.goldmark.renderer]
 unsafe = true
 

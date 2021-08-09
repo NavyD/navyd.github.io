@@ -2,6 +2,7 @@
 title: "my hugo blog"
 date: 2021-08-06T00:36:35+08:00
 draft: false
+tags: [blog, hugo, markdown]
 ---
 
 使用hugo在github搭建静态博客。
@@ -474,3 +475,25 @@ utterances 是依托于 github repository 的 issues 建立的评论功能
 - [hugo博客使用 utterances 作为评论系统](https://blog.51cto.com/xdr630/2797532)
 - [utterances](https://utteranc.es/)
 - [Hugo 主题 Even 的自定义配置](https://blog.dontjudge.cn/post/hugo-%E4%B8%BB%E9%A2%98-even-%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E9%85%8D%E7%BD%AE/)
+
+#### 多层toc
+
+```toml
+[markup.tableOfContents]
+startLevel = 1
+endLevel = 6
+```
+
+配置前：
+
+![](myblog/2021-08-09-20-22-02.png)
+
+配置后：
+
+![](myblog/2021-08-09-20-23-57.png)
+
+参考：
+
+- [Hugo 相关部署操作](https://kuang.netlify.app/blog/hugo.html)
+- [CONTENT MANAGEMENT Table of Contents](https://gohugo.io/content-management/toc/)
+- [Configure Markup](https://gohugo.io/getting-started/configuration-markup#config)
