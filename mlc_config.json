@@ -1,0 +1,9 @@
+{
+    "ignorePatterns": [
+        {
+            // content/post/tools/clash-transparent-proxy.md:
+            // https://blog.skk.moe/post/what-happend-to-dns-in-proxy → Status: 403
+            "pattern": "blog.skk.moe"
+        }
+    ]
+}
