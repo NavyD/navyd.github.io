@@ -2,7 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title> - Even - A super concise theme for Hugo</title>
+<title>Clash Transparent Proxy - Even - A super concise theme for Hugo</title>
 <meta name=renderer content="webkit">
 <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta http-equiv=cache-control content="no-transform">
@@ -11,9 +11,9 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="navyd"><meta name=description content="clash Linux透明代理原理 参考： Linux transparent proxy support Linux transparent proxy support github 透明代理 UDP 为什么要用 TProxy？ 透明代理的基本原理 从 ss-redir 的实现到 Linux NAT 相关工具 配置文件 fake"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=author content="navyd"><meta name=description content="docker部署 在docker内启动时使用iptables操作，stop时清理iptables。 自用docker镜像 NavyD/docker-clash 代理方式 TCP redir + UDP TPROXY re"><meta name=keywords content="Hugo,blog,navyd">
 <meta name=generator content="Hugo 0.87.0 with theme even">
-<link rel=canonical href=https://navyd.github.io/res/linux/clash%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/>
+<link rel=canonical href=https://navyd.github.io/post/tools/clash-transparent-proxy/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
 <link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
@@ -22,16 +22,19 @@
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
 <link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content>
-<meta property="og:description" content="clash Linux透明代理原理 参考： Linux transparent proxy support Linux transparent proxy support github 透明代理 UDP 为什么要用 TProxy？ 透明代理的基本原理 从 ss-redir 的实现到 Linux NAT 相关工具 配置文件 fake">
+<meta property="og:title" content="Clash Transparent Proxy">
+<meta property="og:description" content="docker部署 在docker内启动时使用iptables操作，stop时清理iptables。 自用docker镜像 NavyD/docker-clash 代理方式 TCP redir + UDP TPROXY re">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://navyd.github.io/res/linux/clash%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/"><meta property="article:section" content="res">
-<meta itemprop=name content>
-<meta itemprop=description content="clash Linux透明代理原理 参考： Linux transparent proxy support Linux transparent proxy support github 透明代理 UDP 为什么要用 TProxy？ 透明代理的基本原理 从 ss-redir 的实现到 Linux NAT 相关工具 配置文件 fake">
-<meta itemprop=wordCount content="2280">
-<meta itemprop=keywords content><meta name=twitter:card content="summary">
-<meta name=twitter:title content>
-<meta name=twitter:description content="clash Linux透明代理原理 参考： Linux transparent proxy support Linux transparent proxy support github 透明代理 UDP 为什么要用 TProxy？ 透明代理的基本原理 从 ss-redir 的实现到 Linux NAT 相关工具 配置文件 fake"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta property="og:url" content="https://navyd.github.io/post/tools/clash-transparent-proxy/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-08-09T19:31:12+08:00">
+<meta property="article:modified_time" content="2021-08-09T20:32:48+08:00">
+<meta itemprop=name content="Clash Transparent Proxy">
+<meta itemprop=description content="docker部署 在docker内启动时使用iptables操作，stop时清理iptables。 自用docker镜像 NavyD/docker-clash 代理方式 TCP redir + UDP TPROXY re"><meta itemprop=datePublished content="2021-08-09T19:31:12+08:00">
+<meta itemprop=dateModified content="2021-08-09T20:32:48+08:00">
+<meta itemprop=wordCount content="2334">
+<meta itemprop=keywords content="clash,proxy,linux,tool,docker,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Clash Transparent Proxy">
+<meta name=twitter:description content="docker部署 在docker内启动时使用iptables操作，stop时清理iptables。 自用docker镜像 NavyD/docker-clash 代理方式 TCP redir + UDP TPROXY re"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -81,133 +84,50 @@
 <div class=content-wrapper>
 <div id=content class=content>
 <article class=post>
+<header class=post-header>
+<h1 class=post-title>Clash Transparent Proxy</h1>
+<div class=post-meta>
+<span class=post-time> 2021-08-09 </span>
+<span class=more-meta> 约 2334 字 </span>
+<span class=more-meta> 预计阅读 5 分钟 </span>
+<span id=busuanzi_container_page_pv class=more-meta> <span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#docker部署>docker部署</a></li>
+<li><a href=#代理方式>代理方式</a>
+<ul>
+<li><a href=#tcp-redir--udp-tproxy>TCP redir + UDP TPROXY</a></li>
+<li><a href=#tcpudp-tproxy>TCP&UDP TPROXY</a></li>
+<li><a href=#tun>TUN</a></li>
+<li><a href=#已知问题>已知问题</a></li>
+</ul>
+</li>
+<li><a href=#linux透明代理原理>Linux透明代理原理</a></li>
+<li><a href=#相关工具>相关工具</a>
+<ul>
+<li><a href=#配置文件>配置文件</a></li>
+<li><a href=#订阅转换subconverter>订阅转换subconverter</a>
+<ul>
+<li><a href=#docker部署-1>docker部署</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
 <div class=post-content>
-<h1 id=clash>clash</h1>
-<h2 id=linux透明代理原理>Linux透明代理原理</h2>
-<p>参考：</p>
-<ul>
-<li><a test href=https://powerdns.org/tproxydoc/tproxy.md.html>Linux transparent proxy support</a></li>
-<li><a test href=https://github.com/ahupowerdns/tproxydoc/blob/master/tproxy.md>Linux transparent proxy support github</a></li>
-<li><a test href=https://www.codenong.com/js5393fb5e2c87/>透明代理 UDP 为什么要用 TProxy？</a></li>
-<li><a test href=https://github.com/lazytiger/trojan-rs/blob/master/PRINCIPLE.md>透明代理的基本原理</a></li>
-<li><a test href=https://vvl.me/2018/06/from-ss-redir-to-linux-nat/>从 ss-redir 的实现到 Linux NAT</a></li>
-</ul>
-<h2 id=相关工具>相关工具</h2>
-<h3 id=配置文件>配置文件</h3>
-<ul>
-<li><a test href=https://cdn.jsdelivr.net/gh/Hackl0us/SS-Rule-Snippet@master/LAZY_RULES/clash.yaml>fake-ip-filter规则</a></li>
-<li><a test href=https://github.com/ACL4SSR/ACL4SSR/tree/master/Clash>ACL4SSR 分流规则</a></li>
-<li><a test href=https://github.com/Loyalsoldier/clash-rules>clash-rules Clash Premium Provider可直接使用</a></li>
-</ul>
-<p>相关项目参考：</p>
-<ul>
-<li><a test href=https://github.com/Hackl0us/SS-Rule-Snippet>SS-Rule-Snippet</a></li>
-<li><a test href=https://github.com/ACL4SSR/ACL4SSR/tree/master>SSR去广告规则/GFWList规则/Clash规则碎片</a></li>
-<li><a test href=https://github.com/Loyalsoldier/clash-rules>clash-rules</a></li>
-</ul>
-<h3 id=订阅转换subconverter>订阅转换subconverter</h3>
-<p>clash提供<a test href=https://lancellc.gitbook.io/clash/clash-config-file/proxy-provider>Proxy Provider</a>功能，可以方便的分离代理节点为单个url资源，自动更新订阅节点等如：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=c>#port: 8888</span><span class=w>
-</span><span class=w></span><span class=c>#socks-port: 8889</span><span class=w>
-</span><span class=w></span><span class=c># ...</span><span class=w>
-</span><span class=w></span><span class=c># proxy provider start here</span><span class=w>
-</span><span class=w></span><span class=nt>proxy-providers</span><span class=p>:</span><span class=w>
-</span><span class=w>  </span><span class=nt>hk</span><span class=p>:</span><span class=w>
-</span><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>http</span><span class=w>
-</span><span class=w>    </span><span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>./hk.yaml</span><span class=w>
-</span><span class=w>    </span><span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>http://remote.lancelinked.icu/files/hk.yaml</span><span class=w>
-</span><span class=w>    </span><span class=nt>interval</span><span class=p>:</span><span class=w> </span><span class=m>3600</span><span class=w>
-</span><span class=w>    </span><span class=nt>health-check</span><span class=p>:</span><span class=w>
-</span><span class=w>      </span><span class=nt>enable</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
-</span><span class=w>      </span><span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>http://www.gstatic.com/generate_204</span><span class=w>
-</span><span class=w>      </span><span class=nt>interval</span><span class=p>:</span><span class=w> </span><span class=m>300</span><span class=w>
-</span><span class=w>  </span><span class=nt>us</span><span class=p>:</span><span class=w>
-</span><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>file</span><span class=w>
-</span><span class=w>    </span><span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>/home/lance/.clash/provider/us.yaml</span><span class=w>
-</span><span class=w>    </span><span class=nt>health-check</span><span class=p>:</span><span class=w>
-</span><span class=w>      </span><span class=nt>enable</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
-</span><span class=w>      </span><span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>http://www.gstatic.com/generate_204</span><span class=w>
-</span><span class=w>      </span><span class=nt>interval</span><span class=p>:</span><span class=w> </span><span class=m>300</span><span class=w>
-</span><span class=w></span><span class=c># proxy provider end</span><span class=w>
-</span><span class=w>
-</span><span class=w></span><span class=c>#Proxy:</span><span class=w>
-</span><span class=w></span><span class=c>#  - type: socks5</span><span class=w>
-</span><span class=w></span><span class=c>#    name: spck</span><span class=w>
-</span><span class=w></span><span class=c>#    port: 34335</span><span class=w>
-</span><span class=w></span><span class=c>#    server: 127.0.0.1</span><span class=w>
-</span><span class=w></span><span class=c>#    udp: true</span><span class=w>
-</span></code></pre></td></tr></table>
-</div>
-</div><p>在使用机场提供的clash文件时通常只会使用到其中的proxies，还有过滤节点等需求，clash不支持过滤节点。而<a test href=https://github.com/tindy2013/subconverter/blob/master/README-cn.md#%E8%AF%B4%E6%98%8E%E7%9B%AE%E5%BD%95>subconverter</a>提供了订阅转换与过滤等必要的功能</p>
-<h4 id=docker部署>docker部署</h4>
-<p>使用docker安装</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>docker run -d --restart<span class=o>=</span>always -p 25500:25500 tindy2013/subconverter:latest
-</code></pre></td></tr></table>
-</div>
-</div><p>subconverter参数：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>target=clash	# 转换结果为 clash 配置
-url=xxx	# 机场订阅链接
-include=(TW|台湾|台灣)	# 只匹配台湾节点
-list=true	# 生成 provider 链接
-
-# 将urlencoded 参数拼接起来得到新的订阅链接——只包含台湾节点的 provider 链接
-https://localhost:25500/sub?target=clash&amp;url=https%3a%2f%2fnfnf.xyz%2flink%2fabcdefg%3fmu%3d4&amp;include=(TW%7c%e5%8f%b0%e6%b9%be%7c%e5%8f%b0%e7%81%a3)&amp;list=true
-</code></pre></td></tr></table>
-</div>
-</div><p>参考：</p>
-<ul>
-<li><a test href=https://10101.io/2020/02/12/use-clash-proxy-provider-with-subconverter>Clash proxy-provider 搭配 subconverter 使用小记</a></li>
-</ul>
-<h2 id=docker部署-1>docker部署</h2>
+<h2 id=docker部署>docker部署</h2>
 <p>在docker内启动时使用iptables操作，stop时清理iptables。</p>
 <ul>
 <li><a test href=https://hub.docker.com/r/navyd/clash>自用docker镜像</a></li>
@@ -476,7 +396,161 @@ sysctl -w net.ipv4.conf.all.rp_filter<span class=o>=</span><span class=m>0</span
 <li><a test href=https://github.com/comzyh/clash>go tun comzyh/clash</a></li>
 <li><a test href=https://github.com/lazytiger/trojan-rs>rust Trojan-rs</a></li>
 </ul>
+<h2 id=linux透明代理原理>Linux透明代理原理</h2>
+<p>参考：</p>
+<ul>
+<li><a test href=https://powerdns.org/tproxydoc/tproxy.md.html>Linux transparent proxy support</a></li>
+<li><a test href=https://github.com/ahupowerdns/tproxydoc/blob/master/tproxy.md>Linux transparent proxy support github</a></li>
+<li><a test href=https://www.codenong.com/js5393fb5e2c87/>透明代理 UDP 为什么要用 TProxy？</a></li>
+<li><a test href=https://github.com/lazytiger/trojan-rs/blob/master/PRINCIPLE.md>透明代理的基本原理</a></li>
+<li><a test href=https://vvl.me/2018/06/from-ss-redir-to-linux-nat/>从 ss-redir 的实现到 Linux NAT</a></li>
+</ul>
+<h2 id=相关工具>相关工具</h2>
+<h3 id=配置文件>配置文件</h3>
+<ul>
+<li><a test href=https://cdn.jsdelivr.net/gh/Hackl0us/SS-Rule-Snippet@master/LAZY_RULES/clash.yaml>fake-ip-filter规则</a></li>
+<li><a test href=https://github.com/ACL4SSR/ACL4SSR/tree/master/Clash>ACL4SSR 分流规则</a></li>
+<li><a test href=https://github.com/Loyalsoldier/clash-rules>clash-rules Clash Premium Provider可直接使用</a></li>
+</ul>
+<p>相关项目参考：</p>
+<ul>
+<li><a test href=https://github.com/Hackl0us/SS-Rule-Snippet>SS-Rule-Snippet</a></li>
+<li><a test href=https://github.com/ACL4SSR/ACL4SSR/tree/master>SSR去广告规则/GFWList规则/Clash规则碎片</a></li>
+<li><a test href=https://github.com/Loyalsoldier/clash-rules>clash-rules</a></li>
+</ul>
+<p>注意：<a test href=https://github.com/Loyalsoldier/clash-rules>clash-rules</a>可能存在google play无法下载的问题，解决方法：<a test href=play-store-failed-to-download-in-clash-proxy.md>Google Play Store Failed to Download in Clash Proxy</a></p>
+<h3 id=订阅转换subconverter>订阅转换subconverter</h3>
+<p>clash提供<a test href=https://lancellc.gitbook.io/clash/clash-config-file/proxy-provider>Proxy Provider</a>功能，可以方便的分离代理节点为单个url资源，自动更新订阅节点等如：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=c>#port: 8888</span><span class=w>
+</span><span class=w></span><span class=c>#socks-port: 8889</span><span class=w>
+</span><span class=w></span><span class=c># ...</span><span class=w>
+</span><span class=w></span><span class=c># proxy provider start here</span><span class=w>
+</span><span class=w></span><span class=nt>proxy-providers</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>hk</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>http</span><span class=w>
+</span><span class=w>    </span><span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>./hk.yaml</span><span class=w>
+</span><span class=w>    </span><span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>http://remote.lancelinked.icu/files/hk.yaml</span><span class=w>
+</span><span class=w>    </span><span class=nt>interval</span><span class=p>:</span><span class=w> </span><span class=m>3600</span><span class=w>
+</span><span class=w>    </span><span class=nt>health-check</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>enable</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w>      </span><span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>http://www.gstatic.com/generate_204</span><span class=w>
+</span><span class=w>      </span><span class=nt>interval</span><span class=p>:</span><span class=w> </span><span class=m>300</span><span class=w>
+</span><span class=w>  </span><span class=nt>us</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>file</span><span class=w>
+</span><span class=w>    </span><span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>/home/lance/.clash/provider/us.yaml</span><span class=w>
+</span><span class=w>    </span><span class=nt>health-check</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=nt>enable</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w>      </span><span class=nt>url</span><span class=p>:</span><span class=w> </span><span class=l>http://www.gstatic.com/generate_204</span><span class=w>
+</span><span class=w>      </span><span class=nt>interval</span><span class=p>:</span><span class=w> </span><span class=m>300</span><span class=w>
+</span><span class=w></span><span class=c># proxy provider end</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=c>#Proxy:</span><span class=w>
+</span><span class=w></span><span class=c>#  - type: socks5</span><span class=w>
+</span><span class=w></span><span class=c>#    name: spck</span><span class=w>
+</span><span class=w></span><span class=c>#    port: 34335</span><span class=w>
+</span><span class=w></span><span class=c>#    server: 127.0.0.1</span><span class=w>
+</span><span class=w></span><span class=c>#    udp: true</span><span class=w>
+</span></code></pre></td></tr></table>
 </div>
+</div><p>在使用机场提供的clash文件时通常只会使用到其中的proxies，还有过滤节点等需求，clash不支持过滤节点。而<a test href=https://github.com/tindy2013/subconverter/blob/master/README-cn.md#%E8%AF%B4%E6%98%8E%E7%9B%AE%E5%BD%95>subconverter</a>提供了订阅转换与过滤等必要的功能</p>
+<h4 id=docker部署-1>docker部署</h4>
+<p>使用docker安装</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>docker run -d --restart<span class=o>=</span>always -p 25500:25500 tindy2013/subconverter:latest
+</code></pre></td></tr></table>
+</div>
+</div><p>subconverter参数：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>target=clash	# 转换结果为 clash 配置
+url=xxx	# 机场订阅链接
+include=(TW|台湾|台灣)	# 只匹配台湾节点
+list=true	# 生成 provider 链接
+
+# 将urlencoded 参数拼接起来得到新的订阅链接——只包含台湾节点的 provider 链接
+https://localhost:25500/sub?target=clash&amp;url=https%3a%2f%2fnfnf.xyz%2flink%2fabcdefg%3fmu%3d4&amp;include=(TW%7c%e5%8f%b0%e6%b9%be%7c%e5%8f%b0%e7%81%a3)&amp;list=true
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li><a test href=https://10101.io/2020/02/12/use-clash-proxy-provider-with-subconverter>Clash proxy-provider 搭配 subconverter 使用小记</a></li>
+</ul>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>文章作者</span>
+<span class=item-content>navyd</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>上次更新</span>
+<span class=item-content>
+2021-08-09
+<a href=https://github.com/NavyD/navyd.github.io/commit/e8a38a4498fcea572bd51e69f004044e44df6a37 title="post clash">(e8a38a4)</a>
+</span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/clash/>clash</a>
+<a href=/tags/proxy/>proxy</a>
+<a href=/tags/linux/>linux</a>
+<a href=/tags/tool/>tool</a>
+<a href=/tags/docker/>docker</a>
+</div>
+<nav class=post-nav>
+<a class=next href=/post/tools/play-store-failed-to-download-in-clash-proxy/>
+<span class="next-text nav-default">Google Play Store Failed to Download in Clash Proxy</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
 </article>
 </div>
 <script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script>
