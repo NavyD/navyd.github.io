@@ -2,6 +2,7 @@
 title: "Google Play Store Failed to Download in Clash Proxy"
 date: 2021-08-09T17:21:47+08:00
 draft: false
+tags: [clash, proxy, android, miui]
 ---
 
 ## 问题
