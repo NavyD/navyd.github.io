@@ -1,90 +1,9 @@
-# clash
-
-## Linux透明代理原理
-
-参考：
-
-* [Linux transparent proxy support](https://powerdns.org/tproxydoc/tproxy.md.html)
-* [Linux transparent proxy support github](https://github.com/ahupowerdns/tproxydoc/blob/master/tproxy.md)
-* [透明代理 UDP 为什么要用 TProxy？](https://www.codenong.com/js5393fb5e2c87/)
-* [透明代理的基本原理](https://github.com/lazytiger/trojan-rs/blob/master/PRINCIPLE.md)
-* [从 ss-redir 的实现到 Linux NAT](https://vvl.me/2018/06/from-ss-redir-to-linux-nat/)
-
-## 相关工具
-
-### 配置文件
-
-* [fake-ip-filter规则](https://cdn.jsdelivr.net/gh/Hackl0us/SS-Rule-Snippet@master/LAZY_RULES/clash.yaml)
-* [ACL4SSR 分流规则](https://github.com/ACL4SSR/ACL4SSR/tree/master/Clash)
-* [clash-rules Clash Premium Provider可直接使用](https://github.com/Loyalsoldier/clash-rules)
-
-相关项目参考：
-
-* [SS-Rule-Snippet](https://github.com/Hackl0us/SS-Rule-Snippet)
-* [SSR去广告规则/GFWList规则/Clash规则碎片](https://github.com/ACL4SSR/ACL4SSR/tree/master)
-* [clash-rules](https://github.com/Loyalsoldier/clash-rules)
-
-### 订阅转换subconverter
-
-clash提供[Proxy Provider](https://lancellc.gitbook.io/clash/clash-config-file/proxy-provider)功能，可以方便的分离代理节点为单个url资源，自动更新订阅节点等如：
-
-```yaml
-#port: 8888
-#socks-port: 8889
-# ...
-# proxy provider start here
-proxy-providers:
-  hk:
-    type: http
-    path: ./hk.yaml
-    url: http://remote.lancelinked.icu/files/hk.yaml
-    interval: 3600
-    health-check:
-      enable: true
-      url: http://www.gstatic.com/generate_204
-      interval: 300
-  us:
-    type: file
-    path: /home/lance/.clash/provider/us.yaml
-    health-check:
-      enable: true
-      url: http://www.gstatic.com/generate_204
-      interval: 300
-# proxy provider end
-
-#Proxy:
-#  - type: socks5
-#    name: spck
-#    port: 34335
-#    server: 127.0.0.1
-#    udp: true
-```
-
-在使用机场提供的clash文件时通常只会使用到其中的proxies，还有过滤节点等需求，clash不支持过滤节点。而[subconverter](https://github.com/tindy2013/subconverter/blob/master/README-cn.md#%E8%AF%B4%E6%98%8E%E7%9B%AE%E5%BD%95)提供了订阅转换与过滤等必要的功能
-
-#### docker部署
-
-使用docker安装
-
-```sh
-docker run -d --restart=always -p 25500:25500 tindy2013/subconverter:latest
-```
-
-subconverter参数：
-
-```
-target=clash	# 转换结果为 clash 配置
-url=xxx	# 机场订阅链接
-include=(TW|台湾|台灣)	# 只匹配台湾节点
-list=true	# 生成 provider 链接
-
-# 将urlencoded 参数拼接起来得到新的订阅链接——只包含台湾节点的 provider 链接
-https://localhost:25500/sub?target=clash&url=https%3a%2f%2fnfnf.xyz%2flink%2fabcdefg%3fmu%3d4&include=(TW%7c%e5%8f%b0%e6%b9%be%7c%e5%8f%b0%e7%81%a3)&list=true
-```
-
-参考：
-
-* [Clash proxy-provider 搭配 subconverter 使用小记](https://10101.io/2020/02/12/use-clash-proxy-provider-with-subconverter)
+---
+title: "Clash Transparent Proxy"
+date: 2021-08-09T19:31:12+08:00
+draft: false
+tags: [clash, proxy, linux, tool, docker]
+---
 
 ## docker部署
 
@@ -264,3 +183,91 @@ shell实现参考：
 * [go Dreamacro/clash](https://github.com/Dreamacro/clash)
 * [go tun comzyh/clash](https://github.com/comzyh/clash)
 * [rust Trojan-rs](https://github.com/lazytiger/trojan-rs)
+
+## Linux透明代理原理
+
+参考：
+
+* [Linux transparent proxy support](https://powerdns.org/tproxydoc/tproxy.md.html)
+* [Linux transparent proxy support github](https://github.com/ahupowerdns/tproxydoc/blob/master/tproxy.md)
+* [透明代理 UDP 为什么要用 TProxy？](https://www.codenong.com/js5393fb5e2c87/)
+* [透明代理的基本原理](https://github.com/lazytiger/trojan-rs/blob/master/PRINCIPLE.md)
+* [从 ss-redir 的实现到 Linux NAT](https://vvl.me/2018/06/from-ss-redir-to-linux-nat/)
+
+## 相关工具
+
+### 配置文件
+
+* [fake-ip-filter规则](https://cdn.jsdelivr.net/gh/Hackl0us/SS-Rule-Snippet@master/LAZY_RULES/clash.yaml)
+* [ACL4SSR 分流规则](https://github.com/ACL4SSR/ACL4SSR/tree/master/Clash)
+* [clash-rules Clash Premium Provider可直接使用](https://github.com/Loyalsoldier/clash-rules)
+
+相关项目参考：
+
+* [SS-Rule-Snippet](https://github.com/Hackl0us/SS-Rule-Snippet)
+* [SSR去广告规则/GFWList规则/Clash规则碎片](https://github.com/ACL4SSR/ACL4SSR/tree/master)
+* [clash-rules](https://github.com/Loyalsoldier/clash-rules)
+
+注意：[clash-rules](https://github.com/Loyalsoldier/clash-rules)可能存在google play无法下载的问题，解决方法：[Google Play Store Failed to Download in Clash Proxy](play-store-failed-to-download-in-clash-proxy.md)
+
+### 订阅转换subconverter
+
+clash提供[Proxy Provider](https://lancellc.gitbook.io/clash/clash-config-file/proxy-provider)功能，可以方便的分离代理节点为单个url资源，自动更新订阅节点等如：
+
+```yaml
+#port: 8888
+#socks-port: 8889
+# ...
+# proxy provider start here
+proxy-providers:
+  hk:
+    type: http
+    path: ./hk.yaml
+    url: http://remote.lancelinked.icu/files/hk.yaml
+    interval: 3600
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+  us:
+    type: file
+    path: /home/lance/.clash/provider/us.yaml
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+# proxy provider end
+
+#Proxy:
+#  - type: socks5
+#    name: spck
+#    port: 34335
+#    server: 127.0.0.1
+#    udp: true
+```
+
+在使用机场提供的clash文件时通常只会使用到其中的proxies，还有过滤节点等需求，clash不支持过滤节点。而[subconverter](https://github.com/tindy2013/subconverter/blob/master/README-cn.md#%E8%AF%B4%E6%98%8E%E7%9B%AE%E5%BD%95)提供了订阅转换与过滤等必要的功能
+
+#### docker部署
+
+使用docker安装
+
+```sh
+docker run -d --restart=always -p 25500:25500 tindy2013/subconverter:latest
+```
+
+subconverter参数：
+
+```
+target=clash	# 转换结果为 clash 配置
+url=xxx	# 机场订阅链接
+include=(TW|台湾|台灣)	# 只匹配台湾节点
+list=true	# 生成 provider 链接
+
+# 将urlencoded 参数拼接起来得到新的订阅链接——只包含台湾节点的 provider 链接
+https://localhost:25500/sub?target=clash&url=https%3a%2f%2fnfnf.xyz%2flink%2fabcdefg%3fmu%3d4&include=(TW%7c%e5%8f%b0%e6%b9%be%7c%e5%8f%b0%e7%81%a3)&list=true
+```
+
+参考：
+
+* [Clash proxy-provider 搭配 subconverter 使用小记](https://10101.io/2020/02/12/use-clash-proxy-provider-with-subconverter)
