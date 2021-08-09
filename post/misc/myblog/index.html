@@ -155,15 +155,15 @@
 <h3 id=动态博客>动态博客</h3>
 <p>比较知名的动态博客工具有下面几种：</p>
 <ul>
-<li><a test href=https://wordpress.com/>wordpress</a></li>
-<li><a test href=http://typecho.org/>typecho</a></li>
+<li><a test=/post/misc/myblog/ href=https://wordpress.com/>wordpress</a></li>
+<li><a test=/post/misc/myblog/ href=http://typecho.org/>typecho</a></li>
 </ul>
 <p>都是开源项目，wordpress(简称WP)是使用最广泛的，而typecho开发都不是告别活跃</p>
 <p>对于博客项目，稳定是前提</p>
 <p>开源项目参考：</p>
 <ul>
-<li><a test href=https://github.com/WordPress/WordPress>WordPress/WordPress</a></li>
-<li><a test href=https://github.com/typecho/typecho>typecho/typecho</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/WordPress/WordPress>WordPress/WordPress</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/typecho/typecho>typecho/typecho</a></li>
 </ul>
 <h4 id=部署>部署</h4>
 <p>在试用WP中，虽然现在可以使用docker方便的部署，我使用raspi4 2GB运行有点不够，运行WP与mysql后仅剩下200M左右，如果再vscode remote连接直接死机，需要开启swap才能正常。</p>
@@ -202,7 +202,7 @@
 </div>
 </div></li>
 <li>
-<p>使用markdown-preview-enhanced导出cdn hosted文件<a test href=vim_markdown_preview_enhanced.html>vim_markdown_preview_enhanced.html</a>，下面是部分代码：</p>
+<p>使用markdown-preview-enhanced导出cdn hosted文件<a test=/post/misc/myblog/ href=vim_markdown_preview_enhanced.html>vim_markdown_preview_enhanced.html</a>，下面是部分代码：</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -277,7 +277,7 @@ hyphens: none;
 </div>
 </div></li>
 <li>
-<p>经过WP转义后<a test href=vim_wordpress_esc>vim_wordpress_esc</a></p>
+<p>经过WP转义后<a test=/post/misc/myblog/ href=vim_wordpress_esc>vim_wordpress_esc</a></p>
 <p><img src=2021-08-04-23-17-08.png alt> 下面是部分代码：</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
@@ -364,12 +364,12 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
 </ul>
 <p>参考：</p>
 <ul>
-<li><a test href=https://cloud.tencent.com/developer/article/1150073>在WordPress中使用Markdown进行写作的正确姿势</a></li>
-<li><a test href=https://www.paincker.com/publish-markdown>WordPress+PublishMarkdown快速构建个人博客</a></li>
-<li><a test href=https://zhuanlan.zhihu.com/p/65593971>命令行创建和发布 MarkDown 到 WordPress</a></li>
-<li><a test href=https://developer.wordpress.org/rest-api/reference/>REST API Handbook</a></li>
-<li><a test href=https://developer.wordpress.org/rest-api/reference/posts/>rest api: Posts</a></li>
-<li><a test href=https://stackoverflow.com/questions/27045670/how-to-link-external-css-in-wordpress>How to link external css in wordpress? [closed]</a></li>
+<li><a test=/post/misc/myblog/ href=https://cloud.tencent.com/developer/article/1150073>在WordPress中使用Markdown进行写作的正确姿势</a></li>
+<li><a test=/post/misc/myblog/ href=https://www.paincker.com/publish-markdown>WordPress+PublishMarkdown快速构建个人博客</a></li>
+<li><a test=/post/misc/myblog/ href=https://zhuanlan.zhihu.com/p/65593971>命令行创建和发布 MarkDown 到 WordPress</a></li>
+<li><a test=/post/misc/myblog/ href=https://developer.wordpress.org/rest-api/reference/>REST API Handbook</a></li>
+<li><a test=/post/misc/myblog/ href=https://developer.wordpress.org/rest-api/reference/posts/>rest api: Posts</a></li>
+<li><a test=/post/misc/myblog/ href=https://stackoverflow.com/questions/27045670/how-to-link-external-css-in-wordpress>How to link external css in wordpress? [closed]</a></li>
 </ul>
 <h4 id=问题>问题</h4>
 <p>到此，markdown渲染的问题解决了，新的问题出现了，如何批量渲染md文件。vscode markdown-preview-enhanced插件只提供了手动的方式渲染出html，front-matter配置自动导出需要打开预览界面才行，不利于自动化</p>
@@ -398,20 +398,20 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
 </span></code></pre></td></tr></table>
 </div>
 </div><p>另外，对于不常用的图片，可以base64编码嵌入html文件中，缺点是文件过大，不利于缓存加载，链接形式的图片可以懒加载体验更好</p>
-<p>于是转而寻找自动化工具，在<a test href=https://github.com/typora/typora-issues/issues/824#issuecomment-418176112>typora issues</a>中找到答案：Static Site Generator</p>
+<p>于是转而寻找自动化工具，在<a test=/post/misc/myblog/ href=https://github.com/typora/typora-issues/issues/824#issuecomment-418176112>typora issues</a>中找到答案：Static Site Generator</p>
 <p>参考：</p>
 <ul>
-<li><a test href=https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/>Markdown Preview Enhanced docs</a></li>
-<li><a test href=https://github.com/typora/typora-issues/issues/824>Support export Multiple Documents #824</a></li>
-<li><a test href=https://github.com/typora/typora-issues/issues/1999>[Summary] Advanced command line interface support #1999</a></li>
-<li><a test href=https://github.com/typora/typora-issues>typora issues</a></li>
+<li><a test=/post/misc/myblog/ href=https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/>Markdown Preview Enhanced docs</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/typora/typora-issues/issues/824>Support export Multiple Documents #824</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/typora/typora-issues/issues/1999>[Summary] Advanced command line interface support #1999</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/typora/typora-issues>typora issues</a></li>
 </ul>
 <h3 id=静态博客>静态博客</h3>
 <p>知名的静态博客工具有：</p>
 <ul>
-<li><a test href=https://github.com/hexojs/hexo>hexo</a></li>
-<li><a test href=https://github.com/gohugoio/hugo>hugo. A fast, simple & powerful blog framework, powered by Node.js.</a></li>
-<li><a test href=https://github.com/jekyll/jekyll>jekyll. Jekyll is a blog-aware static site generator in Ruby</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/hexojs/hexo>hexo</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/gohugoio/hugo>hugo. A fast, simple & powerful blog framework, powered by Node.js.</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/jekyll/jekyll>jekyll. Jekyll is a blog-aware static site generator in Ruby</a></li>
 </ul>
 <h4 id=选型-1>选型</h4>
 <p>hexo使用nodejs开发，hugo使用golang开发，相对更熟悉golang。速度在这里不是重点，nodejs已经足够</p>
@@ -503,14 +503,14 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
   - ...
 </code></pre></td></tr></table>
 </div>
-</div><p>在vscode中配合<a test href=https://github.com/mathiassoeholm/markdown-link-updater>Markdown Link Updater</a>重命名文件后对应链接也会被修改</p>
-<p>使用<a test href=https://github.com/gaurav-nelson/github-action-markdown-link-check>GitHub Action - Markdown link check</a>可以在github repo中检查link的有效性</p>
+</div><p>在vscode中配合<a test=/post/misc/myblog/ href=https://github.com/mathiassoeholm/markdown-link-updater>Markdown Link Updater</a>重命名文件后对应链接也会被修改</p>
+<p>使用<a test=/post/misc/myblog/ href=https://github.com/gaurav-nelson/github-action-markdown-link-check>GitHub Action - Markdown link check</a>可以在github repo中检查link的有效性</p>
 <p>参考：</p>
 <ul>
-<li><a test href=https://www.isyin.cn/post/2018-05-03-hugo-%E7%9A%84%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E6%96%B9%E6%A1%88/>Hugo 的文件管理方案</a></li>
-<li><a test href=https://gohugo.io/getting-started/directory-structure/>Directory Structure</a></li>
-<li><a test href=https://gohugo.io/content-management/sections/>CONTENT MANAGEMENT Content Sections</a></li>
-<li><a test href=https://olowolo.com/post/hugo-quick-start/>Hugo 从入门到会用</a></li>
+<li><a test=/post/misc/myblog/ href=https://www.isyin.cn/post/2018-05-03-hugo-%E7%9A%84%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E6%96%B9%E6%A1%88/>Hugo 的文件管理方案</a></li>
+<li><a test=/post/misc/myblog/ href=https://gohugo.io/getting-started/directory-structure/>Directory Structure</a></li>
+<li><a test=/post/misc/myblog/ href=https://gohugo.io/content-management/sections/>CONTENT MANAGEMENT Content Sections</a></li>
+<li><a test=/post/misc/myblog/ href=https://olowolo.com/post/hugo-quick-start/>Hugo 从入门到会用</a></li>
 </ul>
 <h4 id=预处理markdown-link>预处理markdown link</h4>
 <p>由于当前目录结构与hugo官方不一致，导致本地相对链接无法正常使用如：</p>
@@ -572,7 +572,7 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
 <p>下面是简单的处理逻辑：对于<code>myblog.md</code>，在当前页面下，如果存在以页面url.path的最后一层即filename开始的href，如：<code>url=http://localhost:1313/post/myblog, url.path=/post/myblog, filename=myblog, href=myblog/vim_wordpress_esc</code>，则移除这一级的<code>href=vim_wordpress_esc</code></p>
 <p>参考：</p>
 <ul>
-<li><a test href=https://stackoverflow.com/a/46180551/8566831>Cannot link to static files with Hugo</a></li>
+<li><a test=/post/misc/myblog/ href=https://stackoverflow.com/a/46180551/8566831>Cannot link to static files with Hugo</a></li>
 </ul>
 <h5 id=js>js</h5>
 <p>开始的思路是使用js在页面加载时将对应href重写。但是看到<code>&lt;a class="fancybox" href="http://localhost:1313/post/myblog/myblog/2021-08-04-23-17-08.png"</code>就发现使用js无法保证所有对应的href被处理，可能由于加载顺序导致异常。如果link过多可能会影响性能</p>
@@ -674,40 +674,40 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test href=https://gohugo.io/getting-started/configuration-markup#markdown-render-hooks>Configure Markup: Markdown Render Hooks</a></li>
-<li><a test href=https://discourse.gohugo.io/t/markdown-pre-processing/27299>Markdown pre-processing?</a></li>
-<li><a test href=https://discourse.gohugo.io/t/how-to-get-the-url-of-the-current-page-with-the-rel-or-relref-function/29113/4>How to get the URL of the current page with the rel or relref function?</a></li>
-<li><a test href=https://gohugo.io/functions/>Functions Quick Reference</a></li>
+<li><a test=/post/misc/myblog/ href=https://gohugo.io/getting-started/configuration-markup#markdown-render-hooks>Configure Markup: Markdown Render Hooks</a></li>
+<li><a test=/post/misc/myblog/ href=https://discourse.gohugo.io/t/markdown-pre-processing/27299>Markdown pre-processing?</a></li>
+<li><a test=/post/misc/myblog/ href=https://discourse.gohugo.io/t/how-to-get-the-url-of-the-current-page-with-the-rel-or-relref-function/29113/4>How to get the URL of the current page with the rel or relref function?</a></li>
+<li><a test=/post/misc/myblog/ href=https://gohugo.io/functions/>Functions Quick Reference</a></li>
 </ul>
 <h3 id=github-pages部署>github pages部署</h3>
-<p>在github上使用一个仓库<code>&lt;username>.github.io</code>保存hugo博文与gh-pages。基本配置在<a test href=https://gohugo.io/hosting-and-deployment/hosting-on-github/#readout>Host on GitHub</a>一致。</p>
-<p>但是要注意<a test href=https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-first-deployment-with-github_token>First Deployment with GITHUB_TOKEN</a>，配置完github ations后需要主动创建<code>gh-pages</code><em>空的分支</em>用于保存在hugo public/中的内容，并在repo settings中将其配置为GitHub Pages的source：</p>
+<p>在github上使用一个仓库<code>&lt;username>.github.io</code>保存hugo博文与gh-pages。基本配置在<a test=/post/misc/myblog/ href=https://gohugo.io/hosting-and-deployment/hosting-on-github/#readout>Host on GitHub</a>一致。</p>
+<p>但是要注意<a test=/post/misc/myblog/ href=https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-first-deployment-with-github_token>First Deployment with GITHUB_TOKEN</a>，配置完github ations后需要主动创建<code>gh-pages</code><em>空的分支</em>用于保存在hugo public/中的内容，并在repo settings中将其配置为GitHub Pages的source：</p>
 <p><img src=2021-08-06-01-20-34.png alt></p>
 <p>参考：</p>
 <ul>
-<li><a test href=https://github.com/marketplace/actions/github-pages-action>GitHub Pages action</a></li>
-<li><a test href=https://gohugo.io/hosting-and-deployment/hosting-on-github/#types-of-github-pages>hugo: Host on GitHub</a></li>
-<li><a test href=https://github.com/marketplace/actions/hugo-setup>GitHub Action Hugo setup</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/marketplace/actions/github-pages-action>GitHub Pages action</a></li>
+<li><a test=/post/misc/myblog/ href=https://gohugo.io/hosting-and-deployment/hosting-on-github/#types-of-github-pages>hugo: Host on GitHub</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/marketplace/actions/hugo-setup>GitHub Action Hugo setup</a></li>
 </ul>
 <h3 id=定制域名>定制域名</h3>
 <ol>
-<li>在dns提供商添加cname解析到gh-pages的域名<code>navyd.github.io</code>。如<a test href=https://dns.console.aliyun.com>阿里云DNS解析控制台</a>
+<li>在dns提供商添加cname解析到gh-pages的域名<code>navyd.github.io</code>。如<a test=/post/misc/myblog/ href=https://dns.console.aliyun.com>阿里云DNS解析控制台</a>
 <img src=2021-08-06-23-27-37.png alt></li>
 <li>添加域名<code>blog.navyd.xyz</code>内容到<code>static/CNAME</code>文件</li>
-<li>根据<a test href=https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-a-subdomain>Configuring a subdomain</a>指导，在github仓库中添加子域名<code>blog.navyd.xyz</code>并启用https
+<li>根据<a test=/post/misc/myblog/ href=https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-a-subdomain>Configuring a subdomain</a>指导，在github仓库中添加子域名<code>blog.navyd.xyz</code>并启用https
 <img src=2021-08-06-23-19-29.png alt></li>
 </ol>
 <p>注意：如果用浏览器打开新域名时提示不安全的证书，可能是缓存了以前使用过的域名证书，使用chrome无痕模式可以正常打开，等待chrome刷新缓存即可</p>
 <p>参考：</p>
 <ul>
-<li><a test href=https://gohugo.io/hosting-and-deployment/hosting-on-github/#use-a-custom-domain>hugo Use a Custom Domain</a></li>
-<li><a test href=https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages>About custom domains and GitHub Pages</a></li>
-<li><a test href=https://stackoverflow.com/a/9123911/8566831>Q: Custom domain for GitHub project pages</a></li>
-<li><a test href=https://stackoverflow.com/a/16455966/8566831>Can github pages CNAME file contain more than one domain?</a></li>
+<li><a test=/post/misc/myblog/ href=https://gohugo.io/hosting-and-deployment/hosting-on-github/#use-a-custom-domain>hugo Use a Custom Domain</a></li>
+<li><a test=/post/misc/myblog/ href=https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages>About custom domains and GitHub Pages</a></li>
+<li><a test=/post/misc/myblog/ href=https://stackoverflow.com/a/9123911/8566831>Q: Custom domain for GitHub project pages</a></li>
+<li><a test=/post/misc/myblog/ href=https://stackoverflow.com/a/16455966/8566831>Can github pages CNAME file contain more than one domain?</a></li>
 </ul>
 <h3 id=even主题>even主题</h3>
 <h4 id=主题更改无效>主题更改无效</h4>
-<p>在<a test href=https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md#theme-color>Theme Color</a>中提到可以在evne目录中<code>/assets/sass/_variable.scss</code>文件修改主题</p>
+<p>在<a test=/post/misc/myblog/ href=https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md#theme-color>Theme Color</a>中提到可以在evne目录中<code>/assets/sass/_variable.scss</code>文件修改主题</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
@@ -746,9 +746,9 @@ hugo v0.87.0+extended linux/amd64 <span class=nv>BuildDate</span><span class=o>=
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li><a test href=https://github.com/olOwOlo/hugo-theme-even/issues/350#issuecomment-857537169>怎么更该了主题/assets/sass/_variable.scss 颜色值没发生改变是怎么回事</a></li>
-<li><a test href=https://github.com/gohugoio/hugo#build-and-install-the-binaries-from-source-advanced-install>Build and Install the Binaries from Source (Advanced Install)</a></li>
-<li><a test href=https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md#installation>even Installation</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/olOwOlo/hugo-theme-even/issues/350#issuecomment-857537169>怎么更该了主题/assets/sass/_variable.scss 颜色值没发生改变是怎么回事</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/gohugoio/hugo#build-and-install-the-binaries-from-source-advanced-install>Build and Install the Binaries from Source (Advanced Install)</a></li>
+<li><a test=/post/misc/myblog/ href=https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md#installation>even Installation</a></li>
 </ul>
 <h4 id=submodule无法修改>submodule无法修改</h4>
 <p>由于使用了<code>git submodle</code>将even作为项目的子模块，现在要修改<code>/assets/sass/_variable.scss</code>文件，但是无法完成。如果之后无法找到解决方法，只有使用clone而不是作为submodule</p>
@@ -778,7 +778,7 @@ hugo v0.87.0+extended linux/amd64 <span class=nv>BuildDate</span><span class=o>=
 <p>utterances 是依托于 github repository 的 issues 建立的评论功能</p>
 <ol>
 <li>
-<p>点击<a test href=https://github.com/apps/utterances>GitHub App utterances</a>为github pages仓库<code>navyd.github.io</code>安装
+<p>点击<a test=/post/misc/myblog/ href=https://github.com/apps/utterances>GitHub App utterances</a>为github pages仓库<code>navyd.github.io</code>安装
 <img src=2021-08-08-14-03-17.png alt></p>
 </li>
 <li>
@@ -808,9 +808,9 @@ hugo v0.87.0+extended linux/amd64 <span class=nv>BuildDate</span><span class=o>=
 </ol>
 <p>参考：</p>
 <ul>
-<li><a test href=https://blog.51cto.com/xdr630/2797532>hugo博客使用 utterances 作为评论系统</a></li>
-<li><a test href=https://utteranc.es/>utterances</a></li>
-<li><a test href=https://blog.dontjudge.cn/post/hugo-%E4%B8%BB%E9%A2%98-even-%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E9%85%8D%E7%BD%AE/>Hugo 主题 Even 的自定义配置</a></li>
+<li><a test=/post/misc/myblog/ href=https://blog.51cto.com/xdr630/2797532>hugo博客使用 utterances 作为评论系统</a></li>
+<li><a test=/post/misc/myblog/ href=https://utteranc.es/>utterances</a></li>
+<li><a test=/post/misc/myblog/ href=https://blog.dontjudge.cn/post/hugo-%E4%B8%BB%E9%A2%98-even-%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E9%85%8D%E7%BD%AE/>Hugo 主题 Even 的自定义配置</a></li>
 </ul>
 <h4 id=多层toc>多层toc</h4>
 <div class=highlight><div class=chroma>
@@ -831,9 +831,9 @@ hugo v0.87.0+extended linux/amd64 <span class=nv>BuildDate</span><span class=o>=
 <p><img src=2021-08-09-20-23-57.png alt></p>
 <p>参考：</p>
 <ul>
-<li><a test href=https://kuang.netlify.app/blog/hugo.html>Hugo 相关部署操作</a></li>
-<li><a test href=https://gohugo.io/content-management/toc/>CONTENT MANAGEMENT Table of Contents</a></li>
-<li><a test href=https://gohugo.io/getting-started/configuration-markup#config>Configure Markup</a></li>
+<li><a test=/post/misc/myblog/ href=https://kuang.netlify.app/blog/hugo.html>Hugo 相关部署操作</a></li>
+<li><a test=/post/misc/myblog/ href=https://gohugo.io/content-management/toc/>CONTENT MANAGEMENT Table of Contents</a></li>
+<li><a test=/post/misc/myblog/ href=https://gohugo.io/getting-started/configuration-markup#config>Configure Markup</a></li>
 </ul>
 </div>
 <div class=post-copyright>

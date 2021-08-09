@@ -83,7 +83,7 @@
 <article class=post>
 <div class=post-content>
 <h1 id=pin为何无法直接固定在stack上>pin为何无法直接固定在stack上</h1>
-<p>在阅读<a test href=https://cfsamson.github.io/books-futures-explained/introduction.html>Futures Explained in 200 Lines of Rust</a>时，有一个疑问：为何不能在一个栈帧中创建一个自引用对象并返回它，因为任何指向“self”的指针都是无效的？</p>
+<p>在阅读<a test=/res/rust/pin%E6%97%A0%E6%B3%95%E4%B8%BA%E4%BD%95%E7%9B%B4%E6%8E%A5%E5%9B%BA%E5%AE%9A%E5%9C%A8stack%E4%B8%8A/ href=https://cfsamson.github.io/books-futures-explained/introduction.html>Futures Explained in 200 Lines of Rust</a>时，有一个疑问：为何不能在一个栈帧中创建一个自引用对象并返回它，因为任何指向“self”的指针都是无效的？</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -253,7 +253,7 @@
 </div>
 </div><p>这些都在说明一件事，Pin是针对指针的，而rust从struct创建原始指针的方式只能通过<code>& T</code>和<code>&mut T</code>。在这里new是不能返回一个引用指针的，因为在stack上new退出后会被Drop</p>
 <h2 id=方案>方案</h2>
-<h3 id=pin_projecthttpsdocsrspin-project107pin_projectindexhtml><a test href=https://docs.rs/pin-project/1.0.7/pin_project/index.html>pin_project</a></h3>
+<h3 id=pin_projecthttpsdocsrspin-project107pin_projectindexhtml><a test=/res/rust/pin%E6%97%A0%E6%B3%95%E4%B8%BA%E4%BD%95%E7%9B%B4%E6%8E%A5%E5%9B%BA%E5%AE%9A%E5%9C%A8stack%E4%B8%8A/ href=https://docs.rs/pin-project/1.0.7/pin_project/index.html>pin_project</a></h3>
 <p>在stack上提供pin</p>
 <h3 id=boxpin>Box::pin</h3>
 <p>Box也是一种指针，使用Box包装</p>
@@ -291,9 +291,9 @@
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test href=https://cfsamson.github.io/books-futures-explained/introduction.html>Futures Explained in 200 Lines of Rust</a></li>
-<li><a test href=https://doc.rust-lang.org/std/primitive.pointer.html>Primitive Type pointer</a></li>
-<li><a test href=https://github.com/taiki-e/pin-project/blob/HEAD/examples/struct-default-expanded.rs>pin_project Original code: struct-default-expanded.rs</a></li>
+<li><a test=/res/rust/pin%E6%97%A0%E6%B3%95%E4%B8%BA%E4%BD%95%E7%9B%B4%E6%8E%A5%E5%9B%BA%E5%AE%9A%E5%9C%A8stack%E4%B8%8A/ href=https://cfsamson.github.io/books-futures-explained/introduction.html>Futures Explained in 200 Lines of Rust</a></li>
+<li><a test=/res/rust/pin%E6%97%A0%E6%B3%95%E4%B8%BA%E4%BD%95%E7%9B%B4%E6%8E%A5%E5%9B%BA%E5%AE%9A%E5%9C%A8stack%E4%B8%8A/ href=https://doc.rust-lang.org/std/primitive.pointer.html>Primitive Type pointer</a></li>
+<li><a test=/res/rust/pin%E6%97%A0%E6%B3%95%E4%B8%BA%E4%BD%95%E7%9B%B4%E6%8E%A5%E5%9B%BA%E5%AE%9A%E5%9C%A8stack%E4%B8%8A/ href=https://github.com/taiki-e/pin-project/blob/HEAD/examples/struct-default-expanded.rs>pin_project Original code: struct-default-expanded.rs</a></li>
 </ul>
 </div>
 </article>

@@ -208,7 +208,7 @@ Serializable (java.io)
 <span class=o>}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>与初始容量构造方式区别在于：<a test href=#%e6%89%a9%e5%ae%b9>首次扩容</a>时oldCapacity==0无参构造会默认扩容为DEFAULT_CAPACITY=10</p>
+</div><p>与初始容量构造方式区别在于：<a test=/res/java/code-analysis/collections/arraylist/ href=#%e6%89%a9%e5%ae%b9>首次扩容</a>时oldCapacity==0无参构造会默认扩容为DEFAULT_CAPACITY=10</p>
 <h4 id=collection构造>Collection构造</h4>
 <p>对于参数为Collection的构造器应该少用Arrays.asList()将数组转化为ArrayList。</p>
 <p>由于Arrays.asList().toArray()的方法不能将原数组转化为Object[]，构造器会再次将数组复制为Object[]，造成Arrays.asList().toArray()这一个额外的开销(内部实现为<code>arr.clone()</code>)，如果数组过大将造成明显的性能损失</p>
@@ -2083,7 +2083,7 @@ Serializable (java.io)
 </ul>
 <h2 id=参考>参考</h2>
 <ul>
-<li><a test href="https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6260652" title="JDK-6260652 : (coll) Arrays.asList(x).toArray().getClass() should be Object[].[class">https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6260652</a></li>
+<li><a test=/res/java/code-analysis/collections/arraylist/ href="https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6260652" title="JDK-6260652 : (coll) Arrays.asList(x).toArray().getClass() should be Object[].[class">https://bugs.java.com/bugdatabase/view_bug.do?bug_id=6260652</a></li>
 </ul>
 </div>
 </article>

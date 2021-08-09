@@ -196,7 +196,7 @@
 <p><code>设置-->更新和安全-->Windows安全中心-->防火墙和网络保护-->高级设置-->入站规则-->新建规则-->端口-->TCP,特定本地端口-->允许连接</code></p>
 <p><img src=../../assets/images/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5.png alt></p>
 <h3 id=设置powershell-script>设置powershell script</h3>
-<p>因为每一次重新启动 wsl2的ip都会变动，所以每一次重启都去手动执行端口转发是一件反人类的事情，<a test href=https://github.com/microsoft/WSL/issues/4150#issuecomment-504209723>[WSL 2] NIC Bridge mode 🖧 (Has TCP Workaround🔨) #4150</a>找到一个powershell的脚本能够每一次获取虚拟机ip，并进行指定端口转发</p>
+<p>因为每一次重新启动 wsl2的ip都会变动，所以每一次重启都去手动执行端口转发是一件反人类的事情，<a test=/res/linux/wsl2/wsl2%E8%AE%BE%E7%BD%AE%E5%86%85%E7%BD%91%E8%AE%BF%E9%97%AE/ href=https://github.com/microsoft/WSL/issues/4150#issuecomment-504209723>[WSL 2] NIC Bridge mode 🖧 (Has TCP Workaround🔨) #4150</a>找到一个powershell的脚本能够每一次获取虚拟机ip，并进行指定端口转发</p>
 <ol>
 <li>
 <p>使用cmd调用powershell运行脚本，首次执行可能会有报错，因为powershell默认不能直接执行脚本，需要更改一个设置，需在powershell下执行</p>
@@ -275,19 +275,19 @@
 </div>
 </div></li>
 </ol>
-<p><a test href=../../assets/files/wsl2-port-forwarding.ps1>wsl2-port-forwarding.ps1</a></p>
+<p><a test=/res/linux/wsl2/wsl2%E8%AE%BE%E7%BD%AE%E5%86%85%E7%BD%91%E8%AE%BF%E9%97%AE/ href=../../assets/files/wsl2-port-forwarding.ps1>wsl2-port-forwarding.ps1</a></p>
 <p>注意：尽量不要转发常用端口，如不能转发80端口，可能导致win10 共享等不能工作的异常</p>
 <h3 id=配置任务计划>配置任务计划</h3>
 <p>Go to search, search for task scheduler. In the actions menu on the right, click on create task.</p>
 <p>Enter Name, go to triggers tab. Create a new trigger, with a begin task as you login, set delay to 10s.</p>
 <p>Go to the actions and add the script. If you are using Laptop, go to settings and enable run on power.</p>
-<p><a test href=https://blog.csdn.net/qq_26435977/article/details/106008957>WSL2设置内网访问</a></p>
+<p><a test=/res/linux/wsl2/wsl2%E8%AE%BE%E7%BD%AE%E5%86%85%E7%BD%91%E8%AE%BF%E9%97%AE/ href=https://blog.csdn.net/qq_26435977/article/details/106008957>WSL2设置内网访问</a></p>
 <h2 id=参考>参考</h2>
 <ul>
-<li><a test href=https://github.com/microsoft/WSL/issues/4150#issuecomment-504209723>[WSL 2] NIC Bridge mode 🖧 (Has TCP Workaround🔨) #4150</a></li>
-<li><a test href=https://blog.csdn.net/qq_26435977/article/details/106008957>WSL2设置内网访问</a></li>
-<li><a test href=https://studygolang.com/articles/29526>windows10 2004版使用WSL2并自动转发WSL2中端口</a></li>
-<li><a test href=https://zhuanlan.zhihu.com/p/144583887>WSL2来了！但是能正常使用并不简单</a></li>
+<li><a test=/res/linux/wsl2/wsl2%E8%AE%BE%E7%BD%AE%E5%86%85%E7%BD%91%E8%AE%BF%E9%97%AE/ href=https://github.com/microsoft/WSL/issues/4150#issuecomment-504209723>[WSL 2] NIC Bridge mode 🖧 (Has TCP Workaround🔨) #4150</a></li>
+<li><a test=/res/linux/wsl2/wsl2%E8%AE%BE%E7%BD%AE%E5%86%85%E7%BD%91%E8%AE%BF%E9%97%AE/ href=https://blog.csdn.net/qq_26435977/article/details/106008957>WSL2设置内网访问</a></li>
+<li><a test=/res/linux/wsl2/wsl2%E8%AE%BE%E7%BD%AE%E5%86%85%E7%BD%91%E8%AE%BF%E9%97%AE/ href=https://studygolang.com/articles/29526>windows10 2004版使用WSL2并自动转发WSL2中端口</a></li>
+<li><a test=/res/linux/wsl2/wsl2%E8%AE%BE%E7%BD%AE%E5%86%85%E7%BD%91%E8%AE%BF%E9%97%AE/ href=https://zhuanlan.zhihu.com/p/144583887>WSL2来了！但是能正常使用并不简单</a></li>
 </ul>
 </div>
 </article>

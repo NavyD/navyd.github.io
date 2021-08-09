@@ -89,15 +89,15 @@
 <h3 id=动态博客>动态博客</h3>
 <p>比较知名的动态博客工具有下面几种：</p>
 <ul>
-<li><a test href=https://wordpress.com/>wordpress</a></li>
-<li><a test href=http://typecho.org/>typecho</a></li>
+<li><a test=/res/hugo/myblog/ href=https://wordpress.com/>wordpress</a></li>
+<li><a test=/res/hugo/myblog/ href=http://typecho.org/>typecho</a></li>
 </ul>
 <p>都是开源项目，wordpress(简称WP)是使用最广泛的，而typecho开发都不是告别活跃</p>
 <p>对于博客项目，稳定是前提</p>
 <p>开源项目参考：</p>
 <ul>
-<li><a test href=https://github.com/WordPress/WordPress>WordPress/WordPress</a></li>
-<li><a test href=https://github.com/typecho/typecho>typecho/typecho</a></li>
+<li><a test=/res/hugo/myblog/ href=https://github.com/WordPress/WordPress>WordPress/WordPress</a></li>
+<li><a test=/res/hugo/myblog/ href=https://github.com/typecho/typecho>typecho/typecho</a></li>
 </ul>
 <h4 id=部署>部署</h4>
 <p>在试用WP中，虽然现在可以使用docker方便的部署，我使用raspi4 2GB运行有点不够，运行WP与mysql后仅剩下200M左右，如果再vscode remote连接直接死机，需要开启swap才能正常。</p>
@@ -136,7 +136,7 @@
 </div>
 </div></li>
 <li>
-<p>使用markdown-preview-enhanced导出cdn hosted文件<a test href=vim_markdown_preview_enhanced.html>vim_markdown_preview_enhanced.html</a>，下面是部分代码：</p>
+<p>使用markdown-preview-enhanced导出cdn hosted文件<a test=/res/hugo/myblog/ href=vim_markdown_preview_enhanced.html>vim_markdown_preview_enhanced.html</a>，下面是部分代码：</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -211,7 +211,7 @@ hyphens: none;
 </div>
 </div></li>
 <li>
-<p>经过WP转义后<a test href=vim_wordpress_esc>vim_wordpress_esc</a></p>
+<p>经过WP转义后<a test=/res/hugo/myblog/ href=vim_wordpress_esc>vim_wordpress_esc</a></p>
 <p><img src=2021-08-04-23-17-08.png alt> 下面是部分代码：</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
@@ -298,12 +298,12 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
 </ul>
 <p>参考：</p>
 <ul>
-<li><a test href=https://cloud.tencent.com/developer/article/1150073>在WordPress中使用Markdown进行写作的正确姿势</a></li>
-<li><a test href=https://www.paincker.com/publish-markdown>WordPress+PublishMarkdown快速构建个人博客</a></li>
-<li><a test href=https://zhuanlan.zhihu.com/p/65593971>命令行创建和发布 MarkDown 到 WordPress</a></li>
-<li><a test href=https://developer.wordpress.org/rest-api/reference/>REST API Handbook</a></li>
-<li><a test href=https://developer.wordpress.org/rest-api/reference/posts/>rest api: Posts</a></li>
-<li><a test href=https://stackoverflow.com/questions/27045670/how-to-link-external-css-in-wordpress>How to link external css in wordpress? [closed]</a></li>
+<li><a test=/res/hugo/myblog/ href=https://cloud.tencent.com/developer/article/1150073>在WordPress中使用Markdown进行写作的正确姿势</a></li>
+<li><a test=/res/hugo/myblog/ href=https://www.paincker.com/publish-markdown>WordPress+PublishMarkdown快速构建个人博客</a></li>
+<li><a test=/res/hugo/myblog/ href=https://zhuanlan.zhihu.com/p/65593971>命令行创建和发布 MarkDown 到 WordPress</a></li>
+<li><a test=/res/hugo/myblog/ href=https://developer.wordpress.org/rest-api/reference/>REST API Handbook</a></li>
+<li><a test=/res/hugo/myblog/ href=https://developer.wordpress.org/rest-api/reference/posts/>rest api: Posts</a></li>
+<li><a test=/res/hugo/myblog/ href=https://stackoverflow.com/questions/27045670/how-to-link-external-css-in-wordpress>How to link external css in wordpress? [closed]</a></li>
 </ul>
 <h4 id=问题>问题</h4>
 <p>到此，markdown渲染的问题解决了，新的问题出现了，如何批量渲染md文件。vscode markdown-preview-enhanced插件只提供了手动的方式渲染出html，front-matter配置自动导出需要打开预览界面才行，不利于自动化</p>
@@ -332,20 +332,20 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
 </span></code></pre></td></tr></table>
 </div>
 </div><p>另外，对于不常用的图片，可以base64编码嵌入html文件中，缺点是文件过大，不利于缓存加载，链接形式的图片可以懒加载体验更好</p>
-<p>于是转而寻找自动化工具，在<a test href=https://github.com/typora/typora-issues/issues/824#issuecomment-418176112>typora issues</a>中找到答案：Static Site Generator</p>
+<p>于是转而寻找自动化工具，在<a test=/res/hugo/myblog/ href=https://github.com/typora/typora-issues/issues/824#issuecomment-418176112>typora issues</a>中找到答案：Static Site Generator</p>
 <p>参考：</p>
 <ul>
-<li><a test href=https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/>Markdown Preview Enhanced docs</a></li>
-<li><a test href=https://github.com/typora/typora-issues/issues/824>Support export Multiple Documents #824</a></li>
-<li><a test href=https://github.com/typora/typora-issues/issues/1999>[Summary] Advanced command line interface support #1999</a></li>
-<li><a test href=https://github.com/typora/typora-issues>typora issues</a></li>
+<li><a test=/res/hugo/myblog/ href=https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/>Markdown Preview Enhanced docs</a></li>
+<li><a test=/res/hugo/myblog/ href=https://github.com/typora/typora-issues/issues/824>Support export Multiple Documents #824</a></li>
+<li><a test=/res/hugo/myblog/ href=https://github.com/typora/typora-issues/issues/1999>[Summary] Advanced command line interface support #1999</a></li>
+<li><a test=/res/hugo/myblog/ href=https://github.com/typora/typora-issues>typora issues</a></li>
 </ul>
 <h3 id=静态博客>静态博客</h3>
 <p>知名的静态博客工具有：</p>
 <ul>
-<li><a test href=https://github.com/hexojs/hexo>hexo</a></li>
-<li><a test href=https://github.com/gohugoio/hugo>hugo. A fast, simple & powerful blog framework, powered by Node.js.</a></li>
-<li><a test href=https://github.com/jekyll/jekyll>jekyll. Jekyll is a blog-aware static site generator in Ruby</a></li>
+<li><a test=/res/hugo/myblog/ href=https://github.com/hexojs/hexo>hexo</a></li>
+<li><a test=/res/hugo/myblog/ href=https://github.com/gohugoio/hugo>hugo. A fast, simple & powerful blog framework, powered by Node.js.</a></li>
+<li><a test=/res/hugo/myblog/ href=https://github.com/jekyll/jekyll>jekyll. Jekyll is a blog-aware static site generator in Ruby</a></li>
 </ul>
 <h4 id=选型-1>选型</h4>
 <p>hexo使用nodejs开发，hugo使用golang开发，相对更熟悉golang。速度在这里不是重点，nodejs已经足够</p>
@@ -437,14 +437,14 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
   - ...
 </code></pre></td></tr></table>
 </div>
-</div><p>在vscode中配合<a test href=https://github.com/mathiassoeholm/markdown-link-updater>Markdown Link Updater</a>重命名文件后对应链接也会被修改</p>
-<p>使用<a test href=https://github.com/gaurav-nelson/github-action-markdown-link-check>GitHub Action - Markdown link check</a>可以在github repo中检查link的有效性</p>
+</div><p>在vscode中配合<a test=/res/hugo/myblog/ href=https://github.com/mathiassoeholm/markdown-link-updater>Markdown Link Updater</a>重命名文件后对应链接也会被修改</p>
+<p>使用<a test=/res/hugo/myblog/ href=https://github.com/gaurav-nelson/github-action-markdown-link-check>GitHub Action - Markdown link check</a>可以在github repo中检查link的有效性</p>
 <p>参考：</p>
 <ul>
-<li><a test href=https://www.isyin.cn/post/2018-05-03-hugo-%E7%9A%84%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E6%96%B9%E6%A1%88/>Hugo 的文件管理方案</a></li>
-<li><a test href=https://gohugo.io/getting-started/directory-structure/>Directory Structure</a></li>
-<li><a test href=https://gohugo.io/content-management/sections/>CONTENT MANAGEMENT Content Sections</a></li>
-<li><a test href=https://olowolo.com/post/hugo-quick-start/>Hugo 从入门到会用</a></li>
+<li><a test=/res/hugo/myblog/ href=https://www.isyin.cn/post/2018-05-03-hugo-%E7%9A%84%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E6%96%B9%E6%A1%88/>Hugo 的文件管理方案</a></li>
+<li><a test=/res/hugo/myblog/ href=https://gohugo.io/getting-started/directory-structure/>Directory Structure</a></li>
+<li><a test=/res/hugo/myblog/ href=https://gohugo.io/content-management/sections/>CONTENT MANAGEMENT Content Sections</a></li>
+<li><a test=/res/hugo/myblog/ href=https://olowolo.com/post/hugo-quick-start/>Hugo 从入门到会用</a></li>
 </ul>
 <h4 id=预处理markdown-link>预处理markdown link</h4>
 <p>由于当前目录结构与hugo官方不一致，导致本地相对链接无法正常使用如：</p>
@@ -506,7 +506,7 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
 <p>下面是简单的处理逻辑：对于<code>myblog.md</code>，在当前页面下，如果存在以页面url.path的最后一层即filename开始的href，如：<code>url=http://localhost:1313/post/myblog, url.path=/post/myblog, filename=myblog, href=myblog/vim_wordpress_esc</code>，则移除这一级的<code>href=vim_wordpress_esc</code></p>
 <p>参考：</p>
 <ul>
-<li><a test href=https://stackoverflow.com/a/46180551/8566831>Cannot link to static files with Hugo</a></li>
+<li><a test=/res/hugo/myblog/ href=https://stackoverflow.com/a/46180551/8566831>Cannot link to static files with Hugo</a></li>
 </ul>
 <h5 id=js>js</h5>
 <p>开始的思路是使用js在页面加载时将对应href重写。但是看到<code>&lt;a class="fancybox" href="http://localhost:1313/post/myblog/myblog/2021-08-04-23-17-08.png"</code>就发现使用js无法保证所有对应的href被处理，可能由于加载顺序导致异常。如果link过多可能会影响性能</p>
@@ -608,10 +608,10 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test href=https://gohugo.io/getting-started/configuration-markup#markdown-render-hooks>Configure Markup: Markdown Render Hooks</a></li>
-<li><a test href=https://discourse.gohugo.io/t/markdown-pre-processing/27299>Markdown pre-processing?</a></li>
-<li><a test href=https://discourse.gohugo.io/t/how-to-get-the-url-of-the-current-page-with-the-rel-or-relref-function/29113/4>How to get the URL of the current page with the rel or relref function?</a></li>
-<li><a test href=https://gohugo.io/functions/>Functions Quick Reference</a></li>
+<li><a test=/res/hugo/myblog/ href=https://gohugo.io/getting-started/configuration-markup#markdown-render-hooks>Configure Markup: Markdown Render Hooks</a></li>
+<li><a test=/res/hugo/myblog/ href=https://discourse.gohugo.io/t/markdown-pre-processing/27299>Markdown pre-processing?</a></li>
+<li><a test=/res/hugo/myblog/ href=https://discourse.gohugo.io/t/how-to-get-the-url-of-the-current-page-with-the-rel-or-relref-function/29113/4>How to get the URL of the current page with the rel or relref function?</a></li>
+<li><a test=/res/hugo/myblog/ href=https://gohugo.io/functions/>Functions Quick Reference</a></li>
 </ul>
 </div>
 </article>

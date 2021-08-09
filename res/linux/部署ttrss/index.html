@@ -84,9 +84,9 @@
 <div class=post-content>
 <h1 id=部署ttrss>部署TTRSS</h1>
 <h2 id=通过-docker-compose-部署>通过 docker-compose 部署</h2>
-<p>基本可以参考：<a test href=http://ttrss.henry.wang/zh/#%E9%80%9A%E8%BF%87-docker-compose-%E9%83%A8%E7%BD%B2>通过 docker-compose 部署</a></p>
-<p>部分问题可以在<a test href=https://github.com/HenryQW/Awesome-TTRSS/issues>github issues</a>找到</p>
-<p>如：<a test href=https://github.com/HenryQW/Awesome-TTRSS/issues/62>关于 SELF_URL_PATH 错误的解决方案大合集</a></p>
+<p>基本可以参考：<a test=/res/linux/%E9%83%A8%E7%BD%B2ttrss/ href=http://ttrss.henry.wang/zh/#%E9%80%9A%E8%BF%87-docker-compose-%E9%83%A8%E7%BD%B2>通过 docker-compose 部署</a></p>
+<p>部分问题可以在<a test=/res/linux/%E9%83%A8%E7%BD%B2ttrss/ href=https://github.com/HenryQW/Awesome-TTRSS/issues>github issues</a>找到</p>
+<p>如：<a test=/res/linux/%E9%83%A8%E7%BD%B2ttrss/ href=https://github.com/HenryQW/Awesome-TTRSS/issues/62>关于 SELF_URL_PATH 错误的解决方案大合集</a></p>
 <h3 id=备份与恢复数据>备份与恢复数据</h3>
 <p>确保postgres容器正在运行，否则可能出现<code>Error response from daemon: Container xxx is not running</code>的问题</p>
 <div class=highlight><div class=chroma>
@@ -106,14 +106,14 @@ cat backup.sql <span class=p>|</span> docker <span class=nb>exec</span> -i postg
 </code></pre></td></tr></table>
 </div>
 </div><h3 id=bilibili视频>bilibili视频</h3>
-<p>参考：<a test href=http://ttrss.henry.wang/zh/#remove-iframe-sandbox>移除 iframe 上的 sandbox 属性</a></p>
+<p>参考：<a test=/res/linux/%E9%83%A8%E7%BD%B2ttrss/ href=http://ttrss.henry.wang/zh/#remove-iframe-sandbox>移除 iframe 上的 sandbox 属性</a></p>
 <h3 id=docker-nginx反向代理https>docker nginx反向代理https</h3>
 <h3 id=申请域名>申请域名</h3>
 <p>在aliyun和tencent中选择一个域名注册</p>
 <h3 id=子域名申请ssl证书>子域名申请ssl证书</h3>
-<p>在ali和tencent有免费的ssl DV证书，还有<a test href=letsencrypt%e8%af%81%e4%b9%a6%e7%94%b3%e8%af%b7.md><code>let's encrypt</code>免费证书</a></p>
-<p>需要注意的是当前<code>20210221</code>ali的免费证书申请改变到<a test href="https://common-buy.aliyun.com/?spm=5176.14113079.commonbuy2container.4.5d4656a7XqSDJp&commodityCode=cas_dv_public_cn&request=%7B%22ord_time%22:%221:Year%22,%22order_num%22:1,%22product%22:%22free_product%22,%22certCount%22:%2220%22%7D">证书资源包领取</a></p>
-<p>在<a test href="https://dns.console.aliyun.com/?spm=5176.12818093.Operation--ali--widget-home-product-recent.dre2.75e316d0gVoDxB#/dns/setting/navyd.xyz">域名解析页面</a>可以添加记录</p>
+<p>在ali和tencent有免费的ssl DV证书，还有<a test=/res/linux/%E9%83%A8%E7%BD%B2ttrss/ href=/res/linux/letsencrypt%e8%af%81%e4%b9%a6%e7%94%b3%e8%af%b7.md><code>let's encrypt</code>免费证书</a></p>
+<p>需要注意的是当前<code>20210221</code>ali的免费证书申请改变到<a test=/res/linux/%E9%83%A8%E7%BD%B2ttrss/ href="https://common-buy.aliyun.com/?spm=5176.14113079.commonbuy2container.4.5d4656a7XqSDJp&commodityCode=cas_dv_public_cn&request=%7B%22ord_time%22:%221:Year%22,%22order_num%22:1,%22product%22:%22free_product%22,%22certCount%22:%2220%22%7D">证书资源包领取</a></p>
+<p>在<a test=/res/linux/%E9%83%A8%E7%BD%B2ttrss/ href="https://dns.console.aliyun.com/?spm=5176.12818093.Operation--ali--widget-home-product-recent.dre2.75e316d0gVoDxB#/dns/setting/navyd.xyz">域名解析页面</a>可以添加记录</p>
 <h3 id=nginx反向代理>nginx反向代理</h3>
 <p>将上面的ssl证书下载后，配置nginx-default.conf</p>
 <div class=highlight><div class=chroma>
@@ -204,7 +204,7 @@ server {
 }
 </code></pre></td></tr></table>
 </div>
-</div><p>配置docker compose，更多的内容参考<a test href=http://ttrss.henry.wang/zh/#%E9%80%9A%E8%BF%87-docker-compose-%E9%83%A8%E7%BD%B2>通过 docker-compose 部署</a></p>
+</div><p>配置docker compose，更多的内容参考<a test=/res/linux/%E9%83%A8%E7%BD%B2ttrss/ href=http://ttrss.henry.wang/zh/#%E9%80%9A%E8%BF%87-docker-compose-%E9%83%A8%E7%BD%B2>通过 docker-compose 部署</a></p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -252,8 +252,8 @@ server {
 </span></code></pre></td></tr></table>
 </div>
 </div><h2 id=https穿透>https穿透</h2>
-<p><a test href=https://doc.natfrp.com/#/frpc/usage/linux>Linux 系统使用 frpc</a></p>
-<p>参考：<a test href=https://doc.natfrp.com/#/>SakuraFrp 帮助文档</a></p>
+<p><a test=/res/linux/%E9%83%A8%E7%BD%B2ttrss/ href=https://doc.natfrp.com/#/frpc/usage/linux>Linux 系统使用 frpc</a></p>
+<p>参考：<a test=/res/linux/%E9%83%A8%E7%BD%B2ttrss/ href=https://doc.natfrp.com/#/>SakuraFrp 帮助文档</a></p>
 <p>注意在使用systemd启动frpc时配置<code>/lib/systemd/system/frpc.service</code></p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>

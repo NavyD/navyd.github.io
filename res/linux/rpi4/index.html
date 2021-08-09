@@ -120,8 +120,8 @@ groupmod -n navyd ubuntu
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test href=https://askubuntu.com/questions/34074/how-do-i-change-my-username/34075#34075>How do I change my username?</a></li>
-<li><a test href=https://stackoverflow.com/questions/84882/sudo-echo-something-etc-privilegedfile-doesnt-work>sudo echo “something” &#187; /etc/privilegedFile doesn&rsquo;t work</a></li>
+<li><a test=/res/linux/rpi4/ href=https://askubuntu.com/questions/34074/how-do-i-change-my-username/34075#34075>How do I change my username?</a></li>
+<li><a test=/res/linux/rpi4/ href=https://stackoverflow.com/questions/84882/sudo-echo-something-etc-privilegedfile-doesnt-work>sudo echo “something” &#187; /etc/privilegedFile doesn&rsquo;t work</a></li>
 </ul>
 <p>修改密码：</p>
 <div class=highlight><div class=chroma>
@@ -190,7 +190,7 @@ deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ focal-security main restr
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li><a test href=https://mirror.tuna.tsinghua.edu.cn/help/ubuntu/>Ubuntu 镜像使用帮助</a></li>
+<li><a test=/res/linux/rpi4/ href=https://mirror.tuna.tsinghua.edu.cn/help/ubuntu/>Ubuntu 镜像使用帮助</a></li>
 </ul>
 <h3 id=修改时间>修改时间</h3>
 <p>在系统的时间比实际时间慢了8小时</p>
@@ -339,10 +339,10 @@ Warning: Stopping systemd-networkd.service, but it can still be activated by:
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test href=https://www.right.com.cn/forum/thread-4035785-1-1.html>[N1盒子] N1网关模式(旁路由)详细设置指南-搭配主路由华为AX3Pro</a></li>
-<li><a test href=https://mlapp.cn/376.html>在Docker 中运行 OpenWrt 旁路网关</a></li>
-<li><a test href=https://github.com/SuLingGG/OpenWrt-Rpi-Docker>OpenWrt-Rpi-Docker 镜像</a></li>
-<li><a test href=https://netplan.io/examples/#configuration>Netplan configuration examples</a></li>
+<li><a test=/res/linux/rpi4/ href=https://www.right.com.cn/forum/thread-4035785-1-1.html>[N1盒子] N1网关模式(旁路由)详细设置指南-搭配主路由华为AX3Pro</a></li>
+<li><a test=/res/linux/rpi4/ href=https://mlapp.cn/376.html>在Docker 中运行 OpenWrt 旁路网关</a></li>
+<li><a test=/res/linux/rpi4/ href=https://github.com/SuLingGG/OpenWrt-Rpi-Docker>OpenWrt-Rpi-Docker 镜像</a></li>
+<li><a test=/res/linux/rpi4/ href=https://netplan.io/examples/#configuration>Netplan configuration examples</a></li>
 </ul>
 <h5 id=rpi4主机通过ip访问openwrt>rpi4主机通过ip访问openwrt</h5>
 <p>在主机上无法直接通过ip访问openwrt.</p>
@@ -379,9 +379,9 @@ ip route add default via <span class=nv>$openwrt_ip</span> dev <span class=nv>$i
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test href=https://rehtt.com/index.php/archives/236/>【Docker】macvlan网络模式下容器与宿主机互通</a></li>
-<li><a test href=https://github.com/lisaac/openwrt-in-docker>docker 中运行 openwrt</a></li>
-<li><a test href=https://zhuanlan.zhihu.com/p/113664215>Openwrt 下 Docker 网络食用方法</a></li>
+<li><a test=/res/linux/rpi4/ href=https://rehtt.com/index.php/archives/236/>【Docker】macvlan网络模式下容器与宿主机互通</a></li>
+<li><a test=/res/linux/rpi4/ href=https://github.com/lisaac/openwrt-in-docker>docker 中运行 openwrt</a></li>
+<li><a test=/res/linux/rpi4/ href=https://zhuanlan.zhihu.com/p/113664215>Openwrt 下 Docker 网络食用方法</a></li>
 </ul>
 <p>可以将上面的sh脚本写成systemd service，在将下面的内容写入<code>/etc/systemd/system/myinit.service</code>文件中</p>
 <div class=highlight><div class=chroma>
@@ -425,7 +425,7 @@ sudo systemctl status myinit.service
 sudo systemctl restart myinit.service
 </code></pre></td></tr></table>
 </div>
-</div><p>参考：<a test href=https://askubuntu.com/a/719157>How to run scripts on start up?</a></p>
+</div><p>参考：<a test=/res/linux/rpi4/ href=https://askubuntu.com/a/719157>How to run scripts on start up?</a></p>
 <h5 id=安装openwrt后win10无法通过ssh访问rpi4主机名>安装openwrt后win10无法通过ssh访问rpi4主机名</h5>
 <p>在路由器上无法找到rpi4的ip地址。必须在openwrt上主动解析出主机名。可以通过openwrt中dns设置固定主机新增的网卡ip</p>
 <h4 id=docker无法停止openwrt>docker无法停止openwrt</h4>
@@ -441,16 +441,16 @@ sudo systemctl restart myinit.service
 <p>在使用ShadowSocksR Plus+启动后, 只能访问外网，切换iptables防火墙全局模式才可以访问国内网络</p>
 <p>解决方法：接口 - LAN网络里面，物理设置，取消桥接接口，应用即可</p>
 <p>这个问题可能只出现在当前日期<code>20210209</code>的openwrt: <code>registry.cn-shanghai.aliyuncs.com/suling/openwrt:latest</code></p>
-<p>参考：<a test href=https://github.com/SuLingGG/OpenWrt-Rpi-Docker/issues/15>Xray以后版本为什么国内网站无法访问</a></p>
+<p>参考：<a test=/res/linux/rpi4/ href=https://github.com/SuLingGG/OpenWrt-Rpi-Docker/issues/15>Xray以后版本为什么国内网站无法访问</a></p>
 <h4 id=多开openwrt>多开openwrt</h4>
 <p>修改mac地址</p>
 <ul>
-<li><a test href=https://blog.sillyson.com/archives/7.html>树莓派 | Docker上运行 OpenWrt 做旁路由，超简单！</a></li>
+<li><a test=/res/linux/rpi4/ href=https://blog.sillyson.com/archives/7.html>树莓派 | Docker上运行 OpenWrt 做旁路由，超简单！</a></li>
 </ul>
 <h2 id=使用wifi网络>使用wifi网络</h2>
 <ol>
 <li>
-<p>配置<a test href=https://netplan.io/reference/>netplan wifi</a> <code>/etc/netplan/50-cloud-init.yaml</code></p>
+<p>配置<a test=/res/linux/rpi4/ href=https://netplan.io/reference/>netplan wifi</a> <code>/etc/netplan/50-cloud-init.yaml</code></p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -565,7 +565,7 @@ sudo reboot
 </ol>
 <p>参考：</p>
 <ul>
-<li><a test href=https://askubuntu.com/a/1264616>Help: Unable to connect to 5G Wifi on raspberry pi 4 using ubuntu server 18.04</a></li>
+<li><a test=/res/linux/rpi4/ href=https://askubuntu.com/a/1264616>Help: Unable to connect to 5G Wifi on raspberry pi 4 using ubuntu server 18.04</a></li>
 </ul>
 <h3 id=wifi验证>wifi验证</h3>
 <p>wifi扫描可用网络：</p>
@@ -626,17 +626,17 @@ Connected to fe:7c:02:43:c5:5a <span class=o>(</span>on wlan0<span class=o>)</sp
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test href=https://askubuntu.com/a/567021>How can I display the list of available WiFi networks?</a></li>
-<li><a test href=https://unix.stackexchange.com/a/489619>Is there a tool to display WiFi information in console?</a></li>
+<li><a test=/res/linux/rpi4/ href=https://askubuntu.com/a/567021>How can I display the list of available WiFi networks?</a></li>
+<li><a test=/res/linux/rpi4/ href=https://unix.stackexchange.com/a/489619>Is there a tool to display WiFi information in console?</a></li>
 </ul>
 <h3 id=开启wifi-ap热点>开启wifi ap热点</h3>
 <p>注意：如果使用前面配置了docker network <code>macvlan</code> 对eth0配置，wlan0可能无法正确从docker openwrt中获取ip地址，wlan0是没法与docker内的网络通信的，暂时没有研究。rpi4的wifi网卡速度比较慢<code>150 Mbit/s, 40MHz</code>。如果做AP使用更慢，大概是7Mbit/s的样子，基本不可用</p>
 <ul>
-<li><a test href=https://zhuanlan.zhihu.com/p/102598741>从零开始：树莓派共享 WiFi 秒变无线热点（树莓派路由器</a></li>
-<li><a test href=https://www.raspberrypi.org/documentation/configuration/wireless/access-point-routed.md>Setting up a Raspberry Pi as a routed wireless access point</a></li>
+<li><a test=/res/linux/rpi4/ href=https://zhuanlan.zhihu.com/p/102598741>从零开始：树莓派共享 WiFi 秒变无线热点（树莓派路由器</a></li>
+<li><a test=/res/linux/rpi4/ href=/res/linux/https:/www.raspberrypi.org/documentation/configuration/wireless/access-point-routed>Setting up a Raspberry Pi as a routed wireless access point</a></li>
 </ul>
 <h2 id=安装docker-compose>安装docker compose</h2>
-<p>在docker官方文档中没有提到如何在arm上安装docker compose，而且在<a test href=https://github.com/docker/compose/releases>docker compose仓库</a>中也没有发布arm的release文件。但可使用pip安装</p>
+<p>在docker官方文档中没有提到如何在arm上安装docker compose，而且在<a test=/res/linux/rpi4/ href=https://github.com/docker/compose/releases>docker compose仓库</a>中也没有发布arm的release文件。但可使用pip安装</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -678,12 +678,12 @@ docker-compose version 1.28.4, build unknown
 </div><p>如果shell提示没有找到docker-compose，可能是docker-compose没有在环境变量中，可以检查<code>$HOME/.local/bin</code></p>
 <p>参考：</p>
 <ul>
-<li><a test href=https://docs.docker.com/compose/install/#alternative-install-options>Alternative install options</a></li>
+<li><a test=/res/linux/rpi4/ href=https://docs.docker.com/compose/install/#alternative-install-options>Alternative install options</a></li>
 </ul>
 <h2 id=docker-路由器nginx反向代理>docker 路由器nginx反向代理</h2>
 <h2 id=在ubuntu2004安装摄像头>在ubuntu2004安装摄像头</h2>
 <h3 id=通过raspi-config启用摄像头>通过raspi-config启用摄像头</h3>
-<p>启动摄像头需要用到官方的raspi-config配置程序<a test href=http://archive.raspberrypi.org/debian/pool/main/r/raspi-config/>进入官网下载最新的deb程序</a></p>
+<p>启动摄像头需要用到官方的raspi-config配置程序<a test=/res/linux/rpi4/ href=http://archive.raspberrypi.org/debian/pool/main/r/raspi-config/>进入官网下载最新的deb程序</a></p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
@@ -792,9 +792,9 @@ vcgencmd get_camera
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test href=https://zhuanlan.zhihu.com/p/98523007>树莓派raspberry4B指南part-7 摄像头使用及tensorflow lite实现目标检测</a></li>
-<li><a test href=https://blog.csdn.net/sinat_25259461/article/details/108353324>Ubuntu Server下给树莓派安装摄像头</a></li>
-<li><a test href=https://ubuntu.com/blog/how-to-stream-video-with-raspberry-pi-hq-camera-on-ubuntu-core>How to use the Raspberry Pi High Quality camera on Ubuntu Core</a></li>
+<li><a test=/res/linux/rpi4/ href=https://zhuanlan.zhihu.com/p/98523007>树莓派raspberry4B指南part-7 摄像头使用及tensorflow lite实现目标检测</a></li>
+<li><a test=/res/linux/rpi4/ href=https://blog.csdn.net/sinat_25259461/article/details/108353324>Ubuntu Server下给树莓派安装摄像头</a></li>
+<li><a test=/res/linux/rpi4/ href=https://ubuntu.com/blog/how-to-stream-video-with-raspberry-pi-hq-camera-on-ubuntu-core>How to use the Raspberry Pi High Quality camera on Ubuntu Core</a></li>
 </ul>
 <h2 id=启用swap>启用swap</h2>
 <p>安装dphys-swapfile</p>
@@ -828,8 +828,8 @@ CONF_SWAPFILE=/mnt/share/swap
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test href=https://raspberrypi.stackexchange.com/questions/70/how-to-set-up-swap-space>How to set up swap space?</a></li>
-<li><a test href="https://www.raspberrypi.org/forums/viewtopic.php?t=244130">Permanently disable swap on Raspbian Buster</a></li>
+<li><a test=/res/linux/rpi4/ href=https://raspberrypi.stackexchange.com/questions/70/how-to-set-up-swap-space>How to set up swap space?</a></li>
+<li><a test=/res/linux/rpi4/ href="https://www.raspberrypi.org/forums/viewtopic.php?t=244130">Permanently disable swap on Raspbian Buster</a></li>
 </ul>
 <h2 id=raspberry-pi-os>Raspberry Pi OS</h2>
 <p>适用于raspbian 32bit系统</p>
@@ -902,19 +902,19 @@ static <span class=nv>domain_name_servers</span><span class=o>=</span>1.1.1.1
 </ul>
 <p>参考：</p>
 <ul>
-<li><a test href=https://www.raspberrypi.org/documentation/configuration/wireless/headless.md>Setting up a Raspberry Pi headless</a></li>
-<li><a test href="https://www.raspberrypi.org/forums/viewtopic.php?t=217629">Setting a static IP address from SD card before boot</a></li>
-<li><a test href=https://raspberrypi.stackexchange.com/questions/85747/setting-a-static-ip-from-boot-drive-headless-static-ip>Setting a Static IP from Boot Drive (headless static IP)</a></li>
+<li><a test=/res/linux/rpi4/ href=/res/linux/https:/www.raspberrypi.org/documentation/configuration/wireless/headless>Setting up a Raspberry Pi headless</a></li>
+<li><a test=/res/linux/rpi4/ href="https://www.raspberrypi.org/forums/viewtopic.php?t=217629">Setting a static IP address from SD card before boot</a></li>
+<li><a test=/res/linux/rpi4/ href=https://raspberrypi.stackexchange.com/questions/85747/setting-a-static-ip-from-boot-drive-headless-static-ip>Setting a Static IP from Boot Drive (headless static IP)</a></li>
 </ul>
 <h2 id=备份>备份</h2>
 <p>todo</p>
 <h3 id=系统迁移>系统迁移</h3>
 <p>参考：</p>
 <ul>
-<li><a test href=https://lyq.blogd.club/2017/02/11/pi-usb-boot/>把树莓派的系统迁移到U盘上</a></li>
-<li><a test href=https://post.smzdm.com/p/apzkgne7/>树莓派学习笔记 篇四：树莓派4B 的系统备份方法大全（全卡+压缩备份）</a></li>
-<li><a test href=https://github.com/billw2/rpi-clone>rpi-clone</a></li>
-<li><a test href=https://medium.com/xster-tech/move-your-existing-raspberry-pi-4-ubuntu-install-from-sd-card-to-usb-ssd-52e99723f07b>Move your existing Raspberry Pi 4 Ubuntu install from SD card to USB/SSD</a></li>
+<li><a test=/res/linux/rpi4/ href=https://lyq.blogd.club/2017/02/11/pi-usb-boot/>把树莓派的系统迁移到U盘上</a></li>
+<li><a test=/res/linux/rpi4/ href=https://post.smzdm.com/p/apzkgne7/>树莓派学习笔记 篇四：树莓派4B 的系统备份方法大全（全卡+压缩备份）</a></li>
+<li><a test=/res/linux/rpi4/ href=https://github.com/billw2/rpi-clone>rpi-clone</a></li>
+<li><a test=/res/linux/rpi4/ href=https://medium.com/xster-tech/move-your-existing-raspberry-pi-4-ubuntu-install-from-sd-card-to-usb-ssd-52e99723f07b>Move your existing Raspberry Pi 4 Ubuntu install from SD card to USB/SSD</a></li>
 </ul>
 <h2 id=face_recognition>face_recognition</h2>
 <div class=highlight><div class=chroma>
@@ -956,7 +956,7 @@ ImportError: libopenjp2.so.7: cannot open shared object file: No such file or di
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test href=https://stackoverflow.com/a/67043061>Numpy import error Python3 on Raspberry Pi?</a></li>
+<li><a test=/res/linux/rpi4/ href=https://stackoverflow.com/a/67043061>Numpy import error Python3 on Raspberry Pi?</a></li>
 </ul>
 </div>
 </article>
