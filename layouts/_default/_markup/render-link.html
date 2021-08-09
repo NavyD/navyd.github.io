@@ -1,10 +1,19 @@
-<a test=""
+<a test="{{.Page.RelPermalink}}"
 {{$name := path.Base .Page.Permalink}}
 {{if (hasPrefix .Destination $name) }}
     {{$size := len $name}}
     {{$size = add $size 1}}
     {{$destUrl := substr .Destination $size}}
-    href="{{substr .Destination $size}}"
+    href="{{substr .Destination $size}} "
+{{else if (eq ".md" (path.Ext .Destination))}}
+    {{/*  get file name without suffix. eg: http://a.com/a/b/c.md => c */}}
+    {{$name := substr .Destination 0 (sub (len .Destination) 3)}}
+    {{/* get the upper-level path of the relative host name.
+        eg: /a/b/c/ => /a/b/
+    */}}
+    {{$lastPath := path.Dir (path.Dir .Page.RelPermalink) }}
+    {{/*  /a/b/c  */}}
+    href="{{path.Join $lastPath $name }}"
 {{else}}
     href="{{.Destination | safeURL}}"
 {{end}}
