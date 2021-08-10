@@ -1,12 +1,16 @@
-<a test="{{.Page.RelPermalink}}"
+<!-- {{$isHyperLink := or (hasPrefix (strings.TrimPrefix " " .Destination) "http://") (hasPrefix (strings.TrimPrefix " " .Destination) "https://")}} -->
+{{$isHyperLink := eq (len (findRE ".+://.+" .Destination 1)) 1}}
 {{$name := path.Base .Page.Permalink}}
-{{if (hasPrefix .Destination $name) }}
-    {{$size := len $name}}
-    {{$size = add $size 1}}
-    {{$destUrl := substr .Destination $size}}
-    href="{{substr .Destination $size}} "
+<a test="isHyperLink={{$isHyperLink}}"
+{{if ($isHyperLink)}}
+    href="{{.Destination | safeURL}}"
+{{else if (hasPrefix .Destination $name) }}
+    {{/* remove prefix. eg:Permalink=http://host/a/, name=a, .destination=a/b.html => desturl= http://host/a/b.html */}}
+    {{$destUrl := substr .Destination (add (len $name) 1)}}
+    href="{{$destUrl}}"
 {{else if (eq ".md" (path.Ext .Destination))}}
-    {{/*  get file name without suffix. eg: http://a.com/a/b/c.md => c */}}
+    {{/* remove suffix to absolute path on host. eg: Permalink=/a/b/ .Destination=c.md => /a/b/c/ */}}
+    {{/*  get file name without suffix. eg: a/b/c.md => c */}}
     {{$name := substr .Destination 0 (sub (len .Destination) 3)}}
     {{/* get the upper-level path of the relative host name.
         eg: /a/b/c/ => /a/b/
