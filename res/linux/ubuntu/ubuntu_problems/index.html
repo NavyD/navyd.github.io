@@ -28,7 +28,7 @@
 <meta property="og:url" content="https://navyd.github.io/res/linux/ubuntu/ubuntu_problems/"><meta property="article:section" content="res">
 <meta itemprop=name content>
 <meta itemprop=description content="在ubuntu中使用su无法root登录(未创建root账户) 在终端下用su命令切换到root用户提示认证失败： 1 2 3 navyd@navyd-virtual-machine:/usr$ su Password: su: Authentication failure 原因是ro">
-<meta itemprop=wordCount content="2266">
+<meta itemprop=wordCount content="2262">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content>
 <meta name=twitter:description content="在ubuntu中使用su无法root登录(未创建root账户) 在终端下用su命令切换到root用户提示认证失败： 1 2 3 navyd@navyd-virtual-machine:/usr$ su Password: su: Authentication failure 原因是ro"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -136,7 +136,8 @@ sudo apt-get install -f
 <li>可以尝试点击vmware tools 同步客户机时间</li>
 </ul>
 <h2 id=ubuntu每次启动报错>Ubuntu每次启动报错</h2>
-<p><a test=/res/linux/ubuntu/ubuntu_problems/ href=http://www.linuxidc.com/Linux/2014-12/110069.htm title="手把手 教你解决Ubuntu的错误提示">http://www.linuxidc.com/Linux/2014-12/110069.htm</a></p>
+<p>
+<a test="isHyperLink=true" href=http://www.linuxidc.com/Linux/2014-12/110069.htm title="手把手 教你解决Ubuntu的错误提示">http://www.linuxidc.com/Linux/2014-12/110069.htm</a></p>
 <h2 id=ubuntu-在vmware中无法使用ss翻墙问题>ubuntu 在vmware中无法使用ss翻墙问题</h2>
 <p>保持NAT模式；</p>
 <p>在虚拟机里面，打开SS Qt版，填入服务器地址和密码、加密方式，方式选择HTTPS的不要选SOCKS。然后系统设置-网络-代理设置里面手动设置代理，地址都是127.0.0.1，端口是1080。这样就可以正常使用SS了。</p>
@@ -150,7 +151,7 @@ sudo apt-get install -f
 <p>点击通知栏搜狗图标，搜狗界面已经不见了</p>
 <p><img src=images/ubuntu_problems-sougou_2.png alt></p>
 <p>解决方法：
-<a test=/res/linux/ubuntu/ubuntu_problems/ href=http://blog.csdn.net/moewifj/article/details/68484900 title="解决Ubuntu 16.04下搜狗输入法显示白框的问题">http://blog.csdn.net/moewifj/article/details/68484900</a></p>
+<a test="isHyperLink=true" href=http://blog.csdn.net/moewifj/article/details/68484900 title="解决Ubuntu 16.04下搜狗输入法显示白框的问题">http://blog.csdn.net/moewifj/article/details/68484900</a></p>
 <h2 id=win10-和-ubuntu-1604时间不同步>win10 和 Ubuntu 16.04时间不同步</h2>
 <p>在ubuntu中使用本地时间而不是UTC</p>
 <div class=highlight><div class=chroma>
@@ -200,7 +201,8 @@ Warning: The system is configured to <span class=nb>read</span> the RTC <span cl
 </div>
 </div><p>如下图：</p>
 <p><img src=images/win-ubuntu_time_fixed_1.png alt></p>
-<p>详细信息参考：<a test=/res/linux/ubuntu/ubuntu_problems/ href=http://ubuntuhandbook.org/index.php/2016/05/time-differences-ubuntu-1604-windows-10/>How to Fix Time Differences in Ubuntu 16.04 & Windows 10 Dual Boot</a></p>
+<p>详细信息参考：
+<a test="isHyperLink=true" href=http://ubuntuhandbook.org/index.php/2016/05/time-differences-ubuntu-1604-windows-10/>How to Fix Time Differences in Ubuntu 16.04 & Windows 10 Dual Boot</a></p>
 <h2 id=环境变量全局变量>环境变量（全局变量）</h2>
 <p>将一个变量设置为全局变量，这样程序就能使用到该变量，而不是用户的terminal中shell变量</p>
 <p>在用户级别上的变量设置都不是全局变量（系统变量），已经尝试过各种<code>~/.profile</code>等文件的设置。</p>
@@ -248,8 +250,10 @@ Warning: The system is configured to <span class=nb>read</span> the RTC <span cl
 </ul>
 <p>在env中查看该变量是否存在</p>
 <p>参考：</p>
-<p>ubuntu帮助文档 完整的环境变量的描述，比如系统变量，Desktop environment specifics： <a test=/res/linux/ubuntu/ubuntu_problems/ href="https://help.ubuntu.com/community/EnvironmentVariables?action=fullsearch&value=linkto%3A%22EnvironmentVariables%22&context=180">EnvironmentVariables</a></p>
-<p>验证系统变量生效：<a test=/res/linux/ubuntu/ubuntu_problems/ href=http://askubuntu.com/questions/275965/how-to-list-all-variables-names-and-their-current-values/356973#356973>How to list all variables names and their current values?</a></p>
+<p>ubuntu帮助文档 完整的环境变量的描述，比如系统变量，Desktop environment specifics：
+<a test="isHyperLink=true" href="https://help.ubuntu.com/community/EnvironmentVariables?action=fullsearch&value=linkto%3A%22EnvironmentVariables%22&context=180">EnvironmentVariables</a></p>
+<p>验证系统变量生效：
+<a test="isHyperLink=true" href=http://askubuntu.com/questions/275965/how-to-list-all-variables-names-and-their-current-values/356973#356973>How to list all variables names and their current values?</a></p>
 <h2 id=软件升级have-been-kept-back>软件升级have been kept back</h2>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
@@ -260,7 +264,8 @@ Warning: The system is configured to <span class=nb>read</span> the RTC <span cl
 </code></pre></td></tr></table>
 </div>
 </div><p>参考：</p>
-<p><a test=/res/linux/ubuntu/ubuntu_problems/ href=https://askubuntu.com/questions/601/the-following-packages-have-been-kept-back-why-and-how-do-i-solve-it>“The following packages have been kept back:” Why and how do I solve it?</a></p>
+<p>
+<a test="isHyperLink=true" href=https://askubuntu.com/questions/601/the-following-packages-have-been-kept-back-why-and-how-do-i-solve-it>“The following packages have been kept back:” Why and how do I solve it?</a></p>
 <h2 id=sudo-出现unable-to-resolve-host>sudo 出现unable to resolve host</h2>
 <p>由于在system setting &ndash;> details &ndash;> device name 更改了device name可能会在terminal中sudo时出现提示：</p>
 <div class=highlight><div class=chroma>
@@ -300,10 +305,12 @@ navyd@navyd-laptop:~$ sudo hostname -b localhost
 </code></pre></td></tr></table>
 </div>
 </div><p>参考：</p>
-<p><a test=/res/linux/ubuntu/ubuntu_problems/ href=http://blog.csdn.net/End0o0/article/details/8241847>sudo 出现unable to resolve host 解决方法</a></p>
+<p>
+<a test="isHyperLink=true" href=http://blog.csdn.net/End0o0/article/details/8241847>sudo 出现unable to resolve host 解决方法</a></p>
 <h2 id=分区>分区</h2>
 <h3 id=esp分区>ESP分区</h3>
-<p><a test=/res/linux/ubuntu/ubuntu_problems/ href="https://help.ubuntu.com/community/UEFI?highlight=%28%28UEFI%29%29">UEFI</a></p>
+<p>
+<a test="isHyperLink=true" href="https://help.ubuntu.com/community/UEFI?highlight=%28%28UEFI%29%29">UEFI</a></p>
 <h3 id=卸载挂载点>卸载挂载点</h3>
 <p>使用命令umount</p>
 <div class=highlight><div class=chroma>
@@ -445,7 +452,8 @@ The following packages have been kept back:
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test=/res/linux/ubuntu/ubuntu_problems/ href=https://askubuntu.com/q/601>“The following packages have been kept back:” Why and how do I solve it?</a></li>
+<li>
+<a test="isHyperLink=true" href=https://askubuntu.com/q/601>“The following packages have been kept back:” Why and how do I solve it?</a></li>
 </ul>
 </div>
 </article>

@@ -28,7 +28,7 @@
 <meta property="og:url" content="https://navyd.github.io/res/linux/letsencrypt%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7/"><meta property="article:section" content="res">
 <meta itemprop=name content>
 <meta itemprop=description content="letsencrypt证书申请 在使用ali dns验证时，注意使用子账号的key与sercet时存在无法创建的问题，可以使用主账号创建key与">
-<meta itemprop=wordCount content="1355">
+<meta itemprop=wordCount content="1353">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content>
 <meta name=twitter:description content="letsencrypt证书申请 在使用ali dns验证时，注意使用子账号的key与sercet时存在无法创建的问题，可以使用主账号创建key与"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -332,17 +332,25 @@ $ docker <span class=nb>exec</span> -it acme.sh crontab -l
 </div>
 </div><p>问题出现在使用了非法的AccessKey ID和AccessKey Secret，我这个是使用了主账户的ak，可能因为安全问题不能使用。</p>
 <p><img src=../assets/images/e748d22d-82be-41d4-9e60-2dd4d29a9e42.png alt=不要使用云账号AccessKey></p>
-<p>尝试使用子账户的ak，并给予在整个云账号范围内：<code>AliyunHTTPDNSFullAccess,AliyunDNSFullAccess,AliyunPubDNSFullAccess</code>权限（这里是不清楚要多大权限，只能将dns管理权限都给上）。在这里可以管理<a test=/res/linux/letsencrypt%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7/ href=https://ram.console.aliyun.com/users/>RAM 访问控制/用户</a></p>
+<p>尝试使用子账户的ak，并给予在整个云账号范围内：<code>AliyunHTTPDNSFullAccess,AliyunDNSFullAccess,AliyunPubDNSFullAccess</code>权限（这里是不清楚要多大权限，只能将dns管理权限都给上）。在这里可以管理
+<a test="isHyperLink=true" href=https://ram.console.aliyun.com/users/>RAM 访问控制/用户</a></p>
 <p><img src=../assets/images/5ee35819-d496-4c01-8f4f-91ea0509e7fa.png alt></p>
 <p>参考：</p>
 <ul>
-<li><a test=/res/linux/letsencrypt%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7/ href=https://letsencrypt.org/zh-cn/docs/challenge-types/>验证方式</a></li>
-<li><a test=/res/linux/letsencrypt%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7/ href=https://github.com/acmesh-official/acme.sh/wiki/dnsapi>How to use DNS API</a></li>
-<li><a test=/res/linux/letsencrypt%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7/ href=https://www.jianshu.com/p/1a792f87b6fe>Let&rsquo;s Encrypt 证书申请及配置</a></li>
-<li><a test=/res/linux/letsencrypt%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7/ href=https://www.vpslala.com/t/514>acme.sh使用某云dns申请Let&rsquo;sEncrypt证书时遇到的大坑 关闭域名DNSSEC</a></li>
-<li><a test=/res/linux/letsencrypt%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7/ href=https://dns.console.aliyun.com/#/dns/dnssec/navyd.xyz>DNS安全 DNSSEC</a></li>
-<li><a test=/res/linux/letsencrypt%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7/ href=https://github.com/acmesh-official/acme.sh/wiki/deploy-to-docker-containers>deploy to docker containers</a></li>
-<li><a test=/res/linux/letsencrypt%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7/ href=https://github.com/acmesh-official/acme.sh/wiki/Run-acme.sh-in-docker>Run acme.sh in docker</a></li>
+<li>
+<a test="isHyperLink=true" href=https://letsencrypt.org/zh-cn/docs/challenge-types/>验证方式</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/acmesh-official/acme.sh/wiki/dnsapi>How to use DNS API</a></li>
+<li>
+<a test="isHyperLink=true" href=https://www.jianshu.com/p/1a792f87b6fe>Let&rsquo;s Encrypt 证书申请及配置</a></li>
+<li>
+<a test="isHyperLink=true" href=https://www.vpslala.com/t/514>acme.sh使用某云dns申请Let&rsquo;sEncrypt证书时遇到的大坑 关闭域名DNSSEC</a></li>
+<li>
+<a test="isHyperLink=true" href=https://dns.console.aliyun.com/#/dns/dnssec/navyd.xyz>DNS安全 DNSSEC</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/acmesh-official/acme.sh/wiki/deploy-to-docker-containers>deploy to docker containers</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/acmesh-official/acme.sh/wiki/Run-acme.sh-in-docker>Run acme.sh in docker</a></li>
 </ul>
 </div>
 </article>

@@ -28,7 +28,7 @@
 <meta property="og:url" content="https://navyd.github.io/res/java/source-code/java/lang/string/"><meta property="article:section" content="res">
 <meta itemprop=name content>
 <meta itemprop=description content="java String 重载&#34;+&ldquo;与StringBuilder 结论： 对于简单的字符串连接可以让编译器自动优化，也可以使用StringBui">
-<meta itemprop=wordCount content="3179">
+<meta itemprop=wordCount content="3102">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content>
 <meta name=twitter:description content="java String 重载&#34;+&ldquo;与StringBuilder 结论： 对于简单的字符串连接可以让编译器自动优化，也可以使用StringBui"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -424,8 +424,10 @@ static void explicit(java.lang.String[]);
 <p>第二句，创建"h"和"ello"对象，并放入字符串常量池，然后会创建一个"hello"对象，没有放入字符串常量池，s2指向这个"hello"对象。</p>
 <p>第三句，字符串常量池里面还没有，于是会把s1指向的String对象的引用放入字符串常量池（换句话说，放入池中的引用和s1指向了同一个对象），然后会把这个引用返回给了s3，所以s3==s1是true。</p>
 <p>第四句，字符串常量池里面已经有了，直接将它返回给了s4，所以s4==s1是true。</p>
-<p>原文链接：[https://www.zhihu.com/question/55994121](<a test=/res/java/source-code/java/lang/string/ href=https://www.zhihu.com/question/55994121>https://www.zhihu.com/question/55994121</a> &ldquo;Java 中new String("字面量") 中 &ldquo;字面量&rdquo; 是何时进入字符串常量池的?")</p>
-<p>贴个jvm的string相关链接:<a test=/res/java/source-code/java/lang/string/ href=http://rednaxelafx.iteye.com/blog/774673 title='请别再拿“String s = new String(\"xyz\")创建了多少个String实例”来面试了吧'>http://rednaxelafx.iteye.com/blog/774673</a></p>
+<p>原文链接：[https://www.zhihu.com/question/55994121](
+<a test="isHyperLink=true" href=https://www.zhihu.com/question/55994121>https://www.zhihu.com/question/55994121</a> &ldquo;Java 中new String("字面量") 中 &ldquo;字面量&rdquo; 是何时进入字符串常量池的?")</p>
+<p>贴个jvm的string相关链接:
+<a test="isHyperLink=true" href=http://rednaxelafx.iteye.com/blog/774673 title='请别再拿“String s = new String(\"xyz\")创建了多少个String实例”来面试了吧'>http://rednaxelafx.iteye.com/blog/774673</a></p>
 <h2 id=stringbuilder的使用和分析>StringBuilder的使用和分析</h2>
 <h3 id=清空stringbuilder>清空StringBuilder</h3>
 <p>stringbuilder并没有直接提供clear()这样的api</p>

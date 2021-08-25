@@ -158,7 +158,8 @@
 <li><code>(this.head + 1) % this.data.length</code>插入head向前移动</li>
 <li><code>(this.head - 1 + this.data.length) % this.data.length</code>删除head向后移动</li>
 </ul>
-<p>但是取余%这样频繁操作可能会影响性能，ArrayDeque用分配2^n位操作<a test=/res/java/code-analysis/collections/arraydeque/ href=#%e5%88%86%e9%85%8d%e7%a9%ba%e9%97%b4>分配空间</a>的方式优化了性能</p>
+<p>但是取余%这样频繁操作可能会影响性能，ArrayDeque用分配2^n位操作
+<a test="isHyperLink=false" href=#%e5%88%86%e9%85%8d%e7%a9%ba%e9%97%b4>分配空间</a>的方式优化了性能</p>
 <h4 id=插入>插入</h4>
 <p>在插入时必定tail &lt;= head，在扩容后<code>head &lt; tail</code>，插入时head后移，有<code>tail &lt; head</code></p>
 <h4 id=删除>删除</h4>
@@ -729,7 +730,8 @@ head = 0		elements.length = 16	// 初始化时的设置
 <p>在数组中 <em><strong>删除元素都是移动元素覆盖该位置</strong></em>。无论时同端还是异端都是将删除位置前的元素移动一位覆盖删除位置，只不过由于异端时移动不能连续而已</p>
 <p>指定位置靠近head时通过右移覆盖删除，指定位置靠近tail时通过左移覆盖删除</p>
 <h3 id=简单实现>简单实现</h3>
-<p><a test=/res/java/code-analysis/collections/arraydeque/ href=https://leetcode-cn.com/problems/design-circular-deque/>641. 设计循环双端队列</a></p>
+<p>
+<a test="isHyperLink=true" href=https://leetcode-cn.com/problems/design-circular-deque/>641. 设计循环双端队列</a></p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -909,7 +911,8 @@ head = 0		elements.length = 16	// 初始化时的设置
 <p>链表在访问时不容易缓存命中，且需要更大的内存，作为队列唯一的好处是在迭代时更容易删除。</p>
 <p>ArrayDeque作为队列针对与数组两端add/remove操作时要快于LinkedList，而且数组访问速度更快</p>
 <p>但是，ArrayDeque在删除时需要移动复制数组，所以尽量避免在迭代中删除数组元素。另外需要减少在add时扩容操作，所以在创建ArrayDeque时应该指定容量</p>
-<p>参考： <a test=/res/java/code-analysis/collections/arraydeque/ href=https://stackoverflow.com/a/6163204>Why is ArrayDeque better than LinkedList</a></p>
+<p>参考：
+<a test="isHyperLink=true" href=https://stackoverflow.com/a/6163204>Why is ArrayDeque better than LinkedList</a></p>
 <h2 id=双端队列deque>双端队列Deque</h2>
 <h3 id=插入-3>插入</h3>
 <ul>
@@ -1131,9 +1134,11 @@ head = 0		elements.length = 16	// 初始化时的设置
 </code></pre></td></tr></table>
 </div>
 </div><h4 id=坑>坑</h4>
-<p>这里要说一个坑<a test=/res/java/code-analysis/collections/arraydeque/ href=#delete%e6%ba%90%e7%a0%81>delete</a>，由于方法<code>private boolean delete(int i)</code>返回一个boolean值，最初没有在意，以为表示是否删除成功，当我写看到注释<code>This method is called delete rather than remove to emphasize that its semantics differ from those of List.remove(int)</code>.什么叫强调与List.remove()不同，然后就忘记了这回事，等我写完循环数组的删除时，没什么感觉，脑壳昏，没有注意到<code>front&lt;back</code>是返回false。</p>
+<p>这里要说一个坑
+<a test="isHyperLink=false" href=#delete%e6%ba%90%e7%a0%81>delete</a>，由于方法<code>private boolean delete(int i)</code>返回一个boolean值，最初没有在意，以为表示是否删除成功，当我写看到注释<code>This method is called delete rather than remove to emphasize that its semantics differ from those of List.remove(int)</code>.什么叫强调与List.remove()不同，然后就忘记了这回事，等我写完循环数组的删除时，没什么感觉，脑壳昏，没有注意到<code>front&lt;back</code>是返回false。</p>
 <p>然后在看迭代器时发现在remove()中<code>if(delete(lastRet))</code>，还能删除失败吗，回去看了一眼，卧槽，<code>front&lt;back</code>居然返回false，但是不对啊，指定元素都已经被覆盖了，删除成功了啊，再回去看一下原来是表示右移，卧了个槽，还好还好，要是我当时看到返回false，我估计直接崩溃，为什么要返回false。。。</p>
-<p><a test=/res/java/code-analysis/collections/arraydeque/ href=#delete%e6%ba%90%e7%a0%81>delete</a>的注释中可能是想说，这个方法语义和remove不同，即执行delete操作而已。</p>
+<p>
+<a test="isHyperLink=false" href=#delete%e6%ba%90%e7%a0%81>delete</a>的注释中可能是想说，这个方法语义和remove不同，即执行delete操作而已。</p>
 <h3 id=转换数组toarray>转换数组toArray()</h3>
 <p>toArray()无参方法与其余实现一样，底层数组为<code>Object[]</code>，无法转换为原来的类型，应该尽量使用<code>toArray(T[])</code>，并且指定数组的大小推荐为deque.size()</p>
 <div class=highlight><div class=chroma>
@@ -1222,8 +1227,10 @@ head = 0		elements.length = 16	// 初始化时的设置
 </div>
 </div><h2 id=参考>参考</h2>
 <ul>
-<li><a test=/res/java/code-analysis/collections/arraydeque/ href=ArrayDeque.java>基于jdk8 ArrayDeque源码</a></li>
-<li><a test=/res/java/code-analysis/collections/arraydeque/ href=/res/java/code-analysis/collections/https:/github.com/CarpenterLee/JCFInternals/blob/master/markdown/4-Stack%20and%20Queue title="Stack and Queue">https://github.com/CarpenterLee/JCFInternals/blob/master/markdown/4-Stack%20and%20Queue.md</a></li>
+<li>
+<a test="isHyperLink=false" href=ArrayDeque.java>基于jdk8 ArrayDeque源码</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/CarpenterLee/JCFInternals/blob/master/markdown/4-Stack%20and%20Queue.md title="Stack and Queue">https://github.com/CarpenterLee/JCFInternals/blob/master/markdown/4-Stack%20and%20Queue.md</a></li>
 </ul>
 </div>
 </article>

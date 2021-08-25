@@ -143,7 +143,8 @@
 </code></pre></td></tr></table>
 </div>
 </div><h2 id=分析>分析</h2>
-<p><a test=/post/misc/merge-two-git-repos/ href=https://stackoverflow.com/a/10548919/8566831>git merge</a></p>
+<p>
+<a test="isHyperLink=true" href=https://stackoverflow.com/a/10548919/8566831>git merge</a></p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
@@ -168,7 +169,8 @@ mv test.md content/res <span class=c1># 移动之前仓库的文件到res中</sp
 git commit -m <span class=s1>&#39;mv to res folder&#39;</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>这个方法有个很大的缺点，在merge时会合并到根目录，可能出现冲突，无法自定义合并到子文件夹中，虽然可以提前使用<a test=/post/misc/merge-two-git-repos/ href=https://github.com/newren/git-filter-repo>git-filter-repo</a>命令：<code>git filter-repo --to-subdirectory-filter blog-res</code>，但是<code>ubuntu 20.04</code>无法安装，放弃使用merge的方法</p>
+</div><p>这个方法有个很大的缺点，在merge时会合并到根目录，可能出现冲突，无法自定义合并到子文件夹中，虽然可以提前使用
+<a test="isHyperLink=true" href=https://github.com/newren/git-filter-repo>git-filter-repo</a>命令：<code>git filter-repo --to-subdirectory-filter blog-res</code>，但是<code>ubuntu 20.04</code>无法安装，放弃使用merge的方法</p>
 <p><img src=2021-08-08-01-49-49.png alt></p>
 <h3 id=注意>注意</h3>
 <p>如果仓库中存在未被git管理的文件，一定要备份好，<code>git reset --hard</code>将会完全覆盖这样的文件，无法找回</p>
@@ -277,7 +279,8 @@ $ git reset --hard id
 </code></pre></td></tr></table>
 </div>
 </div><h2 id=解决>解决</h2>
-<p>在这里提到<a test=/post/misc/merge-two-git-repos/ href=https://stackoverflow.com/a/14992078/8566831>使用git subtree</a></p>
+<p>在这里提到
+<a test="isHyperLink=true" href=https://stackoverflow.com/a/14992078/8566831>使用git subtree</a></p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
@@ -329,11 +332,16 @@ Date:   Sun Aug <span class=m>8</span> 01:39:45 <span class=m>2021</span> +0800
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test=/post/misc/merge-two-git-repos/ href=https://stackoverflow.com/questions/1425892/how-do-you-merge-two-git-repositories>How do you merge two Git repositories?</a></li>
-<li><a test=/post/misc/merge-two-git-repos/ href=https://stackoverflow.com/a/64966/8566831>How to remove local (untracked) files from the current Git working tree</a></li>
-<li><a test=/post/misc/merge-two-git-repos/ href=https://stackoverflow.com/a/2389423/8566831>Undo a Git merge that hasn&rsquo;t been pushed yet</a></li>
-<li><a test=/post/misc/merge-two-git-repos/ href=https://github.com/newren/git-filter-repo>newren/git-filter-repo</a></li>
-<li><a test=/post/misc/merge-two-git-repos/ href=https://segmentfault.com/a/1190000012002151>git subtree教程</a></li>
+<li>
+<a test="isHyperLink=true" href=https://stackoverflow.com/questions/1425892/how-do-you-merge-two-git-repositories>How do you merge two Git repositories?</a></li>
+<li>
+<a test="isHyperLink=true" href=https://stackoverflow.com/a/64966/8566831>How to remove local (untracked) files from the current Git working tree</a></li>
+<li>
+<a test="isHyperLink=true" href=https://stackoverflow.com/a/2389423/8566831>Undo a Git merge that hasn&rsquo;t been pushed yet</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/newren/git-filter-repo>newren/git-filter-repo</a></li>
+<li>
+<a test="isHyperLink=true" href=https://segmentfault.com/a/1190000012002151>git subtree教程</a></li>
 </ul>
 </div>
 <div class=post-copyright>

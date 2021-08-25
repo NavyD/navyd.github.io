@@ -28,7 +28,7 @@
 <meta property="og:url" content="https://navyd.github.io/res/java/aqs/"><meta property="article:section" content="res">
 <meta itemprop=name content>
 <meta itemprop=description content="从ReentrantLock的实现看AQS的原理及应用 前言 Java中的大部分同步类（Lock、Semaphore、ReentrantLock">
-<meta itemprop=wordCount content="13932">
+<meta itemprop=wordCount content="13933">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content>
 <meta name=twitter:description content="从ReentrantLock的实现看AQS的原理及应用 前言 Java中的大部分同步类（Lock、Semaphore、ReentrantLock"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -82,7 +82,8 @@
 <div id=content class=content>
 <article class=post>
 <div class=post-content>
-<h1 id=从reentrantlock的实现看aqs的原理及应用httpstechmeituancom20191205aqs-theory-and-applyhtml><a test=/res/java/aqs/ href=https://tech.meituan.com/2019/12/05/aqs-theory-and-apply.html>从ReentrantLock的实现看AQS的原理及应用</a></h1>
+<h1 id=从reentrantlock的实现看aqs的原理及应用httpstechmeituancom20191205aqs-theory-and-applyhtml>
+<a test="isHyperLink=true" href=https://tech.meituan.com/2019/12/05/aqs-theory-and-apply.html>从ReentrantLock的实现看AQS的原理及应用</a></h1>
 <h2 id=前言>前言</h2>
 <p>Java中的大部分同步类（Lock、Semaphore、ReentrantLock等）都是基于AbstractQueuedSynchronizer（简称为AQS）实现的。AQS是一种提供了原子式管理同步状态、阻塞和唤醒线程功能以及队列模型的简单框架。本文会从应用层逐渐深入到原理层，并通过ReentrantLock的基本特性和ReentrantLock与AQS的关联，来深入解读AQS相关独占锁的知识点，同时采取问答的模式来帮助大家理解AQS。由于篇幅原因，本篇文章主要阐述AQS中独占锁的逻辑和Sync Queue，不讲述包含共享锁和Condition Queue的部分（本篇文章核心为AQS原理剖析，只是简单介绍了ReentrantLock，感兴趣同学可以阅读一下ReentrantLock的源码）。</p>
 <p>下面列出本篇文章的大纲和思路，以便于大家更好地理解：</p>
@@ -157,7 +158,8 @@ public void test () throw Exception {
 </code></pre></td></tr></table>
 </div>
 </div><h3 id=12-reentrantlock与aqs的关联>1.2 ReentrantLock与AQS的关联</h3>
-<p>通过上文我们已经了解，ReentrantLock支持公平锁和非公平锁（关于公平锁和非公平锁的原理分析，可参考《<a test=/res/java/aqs/ href="https://mp.weixin.qq.com/s?__biz=MjM5NjQ5MTI5OA==&mid=2651749434&idx=3&sn=5ffa63ad47fe166f2f1a9f604ed10091&chksm=bd12a5778a652c61509d9e718ab086ff27ad8768586ea9b38c3dcf9e017a8e49bcae3df9bcc8&scene=38#wechat_redirect">不可不说的Java“锁”事</a>》），并且ReentrantLock的底层就是由AQS来实现的。那么ReentrantLock是如何通过公平锁和非公平锁与AQS关联起来呢？ 我们着重从这两者的加锁过程来理解一下它们与AQS之间的关系（加锁过程中与AQS的关联比较明显，解锁流程后续会介绍）。</p>
+<p>通过上文我们已经了解，ReentrantLock支持公平锁和非公平锁（关于公平锁和非公平锁的原理分析，可参考《
+<a test="isHyperLink=true" href="https://mp.weixin.qq.com/s?__biz=MjM5NjQ5MTI5OA==&mid=2651749434&idx=3&sn=5ffa63ad47fe166f2f1a9f604ed10091&chksm=bd12a5778a652c61509d9e718ab086ff27ad8768586ea9b38c3dcf9e017a8e49bcae3df9bcc8&scene=38#wechat_redirect">不可不说的Java“锁”事</a>》），并且ReentrantLock的底层就是由AQS来实现的。那么ReentrantLock是如何通过公平锁和非公平锁与AQS关联起来呢？ 我们着重从这两者的加锁过程来理解一下它们与AQS之间的关系（加锁过程中与AQS的关联比较明显，解锁流程后续会介绍）。</p>
 <p>非公平锁源码中的加锁流程如下：</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
@@ -1726,7 +1728,8 @@ private volatile int state;
 <p>《Java并发编程实战》</p>
 </li>
 <li>
-<p><a test=/res/java/aqs/ href=https://tech.meituan.com/2018/11/15/java-lock.html>不可不说的Java“锁”事</a></p>
+<p>
+<a test="isHyperLink=true" href=https://tech.meituan.com/2018/11/15/java-lock.html>不可不说的Java“锁”事</a></p>
 </li>
 </ul>
 <h2 id=作者简介>作者简介</h2>
@@ -1742,15 +1745,22 @@ private volatile int state;
 </li>
 </ul>
 <p>美团到店住宿门票业务研发团队期待优秀的技术伙伴加入，欢迎投简历至：tech@meituan.com（邮件标题注明：美团到店住宿门票业务研发团队）</p>
-<p><a test=/res/java/aqs/ href=/tags/%E5%88%B0%E5%BA%97.html>到店</a>, <a test=/res/java/aqs/ href=/tags/java.html>java</a>, <a test=/res/java/aqs/ href=/tags/aqs.html>AQS</a>, <a test=/res/java/aqs/ href=/tags/reentrantlock.html>ReentrantLock</a></p>
+<p>
+<a test="isHyperLink=false" href=/tags/%E5%88%B0%E5%BA%97.html>到店</a>,
+<a test="isHyperLink=false" href=/tags/java.html>java</a>,
+<a test="isHyperLink=false" href=/tags/aqs.html>AQS</a>,
+<a test="isHyperLink=false" href=/tags/reentrantlock.html>ReentrantLock</a></p>
 <p>#看看其他</p>
-<p><a test=/res/java/aqs/ href=https://tech.meituan.com/2019/11/28/meituan-front-end-containerization-evolution.html title=美团外卖前端容器化演进实践>前一篇: 美团外卖前端容器化演进实践</a> <a test=/res/java/aqs/ href=https://tech.meituan.com/2019/12/12/meituan-octo.html title="美团下一代服务治理系统 OCTO 2.0 的探索与实践">后一篇: 美团下一代服务治理系统 OCTO 2.0 的探索与实践</a></p>
+<p>
+<a test="isHyperLink=true" href=https://tech.meituan.com/2019/11/28/meituan-front-end-containerization-evolution.html title=美团外卖前端容器化演进实践>前一篇: 美团外卖前端容器化演进实践</a>
+<a test="isHyperLink=true" href=https://tech.meituan.com/2019/12/12/meituan-octo.html title="美团下一代服务治理系统 OCTO 2.0 的探索与实践">后一篇: 美团下一代服务治理系统 OCTO 2.0 的探索与实践</a></p>
 <p>#一起聊聊</p>
 <p>如发现文章有错误、对内容有疑问，都可以关注美团技术团队微信公众号（meituantech），在后台给我们留言。</p>
 <p><img src=https://p1.meituan.net/travelcube/dc8a757b42b2f6bd12fe8402cc372f041050382.png@1875w_834h_80q alt=美团技术团队微信二维码></p>
 <p>我们每周会挑选出一位热心小伙伴，送上一份精美的小礼品。快来扫码关注我们吧！</p>
 <p>$CONFIG[&lsquo;data&rsquo;][&lsquo;footerLink&rsquo;]=[{&ldquo;name&rdquo;:&ldquo;网站首页&rdquo;,&ldquo;link&rdquo;:"/"},{&ldquo;name&rdquo;:&ldquo;文章存档&rdquo;,&ldquo;link&rdquo;:"/archives"},{&ldquo;name&rdquo;:&ldquo;关于我们&rdquo;,&ldquo;link&rdquo;:"/about"}];</p>
-<p>try{window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);} gtag(&lsquo;js&rsquo;,new Date());gtag(&lsquo;config&rsquo;,&lsquo;UA-55279261-1&rsquo;);}catch(e){}try{var _hmt=_hmt||[];var hm=document.createElement(&ldquo;script&rdquo;);hm.src=&ldquo;<a test=/res/java/aqs/ href=https://hm.baidu.com/hm.js>https://hm.baidu.com/hm.js</a>?7158c55a533ed0cf57dede022b1e6aed&rdquo;;var s=document.getElementsByTagName(&ldquo;script&rdquo;)[0];s.parentNode.insertBefore(hm,s);}catch(e){}</p>
+<p>try{window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);} gtag(&lsquo;js&rsquo;,new Date());gtag(&lsquo;config&rsquo;,&lsquo;UA-55279261-1&rsquo;);}catch(e){}try{var _hmt=_hmt||[];var hm=document.createElement(&ldquo;script&rdquo;);hm.src=&ldquo;
+<a test="isHyperLink=true" href=https://hm.baidu.com/hm.js>https://hm.baidu.com/hm.js</a>?7158c55a533ed0cf57dede022b1e6aed&rdquo;;var s=document.getElementsByTagName(&ldquo;script&rdquo;)[0];s.parentNode.insertBefore(hm,s);}catch(e){}</p>
 </div>
 </article>
 </div>

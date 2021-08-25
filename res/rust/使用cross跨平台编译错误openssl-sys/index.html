@@ -11,7 +11,7 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="navyd"><meta name=description content="使用cross跨平台编译错误openssl-sys 在Remove OpenSSL #229中提到cross已移除对openssl的支持，但是部分依赖open"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=author content="navyd"><meta name=description content="使用cross跨平台编译错误openssl-sys 在 Remove OpenSSL #229中提到cross已移除对openssl的支持，但是部分依赖opensys无法"><meta name=keywords content="Hugo,blog,navyd">
 <meta name=generator content="Hugo 0.87.0 with theme even">
 <link rel=canonical href=https://navyd.github.io/res/rust/%E4%BD%BF%E7%94%A8cross%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AFopenssl-sys/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
@@ -23,15 +23,15 @@
 <link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content>
-<meta property="og:description" content="使用cross跨平台编译错误openssl-sys 在Remove OpenSSL #229中提到cross已移除对openssl的支持，但是部分依赖open">
+<meta property="og:description" content="使用cross跨平台编译错误openssl-sys 在 Remove OpenSSL #229中提到cross已移除对openssl的支持，但是部分依赖opensys无法">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://navyd.github.io/res/rust/%E4%BD%BF%E7%94%A8cross%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AFopenssl-sys/"><meta property="article:section" content="res">
 <meta itemprop=name content>
-<meta itemprop=description content="使用cross跨平台编译错误openssl-sys 在Remove OpenSSL #229中提到cross已移除对openssl的支持，但是部分依赖open">
-<meta itemprop=wordCount content="300">
+<meta itemprop=description content="使用cross跨平台编译错误openssl-sys 在 Remove OpenSSL #229中提到cross已移除对openssl的支持，但是部分依赖opensys无法">
+<meta itemprop=wordCount content="295">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content>
-<meta name=twitter:description content="使用cross跨平台编译错误openssl-sys 在Remove OpenSSL #229中提到cross已移除对openssl的支持，但是部分依赖open"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:description content="使用cross跨平台编译错误openssl-sys 在 Remove OpenSSL #229中提到cross已移除对openssl的支持，但是部分依赖opensys无法"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -83,7 +83,8 @@
 <article class=post>
 <div class=post-content>
 <h1 id=使用cross跨平台编译错误openssl-sys>使用cross跨平台编译错误openssl-sys</h1>
-<p>在<a test=/res/rust/%E4%BD%BF%E7%94%A8cross%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AFopenssl-sys/ href=https://github.com/rust-embedded/cross/issues/229>Remove OpenSSL #229</a>中提到cross已移除对openssl的支持，但是部分依赖opensys无法编译<code>failed to run custom build command for openssl-sys v0.9.60</code></p>
+<p>在
+<a test="isHyperLink=true" href=https://github.com/rust-embedded/cross/issues/229>Remove OpenSSL #229</a>中提到cross已移除对openssl的支持，但是部分依赖opensys无法编译<code>failed to run custom build command for openssl-sys v0.9.60</code></p>
 <p>使用cross跨平台编译有两种方式</p>
 <ul>
 <li>cargo install &ndash;version 0.1.16 cross</li>
@@ -126,12 +127,15 @@
 </span><span class=se></span>    <span class=nv>OPENSSL_LIB_DIR</span><span class=o>=</span>/openssl/lib <span class=err>\
 </span></code></pre></td></tr></table>
 </div>
-</div><p>下载<a test=/res/rust/%E4%BD%BF%E7%94%A8cross%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AFopenssl-sys/ href=https://github.com/rust-embedded/cross/blob/c183ee37a9dc6b0e6b6a6ac9c918173137bad4ef/docker/openssl.sh><code>openssh.sh</code></a>到docker文件夹</p>
+</div><p>下载
+<a test="isHyperLink=true" href=https://github.com/rust-embedded/cross/blob/c183ee37a9dc6b0e6b6a6ac9c918173137bad4ef/docker/openssl.sh><code>openssh.sh</code></a>到docker文件夹</p>
 <p>进入docker文件夹中运行docker命令：<code>docker build -t navyd/aarch64:sec .</code></p>
 <p>参考：</p>
 <ul>
-<li><a test=/res/rust/%E4%BD%BF%E7%94%A8cross%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AFopenssl-sys/ href=https://github.com/rust-embedded/cross/issues/229#issuecomment-748500115>how to support openssl</a></li>
-<li><a test=/res/rust/%E4%BD%BF%E7%94%A8cross%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AFopenssl-sys/ href=https://github.com/rust-embedded/cross#Configuration>cross Configuration</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/rust-embedded/cross/issues/229#issuecomment-748500115>how to support openssl</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/rust-embedded/cross#Configuration>cross Configuration</a></li>
 </ul>
 </div>
 </article>

@@ -11,7 +11,7 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="navyd"><meta name=description content="pin为何无法直接固定在stack上 在阅读Futures Explained in 200 Lines of Rust时，有一个疑问：为何不能在一个栈帧中创建一个自引用对象并返回它，因"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=author content="navyd"><meta name=description content="pin为何无法直接固定在stack上 在阅读 Futures Explained in 200 Lines of Rust时，有一个疑问：为何不能在一个栈帧中创建一个自引用对象并返回它，因为任何指向“"><meta name=keywords content="Hugo,blog,navyd">
 <meta name=generator content="Hugo 0.87.0 with theme even">
 <link rel=canonical href=https://navyd.github.io/res/rust/pin%E6%97%A0%E6%B3%95%E4%B8%BA%E4%BD%95%E7%9B%B4%E6%8E%A5%E5%9B%BA%E5%AE%9A%E5%9C%A8stack%E4%B8%8A/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
@@ -23,15 +23,15 @@
 <link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content>
-<meta property="og:description" content="pin为何无法直接固定在stack上 在阅读Futures Explained in 200 Lines of Rust时，有一个疑问：为何不能在一个栈帧中创建一个自引用对象并返回它，因">
+<meta property="og:description" content="pin为何无法直接固定在stack上 在阅读 Futures Explained in 200 Lines of Rust时，有一个疑问：为何不能在一个栈帧中创建一个自引用对象并返回它，因为任何指向“">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://navyd.github.io/res/rust/pin%E6%97%A0%E6%B3%95%E4%B8%BA%E4%BD%95%E7%9B%B4%E6%8E%A5%E5%9B%BA%E5%AE%9A%E5%9C%A8stack%E4%B8%8A/"><meta property="article:section" content="res">
 <meta itemprop=name content>
-<meta itemprop=description content="pin为何无法直接固定在stack上 在阅读Futures Explained in 200 Lines of Rust时，有一个疑问：为何不能在一个栈帧中创建一个自引用对象并返回它，因">
-<meta itemprop=wordCount content="656">
+<meta itemprop=description content="pin为何无法直接固定在stack上 在阅读 Futures Explained in 200 Lines of Rust时，有一个疑问：为何不能在一个栈帧中创建一个自引用对象并返回它，因为任何指向“">
+<meta itemprop=wordCount content="650">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content>
-<meta name=twitter:description content="pin为何无法直接固定在stack上 在阅读Futures Explained in 200 Lines of Rust时，有一个疑问：为何不能在一个栈帧中创建一个自引用对象并返回它，因"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:description content="pin为何无法直接固定在stack上 在阅读 Futures Explained in 200 Lines of Rust时，有一个疑问：为何不能在一个栈帧中创建一个自引用对象并返回它，因为任何指向“"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -83,7 +83,8 @@
 <article class=post>
 <div class=post-content>
 <h1 id=pin为何无法直接固定在stack上>pin为何无法直接固定在stack上</h1>
-<p>在阅读<a test=/res/rust/pin%E6%97%A0%E6%B3%95%E4%B8%BA%E4%BD%95%E7%9B%B4%E6%8E%A5%E5%9B%BA%E5%AE%9A%E5%9C%A8stack%E4%B8%8A/ href=https://cfsamson.github.io/books-futures-explained/introduction.html>Futures Explained in 200 Lines of Rust</a>时，有一个疑问：为何不能在一个栈帧中创建一个自引用对象并返回它，因为任何指向“self”的指针都是无效的？</p>
+<p>在阅读
+<a test="isHyperLink=true" href=https://cfsamson.github.io/books-futures-explained/introduction.html>Futures Explained in 200 Lines of Rust</a>时，有一个疑问：为何不能在一个栈帧中创建一个自引用对象并返回它，因为任何指向“self”的指针都是无效的？</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -253,7 +254,8 @@
 </div>
 </div><p>这些都在说明一件事，Pin是针对指针的，而rust从struct创建原始指针的方式只能通过<code>& T</code>和<code>&mut T</code>。在这里new是不能返回一个引用指针的，因为在stack上new退出后会被Drop</p>
 <h2 id=方案>方案</h2>
-<h3 id=pin_projecthttpsdocsrspin-project107pin_projectindexhtml><a test=/res/rust/pin%E6%97%A0%E6%B3%95%E4%B8%BA%E4%BD%95%E7%9B%B4%E6%8E%A5%E5%9B%BA%E5%AE%9A%E5%9C%A8stack%E4%B8%8A/ href=https://docs.rs/pin-project/1.0.7/pin_project/index.html>pin_project</a></h3>
+<h3 id=pin_projecthttpsdocsrspin-project107pin_projectindexhtml>
+<a test="isHyperLink=true" href=https://docs.rs/pin-project/1.0.7/pin_project/index.html>pin_project</a></h3>
 <p>在stack上提供pin</p>
 <h3 id=boxpin>Box::pin</h3>
 <p>Box也是一种指针，使用Box包装</p>
@@ -291,9 +293,12 @@
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test=/res/rust/pin%E6%97%A0%E6%B3%95%E4%B8%BA%E4%BD%95%E7%9B%B4%E6%8E%A5%E5%9B%BA%E5%AE%9A%E5%9C%A8stack%E4%B8%8A/ href=https://cfsamson.github.io/books-futures-explained/introduction.html>Futures Explained in 200 Lines of Rust</a></li>
-<li><a test=/res/rust/pin%E6%97%A0%E6%B3%95%E4%B8%BA%E4%BD%95%E7%9B%B4%E6%8E%A5%E5%9B%BA%E5%AE%9A%E5%9C%A8stack%E4%B8%8A/ href=https://doc.rust-lang.org/std/primitive.pointer.html>Primitive Type pointer</a></li>
-<li><a test=/res/rust/pin%E6%97%A0%E6%B3%95%E4%B8%BA%E4%BD%95%E7%9B%B4%E6%8E%A5%E5%9B%BA%E5%AE%9A%E5%9C%A8stack%E4%B8%8A/ href=https://github.com/taiki-e/pin-project/blob/HEAD/examples/struct-default-expanded.rs>pin_project Original code: struct-default-expanded.rs</a></li>
+<li>
+<a test="isHyperLink=true" href=https://cfsamson.github.io/books-futures-explained/introduction.html>Futures Explained in 200 Lines of Rust</a></li>
+<li>
+<a test="isHyperLink=true" href=https://doc.rust-lang.org/std/primitive.pointer.html>Primitive Type pointer</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/taiki-e/pin-project/blob/HEAD/examples/struct-default-expanded.rs>pin_project Original code: struct-default-expanded.rs</a></li>
 </ul>
 </div>
 </article>

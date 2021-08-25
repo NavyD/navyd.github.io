@@ -28,7 +28,7 @@
 <meta property="og:url" content="https://navyd.github.io/res/rust/mutable_borrow_reservation_conflict/"><meta property="article:section" content="res">
 <meta itemprop=name content>
 <meta itemprop=description content="mutable_borrow_reservation_conflict 描述 用map.get获取的值再+1插入时出现warning 1 2 3 4 5 6 7 8 9 10 11 12 13 14 fn dfs_counts(root: Option<Rc<RefCell<TreeNode>>>,counts: &mutHashMap<i32,u32>){ifletSome(root)=root{letroot=root.borrow();matchcounts.get(&root.val){Some(old_counts)=>{// warning: cannot borrow `*counts` as mutable because it is also borrowed as immutable counts.insert(root.val,old_counts+1)}None=>counts.insert(root.val,1),};Self::dfs_counts(root.left.clone(),counts);Self::dfs_counts(root.right.clone(),counts);}} 1 2 3 4 5 6 7 8">
-<meta itemprop=wordCount content="307">
+<meta itemprop=wordCount content="304">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content>
 <meta name=twitter:description content="mutable_borrow_reservation_conflict 描述 用map.get获取的值再+1插入时出现warning 1 2 3 4 5 6 7 8 9 10 11 12 13 14 fn dfs_counts(root: Option<Rc<RefCell<TreeNode>>>,counts: &mutHashMap<i32,u32>){ifletSome(root)=root{letroot=root.borrow();matchcounts.get(&root.val){Some(old_counts)=>{// warning: cannot borrow `*counts` as mutable because it is also borrowed as immutable counts.insert(root.val,old_counts+1)}None=>counts.insert(root.val,1),};Self::dfs_counts(root.left.clone(),counts);Self::dfs_counts(root.right.clone(),counts);}} 1 2 3 4 5 6 7 8"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -157,7 +157,8 @@
 </div>
 </div><h2 id=原因>原因</h2>
 <p>two-phase borrow</p>
-<p><a test=/res/rust/mutable_borrow_reservation_conflict/ href=https://github.com/rust-lang/rust/issues/59159>Tracking issue for <code>mutable_borrow_reservation_conflict</code> compatibility lint #59159</a></p>
+<p>
+<a test="isHyperLink=true" href=https://github.com/rust-lang/rust/issues/59159>Tracking issue for <code>mutable_borrow_reservation_conflict</code> compatibility lint #59159</a></p>
 <h2 id=方法>方法</h2>
 <ul>
 <li>避免borrowed，Copy去除借用关系</li>
@@ -223,7 +224,8 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>使用<a test=/res/rust/mutable_borrow_reservation_conflict/ href=https://doc.rust-lang.org/nightly/std/collections/hash_map/enum.Entry.html>Enty api</a></li>
+<li>使用
+<a test="isHyperLink=true" href=https://doc.rust-lang.org/nightly/std/collections/hash_map/enum.Entry.html>Enty api</a></li>
 </ul>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
@@ -251,9 +253,11 @@
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test=/res/rust/mutable_borrow_reservation_conflict/ href=https://stackoverflow.com/a/60663491/8566831>fold string to build hashmap char counter in rust, but gives two-phase borrow error
+<li>
+<a test="isHyperLink=true" href=https://stackoverflow.com/a/60663491/8566831>fold string to build hashmap char counter in rust, but gives two-phase borrow error
 </a></li>
-<li><a test=/res/rust/mutable_borrow_reservation_conflict/ href=https://github.com/rust-lang/rust/issues/59159>Tracking issue for <code>mutable_borrow_reservation_conflict</code> compatibility lint #59159</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/rust-lang/rust/issues/59159>Tracking issue for <code>mutable_borrow_reservation_conflict</code> compatibility lint #59159</a></li>
 </ul>
 </div>
 </article>

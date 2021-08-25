@@ -366,7 +366,8 @@
 </code></pre></td></tr></table>
 </div>
 </div><h4 id=源码>源码</h4>
-<p><a test=/res/java/code-analysis/collections/priorityqueue/ href=https://leetcode-cn.com/problems/sort-an-array/>Sort an Array</a></p>
+<p>
+<a test="isHyperLink=true" href=https://leetcode-cn.com/problems/sort-an-array/>Sort an Array</a></p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -1005,7 +1006,8 @@
 </div><h3 id=通用remove实现>通用remove实现</h3>
 <p>在不固定remove元素位置时有两种情况：</p>
 <h4 id=删除位置为非叶子节点>删除位置为非叶子节点</h4>
-<p>都只需要使用堆数组最后一个元素替换并下沉使堆有序，由于堆数组正常情况下是有序的，所以只需要下沉即可，与<a test=/res/java/code-analysis/collections/priorityqueue/ href=#%e5%88%a0%e9%99%a4remove>二叉堆删除remove</a>一致</p>
+<p>都只需要使用堆数组最后一个元素替换并下沉使堆有序，由于堆数组正常情况下是有序的，所以只需要下沉即可，与
+<a test="isHyperLink=false" href=#%e5%88%a0%e9%99%a4remove>二叉堆删除remove</a>一致</p>
 <h4 id=删除位置为叶子节点>删除位置为叶子节点</h4>
 <p>由于不同父节点的大小无法确定，在最小堆中，存在叶子节点比其他的父节点更小的情况，此时，如果将该叶子节点替换到合适的父节点下，无法下沉，但能上浮即比父节点小。</p>
 <p>注意这种情况非常小，需要满足替换元素4 &lt; 被删除元素的父节点6，此时需要上浮操作</p>
@@ -1143,8 +1145,10 @@
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test=/res/java/code-analysis/collections/priorityqueue/ href=https://algs4.cs.princeton.edu/24pq>2.4 Priority Queues</a></li>
-<li><a test=/res/java/code-analysis/collections/priorityqueue/ href=https://docs.oracle.com/javase/8/docs/api/>Class PriorityQueue</a></li>
+<li>
+<a test="isHyperLink=true" href=https://algs4.cs.princeton.edu/24pq>2.4 Priority Queues</a></li>
+<li>
+<a test="isHyperLink=true" href=https://docs.oracle.com/javase/8/docs/api/>Class PriorityQueue</a></li>
 </ul>
 </div>
 </article>

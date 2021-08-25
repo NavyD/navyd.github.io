@@ -11,7 +11,7 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="navyd"><meta name=description content="事务隔离Isolation 配置隔离级别 参考：13.3.7 SET TRANSACTION Statement [[不同隔离级别的事务间有何影响.md]] Transaction Isolation Levels REPEATABLE READ READ COMMITTED READ UNCOMMITTED SERIALIZABLE Transaction Access Mode READ WRITE READ ONLY Transaction"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=author content="navyd"><meta name=description content="事务隔离Isolation 配置隔离级别 参考： 13.3.7 SET TRANSACTION Statement [[不同隔离级别的事务间有何影响.md]] Transaction Isolation Levels REPEATABLE READ READ COMMITTED READ UNCOMMITTED SERIALIZABLE Transaction Access Mode READ WRITE READ ONLY Transaction Characteristic Scope Syntax Affected Characteristic"><meta name=keywords content="Hugo,blog,navyd">
 <meta name=generator content="Hugo 0.87.0 with theme even">
 <link rel=canonical href=https://navyd.github.io/res/mysql/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BBisolation/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
@@ -23,15 +23,15 @@
 <link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content>
-<meta property="og:description" content="事务隔离Isolation 配置隔离级别 参考：13.3.7 SET TRANSACTION Statement [[不同隔离级别的事务间有何影响.md]] Transaction Isolation Levels REPEATABLE READ READ COMMITTED READ UNCOMMITTED SERIALIZABLE Transaction Access Mode READ WRITE READ ONLY Transaction">
+<meta property="og:description" content="事务隔离Isolation 配置隔离级别 参考： 13.3.7 SET TRANSACTION Statement [[不同隔离级别的事务间有何影响.md]] Transaction Isolation Levels REPEATABLE READ READ COMMITTED READ UNCOMMITTED SERIALIZABLE Transaction Access Mode READ WRITE READ ONLY Transaction Characteristic Scope Syntax Affected Characteristic">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://navyd.github.io/res/mysql/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BBisolation/"><meta property="article:section" content="res">
 <meta itemprop=name content>
-<meta itemprop=description content="事务隔离Isolation 配置隔离级别 参考：13.3.7 SET TRANSACTION Statement [[不同隔离级别的事务间有何影响.md]] Transaction Isolation Levels REPEATABLE READ READ COMMITTED READ UNCOMMITTED SERIALIZABLE Transaction Access Mode READ WRITE READ ONLY Transaction">
-<meta itemprop=wordCount content="2617">
+<meta itemprop=description content="事务隔离Isolation 配置隔离级别 参考： 13.3.7 SET TRANSACTION Statement [[不同隔离级别的事务间有何影响.md]] Transaction Isolation Levels REPEATABLE READ READ COMMITTED READ UNCOMMITTED SERIALIZABLE Transaction Access Mode READ WRITE READ ONLY Transaction Characteristic Scope Syntax Affected Characteristic">
+<meta itemprop=wordCount content="2608">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content>
-<meta name=twitter:description content="事务隔离Isolation 配置隔离级别 参考：13.3.7 SET TRANSACTION Statement [[不同隔离级别的事务间有何影响.md]] Transaction Isolation Levels REPEATABLE READ READ COMMITTED READ UNCOMMITTED SERIALIZABLE Transaction Access Mode READ WRITE READ ONLY Transaction"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:description content="事务隔离Isolation 配置隔离级别 参考： 13.3.7 SET TRANSACTION Statement [[不同隔离级别的事务间有何影响.md]] Transaction Isolation Levels REPEATABLE READ READ COMMITTED READ UNCOMMITTED SERIALIZABLE Transaction Access Mode READ WRITE READ ONLY Transaction Characteristic Scope Syntax Affected Characteristic"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -84,7 +84,8 @@
 <div class=post-content>
 <h1 id=事务隔离isolation>事务隔离Isolation</h1>
 <h2 id=配置隔离级别>配置隔离级别</h2>
-<p>参考：<a test=/res/mysql/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BBisolation/ href=https://dev.mysql.com/doc/refman/8.0/en/set-transaction.html>13.3.7 SET TRANSACTION Statement</a></p>
+<p>参考：
+<a test="isHyperLink=true" href=https://dev.mysql.com/doc/refman/8.0/en/set-transaction.html>13.3.7 SET TRANSACTION Statement</a></p>
 <p>[[不同隔离级别的事务间有何影响.md]]</p>
 <h3 id=transaction-isolation-levels>Transaction Isolation Levels</h3>
 <ul>
@@ -222,7 +223,8 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><p><code>Next transaction level</code> <code>Current transaction level</code>没有方式可以查询</p>
-<p>参考：<a test=/res/mysql/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BBisolation/ href=https://stackoverflow.com/a/50941611/8566831>Mysql - How to find out isolation level for the transactions</a></p>
+<p>参考：
+<a test="isHyperLink=true" href=https://stackoverflow.com/a/50941611/8566831>Mysql - How to find out isolation level for the transactions</a></p>
 <h3 id=如何配置>如何配置</h3>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
@@ -553,8 +555,10 @@
 <p>可以看到，虽然在B提交后，A update提示Query OK，但更新行数为0，很明显与快照读select不符合，出现了幻读。</p>
 <p>参考：</p>
 <ul>
-<li><a test=/res/mysql/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BBisolation/ href=https://juejin.im/post/6844903796099776519>MySQL 事务隔离级别解析和实战</a></li>
-<li><a test=/res/mysql/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BBisolation/ href=https://www.cnblogs.com/fengzheng/p/12557762.html>一文讲清楚MySQL事务隔离级别和实现原理，开发人员必备知识点</a></li>
+<li>
+<a test="isHyperLink=true" href=https://juejin.im/post/6844903796099776519>MySQL 事务隔离级别解析和实战</a></li>
+<li>
+<a test="isHyperLink=true" href=https://www.cnblogs.com/fengzheng/p/12557762.html>一文讲清楚MySQL事务隔离级别和实现原理，开发人员必备知识点</a></li>
 </ul>
 <p>[[如何解决幻读.md]]</p>
 <h2 id=事务隔离的实现>事务隔离的实现</h2>
@@ -565,7 +569,8 @@
 <h3 id=时间戳>时间戳</h3>
 <h2 id=参考>参考</h2>
 <ul>
-<li><a test=/res/mysql/%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BBisolation/ href=https://draveness.me/mysql-transaction/>『浅入深出』MySQL 中事务的实现</a></li>
+<li>
+<a test="isHyperLink=true" href=https://draveness.me/mysql-transaction/>『浅入深出』MySQL 中事务的实现</a></li>
 </ul>
 <hr>
 <h4 id=可见性异常>可见性异常</h4>

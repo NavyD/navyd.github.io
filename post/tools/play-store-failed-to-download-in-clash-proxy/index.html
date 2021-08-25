@@ -27,11 +27,11 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://navyd.github.io/post/tools/play-store-failed-to-download-in-clash-proxy/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2021-08-09T17:21:47+08:00">
-<meta property="article:modified_time" content="2021-08-09T20:32:48+08:00">
+<meta property="article:modified_time" content="2021-08-26T01:36:54+08:00">
 <meta itemprop=name content="Google Play Store Failed to Download in Clash Proxy">
 <meta itemprop=description content="问题 clash透明代理使用规则发现GOOGLE PLAY商店下载应用一直处于等待中，全局代理能够正常下载。在我的oneplus3t上是可以正常"><meta itemprop=datePublished content="2021-08-09T17:21:47+08:00">
-<meta itemprop=dateModified content="2021-08-09T20:32:48+08:00">
-<meta itemprop=wordCount content="875">
+<meta itemprop=dateModified content="2021-08-26T01:36:54+08:00">
+<meta itemprop=wordCount content="1948">
 <meta itemprop=keywords content="clash,proxy,android,miui,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Google Play Store Failed to Download in Clash Proxy">
 <meta name=twitter:description content="问题 clash透明代理使用规则发现GOOGLE PLAY商店下载应用一直处于等待中，全局代理能够正常下载。在我的oneplus3t上是可以正常"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -88,8 +88,8 @@
 <h1 class=post-title>Google Play Store Failed to Download in Clash Proxy</h1>
 <div class=post-meta>
 <span class=post-time> 2021-08-09 </span>
-<span class=more-meta> 约 875 字 </span>
-<span class=more-meta> 预计阅读 2 分钟 </span>
+<span class=more-meta> 约 1948 字 </span>
+<span class=more-meta> 预计阅读 4 分钟 </span>
 <span id=busuanzi_container_page_pv class=more-meta> <span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读 </span>
 </div>
 </header>
@@ -101,7 +101,11 @@
 <li>
 <ul>
 <li><a href=#问题>问题</a></li>
-<li><a href=#分析>分析</a></li>
+<li><a href=#分析>分析</a>
+<ul>
+<li><a href=#后记>后记</a></li>
+</ul>
+</li>
 <li><a href=#解决>解决</a></li>
 </ul>
 </li>
@@ -119,7 +123,7 @@
 <ul>
 <li>redmi k40</li>
 <li>miui 12.5.4</li>
-<li>从小米商店下载的 Play Store version: 258.21-19 [0] [PR] 379071060</li>
+<li>从小米商店下载的 <code>Play Store version: 258.21-19 [0] [PR] 379071060</code></li>
 </ul>
 <h2 id=分析>分析</h2>
 <p>这个问题持续了2个月，开始遇到时使用oneplus3t上的其它的代理软件如老王、pandavpn测试没有clash环境下play商店是否可用，这两种免费的代理都无法使用，根本没法连接国外网站，测试失败</p>
@@ -132,14 +136,59 @@
 <li>重新打开Google Play应用商店进行下载或者更新应用</li>
 </ol>
 <p>依然不可用。</p>
-<p>有时候感觉就是这么突然，就在今天，可能是之前在什么地方看到过clash与play store的问题，而且是有关clash规则的，也就是我现在正在使用的<a test=/post/tools/play-store-failed-to-download-in-clash-proxy/ href=https://github.com/Loyalsoldier/clash-rules>clash-rules</a>。</p>
+<p>有时候感觉就是这么突然，就在今天，可能是之前在什么地方看到过clash与play store的问题，而且是有关clash规则的，也就是我现在正在使用的
+<a test="isHyperLink=true" href=https://github.com/Loyalsoldier/clash-rules>clash-rules</a>。</p>
 <p>打开issues中搜索<code>play</code>果然发现了问题：</p>
 <p><img src=2021-08-09-19-13-51.png alt></p>
-<p>根据<a test=/post/tools/play-store-failed-to-download-in-clash-proxy/ href=https://github.com/Loyalsoldier/clash-rules/issues/28#issuecomment-829886733>clash 规则模式下google play无法下载 #28</a>的方法是<code>services.googleapis.cn</code>没有使用代理，下面是在clash使用play下载时的google连接：</p>
+<p>根据
+<a test="isHyperLink=true" href=https://github.com/Loyalsoldier/clash-rules/issues/28#issuecomment-829886733>clash 规则模式下google play无法下载 #28</a>的方法是<code>services.googleapis.cn</code>没有使用代理，下面是在clash使用play下载时的google连接：</p>
 <p><img src=2021-08-09-18-34-55.png alt></p>
-<p>可以看到最后的<code>services.googleapis.cn</code>确实是直连。</p>
+<p>可以看到最后的<code>services.googleapis.cn</code>确实是直连TCP。</p>
+<h3 id=后记>后记</h3>
+<p>在这之后，依然存在无法下载的问题，可能是由于下面的神奇操作使得之前的分析不可用：</p>
+<ol>
+<li>启用clash</li>
+<li>进入play store下载更新应用</li>
+<li>等待一段时间后一直显示正在下载</li>
+<li>断网等待几秒不要退出play store</li>
+<li>重连网络可以看到play store开始下载/更新应用</li>
+</ol>
+<p>上面这个操作看运气，不具有稳定性，导致代理<code>services.googleapis.cn</code>分析不可用，就连使用全局代理都无法使用。</p>
+<p>google搜索<code>miui12 clash 代理 play store</code>，在这篇文章
+<a test="isHyperLink=true" href=https://www.v2ex.com/t/696735>关于 Google Play 商店只能浏览不能下载的一点奇怪发现</a>和我的情况十分相似：</p>
+<blockquote>
+<p>ping 后发现这个网址的 IP 是 203.208 网段的，也就是 Google 部署在中国大陆的 IP 之一。更奇怪的是只有在我使用 HK 线路的时候，哪怕是全局，Play 商店都不能下载更新。一但使用别的地区（ SG/US&mldr;）的网络，Play 商店就正常了。</p>
+<p>Google Play 能不能下载及更新只跟机场有关。与手机是否国行，services.googl 去掉 eapis.cn 是否走代理都无关。 好的机场无需任何设置，在国行上也可以下载更新。（小米手机必须关闭迅雷功能）
+一般来说，这个问题发生在香港节点较多。原因的本质是 ip 被谷歌识别为中国 ip 。 （虽然你的 ip 的确是香港的）
+直接的结果是某些谷歌服务不可用。 已知的有 Google Play 无法更新下载。 地图时间轴打开 400，YoutubePremium 不可用。
+判断的方式上面已经有人提过，可以通过以下两个链接：
+htt 去掉 ps://www.google.com/maps/timeline 打开 400 错误表示 ip 被封
+htt 去掉 ps://www.youtube.com/red 网页打开提示“YouTube Premium 在您所在的国家 /地区尚未推出”。在手机上使用链接直接跳转到 YouTube app 里，它会明确地告诉你 YouTube Premium 在中国未推出。
+这种节点无论做什么努力都是无法改变无法使用 Google Play 的本质问题的。只有换节点一个办法。</p>
+</blockquote>
+<p>在多次实验后，发现global+iepl专线节点有效，同时，除了HK节点，其它节点都可以在<code>services.googleapis.cn</code>代理下使得play store正常下载</p>
+<p>另外，由于存在另一个<code>services.googleapis.cn</code>UDP连接，尝试了多种方式都无法代理UDP，解析<code>services.googleapis.cn</code>常见ip有：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>120.253.253.98 中国 上海 上海 移动
+180.163.150.162 中国 上海 上海 电信
+203.208.39.226 中国 北京 北京 谷歌云
+203.208.43.66 中国 北京 北京 谷歌云
+180.163.150.34 中国 上海 上海 电信
+#...
+</code></pre></td></tr></table>
+</div>
+</div><p>用<code>180.163.150.34</code>尝试在配置文件中添加<code>IP-CIDR,180.163.0.0/16,Proxy</code>但无法对UDP生效</p>
 <h2 id=解决>解决</h2>
-<p>在clash配置文件中加上<code>DOMAIN,services.googleapis.cn,PROXY</code>如：</p>
+<p>在clash配置文件中加上<code>DOMAIN,services.googleapis.cn,Proxy</code>，注意<code>Proxy</code>尽量不要使用香港节点如：</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -160,9 +209,29 @@
 </span><span class=lnt>16
 </span><span class=lnt>17
 </span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
 </span></code></pre></td>
 <td class=lntd>
 <pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=c># ...</span><span class=w>
+</span><span class=w></span><span class=nt>proxy-groups</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Proxy</span><span class=w>
+</span><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>select</span><span class=w>
+</span><span class=w>    </span><span class=nt>proxies</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span><span class=c># - HK-Test</span><span class=w>
+</span><span class=w>      </span>- <span class=l>IEPL-Test</span><span class=w>
+</span><span class=w>      </span>- <span class=l>SGP-Test</span><span class=w>
+</span><span class=w>      </span>- <span class=l>US-Test</span><span class=w>
+</span><span class=w>      </span>- <span class=l>TW-Test</span><span class=w>
+</span><span class=w>      </span>- <span class=l>DIRECT</span><span class=w>
 </span><span class=w></span><span class=nt>rules</span><span class=p>:</span><span class=w>
 </span><span class=w>  </span>- <span class=l>RULE-SET,private,DIRECT</span><span class=w>
 </span><span class=w>  </span>- <span class=l>RULE-SET,reject,REJECT</span><span class=w>
@@ -186,10 +255,22 @@
 <p><img src=2021-08-09-18-44-36.png alt></p>
 <p>参考：</p>
 <ul>
-<li><a test=/post/tools/play-store-failed-to-download-in-clash-proxy/ href=https://github.com/Loyalsoldier/clash-rules>Loyalsoldier/clash-rules</a></li>
-<li><a test=/post/tools/play-store-failed-to-download-in-clash-proxy/ href=https://github.com/Loyalsoldier/clash-rules/issues/28>clash 规则模式下google play无法下载 #28</a></li>
-<li><a test=/post/tools/play-store-failed-to-download-in-clash-proxy/ href=https://yueyue200830.github.io/2020/02/29/%E8%A7%A3%E5%86%B3Google-Play-Store%E4%B8%80%E7%9B%B4%E3%80%8C%E6%AD%A3%E5%9C%A8%E7%AD%89%E5%BE%85%E4%B8%8B%E8%BD%BD%E3%80%8D%E7%9A%84%E9%97%AE%E9%A2%98/>解决Google Play Store一直「正在等待下载」的问题</a></li>
-<li><a test=/post/tools/play-store-failed-to-download-in-clash-proxy/ href=http://www.chinacion.cn/article/8209.html>小米手机 Google Play 一直等待下载/安装不了软件解决办法</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/Loyalsoldier/clash-rules>Loyalsoldier/clash-rules</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/Loyalsoldier/clash-rules/issues/28>clash 规则模式下google play无法下载 #28</a></li>
+<li>
+<a test="isHyperLink=true" href=https://yueyue200830.github.io/2020/02/29/%E8%A7%A3%E5%86%B3Google-Play-Store%E4%B8%80%E7%9B%B4%E3%80%8C%E6%AD%A3%E5%9C%A8%E7%AD%89%E5%BE%85%E4%B8%8B%E8%BD%BD%E3%80%8D%E7%9A%84%E9%97%AE%E9%A2%98/>解决Google Play Store一直「正在等待下载」的问题</a></li>
+<li>
+<a test="isHyperLink=true" href=http://www.chinacion.cn/article/8209.html>小米手机 Google Play 一直等待下载/安装不了软件解决办法</a></li>
+<li>
+<a test="isHyperLink=true" href=https://www.v2ex.com/t/696735>关于 Google Play 商店只能浏览不能下载的一点奇怪发现</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/Kr328/ClashForAndroid/issues/113>Play商店和youtube代理不了 #113</a></li>
+<li>
+<a test="isHyperLink=true" href=https://github.com/Kr328/ClashForAndroid/issues/478>[BUG] Play Store应用无法下载 #478</a></li>
+<li>
+<a test="isHyperLink=true" href=https://lancellc.gitbook.io/clash/clash-config-file/rules/ip-based-rule>clash IP-based Rule</a></li>
 </ul>
 </div>
 <div class=post-copyright>
@@ -200,8 +281,8 @@
 <p class=copyright-item>
 <span class=item-title>上次更新</span>
 <span class=item-content>
-2021-08-09
-<a href=https://github.com/NavyD/navyd.github.io/commit/e8a38a4498fcea572bd51e69f004044e44df6a37 title="post clash">(e8a38a4)</a>
+2021-08-26
+<a href=https://github.com/NavyD/navyd.github.io/commit/a6a0bdc63101d6e68237befeba8c630a84145307 title=增加分析原因，修复了之前依然无法下载的问题>(a6a0bdc)</a>
 </span>
 </p>
 </div>

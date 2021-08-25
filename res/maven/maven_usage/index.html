@@ -28,7 +28,7 @@
 <meta property="og:url" content="https://navyd.github.io/res/maven/maven_usage/"><meta property="article:section" content="res">
 <meta itemprop=name content>
 <meta itemprop=description content="Maven 简介 Maven试图将模式应用于项目的构建基础架构，以便通过提供使用最佳实践的清晰路径来提高理解力和生产力。 Maven本质上是一个项目管理和">
-<meta itemprop=wordCount content="4990">
+<meta itemprop=wordCount content="4960">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content>
 <meta name=twitter:description content="Maven 简介 Maven试图将模式应用于项目的构建基础架构，以便通过提供使用最佳实践的清晰路径来提高理解力和生产力。 Maven本质上是一个项目管理和"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -98,7 +98,8 @@
 <p>一个原型(Archetype)被定义为一种原始模式或模型，其他所有同类事物都是从该原始模式或模型中作出的。在Maven中，原型是一个项目的模板，它与一些用户输入相结合，生成一个适合用户需求的工作Maven项目。</p>
 <p>这个名字适合我们试图提供一个系统，提供一个生成Maven项目的一致手段。 Archetype将帮助作者为用户创建Maven项目模板，并为用户提供生成这些项目模板的参数化版本的方法。</p>
 <h2 id=标准目录结构>标准目录结构</h2>
-<p><a test=/res/maven/maven_usage/ href=https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html#>Standard Directory Layout</a></p>
+<p>
+<a test="isHyperLink=true" href=https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html#>Standard Directory Layout</a></p>
 <h2 id=构建项目>构建项目</h2>
 <p>Creating a project from an archetype involves three steps:</p>
 <ul>
@@ -376,7 +377,8 @@ MyDemo/
 </ul>
 <p>已存在的项目下可能需要maven必须的pom.xml文件</p>
 <p>在maven项目中应该包含pom.xml即Project Object Model (POM)信息</p>
-<p><a test=/res/maven/maven_usage/ href=https://maven.apache.org/archetype/maven-archetype-plugin/advanced-usage.html#>Advanced Usage</a></p>
+<p>
+<a test="isHyperLink=true" href=https://maven.apache.org/archetype/maven-archetype-plugin/advanced-usage.html#>Advanced Usage</a></p>
 <p>注意：</p>
 <ul>
 <li>如果已存在的项目目录不符合maven标准的目录结构将会报错</li>
@@ -534,7 +536,8 @@ Choose org.apache.struts:struts2-archetype-starter version:
 <pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ mvn install
 </code></pre></td></tr></table>
 </div>
-</div><p>仓库介绍：<a test=/res/maven/maven_usage/ href=https://maven.apache.org/guides/introduction/introduction-to-repositories.html>Introduction to Repositories</a></p>
+</div><p>仓库介绍：
+<a test="isHyperLink=true" href=https://maven.apache.org/guides/introduction/introduction-to-repositories.html>Introduction to Repositories</a></p>
 <p>请注意，surefire插件（执行测试）使用特定的命名约定查找包含在文件中的测试。默认情况下，测试包括：</p>
 <ul>
 <li><code>**/*Test.java</code></li>
@@ -599,8 +602,10 @@ Choose org.apache.struts:struts2-archetype-starter version:
 </code></pre></td></tr></table>
 </div>
 </div><h2 id=配置>配置</h2>
-<p>所有配置说明：<a test=/res/maven/maven_usage/ href=https://maven.apache.org/maven-settings/settings.html>full reference</a></p>
-<p>配置向导：<a test=/res/maven/maven_usage/ href=https://maven.apache.org/guides/mini/guide-configuring-maven.html#>Configuring Maven</a></p>
+<p>所有配置说明：
+<a test="isHyperLink=true" href=https://maven.apache.org/maven-settings/settings.html>full reference</a></p>
+<p>配置向导：
+<a test="isHyperLink=true" href=https://maven.apache.org/guides/mini/guide-configuring-maven.html#>Configuring Maven</a></p>
 <h3 id=下载jar源码和文档>下载jar源码和文档</h3>
 <p>在maven的本地文件夹中<code>~/.m2/setting.xml</code>添加如下代码：</p>
 <div class=highlight><div class=chroma>
@@ -646,8 +651,10 @@ Choose org.apache.struts:struts2-archetype-starter version:
 </code></pre></td></tr></table>
 </div>
 </div><p>参考：</p>
-<p><a test=/res/maven/maven_usage/ href=https://stackoverflow.com/questions/5780758/maven-always-download-sources-and-javadocs>Maven – Always download sources and javadocs</a></p>
-<p><a test=/res/maven/maven_usage/ href=https://maven.apache.org/plugins/maven-dependency-plugin/sources-mojo.html>dependency:sources</a></p>
+<p>
+<a test="isHyperLink=true" href=https://stackoverflow.com/questions/5780758/maven-always-download-sources-and-javadocs>Maven – Always download sources and javadocs</a></p>
+<p>
+<a test="isHyperLink=true" href=https://maven.apache.org/plugins/maven-dependency-plugin/sources-mojo.html>dependency:sources</a></p>
 <h3 id=配置编译版本>配置编译版本</h3>
 <p>maven默认的编译版本为java 1.5，创建的项目导入的jre包为jre 1.5，导致高版本无法通过编译</p>
 <p>可以在项目的pom.xml中编辑：</p>
@@ -890,7 +897,8 @@ Choose org.apache.struts:struts2-archetype-starter version:
         <span class=nt>&lt;/plugins&gt;</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>参考：<a test=/res/maven/maven_usage/ href=https://maven.apache.org/plugins/maven-compiler-plugin/examples/set-compiler-source-and-target.html#>Compile Using -source and -target javac Options</a></p>
+</div><p>参考：
+<a test="isHyperLink=true" href=https://maven.apache.org/plugins/maven-compiler-plugin/examples/set-compiler-source-and-target.html#>Compile Using -source and -target javac Options</a></p>
 <h2 id=插件>插件</h2>
 <p>与依赖dependency很像</p>
 <p>下面是在pom.xml文件中配置使用java 1.5编译项目</p>
@@ -1078,8 +1086,10 @@ Choose org.apache.struts:struts2-archetype-starter version:
 </div>
 </div><p>参考：</p>
 <ul>
-<li><a test=/res/maven/maven_usage/ href=https://stackoverflow.com/q/28673651/8566831>How to get the path of src/test/resources directory in JUnit?</a></li>
-<li><a test=/res/maven/maven_usage/ href=https://maven.apache.org/plugins/maven-resources-plugin/index.html>Apache Maven Resources Plugin</a></li>
+<li>
+<a test="isHyperLink=true" href=https://stackoverflow.com/q/28673651/8566831>How to get the path of src/test/resources directory in JUnit?</a></li>
+<li>
+<a test="isHyperLink=true" href=https://maven.apache.org/plugins/maven-resources-plugin/index.html>Apache Maven Resources Plugin</a></li>
 </ul>
 </div>
 </article>
