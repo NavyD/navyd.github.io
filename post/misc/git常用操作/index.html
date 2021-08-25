@@ -31,7 +31,7 @@
 <meta itemprop=name content="git常用操作">
 <meta itemprop=description content="撤消 删除本地最近的commit How do I undo the most recent local commits in Git? 1 2 3 4 git commit -m &#34;Something terribly misguided&#34; # (0: Your Accident) git reset HEAD~ # (1) delete commit git add . # (3) git commit -c ORIG_HEAD # (4) 如果之前未存在提交的文件"><meta itemprop=datePublished content="2021-08-06T18:25:53+08:00">
 <meta itemprop=dateModified content="2021-08-06T18:25:53+08:00">
-<meta itemprop=wordCount content="153">
+<meta itemprop=wordCount content="298">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="git常用操作">
 <meta name=twitter:description content="撤消 删除本地最近的commit How do I undo the most recent local commits in Git? 1 2 3 4 git commit -m &#34;Something terribly misguided&#34; # (0: Your Accident) git reset HEAD~ # (1) delete commit git add . # (3) git commit -c ORIG_HEAD # (4) 如果之前未存在提交的文件"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -88,7 +88,7 @@
 <h1 class=post-title>git常用操作</h1>
 <div class=post-meta>
 <span class=post-time> 2021-08-06 </span>
-<span class=more-meta> 约 153 字 </span>
+<span class=more-meta> 约 298 字 </span>
 <span class=more-meta> 预计阅读 1 分钟 </span>
 <span id=busuanzi_container_page_pv class=more-meta> <span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读 </span>
 </div>
@@ -104,6 +104,7 @@
 <ul>
 <li><a href=#删除本地最近的commit>删除本地最近的commit</a></li>
 <li><a href=#删除远程仓库的提交commits>删除远程仓库的提交commits</a></li>
+<li><a href=#移除git对文件的管理>移除git对文件的管理</a></li>
 </ul>
 </li>
 </ul>
@@ -145,7 +146,25 @@ git commit -c ORIG_HEAD                      <span class=c1># (4)</span>
 git push --force
 </code></pre></td></tr></table>
 </div>
+</div><h3 id=移除git对文件的管理>移除git对文件的管理</h3>
+<p>在添加到.gitignore文件后git不会忽略该文件</p>
+<p>
+<a test="isHyperLink=true" href=https://stackoverflow.com/a/1274447/8566831>How can I make Git “forget” about a file that was tracked, but is now in .gitignore?</a></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># for file</span>
+git rm --cached &lt;file&gt;
+<span class=c1># or for folder</span>
+git rm -r --cached &lt;folder&gt;
+</code></pre></td></tr></table>
 </div>
+</div><p>注意不会在之前管理commits中移除该文件，可以在git历史commit中找到，但是在HEAD之后的版本中将不会管理该文件了</p>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
