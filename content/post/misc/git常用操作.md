@@ -27,3 +27,18 @@ git commit -c ORIG_HEAD                      # (4)
 git reset --hard <last_working_commit_id>
 git push --force
 ```
+
+### 移除git对文件的管理
+
+在添加到.gitignore文件后git不会忽略该文件
+
+[How can I make Git “forget” about a file that was tracked, but is now in .gitignore?](https://stackoverflow.com/a/1274447/8566831)
+
+```sh
+# for file
+git rm --cached <file>
+# or for folder
+git rm -r --cached <folder>
+```
+
+注意不会在之前管理commits中移除该文件，可以在git历史commit中找到，但是在HEAD之后的版本中将不会管理该文件了
