@@ -31,7 +31,7 @@ Usage: wslview (--register|--unregister|--help|--version) [LINK]
 For more help for wslview, visit the following site: https://github.com/wslutilities/wslu/wiki/wslview
 $ wslview --version
 wslu v2.3.6; wslview v06
-$ wslview --register '/mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe'
+$ wslview --register
 [sudo] password for navyd:
 
 $ update-alternatives --list x-www-browser
