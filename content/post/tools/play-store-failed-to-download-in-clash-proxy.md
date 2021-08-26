@@ -62,14 +62,21 @@ google搜索`miui12 clash 代理 play store`，在这篇文章[关于 Google Pla
 >ping 后发现这个网址的 IP 是 203.208 网段的，也就是 Google 部署在中国大陆的 IP 之一。更奇怪的是只有在我使用 HK 线路的时候，哪怕是全局，Play 商店都不能下载更新。一但使用别的地区（ SG/US...）的网络，Play 商店就正常了。
 >
 >Google Play 能不能下载及更新只跟机场有关。与手机是否国行，services.googl 去掉 eapis.cn 是否走代理都无关。 好的机场无需任何设置，在国行上也可以下载更新。（小米手机必须关闭迅雷功能）
+>
 >一般来说，这个问题发生在香港节点较多。原因的本质是 ip 被谷歌识别为中国 ip 。 （虽然你的 ip 的确是香港的）
+>
 >直接的结果是某些谷歌服务不可用。 已知的有 Google Play 无法更新下载。 地图时间轴打开 400，YoutubePremium 不可用。
+>
 >判断的方式上面已经有人提过，可以通过以下两个链接：
->htt 去掉 ps://www.google.com/maps/timeline 打开 400 错误表示 ip 被封
->htt 去掉 ps://www.youtube.com/red 网页打开提示“YouTube Premium 在您所在的国家 /地区尚未推出”。在手机上使用链接直接跳转到 YouTube app 里，它会明确地告诉你 YouTube Premium 在中国未推出。
+>
+>`https://www.google.com/maps/timeline` 打开 400 错误表示 ip 被封
+>`https://www.youtube.com/red` 网页打开提示“YouTube Premium 在您所在的国家 /地区尚未推出”。在手机上使用链接直接跳转到 YouTube app 里，它会明确地告诉你 YouTube Premium 在中国未推出。
+>
 >这种节点无论做什么努力都是无法改变无法使用 Google Play 的本质问题的。只有换节点一个办法。
 
 在多次实验后，发现global+iepl专线节点有效，同时，除了HK节点，其它节点都可以在`services.googleapis.cn`代理下使得play store正常下载
+
+### 代理UDP
 
 另外，由于存在另一个`services.googleapis.cn`UDP连接，尝试了多种方式都无法代理UDP，解析`services.googleapis.cn`常见ip有：
 
@@ -82,7 +89,21 @@ google搜索`miui12 clash 代理 play store`，在这篇文章[关于 Google Pla
 #...
 ```
 
-用`180.163.150.34`尝试在配置文件中添加`IP-CIDR,180.163.0.0/16,Proxy`但无法对UDP生效
+用`180.163.150.34`尝试在配置文件中添加`IP-CIDR,180.163.0.0/16,Proxy`但无法对UDP生效。在clash-rules中的[中国大陆 IPv4 地址列表 cncidr.txt](https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt)规则中存在对该ip的配置
+
+```yml
+rules:
+#...
+  - GEOIP,,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,Final-Match
+```
+
+![](play-store-failed-to-download-in-clash-proxy/2021-08-26-01-49-06.png)
+
+什么时候有时间好好研究下
+
+<!-- todo -->
 
 ## 解决
 
