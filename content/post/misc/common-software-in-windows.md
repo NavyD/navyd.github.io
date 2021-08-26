@@ -4,7 +4,7 @@ date: 2021-08-26T12:26:21+08:00
 draft: false
 ---
 
-## Snipaste
+## [Snipaste](https://www.snipaste.com)
 
 >Snipaste 是一个简单但强大的截图工具，也可以让你将截图贴回到屏幕上！下载并打开 Snipaste，按下 F1 来开始截图，再按 F3，截图就在桌面置顶显示了。就这么简单！
 >
@@ -18,5 +18,5 @@ draft: false
 
 参考：
 
-- [官网](https://www.snipaste.com)
+- [官网](https://zh.snipaste.com/)
 - [in microsoft store](https://www.microsoft.com/store/apps/9P1WXPKB68KX)
