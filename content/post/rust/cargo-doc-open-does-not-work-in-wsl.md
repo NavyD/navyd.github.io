@@ -14,7 +14,7 @@ draft: false
 
 >A fake WSL browser that can help you open link in default Windows browser or open files on Windows.
 
-wslview是可以使用windows的默认程序打开文件的
+在wsl命令行中使用wslview可以用windows的默认程序打开文件
 
 ```sh
 # 使用默认文本处理程序打开
@@ -53,11 +53,22 @@ $ head -n 2 /usr/bin/wslview
 
 可以看到wslview脚本确实成为了wsl中的浏览器，但是cargo依然无法打开，应该是cargo依赖的是环境变量而不是xserver环境。
 
-注意：当前版本`wslu v2.3.6; wslview v06` [wslview open file by absolute path failed #118](https://github.com/wslutilities/wslu/issues/118)无法打开绝对路径
+**注意：当前版本`wslu v2.3.6; wslview v06`存在无法打开绝对路径bug：[wslview open file by absolute path failed #118](https://github.com/wslutilities/wslu/issues/118)**
+
+```sh
+$ wslview /home/panjie/temp/aaa.docx
+
+Start : 由于出现以下错误，无法运行此命令: 系统找不到指定的文件。。
+所在位置 行:1 字符: 1
++ Start "/home/panjie/temp/aaa.docx"
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [Start-Process]，InvalidOperationException
+    + FullyQualifiedErrorId : InvalidOperationException,Microsoft.PowerShell.Commands.StartProcessCommand
+```
 
 ## 解决方案
 
-### file protocol`file://`
+### file protocol
 
 以ubuntu为例，创建文件`~/open_browser.sh`并添加执行权限，在`.bashrc`或`.zshrc`中添加下面代码，注意`file://///wsl$`不能改为`file:///wsl$`。
 
@@ -86,7 +97,7 @@ browser = "$HOME/open_browser.sh"
 
 ### wslu-wslview
 
-从[wslview sh源码](https://github.com/wslutilities/wslu/blob/master/src/wslview.sh)上看还是使用了`file`协议，功能更强大，但是需要更新默认的wslu版本
+从[wslview sh源码](https://github.com/wslutilities/wslu/blob/master/src/wslview.sh)上看还是使用了`file`协议，功能更强大，但是需要更新默认版本`wslu v2.3.6`
 
 ```sh
 wslview --version
