@@ -40,7 +40,7 @@ git commit -m 'mv to res folder'
 
 这个方法有个很大的缺点，在merge时会合并到根目录，可能出现冲突，无法自定义合并到子文件夹中，虽然可以提前使用[git-filter-repo](https://github.com/newren/git-filter-repo)命令：`git filter-repo --to-subdirectory-filter blog-res`，但是`ubuntu 20.04`无法安装，放弃使用merge的方法
 
-![](merge-two-git-repos/2021-08-08-01-49-49.png)
+![](2021-08-08-01-49-49.png)
 
 ### 注意
 

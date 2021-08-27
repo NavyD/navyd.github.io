@@ -8,7 +8,7 @@ draft: false
 
 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致`git-submodule-in-hugo/你好%20a.png`和`git-submodule-in-hugo/你好 a.png`在vscode不同的插件中`kisstkondoros.vscode-gutter-preview`, `shd101wyy.markdown-preview-enhanced`存在有不同的解析结果，所以不能在文件名中出现空格
 
-![](github-actions-in-hugo/2021-08-06-17-43-23.png)
+![](2021-08-06-17-43-23.png)
 
 ## 分析
 

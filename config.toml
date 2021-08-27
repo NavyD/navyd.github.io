@@ -1,4 +1,4 @@
-baseURL = "https://navyd.github.io/"
+baseURL = "https://blog.navyd.xyz/"
 languageCode = "en"
 defaultContentLanguage = "zh-cn"                # en / zh-cn / ... (This field determines which i18n file to use)
 title = "Even - A super concise theme for Hugo"
@@ -19,6 +19,12 @@ paginate = 5          # 首页每页显示的文章数
 disqusShortname = ""  # disqus_shortname
 googleAnalytics = ""  # UA-XXXXXXXX-X
 copyright = ""        # default: author.name ↓        # 默认为下面配置的author.name ↓
+
+ignoreFiles = ['content/res/*']
+
+[permalinks]
+post = "/post/:year/:month/:day/:filename/"
+archive = "/archive/:year/:month/:day/:filename/"
 
 [author] # essential                     # 必需
 name = "navyd"

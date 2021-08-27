@@ -54,7 +54,7 @@ tags: [blog, hugo, markdown]
     * [Vim 配置入门](http://www.ruanyifeng.com/blog/2018/09/vimrc.html)
     ```
 
-1. 使用markdown-preview-enhanced导出cdn hosted文件[vim_markdown_preview_enhanced.html](myblog/vim_markdown_preview_enhanced.html)，下面是部分代码：
+1. 使用markdown-preview-enhanced导出cdn hosted文件[vim_markdown_preview_enhanced.html](vim_markdown_preview_enhanced.html)，下面是部分代码：
 
     ```html
     <!DOCTYPE html><html><head>
@@ -92,9 +92,9 @@ tags: [blog, hugo, markdown]
     }
     ```
 
-1. 经过WP转义后[vim_wordpress_esc](myblog/vim_wordpress_esc)
+1. 经过WP转义后[vim_wordpress_esc](vim_wordpress_esc)
 
-    ![](myblog/2021-08-04-23-17-08.png) 下面是部分代码：
+    ![](2021-08-04-23-17-08.png) 下面是部分代码：
 
     ```html
     &nbsp;
@@ -133,10 +133,10 @@ tags: [blog, hugo, markdown]
 - 在WP中引用全局外部css。有两种方式
 
   1. 在额外css中插入`@import url("//cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css");`
-      ![](myblog/2021-08-05-00-41-10.png)
+      ![](2021-08-05-00-41-10.png)
 
   2. 在主题style.css中插入`@import url("//cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css");`
-      ![](myblog/2021-08-05-00-43-59.png)
+      ![](2021-08-05-00-43-59.png)
 
 参考：
 
@@ -192,7 +192,7 @@ hexo使用nodejs开发，hugo使用golang开发，相对更熟悉golang。速度
 
 ## hugo博客
 
-[目录管理](markdown-management-in-hugo.md)
+[目录管理](../markdown-management-in-hugo.md)
 
 ### github pages部署
 
@@ -200,7 +200,7 @@ hexo使用nodejs开发，hugo使用golang开发，相对更熟悉golang。速度
 
 但是要注意[First Deployment with GITHUB_TOKEN](https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-first-deployment-with-github_token)，配置完github ations后需要主动创建`gh-pages`*空的分支*用于保存在hugo public/中的内容，并在repo settings中将其配置为GitHub Pages的source：
 
-![](myblog/2021-08-06-01-20-34.png)
+![](2021-08-06-01-20-34.png)
 
 参考：
 
@@ -211,10 +211,10 @@ hexo使用nodejs开发，hugo使用golang开发，相对更熟悉golang。速度
 ### 定制域名
 
 1. 在dns提供商添加cname解析到gh-pages的域名`navyd.github.io`。如[阿里云DNS解析控制台](https://dns.console.aliyun.com)
-  ![](myblog/2021-08-06-23-27-37.png)
+  ![](2021-08-06-23-27-37.png)
 1. 添加域名`blog.navyd.xyz`内容到`static/CNAME`文件
 1. 根据[Configuring a subdomain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-a-subdomain)指导，在github仓库中添加子域名`blog.navyd.xyz`并启用https
-  ![](myblog/2021-08-06-23-19-29.png)
+  ![](2021-08-06-23-19-29.png)
 
 注意：如果用浏览器打开新域名时提示不安全的证书，可能是缓存了以前使用过的域名证书，使用chrome无痕模式可以正常打开，等待chrome刷新缓存即可
 
@@ -275,21 +275,21 @@ pagePV = true
 
 主站统计
 
-![](myblog/2021-08-08-14-34-15.png)
+![](2021-08-08-14-34-15.png)
 
 文章访问统计
 
-![](myblog/2021-08-08-14-34-54.png)
+![](2021-08-08-14-34-54.png)
 
 #### 启用utterances评论
 
 utterances 是依托于 github repository 的 issues 建立的评论功能
 
 1. 点击[GitHub App utterances](https://github.com/apps/utterances)为github pages仓库`navyd.github.io`安装
-  ![](myblog/2021-08-08-14-03-17.png)
+  ![](2021-08-08-14-03-17.png)
 2. 选择使用utterances评论的仓库
-  ![](myblog/2021-08-08-14-19-00.png)
-  ![](myblog/2021-08-08-14-03-08.png)
+  ![](2021-08-08-14-19-00.png)
+  ![](2021-08-08-14-03-08.png)
 3. 在even配置中启用utterances
 
     ```toml
@@ -299,7 +299,7 @@ utterances 是依托于 github repository 的 issues 建立的评论功能
     ```
 
 4. 启动`hugo server -D`本地查看效果
-  ![](myblog/2021-08-08-14-23-26.png)
+  ![](2021-08-08-14-23-26.png)
 
 参考：
 
@@ -317,11 +317,11 @@ endLevel = 6
 
 配置前：
 
-![](myblog/2021-08-09-20-22-02.png)
+![](2021-08-09-20-22-02.png)
 
 配置后：
 
-![](myblog/2021-08-09-20-23-57.png)
+![](2021-08-09-20-23-57.png)
 
 参考：
 

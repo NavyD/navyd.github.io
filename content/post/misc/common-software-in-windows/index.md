@@ -14,7 +14,7 @@ draft: false
 
 可以查看颜色代码，不用qq的截图了
 
-![](common-software-in-windows/2021-08-26-12-35-08.png)
+![](2021-08-26-12-35-08.png)
 
 参考：
 
