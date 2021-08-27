@@ -328,3 +328,50 @@ endLevel = 6
 - [Hugo 相关部署操作](https://kuang.netlify.app/blog/hugo.html)
 - [CONTENT MANAGEMENT Table of Contents](https://gohugo.io/content-management/toc/)
 - [Configure Markup](https://gohugo.io/getting-started/configuration-markup#config)
+
+### 配置
+
+#### 忽略渲染部分文件
+
+在输出中发现非hugo配置的md文件被渲染，实际不需要渲染生成这些文件
+
+```sh
+$ hugo --debug
+Start building sites …
+hugo v0.87.0 linux/amd64 BuildDate=unknown
+INFO 2021/08/27 19:47:43 syncing static files to /home/navyd/Workspaces/projects/navyd.github.io/public/
+DEBUG 2021/08/27 19:47:43 Render page Cargo Doc Open Does Not Work in Wsl to "/post/rust/cargo-doc-open-does-not-work-in-wsl/index.html"
+DEBUG 2021/08/27 19:47:43 found menu: "main", in site config
+DEBUG 2021/08/27 19:47:43 found menu: "main", in site config
+DEBUG 2021/08/27 19:47:43 found menu: "main", in site config
+DEBUG 2021/08/27 19:47:43 found menu: "main", in site config
+DEBUG 2021/08/27 19:47:43 Render page  to "/res/docker/docker更换国内镜像/index.html"
+DEBUG 2021/08/27 19:47:43 Render page  to "/res/docker/docker构建容器/index.html"
+# ...
+                   | ZH-CN
+-------------------+--------
+  Pages            |   155
+  Paginator pages  |     3
+  Non-page files   |   175
+  Static files     |    39
+  Processed images |     0
+  Aliases          |    17
+  Sitemaps         |     1
+  Cleaned          |     0
+
+Total in 391 ms
+```
+
+```toml
+# baseURL = "https://blog.navyd.xyz/"
+# languageCode = "en"
+# ...
+ignoreFiles = ['content/res/*']
+
+# [permalinks]
+#...
+```
+
+参考：
+
+- [Ignore Content and Data Files when Rendering](https://gohugo.io/getting-started/configuration/#ignore-content-and-data-files-when-rendering)
