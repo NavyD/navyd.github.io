@@ -70,8 +70,8 @@ $ git submodule add https://github.com/olOwOlo/hugo-theme-even themes/even
 
 尝试移除submodule时`git rm -f themes/even`出错：`fatal: pathspec 'themes/even' did not match any files`，幸好github上存在完整的仓库，看下`themes/even`是否存在
 
-![](git-submodule-in-hugo/2021-08-06-16-01-30.png)
-![](git-submodule-in-hugo/2021-08-06-16-02-08.png)
+![](2021-08-06-16-01-30.png)
+![](2021-08-06-16-02-08.png)
 
 github上的`themes/even`链接到了原来的even仓库，并不是被删除了。
 

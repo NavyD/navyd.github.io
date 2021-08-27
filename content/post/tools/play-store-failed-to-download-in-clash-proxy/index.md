@@ -9,9 +9,9 @@ tags: [clash, proxy, android, miui]
 
 clash透明代理使用规则发现GOOGLE PLAY商店下载应用一直处于等待中，全局代理能够正常下载。在我的oneplus3t上是可以正常使用play商店的，但是在redmi k40上只能浏览，无法下载，一直处于pending状态。
 
-![](play-store-failed-to-download-in-clash-proxy/2021-08-09-18-06-18.gif)
-![](play-store-failed-to-download-in-clash-proxy/2021-08-09-18-09-35.png)
-![](play-store-failed-to-download-in-clash-proxy/2021-08-09-18-14-35.png)
+![](2021-08-09-18-06-18.gif)
+![](2021-08-09-18-09-35.png)
+![](2021-08-09-18-14-35.png)
 
 相关环境：
 
@@ -28,7 +28,7 @@ clash透明代理使用规则发现GOOGLE PLAY商店下载应用一直处于等�
 1. 打开系统自带的【下载管理】应用
 2. 点击【设置】
 3. 将【使用迅雷下载引擎】关闭
-    ![](play-store-failed-to-download-in-clash-proxy/2021-08-09-18-19-06.png)
+    ![](2021-08-09-18-19-06.png)
 4. 重新打开Google Play应用商店进行下载或者更新应用
 
 依然不可用。
@@ -37,11 +37,11 @@ clash透明代理使用规则发现GOOGLE PLAY商店下载应用一直处于等�
 
 打开issues中搜索`play`果然发现了问题：
 
-![](play-store-failed-to-download-in-clash-proxy/2021-08-09-19-13-51.png)
+![](2021-08-09-19-13-51.png)
 
 根据[clash 规则模式下google play无法下载 #28](https://github.com/Loyalsoldier/clash-rules/issues/28#issuecomment-829886733)的方法是`services.googleapis.cn`没有使用代理，下面是在clash使用play下载时的google连接：
 
-![](play-store-failed-to-download-in-clash-proxy/2021-08-09-18-34-55.png)
+![](2021-08-09-18-34-55.png)
 
 可以看到最后的`services.googleapis.cn`确实是直连TCP。
 
@@ -99,7 +99,7 @@ rules:
   - MATCH,Final-Match
 ```
 
-![](play-store-failed-to-download-in-clash-proxy/2021-08-26-01-49-06.png)
+![](2021-08-26-01-49-06.png)
 
 什么时候有时间好好研究下
 
@@ -142,7 +142,7 @@ rules:
 
 重启clash后可以正常下载应用，这里存在tcp与udp的`services.googleapis.cn`，tcp的使用了代理
 
-![](play-store-failed-to-download-in-clash-proxy/2021-08-09-18-44-36.png)
+![](2021-08-09-18-44-36.png)
 
 参考：
 
