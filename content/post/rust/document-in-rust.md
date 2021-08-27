@@ -9,3 +9,10 @@ draft: true
 参考：
 
 - [The rustdoc book](https://doc.rust-lang.org/stable/rustdoc/)
+
+## 链接本地文件
+
+参考：
+
+- [Include images in rustdoc output #32104](https://github.com/rust-lang/rust/issues/32104)
+- [embed-doc-image](https://crates.io/crates/embed-doc-image)
