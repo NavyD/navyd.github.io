@@ -1,0 +1,423 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>Merge Two Git Repos - Even - A super concise theme for Hugo</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="问题 从原始博客仓库blog-resources中迁移所有记录到新的hugo博客仓库navyd.github.io新文件夹下content/r"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.87.0 with theme even">
+<link rel=canonical href=https://blog.navyd.xyz/post/2021/08/08/merge-two-git-repos/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.a659bb31b17a54f7792e1bc783fc75b31118e6a175b42337b03fae0b1a3ef2b5.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="Merge Two Git Repos">
+<meta property="og:description" content="问题 从原始博客仓库blog-resources中迁移所有记录到新的hugo博客仓库navyd.github.io新文件夹下content/r">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.navyd.xyz/post/2021/08/08/merge-two-git-repos/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-08-08T01:49:33+08:00">
+<meta property="article:modified_time" content="2021-08-27T20:32:16+08:00">
+<meta itemprop=name content="Merge Two Git Repos">
+<meta itemprop=description content="问题 从原始博客仓库blog-resources中迁移所有记录到新的hugo博客仓库navyd.github.io新文件夹下content/r"><meta itemprop=datePublished content="2021-08-08T01:49:33+08:00">
+<meta itemprop=dateModified content="2021-08-27T20:32:16+08:00">
+<meta itemprop=wordCount content="955">
+<meta itemprop=keywords content="git,git merge,git subtree,git submodule,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Merge Two Git Repos">
+<meta name=twitter:description content="问题 从原始博客仓库blog-resources中迁移所有记录到新的hugo博客仓库navyd.github.io新文件夹下content/r"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Merge Two Git Repos</h1>
+<div class=post-meta>
+<span class=post-time> 2021-08-08 </span>
+<span class=more-meta> 约 955 字 </span>
+<span class=more-meta> 预计阅读 2 分钟 </span>
+<span id=busuanzi_container_page_pv class=more-meta> <span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#问题>问题</a></li>
+<li><a href=#分析>分析</a>
+<ul>
+<li><a href=#注意>注意</a></li>
+</ul>
+</li>
+<li><a href=#解决>解决</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<h2 id=问题>问题</h2>
+<p>从原始博客仓库<code>blog-resources</code>中迁移所有记录到新的hugo博客仓库<code>navyd.github.io</code>新文件夹下<code>content/res</code>中，以后慢慢修改为hugo博客形式。下面是两个仓库的目录结构</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>../
+    - blog-resources/
+        - .git/
+        - blog.md
+        - ...
+    - navyd.github.io/
+        - .git/
+        - content/
+            - post/
+        - ...
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=分析>分析</h2>
+<p>
+<a href=https://stackoverflow.com/a/10548919/8566831>git merge</a></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=nb>cd</span> navyd.github.io
+git checkout -b blog
+git remote add blog-res ../blog-resources
+git fetch blog-res --tags
+git merge --allow-unrelated-histories blog-res/master <span class=c1># or whichever branch you want to merge</span>
+git remote remove blog-res
+
+mv test.md content/res <span class=c1># 移动之前仓库的文件到res中</span>
+git commit -m <span class=s1>&#39;mv to res folder&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这个方法有个很大的缺点，在merge时会合并到根目录，可能出现冲突，无法自定义合并到子文件夹中，虽然可以提前使用
+<a href=https://github.com/newren/git-filter-repo>git-filter-repo</a>命令：<code>git filter-repo --to-subdirectory-filter blog-res</code>，但是<code>ubuntu 20.04</code>无法安装，放弃使用merge的方法</p>
+<p><img src=2021-08-08-01-49-49.png alt></p>
+<h3 id=注意>注意</h3>
+<p>如果仓库中存在未被git管理的文件，一定要备份好，<code>git reset --hard</code>将会完全覆盖这样的文件，无法找回</p>
+<p>使用<code>git reset --hard &lt;commit_id></code>回到合并前的状态。如果操作失误出现大量的<code>untracked files</code>，可以使用<code>git clean</code>删除</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># 查看可被清除的文件</span>
+git clean -n
+<span class=c1># 删除文件目录</span>
+git clean -f -d
+</code></pre></td></tr></table>
+</div>
+</div><p>如果在merge后想要撤消，但是使用<code>git log</code>找不能合并的记录日志对应的commit id，可以使用<code>git reflog</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ git log
+commit 0504c8037617b01b6c90183a7b8fcdaf71216411 <span class=o>(</span>HEAD -&gt; main, blog<span class=o>)</span>
+Merge: a30ea67 34cef1f
+Author: navyd &lt;dhjnavyd@gmail.com&gt;
+Date:   Sun Aug <span class=m>8</span> 01:39:45 <span class=m>2021</span> +0800
+
+    Add <span class=s1>&#39;content/res/&#39;</span> from commit <span class=s1>&#39;34cef1f6fe6477181818e55ff468e9a62c7fccbf&#39;</span>
+
+    git-subtree-dir: content/res
+    git-subtree-mainline: a30ea67efb72183d0d696dc74d9677a98b784035
+    git-subtree-split: 34cef1f6fe6477181818e55ff468e9a62c7fccbf
+
+commit a30ea67efb72183d0d696dc74d9677a98b784035 <span class=o>(</span>origin/main, origin/HEAD<span class=o>)</span>
+Author: navyd &lt;dhjnavyd@gmail.com&gt;
+Date:   Sat Aug <span class=m>7</span> 00:26:58 <span class=m>2021</span> +0800
+
+    even主题问题
+
+$ git reflog
+0504c80 <span class=o>(</span>HEAD -&gt; main, blog<span class=o>)</span> HEAD@<span class=o>{</span>0<span class=o>}</span>: merge blog: Fast-forward
+a30ea67 <span class=o>(</span>origin/main, origin/HEAD<span class=o>)</span> HEAD@<span class=o>{</span>1<span class=o>}</span>: reset: moving to a30ea67
+c9dc62b HEAD@<span class=o>{</span>2<span class=o>}</span>: reset: moving to HEAD~1
+e341955 HEAD@<span class=o>{</span>3<span class=o>}</span>: checkout: moving from blog to main
+0504c80 <span class=o>(</span>HEAD -&gt; main, blog<span class=o>)</span> HEAD@<span class=o>{</span>4<span class=o>}</span>: reset: moving to 0504c80
+94302ef HEAD@<span class=o>{</span>5<span class=o>}</span>: commit: <span class=nb>test</span>
+0504c80 <span class=o>(</span>HEAD -&gt; main, blog<span class=o>)</span> HEAD@<span class=o>{</span>6<span class=o>}</span>: reset: moving to 0504c8037617b01b6c90183a7b8fcdaf71216411
+a30ea67 <span class=o>(</span>origin/main, origin/HEAD<span class=o>)</span> HEAD@<span class=o>{</span>7<span class=o>}</span>: reset: moving to a30ea67
+00dc6b8 HEAD@<span class=o>{</span>8<span class=o>}</span>: commit: mv
+1f736a4 HEAD@<span class=o>{</span>9<span class=o>}</span>: reset: moving to 1f736a4272dbd8306d8451bcb9fe5d35ce81878e
+a30ea67 <span class=o>(</span>origin/main, origin/HEAD<span class=o>)</span> HEAD@<span class=o>{</span>10<span class=o>}</span>: checkout: moving from main to blog
+e341955 HEAD@<span class=o>{</span>11<span class=o>}</span>: merge blog: Fast-forward
+a30ea67 <span class=o>(</span>origin/main, origin/HEAD<span class=o>)</span> HEAD@<span class=o>{</span>12<span class=o>}</span>: checkout: moving from blog to main
+e341955 HEAD@<span class=o>{</span>13<span class=o>}</span>: commit: remove index.md
+c9dc62b HEAD@<span class=o>{</span>14<span class=o>}</span>: commit: mv to old folder
+e965a30 HEAD@<span class=o>{</span>15<span class=o>}</span>: merge blog-res/master: Merge made by the <span class=s1>&#39;recursive&#39;</span> strategy.
+a30ea67 <span class=o>(</span>origin/main, origin/HEAD<span class=o>)</span> HEAD@<span class=o>{</span>16<span class=o>}</span>: reset: moving to a30ea67
+a30ea67 <span class=o>(</span>origin/main, origin/HEAD<span class=o>)</span> HEAD@<span class=o>{</span>17<span class=o>}</span>: reset: moving to HEAD~
+e440e06 HEAD@<span class=o>{</span>18<span class=o>}</span>: merge blog-res/master: Merge made by the <span class=s1>&#39;recursive&#39;</span> strategy.
+a30ea67 <span class=o>(</span>origin/main, origin/HEAD<span class=o>)</span> HEAD@<span class=o>{</span>19<span class=o>}</span>: checkout: moving from main to blog
+
+$ git reset --hard id
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=解决>解决</h2>
+<p>在这里提到
+<a href=https://stackoverflow.com/a/14992078/8566831>使用git subtree</a></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=nb>cd</span> navyd.github.io
+git checkout -b blog
+<span class=c1># 添加blog-resources@master</span>
+git subtree add --prefix<span class=o>=</span>content/res ../blog-resources master
+<span class=c1># 合并blog到main分支</span>
+git checkout main
+git merge blog
+</code></pre></td></tr></table>
+</div>
+</div><p>完成合并log</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ git log
+commit 0504c8037617b01b6c90183a7b8fcdaf71216411 <span class=o>(</span>HEAD -&gt; main, blog<span class=o>)</span>
+Merge: a30ea67 34cef1f
+Author: navyd &lt;dhjnavyd@gmail.com&gt;
+Date:   Sun Aug <span class=m>8</span> 01:39:45 <span class=m>2021</span> +0800
+
+    Add <span class=s1>&#39;content/res/&#39;</span> from commit <span class=s1>&#39;34cef1f6fe6477181818e55ff468e9a62c7fccbf&#39;</span>
+
+    git-subtree-dir: content/res
+    git-subtree-mainline: a30ea67efb72183d0d696dc74d9677a98b784035
+    git-subtree-split: 34cef1f6fe6477181818e55ff468e9a62c7fccbf
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li>
+<a href=https://stackoverflow.com/questions/1425892/how-do-you-merge-two-git-repositories>How do you merge two Git repositories?</a></li>
+<li>
+<a href=https://stackoverflow.com/a/64966/8566831>How to remove local (untracked) files from the current Git working tree</a></li>
+<li>
+<a href=https://stackoverflow.com/a/2389423/8566831>Undo a Git merge that hasn&rsquo;t been pushed yet</a></li>
+<li>
+<a href=https://github.com/newren/git-filter-repo>newren/git-filter-repo</a></li>
+<li>
+<a href=https://segmentfault.com/a/1190000012002151>git subtree教程</a></li>
+</ul>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>文章作者</span>
+<span class=item-content>navyd</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>上次更新</span>
+<span class=item-content>
+2021-08-27
+<a href=https://github.com/NavyD/navyd.github.io/commit/4bd1b9b5b6af0312383f13297ddc564d0bf7a602 title="modified the current post back to the standard hugo Page Bundles structure. added configuration to ignore rendering content/res/ directory">(4bd1b9b)</a>
+</span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/git/>git</a>
+<a href=/tags/git-merge/>git merge</a>
+<a href=/tags/git-subtree/>git subtree</a>
+<a href=/tags/git-submodule/>git submodule</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/2021/08/09/play-store-failed-to-download-in-clash-proxy/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Google Play Store Failed to Download in Clash Proxy</span>
+<span class="prev-text nav-mobile">上一篇</span>
+</a>
+<a class=next href=/post/2021/08/06/git%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/>
+<span class="next-text nav-default">git常用操作</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script>
+<noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://blog.navyd.xyz/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<div class=busuanzi-footer>
+<span id=busuanzi_container_site_pv> 本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次 </span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv> 本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人 </span>
+</div>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="en".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+</body>
+</html>
