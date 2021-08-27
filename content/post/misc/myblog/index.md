@@ -98,9 +98,9 @@ tags: [blog, hugo, markdown]
 
     ```html
     &nbsp;
-
+    
     &nbsp;
-
+    
     <style>
     /**<br />
     * prism.js Github theme based on GitHub's theme.<br />
@@ -211,10 +211,10 @@ hexo使用nodejs开发，hugo使用golang开发，相对更熟悉golang。速度
 ### 定制域名
 
 1. 在dns提供商添加cname解析到gh-pages的域名`navyd.github.io`。如[阿里云DNS解析控制台](https://dns.console.aliyun.com)
-  ![](2021-08-06-23-27-37.png)
+    ![](2021-08-06-23-27-37.png)
 1. 添加域名`blog.navyd.xyz`内容到`static/CNAME`文件
 1. 根据[Configuring a subdomain](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-a-subdomain)指导，在github仓库中添加子域名`blog.navyd.xyz`并启用https
-  ![](2021-08-06-23-19-29.png)
+    ![](2021-08-06-23-19-29.png)
 
 注意：如果用浏览器打开新域名时提示不安全的证书，可能是缓存了以前使用过的域名证书，使用chrome无痕模式可以正常打开，等待chrome刷新缓存即可
 
@@ -286,10 +286,10 @@ pagePV = true
 utterances 是依托于 github repository 的 issues 建立的评论功能
 
 1. 点击[GitHub App utterances](https://github.com/apps/utterances)为github pages仓库`navyd.github.io`安装
-  ![](2021-08-08-14-03-17.png)
+    ![](2021-08-08-14-03-17.png)
 2. 选择使用utterances评论的仓库
-  ![](2021-08-08-14-19-00.png)
-  ![](2021-08-08-14-03-08.png)
+    ![](2021-08-08-14-19-00.png)
+    ![](2021-08-08-14-03-08.png)
 3. 在even配置中启用utterances
 
     ```toml
@@ -299,7 +299,7 @@ utterances 是依托于 github repository 的 issues 建立的评论功能
     ```
 
 4. 启动`hugo server -D`本地查看效果
-  ![](2021-08-08-14-23-26.png)
+    ![](2021-08-08-14-23-26.png)
 
 参考：
 
