@@ -208,7 +208,7 @@ shell实现参考：
 * [SSR去广告规则/GFWList规则/Clash规则碎片](https://github.com/ACL4SSR/ACL4SSR/tree/master)
 * [clash-rules](https://github.com/Loyalsoldier/clash-rules)
 
-注意：[clash-rules](https://github.com/Loyalsoldier/clash-rules)可能存在google play无法下载的问题，解决方法：[Google Play Store Failed to Download in Clash Proxy](play-store-failed-to-download-in-clash-proxy.md)
+注意：[clash-rules](https://github.com/Loyalsoldier/clash-rules)可能存在google play无法下载的问题，解决方法：[Google Play Store Failed to Download in Clash Proxy](play-store-failed-to-download-in-clash-proxy/index.md)
 
 ### 订阅转换subconverter
 
