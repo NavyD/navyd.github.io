@@ -27,11 +27,11 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://navyd.github.io/post/misc/myblog/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2021-08-06T00:36:35+08:00">
-<meta property="article:modified_time" content="2021-08-09T20:28:19+08:00">
+<meta property="article:modified_time" content="2021-08-27T19:32:03+08:00">
 <meta itemprop=name content="my hugo blog">
 <meta itemprop=description content="使用hugo在github搭建静态博客。 选型 可选类型 动态博客 比较知名的动态博客工具有下面几种： wordpress typecho 都是开源项目，wordpress(简称WP"><meta itemprop=datePublished content="2021-08-06T00:36:35+08:00">
-<meta itemprop=dateModified content="2021-08-09T20:28:19+08:00">
-<meta itemprop=wordCount content="4392">
+<meta itemprop=dateModified content="2021-08-27T19:32:03+08:00">
+<meta itemprop=wordCount content="2860">
 <meta itemprop=keywords content="blog,hugo,markdown,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="my hugo blog">
 <meta name=twitter:description content="使用hugo在github搭建静态博客。 选型 可选类型 动态博客 比较知名的动态博客工具有下面几种： wordpress typecho 都是开源项目，wordpress(简称WP"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -88,8 +88,8 @@
 <h1 class=post-title>my hugo blog</h1>
 <div class=post-meta>
 <span class=post-time> 2021-08-06 </span>
-<span class=more-meta> 约 4392 字 </span>
-<span class=more-meta> 预计阅读 9 分钟 </span>
+<span class=more-meta> 约 2860 字 </span>
+<span class=more-meta> 预计阅读 6 分钟 </span>
 <span id=busuanzi_container_page_pv class=more-meta> <span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读 </span>
 </div>
 </header>
@@ -118,17 +118,6 @@
 </li>
 <li><a href=#hugo博客>hugo博客</a>
 <ul>
-<li><a href=#markdown文件管理>markdown文件管理</a>
-<ul>
-<li><a href=#预处理markdown-link>预处理markdown link</a>
-<ul>
-<li><a href=#template-in-markdown>template in markdown</a></li>
-<li><a href=#js>js</a></li>
-<li><a href=#render-hooks>render hooks</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li><a href=#github-pages部署>github pages部署</a></li>
 <li><a href=#定制域名>定制域名</a></li>
 <li><a href=#even主题>even主题</a>
@@ -438,278 +427,8 @@ hyphens: none;<span class=p>&lt;</span><span class=nt>br</span> <span class=p>/&
 <p>部署方面，由于不是nodejs开发者，需要配置复杂的开发环境，虽然可借助docker在本地使用，但是没有找到可用的docker镜像，能满足需求。hugo部署非常简单，只有一个bin文件，结合git管理与github pages非常方便</p>
 <p>在资源方面，hexo更多，但本着可以折腾golang、轻量博客功能不作过多要求的精神，hugo是理想的选择</p>
 <h2 id=hugo博客>hugo博客</h2>
-<h3 id=markdown文件管理>markdown文件管理</h3>
-<p>使用markdown写作有一个痛点，如何链接本地文件。如图片、本地md文件链接、其它博文相关文件log等，一般在workspace目录中放置一个<code>assets/images</code>目录，md文件会链接到该路径。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>workspaces/
-  - assets/
-    - images/
-    - files/
-  - posts/
-    - myblog.md
-    - test/a.md
-</code></pre></td></tr></table>
-</div>
-</div><p>但是这样存在一个问题，大量文件被放在一个不相关的地方，在需要时很难寻找。一旦md文件目录发生迁移，整个md文件中的链接都失效了。</p>
-<p>在hugo中目录结构如果md存在多种本地文件链接，则用一个文件夹放入一个index.md与对应文件在同个目录</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>├── archetypes
-├── config.toml
-├── content
-    - posts/
-      - blog.md
-      - multi-res/
-        - index.md
-        - a.png
-        - b.log
-        - c.file
-├── data
-├── layouts
-├── static
-└── themes
-</code></pre></td></tr></table>
-</div>
-</div><p>但是这里选择一个<code>filename.md</code>文件被build后会生成无后缀的<code>filename/</code>目录，里面存放相关的静态资源文件，如果md没有本地文件链接不需要文件夹。将一个md文件相关资源都放在这样的目录中非常方便：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>workspaces/
-  - content/posts/
-    - alone.md
-    - myblog.md
-    - myblog/
-      - a.log
-      - b.html
-      - c.png
-  - public/
-  - ...
-</code></pre></td></tr></table>
-</div>
-</div><p>在vscode中配合
-<a test="isHyperLink=true" href=https://github.com/mathiassoeholm/markdown-link-updater>Markdown Link Updater</a>重命名文件后对应链接也会被修改</p>
-<p>使用
-<a test="isHyperLink=true" href=https://github.com/gaurav-nelson/github-action-markdown-link-check>GitHub Action - Markdown link check</a>可以在github repo中检查link的有效性</p>
-<p>参考：</p>
-<ul>
-<li>
-<a test="isHyperLink=true" href=https://www.isyin.cn/post/2018-05-03-hugo-%E7%9A%84%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E6%96%B9%E6%A1%88/>Hugo 的文件管理方案</a></li>
-<li>
-<a test="isHyperLink=true" href=https://gohugo.io/getting-started/directory-structure/>Directory Structure</a></li>
-<li>
-<a test="isHyperLink=true" href=https://gohugo.io/content-management/sections/>CONTENT MANAGEMENT Content Sections</a></li>
-<li>
-<a test="isHyperLink=true" href=https://olowolo.com/post/hugo-quick-start/>Hugo 从入门到会用</a></li>
-</ul>
-<h4 id=预处理markdown-link>预处理markdown link</h4>
-<p>由于当前目录结构与hugo官方不一致，导致本地相对链接无法正常使用如：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-markdown data-lang=markdown><span class=c>&lt;!-- 结构：
-</span><span class=c>
-</span><span class=c>myblog.md
-</span><span class=c>myblog/
-</span><span class=c></span>  <span class=k>-</span> <span class=c>vim_wordpress_esc
-</span><span class=c></span>  <span class=k>-</span> <span class=c>2021-08-04-23-17-08.png
-</span><span class=c>
-</span><span class=c>--&gt;</span>
-[<span class=nt>vim_wordpress_esc</span>](<span class=na>myblog/vim_wordpress_esc</span>)
-![](myblog/2021-08-04-23-17-08.png)
-</code></pre></td></tr></table>
-</div>
-</div><p>对于上面的两个本地链接，hugo 构建后</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-html data-lang=html><span class=p>&lt;</span><span class=nt>a</span> <span class=na>href</span><span class=o>=</span><span class=s>&#34;myblog/vim_wordpress_esc&#34;</span><span class=p>&gt;</span>vim_wordpress_esc<span class=p>&lt;/</span><span class=nt>a</span><span class=p>&gt;</span>
-<span class=c>&lt;!-- 配置了 fancybox = true --&gt;</span>
-<span class=p>&lt;</span><span class=nt>a</span> <span class=na>class</span><span class=o>=</span><span class=s>&#34;fancybox&#34;</span> <span class=na>href</span><span class=o>=</span><span class=s>&#34;http://localhost:1313/post/myblog/myblog/2021-08-04-23-17-08.png&#34;</span> <span class=na>data-fancybox</span><span class=o>=</span><span class=s>&#34;gallery&#34;</span> <span class=na>data-caption</span><span class=o>=</span><span class=s>&#34;&#34;</span><span class=p>&gt;&lt;</span><span class=nt>img</span> <span class=na>src</span><span class=o>=</span><span class=s>&#34;myblog/2021-08-04-23-17-08.png&#34;</span> <span class=na>alt</span><span class=o>=</span><span class=s>&#34;&#34;</span><span class=p>&gt;&lt;/</span><span class=nt>a</span><span class=p>&gt;</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>很明显，blog.md被hugo后本地路径已经与<code>myblog/</code>文件夹一级，而其中的相对路径链接还是没有变化，应该移除对应的filename前缀如：<code>&lt;a href="vim_wordpress_esc">vim_wordpress_esc&lt;/a></code></p>
-<h5 id=template-in-markdown>template in markdown</h5>
-<p>有一种简单的方式可以实现，在markdown文件中嵌入hugo template，可以使重写对应的链接如：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-markdown data-lang=markdown><span class=p>&lt;</span><span class=nt>base</span> <span class=na>href</span><span class=o>=</span><span class=s>&#34;{{ .Site.BaseURL }}&#34;</span><span class=p>&gt;</span>
-<span class=c>&lt;!-- 访问：https://host.url/img/foo.jpg --&gt;</span>
-![<span class=nt>Foo image</span>](<span class=na>img/foo.jpg</span>)
-</code></pre></td></tr></table>
-</div>
-</div><p><em><strong>注意：上面的代码仅用于演示，实际中存在改写<code>base url</code>后导致其它相对链接无法正常工作</strong></em></p>
-<p>下面是简单的处理逻辑：对于<code>myblog.md</code>，在当前页面下，如果存在以页面url.path的最后一层即filename开始的href，如：<code>url=http://localhost:1313/post/myblog, url.path=/post/myblog, filename=myblog, href=myblog/vim_wordpress_esc</code>，则移除这一级的<code>href=vim_wordpress_esc</code></p>
-<p>参考：</p>
-<ul>
-<li>
-<a test="isHyperLink=true" href=https://stackoverflow.com/a/46180551/8566831>Cannot link to static files with Hugo</a></li>
-</ul>
-<h5 id=js>js</h5>
-<p>开始的思路是使用js在页面加载时将对应href重写。但是看到<code>&lt;a class="fancybox" href="http://localhost:1313/post/myblog/myblog/2021-08-04-23-17-08.png"</code>就发现使用js无法保证所有对应的href被处理，可能由于加载顺序导致异常。如果link过多可能会影响性能</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=kd>let</span> <span class=nx>list</span> <span class=o>=</span> <span class=nb>window</span><span class=p>.</span><span class=nx>location</span><span class=p>.</span><span class=nx>pathname</span><span class=p>.</span><span class=nx>split</span><span class=p>(</span><span class=s2>&#34;/&#34;</span><span class=p>).</span><span class=nx>filter</span><span class=p>(</span><span class=nx>name</span> <span class=p>=&gt;</span> <span class=nx>name</span><span class=p>.</span><span class=nx>length</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>);</span>
-<span class=nx>console</span><span class=p>.</span><span class=nx>info</span><span class=p>(</span><span class=s2>&#34;got path list: &#34;</span><span class=p>,</span> <span class=nx>list</span><span class=p>);</span>
-<span class=k>if</span> <span class=p>(</span><span class=nx>list</span><span class=p>.</span><span class=nx>length</span> <span class=o>!=</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
-    <span class=kd>let</span> <span class=nx>last</span> <span class=o>=</span> <span class=nx>list</span><span class=p>[</span><span class=nx>list</span><span class=p>.</span><span class=nx>length</span> <span class=o>-</span> <span class=mi>1</span><span class=p>];</span>
-    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;check all ref tag&#34;</span><span class=p>);</span>
-    <span class=k>for</span> <span class=p>(</span><span class=kd>let</span> <span class=nx>item</span> <span class=k>of</span> <span class=nb>document</span><span class=p>.</span><span class=nx>getElementsByTagName</span><span class=p>(</span><span class=s2>&#34;a&#34;</span><span class=p>))</span> <span class=p>{</span>
-        <span class=kd>let</span> <span class=nx>href</span> <span class=o>=</span> <span class=nx>item</span><span class=p>.</span><span class=nx>getAttribute</span><span class=p>(</span><span class=s2>&#34;href&#34;</span><span class=p>);</span>
-        <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;href &#34;</span><span class=p>,</span> <span class=nx>href</span><span class=p>)</span>
-        <span class=k>if</span> <span class=p>(</span><span class=nx>href</span><span class=p>.</span><span class=nx>startsWith</span><span class=p>(</span><span class=nb>window</span><span class=p>.</span><span class=nx>location</span><span class=p>.</span><span class=nx>href</span><span class=p>))</span> <span class=p>{</span>
-            <span class=c1>// console.log(&#34;href &#34;, href);
-</span><span class=c1></span>            <span class=nx>href</span> <span class=o>=</span> <span class=nx>href</span><span class=p>.</span><span class=nx>substring</span><span class=p>(</span><span class=nb>window</span><span class=p>.</span><span class=nx>location</span><span class=p>.</span><span class=nx>href</span><span class=p>.</span><span class=nx>length</span> <span class=o>+</span> <span class=mi>1</span><span class=p>);</span>
-        <span class=p>}</span>
-        <span class=k>if</span> <span class=p>(</span><span class=nx>href</span><span class=p>.</span><span class=nx>startsWith</span><span class=p>(</span><span class=nx>last</span><span class=p>))</span> <span class=p>{</span>
-            <span class=kd>let</span> <span class=nx>newRef</span> <span class=o>=</span> <span class=nx>href</span><span class=p>.</span><span class=nx>substring</span><span class=p>(</span><span class=nx>last</span><span class=p>.</span><span class=nx>length</span> <span class=o>+</span> <span class=mi>1</span><span class=p>);</span>
-            <span class=nx>item</span><span class=p>.</span><span class=nx>setAttribute</span><span class=p>(</span><span class=s2>&#34;href&#34;</span><span class=p>,</span> <span class=nx>newRef</span><span class=p>);</span>
-            <span class=nx>console</span><span class=p>.</span><span class=nx>info</span><span class=p>(</span><span class=s2>&#34;replaced &#34;</span><span class=p>,</span> <span class=nx>href</span><span class=p>,</span> <span class=s2>&#34; with &#34;</span><span class=p>,</span> <span class=nx>newRef</span><span class=p>);</span>
-        <span class=p>}</span>
-    <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><h5 id=render-hooks>render hooks</h5>
-<p>在markdown渲染时预处理链接最合适，如果不行，就只能回到hugo标准目录结构了。</p>
-<p>Markdown Render Hooks配合hugo template可以在渲染html时处理链接。定义下面的文件可以处理对应的链接类型</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>layouts
-└── _default
-    └── _markup
-        ├── render-image.html
-        ├── render-image.rss.xml
-        └── render-link.html
-</code></pre></td></tr></table>
-</div>
-</div><p>下面是<code>render-link.html</code>代码</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-html data-lang=html><span class=p>&lt;</span><span class=nt>a</span> <span class=na>test</span><span class=o>=</span><span class=s>&#34;&#34;</span>
-<span class=err>{{$</span><span class=na>name</span> <span class=na>:</span><span class=o>=</span> <span class=s>path.Base</span> <span class=err>.</span><span class=na>Page</span><span class=err>.</span><span class=na>Permalink</span><span class=err>}}</span>
-<span class=err>{{</span><span class=na>if</span> <span class=err>(</span><span class=na>hasPrefix</span> <span class=err>.</span><span class=na>Destination</span> <span class=err>$</span><span class=na>name</span><span class=err>)</span> <span class=err>}}</span>
-    <span class=err>{{$</span><span class=na>size</span> <span class=na>:</span><span class=o>=</span> <span class=s>len</span> <span class=err>$</span><span class=na>name</span><span class=err>}}</span>
-    <span class=err>{{$</span><span class=na>size </span><span class=o>=</span> <span class=s>add</span> <span class=err>$</span><span class=na>size</span> <span class=na>1</span><span class=err>}}</span>
-    <span class=err>{{$</span><span class=na>destUrl</span> <span class=na>:</span><span class=o>=</span> <span class=s>substr</span> <span class=err>.</span><span class=na>Destination</span> <span class=err>$</span><span class=na>size</span><span class=err>}}</span>
-    <span class=na>href</span><span class=o>=</span><span class=s>&#34;{{substr .Destination $size}}&#34;</span>
-<span class=err>{{</span><span class=na>else</span><span class=err>}}</span>
-    <span class=na>href</span><span class=o>=</span><span class=s>&#34;{{.Destination | safeURL}}&#34;</span>
-<span class=err>{{</span><span class=na>end</span><span class=err>}}</span>
-<span class=err>{{</span> <span class=na>with</span> <span class=err>.</span><span class=na>Title</span><span class=err>}}</span>
-<span class=na>title</span><span class=o>=</span><span class=s>&#34;{{ . }}&#34;</span><span class=err>{{</span> <span class=na>end</span> <span class=err>}}</span><span class=p>&gt;</span>{{ .Text | safeHTML }}<span class=p>&lt;/</span><span class=nt>a</span><span class=p>&gt;</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>参考：</p>
-<ul>
-<li>
-<a test="isHyperLink=true" href=https://gohugo.io/getting-started/configuration-markup#markdown-render-hooks>Configure Markup: Markdown Render Hooks</a></li>
-<li>
-<a test="isHyperLink=true" href=https://discourse.gohugo.io/t/markdown-pre-processing/27299>Markdown pre-processing?</a></li>
-<li>
-<a test="isHyperLink=true" href=https://discourse.gohugo.io/t/how-to-get-the-url-of-the-current-page-with-the-rel-or-relref-function/29113/4>How to get the URL of the current page with the rel or relref function?</a></li>
-<li>
-<a test="isHyperLink=true" href=https://gohugo.io/functions/>Functions Quick Reference</a></li>
-</ul>
+<p>
+<a test="isHyperLink=false" href=/post/misc/markdown-management-in-hugo>目录管理</a></p>
 <h3 id=github-pages部署>github pages部署</h3>
 <p>在github上使用一个仓库<code>&lt;username>.github.io</code>保存hugo博文与gh-pages。基本配置在
 <a test="isHyperLink=true" href=https://gohugo.io/hosting-and-deployment/hosting-on-github/#readout>Host on GitHub</a>一致。</p>
@@ -897,8 +616,8 @@ hugo v0.87.0+extended linux/amd64 <span class=nv>BuildDate</span><span class=o>=
 <p class=copyright-item>
 <span class=item-title>上次更新</span>
 <span class=item-content>
-2021-08-09
-<a href=https://github.com/NavyD/navyd.github.io/commit/cce1dfefd70f598dcd71a9cf7232c8e3bfe302d9 title="enable multi toc. add tags">(cce1dfe)</a>
+2021-08-27
+<a href=https://github.com/NavyD/navyd.github.io/commit/978b4a8bb0e76823ddf0c57541822cf83c7ed729 title="moved the markdown management content in myhugo to the new file">(978b4a8)</a>
 </span>
 </p>
 </div>
