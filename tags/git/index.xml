@@ -13,7 +13,7 @@
       <pubDate>Sun, 08 Aug 2021 01:49:33 +0800</pubDate>
       
       <guid>https://blog.navyd.xyz/post/2021/08/08/merge-two-git-repos/</guid>
-      <description>问题 从原始博客仓库blog-resources中迁移所有记录到新的hugo博客仓库navyd.github.io新文件夹下content/r</description>
+      <description>问题 从原始博客仓库blog-resources中迁移所有记录到新的hugo博客仓库navyd.github.io新文件夹下content/res中，以后慢慢修改为hugo博客形式。下面是两个仓库的目录</description>
     </item>
     
   </channel>

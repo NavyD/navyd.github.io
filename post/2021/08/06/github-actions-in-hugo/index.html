@@ -5,7 +5,7 @@
 <meta name=robots content="index, follow">
 <title>github actions in hugo | navyd的个人博客</title>
 <meta name=keywords content>
-<meta name=description content="问题 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致git-submodule-in-hugo/你好%2">
+<meta name=description content="问题 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致git-submodule-in-hugo/你好%20a.png和git-submodule-in-hugo/你">
 <meta name=author content="navyd">
 <link rel=canonical href=https://blog.navyd.xyz/post/2021/08/06/github-actions-in-hugo/>
 <meta name=google-site-verification content="G-JKFZ31HBBS">
@@ -20,17 +20,19 @@
 <meta name=theme-color content="#2e2e33">
 <meta name=msapplication-TileColor content="#2e2e33">
 <meta name=generator content="Hugo 0.87.0">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JKFZ31HBBS"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date),gtag('config','G-JKFZ31HBBS',{anonymize_ip:!1})}</script>
 <meta property="og:title" content="github actions in hugo">
-<meta property="og:description" content="问题 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致git-submodule-in-hugo/你好%2">
+<meta property="og:description" content="问题 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致git-submodule-in-hugo/你好%20a.png和git-submodule-in-hugo/你">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.navyd.xyz/post/2021/08/06/github-actions-in-hugo/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2021-08-06T17:30:53+08:00">
 <meta property="article:modified_time" content="2021-08-06T17:30:53+08:00"><meta property="og:site_name" content="ExampleSite">
 <meta name=twitter:card content="summary">
 <meta name=twitter:title content="github actions in hugo">
-<meta name=twitter:description content="问题 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致git-submodule-in-hugo/你好%2">
+<meta name=twitter:description content="问题 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致git-submodule-in-hugo/你好%20a.png和git-submodule-in-hugo/你">
 <script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":2,"name":"Posts","item":"https://blog.navyd.xyz/post/"},{"@type":"ListItem","position":3,"name":"github actions in hugo","item":"https://blog.navyd.xyz/post/2021/08/06/github-actions-in-hugo/"}]}</script>
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"github actions in hugo","name":"github actions in hugo","description":"问题 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致git-submodule-in-hugo/你好%2","keywords":[],"articleBody":"问题 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致git-submodule-in-hugo/你好%20a.png和git-submodule-in-hugo/你好 a.png在vscode不同的插件中kisstkondoros.vscode-gutter-preview, shd101wyy.markdown-preview-enhanced存在有不同的解析结果，所以不能在文件名中出现空格\n分析 在hugo渲染html时，可能也会出现空格的问题，如当前自定义的layouts/_default/_markup/render-link.html，如果没有使用测试转义，可能导致hasPrefix .Destination $name不一样的情况。当然，应该不会出现这样的情况，毕竟$name与.Destination都是经过hugo转义后的。但是本地不一致的行为影响体验，总之，空格禁用\ngithub action 在github仓库上在hugo build前使用actions检查是否含空格\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18  jobs:check:runs-on:ubuntu-20.04steps:- uses:actions/checkout@master- name:Check file names with spacesrun:|# search spaces in all subfolder names if s=$(find content/post | grep ' '); then # output to stderr \u00262 echo \"found spaces in $s\" exit 1 fideploy:runs-on:ubuntu-20.04# dependence checkneeds:check#...  参考：\n  Quickstart for GitHub Actions  Creating dependent jobs  ","wordCount":"500","inLanguage":"zh","datePublished":"2021-08-06T17:30:53+08:00","dateModified":"2021-08-06T17:30:53+08:00","author":{"@type":"Person","name":"navyd"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.navyd.xyz/post/2021/08/06/github-actions-in-hugo/"},"publisher":{"@type":"Organization","name":"navyd的个人博客","logo":{"@type":"ImageObject","url":"https://blog.navyd.xyz/favicon.ico"}}}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"github actions in hugo","name":"github actions in hugo","description":"问题 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致git-submodule-in-hugo/你好%20a.png和git-submodule-in-hugo/你","keywords":[],"articleBody":"问题 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致git-submodule-in-hugo/你好%20a.png和git-submodule-in-hugo/你好 a.png在vscode不同的插件中kisstkondoros.vscode-gutter-preview, shd101wyy.markdown-preview-enhanced存在有不同的解析结果，所以不能在文件名中出现空格\n分析 在hugo渲染html时，可能也会出现空格的问题，如当前自定义的layouts/_default/_markup/render-link.html，如果没有使用测试转义，可能导致hasPrefix .Destination $name不一样的情况。当然，应该不会出现这样的情况，毕竟$name与.Destination都是经过hugo转义后的。但是本地不一致的行为影响体验，总之，空格禁用\ngithub action 在github仓库上在hugo build前使用actions检查是否含空格\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18  jobs:check:runs-on:ubuntu-20.04steps:- uses:actions/checkout@master- name:Check file names with spacesrun:|# search spaces in all subfolder names if s=$(find content/post | grep ' '); then # output to stderr \u00262 echo \"found spaces in $s\" exit 1 fideploy:runs-on:ubuntu-20.04# dependence checkneeds:check#...  参考：\n  Quickstart for GitHub Actions  Creating dependent jobs  ","wordCount":"500","inLanguage":"zh","datePublished":"2021-08-06T17:30:53+08:00","dateModified":"2021-08-06T17:30:53+08:00","author":{"@type":"Person","name":"navyd"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.navyd.xyz/post/2021/08/06/github-actions-in-hugo/"},"publisher":{"@type":"Organization","name":"navyd的个人博客","logo":{"@type":"ImageObject","url":"https://blog.navyd.xyz/favicon.ico"}}}</script>
 </head>
 <body id=top>
 <script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
@@ -95,8 +97,7 @@ github actions in hugo
 </div>
 <div class=post-content><h2 id=问题>问题<a hidden class=anchor aria-hidden=true href=#问题>#</a></h2>
 <p>使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致<code>git-submodule-in-hugo/你好%20a.png</code>和<code>git-submodule-in-hugo/你好 a.png</code>在vscode不同的插件中<code>kisstkondoros.vscode-gutter-preview</code>, <code>shd101wyy.markdown-preview-enhanced</code>存在有不同的解析结果，所以不能在文件名中出现空格</p>
-<p><img loading=lazy src=2021-08-06-17-43-23.png alt>
-</p>
+<p><img loading=lazy src=https://blog.navyd.xyz/post/2021/08/06/github-actions-in-hugo/2021-08-06-17-43-23.png alt></p>
 <h2 id=分析>分析<a hidden class=anchor aria-hidden=true href=#分析>#</a></h2>
 <p>在hugo渲染html时，可能也会出现空格的问题，如当前自定义的<code>layouts/_default/_markup/render-link.html</code>，如果没有使用测试转义，可能导致<code>hasPrefix .Destination $name</code>不一样的情况。当然，应该不会出现这样的情况，毕竟<code>$name</code>与<code>.Destination</code>都是经过hugo转义后的。但是本地不一致的行为影响体验，总之，空格禁用</p>
 <h2 id=github-action>github action<a hidden class=anchor aria-hidden=true href=#github-action>#</a></h2>
