@@ -1,17 +1,17 @@
 ---
-title: "Google Play Store Failed to Download in Clash Proxy"
+title: "clash代理在Google Play Store下载时失败"
 date: 2021-08-09T17:21:47+08:00
 draft: false
 tags: [clash, proxy, android, miui]
 ---
 
-## 问题
+![](2021-08-09-18-14-35.png)
 
 clash透明代理使用规则发现GOOGLE PLAY商店下载应用一直处于等待中，全局代理能够正常下载。在我的oneplus3t上是可以正常使用play商店的，但是在redmi k40上只能浏览，无法下载，一直处于pending状态。
 
+<!--more-->
 ![](2021-08-09-18-06-18.gif)
 ![](2021-08-09-18-09-35.png)
-![](2021-08-09-18-14-35.png)
 
 相关环境：
 
