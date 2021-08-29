@@ -4,8 +4,6 @@ date: 2021-08-26T16:26:40+08:00
 draft: false
 ---
 
-## 问题
-
 在wsl命令行中使用`cargo doc --open`无法在windows端打开
 
 ## 分析
