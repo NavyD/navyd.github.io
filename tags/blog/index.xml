@@ -1,25 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
-  <channel>
-    <title>blog on navyd的个人博客</title>
-    <link>https://blog.navyd.xyz/tags/blog/</link>
-    <description>Recent content in blog on navyd的个人博客</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <lastBuildDate>Fri, 06 Aug 2021 00:36:35 +0800</lastBuildDate><atom:link href="https://blog.navyd.xyz/tags/blog/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>my hugo blog</title>
-      <link>https://blog.navyd.xyz/post/2021/08/06/myblog/</link>
-      <pubDate>Fri, 06 Aug 2021 00:36:35 +0800</pubDate>
-      
-      <guid>https://blog.navyd.xyz/post/2021/08/06/myblog/</guid>
-      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34;
- 
-src=&#34;https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg&#34;
-
-alt=&#34;&#34;  /&gt;&lt;/p&gt;
-&lt;p&gt;使用hugo在github搭建静态博客。&lt;/p&gt;</description>
-    </item>
-    
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>blog on navyd的个人博客</title><link>https://blog.navyd.xyz/tags/blog/</link><description>Recent content in blog on navyd的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 06 Aug 2021 00:36:35 +0800</lastBuildDate><atom:link href="https://blog.navyd.xyz/tags/blog/index.xml" rel="self" type="application/rss+xml"/><item><title>my hugo blog</title><link>https://blog.navyd.xyz/post/2021/08/06/myblog/</link><pubDate>Fri, 06 Aug 2021 00:36:35 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/08/06/myblog/</guid><description>&lt;p>&lt;img loading="lazy"
+src="https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg"
+alt="" />&lt;/p>
+&lt;p>使用hugo在github搭建静态博客。&lt;/p></description></item></channel></rss>

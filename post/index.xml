@@ -1,110 +1,12 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
-  <channel>
-    <title>Posts on navyd的个人博客</title>
-    <link>https://blog.navyd.xyz/post/</link>
-    <description>Recent content in Posts on navyd的个人博客</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <lastBuildDate>Fri, 27 Aug 2021 18:38:09 +0800</lastBuildDate><atom:link href="https://blog.navyd.xyz/post/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>在hugo中管理markdown文件</title>
-      <link>https://blog.navyd.xyz/post/2021/08/27/markdown-management-in-hugo/</link>
-      <pubDate>Fri, 27 Aug 2021 18:38:09 +0800</pubDate>
-      
-      <guid>https://blog.navyd.xyz/post/2021/08/27/markdown-management-in-hugo/</guid>
-      <description>使用markdown写作有一个痛点，如何链接本地文件。如图片、本地md文件链接、其它博文相关文件log等，一般在workspace目录中放置一个assets/images目录，md文件会链接到该路径。</description>
-    </item>
-    
-    <item>
-      <title>Cargo Doc Open Does Not Work in Wsl</title>
-      <link>https://blog.navyd.xyz/post/2021/08/26/cargo-doc-open-does-not-work-in-wsl/</link>
-      <pubDate>Thu, 26 Aug 2021 16:26:40 +0800</pubDate>
-      
-      <guid>https://blog.navyd.xyz/post/2021/08/26/cargo-doc-open-does-not-work-in-wsl/</guid>
-      <description>问题 在wsl命令行中使用cargo doc --open无法在windows端打开 分析 在wsl命令行中是可以直接执行windows exe文件的，ubuntu中预置了 wslu工具，其中的wslview可以满足要</description>
-    </item>
-    
-    <item>
-      <title>常用软件</title>
-      <link>https://blog.navyd.xyz/post/2021/08/26/common-softwares/</link>
-      <pubDate>Thu, 26 Aug 2021 12:26:21 +0800</pubDate>
-      
-      <guid>https://blog.navyd.xyz/post/2021/08/26/common-softwares/</guid>
-      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34;
-
-src=&#34;https://blog.navyd.xyz/post/2021/08/26/common-softwares/2021-08-29-15-01-24.png&#34; 
-
-alt=&#34;&#34;  /&gt;&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Clash Transparent Proxy</title>
-      <link>https://blog.navyd.xyz/post/2021/08/09/clash-transparent-proxy/</link>
-      <pubDate>Mon, 09 Aug 2021 19:31:12 +0800</pubDate>
-      
-      <guid>https://blog.navyd.xyz/post/2021/08/09/clash-transparent-proxy/</guid>
-      <description>docker部署 在docker内启动时使用iptables操作，stop时清理iptables。 自用docker镜像 NavyD/docker-clash 代理方式 TCP redir + UDP TPROXY redir模式。对转发流量使用tcp redir, udp tproxy方式代理。本</description>
-    </item>
-    
-    <item>
-      <title>Google Play Store Failed to Download in Clash Proxy</title>
-      <link>https://blog.navyd.xyz/post/2021/08/09/play-store-failed-to-download-in-clash-proxy/</link>
-      <pubDate>Mon, 09 Aug 2021 17:21:47 +0800</pubDate>
-      
-      <guid>https://blog.navyd.xyz/post/2021/08/09/play-store-failed-to-download-in-clash-proxy/</guid>
-      <description>问题 clash透明代理使用规则发现GOOGLE PLAY商店下载应用一直处于等待中，全局代理能够正常下载。在我的oneplus3t上是可以正常使用play商店的，但是在redmi k40上只能浏览，无法下</description>
-    </item>
-    
-    <item>
-      <title>Merge Two Git Repos</title>
-      <link>https://blog.navyd.xyz/post/2021/08/08/merge-two-git-repos/</link>
-      <pubDate>Sun, 08 Aug 2021 01:49:33 +0800</pubDate>
-      
-      <guid>https://blog.navyd.xyz/post/2021/08/08/merge-two-git-repos/</guid>
-      <description>问题 从原始博客仓库blog-resources中迁移所有记录到新的hugo博客仓库navyd.github.io新文件夹下content/res中，以后慢慢修改为hugo博客形式。下面是两个仓库的目录</description>
-    </item>
-    
-    <item>
-      <title>git常用操作</title>
-      <link>https://blog.navyd.xyz/post/2021/08/06/git%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/</link>
-      <pubDate>Fri, 06 Aug 2021 18:25:53 +0800</pubDate>
-      
-      <guid>https://blog.navyd.xyz/post/2021/08/06/git%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/</guid>
-      <description>撤消 删除本地最近的commit How do I undo the most recent local commits in Git? 1 2 3 4 git commit -m &amp;#34;Something terribly misguided&amp;#34; # (0: Your Accident) git reset HEAD~ # (1) delete commit git add . # (3) git commit -c ORIG_HEAD # (4) 如果之前未存在提交的文件，git reset HEAD~不会删除，只会将文件置为Unstaged</description>
-    </item>
-    
-    <item>
-      <title>github actions in hugo</title>
-      <link>https://blog.navyd.xyz/post/2021/08/06/github-actions-in-hugo/</link>
-      <pubDate>Fri, 06 Aug 2021 17:30:53 +0800</pubDate>
-      
-      <guid>https://blog.navyd.xyz/post/2021/08/06/github-actions-in-hugo/</guid>
-      <description>问题 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致git-submodule-in-hugo/你好%20a.png和git-submodule-in-hugo/你</description>
-    </item>
-    
-    <item>
-      <title>git submodule in hugo</title>
-      <link>https://blog.navyd.xyz/post/2021/08/06/git-submodule-in-hugo/</link>
-      <pubDate>Fri, 06 Aug 2021 16:39:24 +0800</pubDate>
-      
-      <guid>https://blog.navyd.xyz/post/2021/08/06/git-submodule-in-hugo/</guid>
-      <description>问题 在使用hugo添加主题时git submodule add https://github.com/olOwOlo/hugo-theme-even themes/even。在push到github后，过了一晚，不知道为啥启动hugo时出现错误： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ❯ hugo</description>
-    </item>
-    
-    <item>
-      <title>my hugo blog</title>
-      <link>https://blog.navyd.xyz/post/2021/08/06/myblog/</link>
-      <pubDate>Fri, 06 Aug 2021 00:36:35 +0800</pubDate>
-      
-      <guid>https://blog.navyd.xyz/post/2021/08/06/myblog/</guid>
-      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34;
- 
-src=&#34;https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg&#34;
-
-alt=&#34;&#34;  /&gt;&lt;/p&gt;
-&lt;p&gt;使用hugo在github搭建静态博客。&lt;/p&gt;</description>
-    </item>
-    
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on navyd的个人博客</title><link>https://blog.navyd.xyz/post/</link><description>Recent content in Posts on navyd的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 27 Aug 2021 18:38:09 +0800</lastBuildDate><atom:link href="https://blog.navyd.xyz/post/index.xml" rel="self" type="application/rss+xml"/><item><title>在hugo中管理markdown文件</title><link>https://blog.navyd.xyz/post/2021/08/27/markdown-management-in-hugo/</link><pubDate>Fri, 27 Aug 2021 18:38:09 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/08/27/markdown-management-in-hugo/</guid><description>使用markdown写作有一个痛点，如何链接本地文件。如图片、本地md文件链接、其它博文相关文件log等，一般在workspace目录中放置</description></item><item><title>Cargo Doc Open Does Not Work in Wsl</title><link>https://blog.navyd.xyz/post/2021/08/26/cargo-doc-open-does-not-work-in-wsl/</link><pubDate>Thu, 26 Aug 2021 16:26:40 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/08/26/cargo-doc-open-does-not-work-in-wsl/</guid><description>在wsl命令行中使用cargo doc --open无法在windows端打开 分析 在wsl命令行中是可以直接执行windows exe文件的，ubun</description></item><item><title>常用软件</title><link>https://blog.navyd.xyz/post/2021/08/26/common-softwares/</link><pubDate>Thu, 26 Aug 2021 12:26:21 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/08/26/common-softwares/</guid><description>&lt;p>&lt;img loading="lazy"
+src="https://blog.navyd.xyz/post/2021/08/26/common-softwares/2021-08-29-15-01-24.png"
+alt="" />&lt;/p></description></item><item><title>Clash透明代理</title><link>https://blog.navyd.xyz/post/2021/08/09/clash-transparent-proxy/</link><pubDate>Mon, 09 Aug 2021 19:31:12 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/08/09/clash-transparent-proxy/</guid><description>&lt;p>&lt;img loading="lazy"
+src="https://github.com/Dreamacro/clash/raw/master/docs/logo.png"
+alt="" />&lt;/p>
+&lt;p>Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。&lt;/p></description></item><item><title>clash代理在Google Play Store下载时失败</title><link>https://blog.navyd.xyz/post/2021/08/09/play-store-failed-to-download-in-clash-proxy/</link><pubDate>Mon, 09 Aug 2021 17:21:47 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/08/09/play-store-failed-to-download-in-clash-proxy/</guid><description>&lt;p>&lt;img loading="lazy"
+src="https://blog.navyd.xyz/post/2021/08/09/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-14-35.png"
+alt="" />&lt;/p>
+&lt;p>clash透明代理使用规则发现GOOGLE PLAY商店下载应用一直处于等待中，全局代理能够正常下载。在我的oneplus3t上是可以正常使用play商店的，但是在redmi k40上只能浏览，无法下载，一直处于pending状态。&lt;/p></description></item><item><title>Merge Two Git Repos</title><link>https://blog.navyd.xyz/post/2021/08/08/merge-two-git-repos/</link><pubDate>Sun, 08 Aug 2021 01:49:33 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/08/08/merge-two-git-repos/</guid><description>问题 从原始博客仓库blog-resources中迁移所有记录到新的hugo博客仓库navyd.github.io新文件夹下content/r</description></item><item><title>git常用操作</title><link>https://blog.navyd.xyz/post/2021/08/06/git%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/</link><pubDate>Fri, 06 Aug 2021 18:25:53 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/08/06/git%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/</guid><description>撤消 删除本地最近的commit How do I undo the most recent local commits in Git? 1 2 3 4 git commit -m &amp;#34;Something terribly misguided&amp;#34; # (0: Your Accident) git reset HEAD~ # (1) delete commit git add . # (3) git commit -c ORIG_HEAD # (4) 如果之前未存在提交的文件</description></item><item><title>github actions in hugo</title><link>https://blog.navyd.xyz/post/2021/08/06/github-actions-in-hugo/</link><pubDate>Fri, 06 Aug 2021 17:30:53 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/08/06/github-actions-in-hugo/</guid><description>问题 使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致git-submodule-in-hugo/你好%2</description></item><item><title>git submodule in hugo</title><link>https://blog.navyd.xyz/post/2021/08/06/git-submodule-in-hugo/</link><pubDate>Fri, 06 Aug 2021 16:39:24 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/08/06/git-submodule-in-hugo/</guid><description>问题 在使用hugo添加主题时git submodule add https://github.com/olOwOlo/hugo-theme-even themes/even。在push到github后，过了一晚，不知道为啥启动hugo时出现错误： 1 2</description></item><item><title>my hugo blog</title><link>https://blog.navyd.xyz/post/2021/08/06/myblog/</link><pubDate>Fri, 06 Aug 2021 00:36:35 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/08/06/myblog/</guid><description>&lt;p>&lt;img loading="lazy"
+src="https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg"
+alt="" />&lt;/p>
+&lt;p>使用hugo在github搭建静态博客。&lt;/p></description></item></channel></rss>
