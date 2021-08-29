@@ -6,12 +6,14 @@ enableRobotsTXT = true
 buildDrafts = false
 buildFuture = false
 buildExpired = false
-# googleAnalytics = "UA-123-45"
+googleAnalytics = "G-JKFZ31HBBS"
 
 ignoreFiles = ['content/res/*']
 languageCode = "zh-cn"
 defaultContentLanguage = "zh"
 hasCJKLanguage = true
+# https://gohugo.io/content-management/summaries/#hugo-defined-automatic-summary-splitting
+summaryLength = 100
 
 pygmentsOptions = "linenos=table"
 pygmentsCodefences = true
