@@ -1,8 +1,12 @@
 ---
-title: "Common Software in Windows"
+title: "常用软件"
 date: 2021-08-26T12:26:21+08:00
 draft: false
 ---
+
+![](2021-08-29-15-01-24.png)
+
+<!--more-->
 
 ## [Snipaste](https://www.snipaste.com)
 
