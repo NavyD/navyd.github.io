@@ -5,7 +5,11 @@ draft: false
 tags: [blog, hugo, markdown]
 ---
 
+![](https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg)
+
 使用hugo在github搭建静态博客。
+
+<!--more-->
 
 ## 选型
 
@@ -375,3 +379,22 @@ ignoreFiles = ['content/res/*']
 参考：
 
 - [Ignore Content and Data Files when Rendering](https://gohugo.io/getting-started/configuration/#ignore-content-and-data-files-when-rendering)
+
+#### 修改首页博文list排序
+
+覆盖主题中提供的list模板如`themes/<your-theme>/layouts/_default/list.html`，放到`layouts/_default/list.html`中，修改其中的关键变量`.Pages`，hugo在这[Lists of Content in Hugo#Order Content](https://gohugo.io/templates/lists/#order-content)提供了多种方式排序，默认为`Weight > Date > LinkTitle > FilePath`
+
+参考：
+
+- [Lists of Content in Hugo#Order Content](https://gohugo.io/templates/lists/#order-content)
+- [Sorting paginated pages by date](https://discourse.gohugo.io/t/sorting-paginated-pages-by-date/14472)
+- [TEMPLATES Pagination List Paginator Pages](https://gohugo.io/templates/pagination/#list-paginator-pages)
+- [VARIABLES AND PARAMS Page Variables The .Pages Variable](https://gohugo.io/variables/page/#pages)
+
+#### Content Summaries
+
+使用`<!--more-->`控制渲染md显示文章简介
+
+参考：
+
+- [CONTENT MANAGEMENT Content Summaries](https://gohugo.io/content-management/summaries/#readout)
