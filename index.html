@@ -12,7 +12,7 @@
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
 <meta name=author content="navyd"><meta name=description content="个人博客"><meta name=keywords content="Hugo,blog,navyd">
-<meta name=generator content="Hugo 0.87.0 with theme even">
+<meta name=generator content="Hugo 0.88.1 with theme even">
 <link rel=canonical href=https://blog.navyd.xyz/>
 <link href=https://blog.navyd.xyz/index.xml rel=alternate type=application/rss+xml title=navyd的个人博客>
 <link href=https://blog.navyd.xyz/index.xml rel=feed type=application/rss+xml title=navyd的个人博客>
@@ -92,7 +92,28 @@
 </header>
 <div class=post-content>
 <div class=post-summary>
-使用markdown写作有一个痛点，如何链接本地文件。如图片、本地md文件链接、其它博文相关文件log等，一般在workspace目录中放置
+<p>使用markdown写作有一个痛点，如何链接本地文件。如图片、本地md文件链接、其它博文相关文件log等，一般在workspace目录中放置一个<code>assets/images</code>目录，md文件会链接到该路径。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>workspaces/
+  - assets/
+    - images/
+    - files/
+  - posts/
+    - myblog.md
+    - test/a.md
+</code></pre></td></tr></table>
+</div>
+</div>
 </div>
 <div class=read-more>
 <a href=/post/2021/08/27/markdown-management-in-hugo/ class=read-more-link>阅读更多</a>
