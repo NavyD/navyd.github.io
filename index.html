@@ -83,6 +83,43 @@
 <section id=posts class=posts>
 <article class=post>
 <header class=post-header>
+<h1 class=post-title><a class=post-link href=/post/2021/09/13/how-to-keep-environment-variables-when-using-sudo/>在sudo时如何保持当前环境变量</a></h1>
+<div class=post-meta>
+<span class=post-time> 2021-09-13 </span>
+<span class=more-meta> 约 553 字 </span>
+<span class=more-meta> 预计阅读 2 分钟 </span>
+</div>
+</header>
+<div class=post-content>
+<div class=post-summary>
+<p>在使用sudo时经常出现环境问题，如命令无法找到</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ sudo poetry<span class=p>;</span>sudo sh -c <span class=s1>&#39;echo $VISUAL&#39;</span>
+sudo: poetry: <span class=nb>command</span> not found
+
+$ which poetry<span class=p>;</span> <span class=nb>echo</span> <span class=nv>$VISUAL</span>
+/home/navyd/.local/bin/poetry
+vim
+</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<div class=read-more>
+<a href=/post/2021/09/13/how-to-keep-environment-variables-when-using-sudo/ class=read-more-link>阅读更多</a>
+</div>
+</div>
+</article>
+<article class=post>
+<header class=post-header>
 <h1 class=post-title><a class=post-link href=/post/2021/09/06/redirect-output-of-running-process/>重定向已启动程序的输出</a></h1>
 <div class=post-meta>
 <span class=post-time> 2021-09-06 </span>
@@ -174,25 +211,6 @@
 </div>
 <div class=read-more>
 <a href=/post/2021/08/26/common-softwares/ class=read-more-link>阅读更多</a>
-</div>
-</div>
-</article>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/2021/08/09/clash-transparent-proxy/>Clash透明代理</a></h1>
-<div class=post-meta>
-<span class=post-time> 2021-08-09 </span>
-<span class=more-meta> 约 2350 字 </span>
-<span class=more-meta> 预计阅读 5 分钟 </span>
-</div>
-</header>
-<div class=post-content>
-<div class=post-summary>
-<p><img loading=lazy src=https://github.com/Dreamacro/clash/raw/master/docs/logo.png alt></p>
-<p>Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。</p>
-</div>
-<div class=read-more>
-<a href=/post/2021/08/09/clash-transparent-proxy/ class=read-more-link>阅读更多</a>
 </div>
 </div>
 </article>
