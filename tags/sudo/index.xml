@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>linux on navyd的个人博客</title><link>https://blog.navyd.xyz/tags/linux/</link><description>Recent content in linux on navyd的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 15 Sep 2021 13:34:37 +0800</lastBuildDate><atom:link href="https://blog.navyd.xyz/tags/linux/index.xml" rel="self" type="application/rss+xml"/><item><title>使用root权限运行cargo test</title><link>https://blog.navyd.xyz/post/2021/09/15/cargo-test-with-root-privilege/</link><pubDate>Wed, 15 Sep 2021 13:34:37 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/09/15/cargo-test-with-root-privilege/</guid><description>&lt;p>在一些系统应用中需要访问root权限的资源，直接运行可能出现权限错误：&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>sudo on navyd的个人博客</title><link>https://blog.navyd.xyz/tags/sudo/</link><description>Recent content in sudo on navyd的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 15 Sep 2021 13:34:37 +0800</lastBuildDate><atom:link href="https://blog.navyd.xyz/tags/sudo/index.xml" rel="self" type="application/rss+xml"/><item><title>使用root权限运行cargo test</title><link>https://blog.navyd.xyz/post/2021/09/15/cargo-test-with-root-privilege/</link><pubDate>Wed, 15 Sep 2021 13:34:37 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/09/15/cargo-test-with-root-privilege/</guid><description>&lt;p>在一些系统应用中需要访问root权限的资源，直接运行可能出现权限错误：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -43,7 +43,4 @@ $ which poetry&lt;span class="p">;&lt;/span> &lt;span class="nb">echo&lt;/span> 
 vim
 &lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div></description></item><item><title>Clash透明代理</title><link>https://blog.navyd.xyz/post/2021/08/09/clash-transparent-proxy/</link><pubDate>Mon, 09 Aug 2021 19:31:12 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/08/09/clash-transparent-proxy/</guid><description>&lt;p>&lt;img loading="lazy"
-src="https://github.com/Dreamacro/clash/raw/master/docs/logo.png"
-alt="" />&lt;/p>
-&lt;p>Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。&lt;/p></description></item></channel></rss>
+&lt;/div></description></item></channel></rss>
