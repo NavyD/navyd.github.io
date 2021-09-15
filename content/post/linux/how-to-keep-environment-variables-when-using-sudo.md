@@ -2,6 +2,7 @@
 title: "在sudo时如何保持当前环境变量"
 date: 2021-09-13T20:53:59+08:00
 draft: false
+tags: [linux, sudo]
 ---
 
 在使用sudo时经常出现环境问题，如命令无法找到
