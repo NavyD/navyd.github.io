@@ -4,8 +4,6 @@ date: 2021-09-06T12:22:01+08:00
 draft: false
 ---
 
-## 问题
-
 在使用[clash](https://github.com/Dreamacro/clash)时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。
 
 如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动
