@@ -73,6 +73,41 @@ ip route add local default dev lo table $TABLE_ID
 * [iptables处理icmp转发](https://lev.shield.asia/index.php/Ops/31.html)
 * [使用 iptables 透明代理 TCP 与 UDP](https://blog.lilydjwg.me/2018/7/16/transparent-proxy-for-tcp-and-udp-with-iptables.213139.html)
 
+注意：
+
+TPROXY 是一个 Linux 内核模块，在 Linux 2.6.28 后进入官方内核。一般正常的发行版都没有裁剪 TPROXY 模块，TPROXY 模块缺失问题主要出现在无线路由固件上（某些精简型发行版也会去掉 TPROXY 模块，比如 Alpine）。使用以下方法可以检测当前内核是否包含 TPROXY 模块。
+
+```bash
+# 查找 TPROXY 模块
+$ find /lib/modules/$(uname -r) -type f -name 'xt_TPROXY.ko*'
+# 正常情况下的输出
+/lib/modules/4.16.8-1-ARCH/kernel/net/netfilter/xt_TPROXY.ko.xz
+```
+
+在WSL2 Ubuntu上没有TPROXY模块：
+
+```bash
+$ find /lib/modules/$(uname -r) -type f -name 'xt_TPROXY.ko*'
+find: ‘/lib/modules/5.10.16.3-microsoft-standard-WSL2’: No such file or directory
+
+$ zgrep TPROXY /proc/config.gz
+# CONFIG_NFT_TPROXY is not set
+# CONFIG_NETFILTER_XT_TARGET_TPROXY is not set
+# CONFIG_NF_TPROXY_IPV4 is not set
+# CONFIG_NF_TPROXY_IPV6 is not set
+$ sudo lsmod
+Module                  Size  Used by
+
+```
+
+参考：
+
+* [View Linux Kernel Config Options [closed]](https://stackoverflow.com/a/14382864/8566831)
+* [记一次在suse上遇到的TPROXY的坑。](https://www.jianshu.com/p/9a1909bcc54f)
+* [linux系统管理（1）之 内核编译选项查看](https://www.cnblogs.com/linengier/p/9956517.html)
+* [Where are the current kernel build options stored?](https://unix.stackexchange.com/a/83327)
+* [Linux 透明代理 tproxy](https://github.com/zfl9/ss-tproxy/wiki/Linux-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86#tproxy)
+
 ### TCP&UDP TPROXY
 
 clash支持tcp tproxy，可以使用tcp tproxy避免在nat中重定向定义多个chain
