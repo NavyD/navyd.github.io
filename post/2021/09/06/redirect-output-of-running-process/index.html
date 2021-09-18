@@ -11,7 +11,7 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="navyd"><meta name=description content="问题 在使用 clash时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。
+<meta name=author content="navyd"><meta name=description content="在使用 clash时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。
 如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动
 "><meta name=keywords content="Hugo,blog,navyd">
 <meta name=generator content="Hugo 0.88.1 with theme even">
@@ -25,8 +25,7 @@
 <link href=/sass/main.min.cb68f97bc9cece255d217346d970e3c62623408634e500c330a62fadabbbe77c.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="重定向已启动程序的输出">
-<meta property="og:description" content="问题
-在使用
+<meta property="og:description" content="在使用
 clash时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。
 如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动">
 <meta property="og:type" content="article">
@@ -34,16 +33,14 @@ clash时要在clash启动后创建对应tun设备iptables与ip route相关操作
 <meta property="article:published_time" content="2021-09-06T12:22:01+08:00">
 <meta property="article:modified_time" content="2021-09-06T12:22:01+08:00">
 <meta itemprop=name content="重定向已启动程序的输出">
-<meta itemprop=description content="问题
-在使用
+<meta itemprop=description content="在使用
 clash时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。
 如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动"><meta itemprop=datePublished content="2021-09-06T12:22:01+08:00">
 <meta itemprop=dateModified content="2021-09-06T12:22:01+08:00">
-<meta itemprop=wordCount content="1810">
+<meta itemprop=wordCount content="1808">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="重定向已启动程序的输出">
-<meta name=twitter:description content="问题
-在使用
+<meta name=twitter:description content="在使用
 clash时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。
 如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
@@ -99,7 +96,7 @@ clash时要在clash启动后创建对应tun设备iptables与ip route相关操作
 <h1 class=post-title>重定向已启动程序的输出</h1>
 <div class=post-meta>
 <span class=post-time> 2021-09-06 </span>
-<span class=more-meta> 约 1810 字 </span>
+<span class=more-meta> 约 1808 字 </span>
 <span class=more-meta> 预计阅读 4 分钟 </span>
 <span id=busuanzi_container_page_pv class=more-meta> <span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读 </span>
 </div>
@@ -111,7 +108,6 @@ clash时要在clash启动后创建对应tun设备iptables与ip route相关操作
 <ul>
 <li>
 <ul>
-<li><a href=#问题>问题</a></li>
 <li><a href=#分析>分析</a>
 <ul>
 <li><a href=#strace>strace</a></li>
@@ -129,7 +125,6 @@ clash时要在clash启动后创建对应tun设备iptables与ip route相关操作
 </div>
 </div>
 <div class=post-content>
-<h2 id=问题>问题</h2>
 <p>在使用
 <a href=https://github.com/Dreamacro/clash>clash</a>时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。</p>
 <p>如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动</p>

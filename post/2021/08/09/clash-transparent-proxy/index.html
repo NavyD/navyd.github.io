@@ -34,7 +34,7 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 <meta itemprop=description content="
 Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。"><meta itemprop=datePublished content="2021-08-09T19:31:12+08:00">
 <meta itemprop=dateModified content="2021-08-09T19:31:12+08:00">
-<meta itemprop=wordCount content="2350">
+<meta itemprop=wordCount content="2685">
 <meta itemprop=keywords content="clash,proxy,linux,tool,docker,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Clash透明代理">
 <meta name=twitter:description content="
@@ -92,8 +92,8 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 <h1 class=post-title>Clash透明代理</h1>
 <div class=post-meta>
 <span class=post-time> 2021-08-09 </span>
-<span class=more-meta> 约 2350 字 </span>
-<span class=more-meta> 预计阅读 5 分钟 </span>
+<span class=more-meta> 约 2685 字 </span>
+<span class=more-meta> 预计阅读 6 分钟 </span>
 <span id=busuanzi_container_page_pv class=more-meta> <span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读 </span>
 </div>
 </header>
@@ -128,11 +128,6 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 </li>
 </ul>
 </nav>
-</div>
-</div>
-<div class=post-outdated>
-<div class=hint>
-<p>【注意】最后更新于 <span class=timeago datetime=2021-08-09T19:31:12 title="August 9, 2021">August 9, 2021</span>，文中内容可能已过时，请谨慎使用。</p>
 </div>
 </div>
 <div class=post-content>
@@ -243,6 +238,64 @@ ip route add <span class=nb>local</span> default dev lo table <span class=nv>$TA
 <a href=https://lev.shield.asia/index.php/Ops/31.html>iptables处理icmp转发</a></li>
 <li>
 <a href=https://blog.lilydjwg.me/2018/7/16/transparent-proxy-for-tcp-and-udp-with-iptables.213139.html>使用 iptables 透明代理 TCP 与 UDP</a></li>
+</ul>
+<p>注意：</p>
+<p>TPROXY 是一个 Linux 内核模块，在 Linux 2.6.28 后进入官方内核。一般正常的发行版都没有裁剪 TPROXY 模块，TPROXY 模块缺失问题主要出现在无线路由固件上（某些精简型发行版也会去掉 TPROXY 模块，比如 Alpine）。使用以下方法可以检测当前内核是否包含 TPROXY 模块。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># 查找 TPROXY 模块</span>
+$ find /lib/modules/<span class=k>$(</span>uname -r<span class=k>)</span> -type f -name <span class=s1>&#39;xt_TPROXY.ko*&#39;</span>
+<span class=c1># 正常情况下的输出</span>
+/lib/modules/4.16.8-1-ARCH/kernel/net/netfilter/xt_TPROXY.ko.xz
+</code></pre></td></tr></table>
+</div>
+</div><p>在WSL2 Ubuntu上没有TPROXY模块：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ find /lib/modules/<span class=k>$(</span>uname -r<span class=k>)</span> -type f -name <span class=s1>&#39;xt_TPROXY.ko*&#39;</span>
+find: ‘/lib/modules/5.10.16.3-microsoft-standard-WSL2’: No such file or directory
+
+$ zgrep TPROXY /proc/config.gz
+<span class=c1># CONFIG_NFT_TPROXY is not set</span>
+<span class=c1># CONFIG_NETFILTER_XT_TARGET_TPROXY is not set</span>
+<span class=c1># CONFIG_NF_TPROXY_IPV4 is not set</span>
+<span class=c1># CONFIG_NF_TPROXY_IPV6 is not set</span>
+$ sudo lsmod
+Module                  Size  Used by
+
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li>
+<a href=https://stackoverflow.com/a/14382864/8566831>View Linux Kernel Config Options [closed]</a></li>
+<li>
+<a href=https://www.jianshu.com/p/9a1909bcc54f>记一次在suse上遇到的TPROXY的坑。</a></li>
+<li>
+<a href=https://www.cnblogs.com/linengier/p/9956517.html>linux系统管理（1）之 内核编译选项查看</a></li>
+<li>
+<a href=https://unix.stackexchange.com/a/83327>Where are the current kernel build options stored?</a></li>
+<li>
+<a href=https://github.com/zfl9/ss-tproxy/wiki/Linux-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86#tproxy>Linux 透明代理 tproxy</a></li>
 </ul>
 <h3 id=tcpudp-tproxy>TCP&UDP TPROXY</h3>
 <p>clash支持tcp tproxy，可以使用tcp tproxy避免在nat中重定向定义多个chain</p>

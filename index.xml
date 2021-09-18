@@ -43,8 +43,7 @@ $ which poetry&lt;span class="p">;&lt;/span> &lt;span class="nb">echo&lt;/span> 
 vim
 &lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div></description></item><item><title>重定向已启动程序的输出</title><link>https://blog.navyd.xyz/post/2021/09/06/redirect-output-of-running-process/</link><pubDate>Mon, 06 Sep 2021 12:22:01 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/09/06/redirect-output-of-running-process/</guid><description>&lt;h2 id="问题">问题&lt;/h2>
-&lt;p>在使用
+&lt;/div></description></item><item><title>重定向已启动程序的输出</title><link>https://blog.navyd.xyz/post/2021/09/06/redirect-output-of-running-process/</link><pubDate>Mon, 06 Sep 2021 12:22:01 +0800</pubDate><guid>https://blog.navyd.xyz/post/2021/09/06/redirect-output-of-running-process/</guid><description>&lt;p>在使用
 &lt;a
 href="https://github.com/Dreamacro/clash"
 >clash&lt;/a>时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。&lt;/p>
