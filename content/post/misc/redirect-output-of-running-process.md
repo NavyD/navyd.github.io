@@ -48,6 +48,8 @@ time="2021-09-13T02:35:41Z" level=info msg="DNS server listening at: 0.0.0.0:535
 
 通常可以在启动程序时重定向如`clash &> temp.log`，有没有一种可能，复制或重定向已启动程序的输出，这样可以不用局限于启动clash，只要clash进程存在就行
 
+***更新：如果要检查clash是否成功启动，可以简单的判断clash的端口是否被使用***
+
 ### strace
 
 过滤strace的输出
