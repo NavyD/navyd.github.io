@@ -35,6 +35,21 @@ antigen theme robbyrussell
 antigen apply
 ```
 
+如果使用ubuntu apt安装`sudo apt install zsh-antigen`可能会出现问题[antigen.zsh:748: command not found: -antigen-env-setup in Ubuntu 18.04 LTS Bionic Beaver #659](https://github.com/zsh-users/antigen/issues/659)，解决方式是不使用ubuntu的包，手动写入
+
+```
+/usr/share/zsh-antigen/antigen.zsh:748: command not found: -antigen-env-setup
+Antigen: Unknown command: use
+Antigen: Unknown command: bundle
+Antigen: Unknown command: bundle
+Antigen: Unknown command: bundle
+Antigen: Unknown command: bundle
+Antigen: Unknown command: bundle
+Antigen: Unknown command: bundle
+Antigen: Unknown command: theme
+Antigen: Unknown command: apply
+```
+
 ## alias
 
 查看当前alias
