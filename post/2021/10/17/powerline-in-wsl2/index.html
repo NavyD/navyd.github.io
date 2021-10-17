@@ -2,7 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>navyd的个人博客</title>
+<title>Powerline in WSL2 - navyd的个人博客</title>
 <meta name=renderer content="webkit">
 <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta http-equiv=cache-control content="no-transform">
@@ -11,11 +11,9 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="navyd"><meta name=description content="个人博客"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=author content="navyd"><meta name=description content="在wsl2中使用zsh主题出现乱码时需要安装powerline字体才能显示，windows terminal使用的Cascadia Code字体"><meta name=keywords content="Hugo,blog,navyd">
 <meta name=generator content="Hugo 0.88.1 with theme even">
-<link rel=canonical href=https://blog.navyd.xyz/>
-<link href=https://blog.navyd.xyz/index.xml rel=alternate type=application/rss+xml title=navyd的个人博客>
-<link href=https://blog.navyd.xyz/index.xml rel=feed type=application/rss+xml title=navyd的个人博客>
+<link rel=canonical href=https://blog.navyd.xyz/post/2021/10/17/powerline-in-wsl2/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
 <link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
@@ -24,14 +22,19 @@
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
 <link href=/sass/main.min.cb68f97bc9cece255d217346d970e3c62623408634e500c330a62fadabbbe77c.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content="navyd的个人博客">
-<meta property="og:description" content="个人博客">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://blog.navyd.xyz/">
-<meta itemprop=name content="navyd的个人博客">
-<meta itemprop=description content="个人博客"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="navyd的个人博客">
-<meta name=twitter:description content="个人博客"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta property="og:title" content="Powerline in WSL2">
+<meta property="og:description" content="在wsl2中使用zsh主题出现乱码时需要安装powerline字体才能显示，windows terminal使用的Cascadia Code字体">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.navyd.xyz/post/2021/10/17/powerline-in-wsl2/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-10-17T16:19:48+08:00">
+<meta property="article:modified_time" content="2021-10-17T16:19:48+08:00">
+<meta itemprop=name content="Powerline in WSL2">
+<meta itemprop=description content="在wsl2中使用zsh主题出现乱码时需要安装powerline字体才能显示，windows terminal使用的Cascadia Code字体"><meta itemprop=datePublished content="2021-10-17T16:19:48+08:00">
+<meta itemprop=dateModified content="2021-10-17T16:19:48+08:00">
+<meta itemprop=wordCount content="303">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Powerline in WSL2">
+<meta name=twitter:description content="在wsl2中使用zsh主题出现乱码时需要安装powerline字体才能显示，windows terminal使用的Cascadia Code字体"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -80,76 +83,58 @@
 <main id=main class=main>
 <div class=content-wrapper>
 <div id=content class=content>
-<section id=posts class=posts>
 <article class=post>
 <header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/2021/09/13/how-to-keep-environment-variables-when-using-sudo/>在sudo时如何保持当前环境变量</a></h1>
+<h1 class=post-title>Powerline in WSL2</h1>
 <div class=post-meta>
-<span class=post-time> 2021-09-13 </span>
-<span class=more-meta> 约 553 字 </span>
-<span class=more-meta> 预计阅读 2 分钟 </span>
+<span class=post-time> 2021-10-17 </span>
+<span class=more-meta> 约 303 字 </span>
+<span class=more-meta> 预计阅读 1 分钟 </span>
+<span id=busuanzi_container_page_pv class=more-meta> <span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读 </span>
 </div>
 </header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#配置使用>配置使用</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
 <div class=post-content>
-<div class=post-summary>
-<p>在使用sudo时经常出现环境问题，如命令无法找到</p>
+<p>在wsl2中使用zsh主题出现乱码时需要安装powerline字体才能显示，windows terminal使用的Cascadia Code字体也支持powerline版本
+<a href=https://github.com/microsoft/cascadia-code#installation>Cascadia Code</a>，常用的还有
+<a href=https://github.com/powerline/fonts>powerline/fonts</a></p>
+<p>对于Cascadia Code字体下载
+<a href=https://github.com/microsoft/cascadia-code/releases>microsoft/cascadia-code/releases</a>解压安装即可：</p>
+<p><img loading=lazy src=https://blog.navyd.xyz/post/2021/10/17/powerline-in-wsl2/2021-10-17-20-09-02.png alt></p>
+<p>对于powerline字体文件可以使用<code>git clone https://github.com/powerline/fonts.git --depth=1</code>下载后在管理员权限下执行安装
+<a href=https://github.com/powerline/fonts/blob/master/install.ps1>install.ps1</a></p>
+<h2 id=配置使用>配置使用</h2>
+<ul>
+<li>
+<p>vscode：在settings.json中添加</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
 </span></code></pre></td>
 <td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ sudo poetry<span class=p>;</span>sudo sh -c <span class=s1>&#39;echo $VISUAL&#39;</span>
-sudo: poetry: <span class=nb>command</span> not found
-
-$ which poetry<span class=p>;</span> <span class=nb>echo</span> <span class=nv>$VISUAL</span>
-/home/navyd/.local/bin/poetry
-vim
+<pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=p>{</span>
+  <span class=nt>&#34;terminal.integrated.fontFamily&#34;</span><span class=p>:</span> <span class=s2>&#34;Cascadia Mono PL&#34;</span>
+<span class=p>}</span>
 </code></pre></td></tr></table>
 </div>
-</div>
-</div>
-<div class=read-more>
-<a href=/post/2021/09/13/how-to-keep-environment-variables-when-using-sudo/ class=read-more-link>阅读更多</a>
-</div>
-</div>
-</article>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/2021/09/06/redirect-output-of-running-process/>重定向已启动程序的输出</a></h1>
-<div class=post-meta>
-<span class=post-time> 2021-09-06 </span>
-<span class=more-meta> 约 1848 字 </span>
-<span class=more-meta> 预计阅读 4 分钟 </span>
-</div>
-</header>
-<div class=post-content>
-<div class=post-summary>
-<p>在使用
-<a href=https://github.com/Dreamacro/clash>clash</a>时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。</p>
-<p>如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动</p>
-</div>
-<div class=read-more>
-<a href=/post/2021/09/06/redirect-output-of-running-process/ class=read-more-link>阅读更多</a>
-</div>
-</div>
-</article>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/2021/08/27/markdown-management-in-hugo/>在hugo中管理markdown文件</a></h1>
-<div class=post-meta>
-<span class=post-time> 2021-08-27 </span>
-<span class=more-meta> 约 2154 字 </span>
-<span class=more-meta> 预计阅读 5 分钟 </span>
-</div>
-</header>
-<div class=post-content>
-<div class=post-summary>
-<p>使用markdown写作有一个痛点，如何链接本地文件。如图片、本地md文件链接、其它博文相关文件log等，一般在workspace目录中放置一个<code>assets/images</code>目录，md文件会链接到该路径。</p>
+</div></li>
+<li>
+<p>windows terminal：在settings.json中添加</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
@@ -161,70 +146,54 @@ vim
 </span><span class=lnt>7
 </span></code></pre></td>
 <td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>workspaces/
-  - assets/
-    - images/
-    - files/
-  - posts/
-    - myblog.md
-    - test/a.md
+<pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=p>{</span>
+	<span class=nt>&#34;profiles&#34;</span><span class=p>:</span> <span class=p>{</span>
+        <span class=nt>&#34;defaults&#34;</span><span class=p>:</span> <span class=p>{</span>
+            <span class=nt>&#34;fontFace&#34;</span><span class=p>:</span> <span class=s2>&#34;Cascadia Code PL&#34;</span>
+        <span class=p>},</span>
+    <span class=p>}</span>
+<span class=p>}</span>
 </code></pre></td></tr></table>
 </div>
+</div></li>
+</ul>
+<p>参考：</p>
+<ul>
+<li>
+<p>
+<a href=https://docs.microsoft.com/en-us/windows/terminal/tutorials/powerline-setup>Tutorial: Set up Powerline in Windows Terminal</a></p>
+</li>
+<li>
+<p>
+<a href=https://code.visualstudio.com/docs/editor/integrated-terminal#_can-i-use-powerline-fonts-in-the-integrated-terminal>Can I use Powerline fonts in the integrated terminal?</a></p>
+</li>
+</ul>
 </div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>文章作者</span>
+<span class=item-content>navyd</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>上次更新</span>
+<span class=item-content>
+2021-10-17
+</span>
+</p>
 </div>
-<div class=read-more>
-<a href=/post/2021/08/27/markdown-management-in-hugo/ class=read-more-link>阅读更多</a>
-</div>
-</div>
-</article>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/2021/08/26/cargo-doc-open-does-not-work-in-wsl/>Cargo Doc Open Does Not Work in Wsl</a></h1>
-<div class=post-meta>
-<span class=post-time> 2021-08-26 </span>
-<span class=more-meta> 约 1074 字 </span>
-<span class=more-meta> 预计阅读 3 分钟 </span>
-</div>
-</header>
-<div class=post-content>
-<div class=post-summary>
-在wsl命令行中使用cargo doc --open无法在windows端打开 分析 在wsl命令行中是可以直接执行windows exe文件的，ubun
-</div>
-<div class=read-more>
-<a href=/post/2021/08/26/cargo-doc-open-does-not-work-in-wsl/ class=read-more-link>阅读更多</a>
-</div>
-</div>
-</article>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/2021/08/26/common-softwares/>常用软件</a></h1>
-<div class=post-meta>
-<span class=post-time> 2021-08-26 </span>
-<span class=more-meta> 约 210 字 </span>
-<span class=more-meta> 预计阅读 1 分钟 </span>
-</div>
-</header>
-<div class=post-content>
-<div class=post-summary>
-<p><img loading=lazy src=https://blog.navyd.xyz/post/2021/08/26/common-softwares/2021-08-29-15-01-24.png alt></p>
-</div>
-<div class=read-more>
-<a href=/post/2021/08/26/common-softwares/ class=read-more-link>阅读更多</a>
-</div>
-</div>
-</article>
-</section>
-<nav class=pagination>
-<a class=prev href=/>
-<i class="iconfont icon-left"></i>
-<span class=prev-text>上一页</span>
-</a>
-<a class=next href=/page/3/>
-<span class=next-text>下一页</span>
+<footer class=post-footer>
+<nav class=post-nav>
+<a class=next href=/post/2021/10/01/auto-run-shell-commands-after-entering-the-directory/>
+<span class="next-text nav-default">进入目录后自动运行shell命令</span>
+<span class="next-text nav-mobile">下一篇</span>
 <i class="iconfont icon-right"></i>
 </a>
 </nav>
+</footer>
+</article>
 </div>
+<script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script>
+<noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript>
 </div>
 </main>
 <footer id=footer class=footer>

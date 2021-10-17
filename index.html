@@ -83,6 +83,24 @@
 <section id=posts class=posts>
 <article class=post>
 <header class=post-header>
+<h1 class=post-title><a class=post-link href=/post/2021/10/17/powerline-in-wsl2/>Powerline in WSL2</a></h1>
+<div class=post-meta>
+<span class=post-time> 2021-10-17 </span>
+<span class=more-meta> 约 303 字 </span>
+<span class=more-meta> 预计阅读 1 分钟 </span>
+</div>
+</header>
+<div class=post-content>
+<div class=post-summary>
+在wsl2中使用zsh主题出现乱码时需要安装powerline字体才能显示，windows terminal使用的Cascadia Code字体
+</div>
+<div class=read-more>
+<a href=/post/2021/10/17/powerline-in-wsl2/ class=read-more-link>阅读更多</a>
+</div>
+</div>
+</article>
+<article class=post>
+<header class=post-header>
 <h1 class=post-title><a class=post-link href=/post/2021/10/01/auto-run-shell-commands-after-entering-the-directory/>进入目录后自动运行shell命令</a></h1>
 <div class=post-meta>
 <span class=post-time> 2021-10-01 </span>
@@ -175,43 +193,6 @@ cargo install管理cargo本地的binary类型文件：bin, example targets 方�
 </div>
 <div class=read-more>
 <a href=/post/2021/09/15/cargo-test-with-root-privilege/ class=read-more-link>阅读更多</a>
-</div>
-</div>
-</article>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title><a class=post-link href=/post/2021/09/13/how-to-keep-environment-variables-when-using-sudo/>在sudo时如何保持当前环境变量</a></h1>
-<div class=post-meta>
-<span class=post-time> 2021-09-13 </span>
-<span class=more-meta> 约 553 字 </span>
-<span class=more-meta> 预计阅读 2 分钟 </span>
-</div>
-</header>
-<div class=post-content>
-<div class=post-summary>
-<p>在使用sudo时经常出现环境问题，如命令无法找到</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ sudo poetry<span class=p>;</span>sudo sh -c <span class=s1>&#39;echo $VISUAL&#39;</span>
-sudo: poetry: <span class=nb>command</span> not found
-
-$ which poetry<span class=p>;</span> <span class=nb>echo</span> <span class=nv>$VISUAL</span>
-/home/navyd/.local/bin/poetry
-vim
-</code></pre></td></tr></table>
-</div>
-</div>
-</div>
-<div class=read-more>
-<a href=/post/2021/09/13/how-to-keep-environment-variables-when-using-sudo/ class=read-more-link>阅读更多</a>
 </div>
 </div>
 </article>
