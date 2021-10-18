@@ -1,73 +1,16 @@
-# failed to run custom build command for openssl-sys
+---
+title: "Failed to Run Custom Build Command for openssl-sys"
+date: 2021-10-17T16:19:48+08:00
+draft: false
+tags: [rust, cargo, ssl]
+---
 
 在编译reqwest一段简单的代码时出现`error: failed to run custom build command for openssl-sys v0.9.58`
 
 ```bash
 $ cargo check
    Compiling libc v0.2.77
-    Checking cfg-if v0.1.10
-   Compiling autocfg v1.0.1
-   Compiling proc-macro2 v1.0.21
-   Compiling unicode-xid v0.2.1
-   Compiling log v0.4.11
-   Compiling syn v1.0.41
-    Checking lazy_static v1.4.0
-   Compiling pkg-config v0.3.18
-   Compiling cc v1.0.60
-    Checking fnv v1.0.7
-   Compiling memchr v2.3.3
-    Checking bytes v0.5.6
-    Checking futures-core v0.3.5
-    Checking slab v0.4.2
-    Checking itoa v0.4.6
-   Compiling pin-project-internal v0.4.23
-    Checking arc-swap v0.4.7
-   Compiling version_check v0.9.2
-   Compiling bitflags v1.2.1
-    Checking pin-project-lite v0.1.7
-    Checking foreign-types-shared v0.1.1
-   Compiling openssl v0.10.30
-    Checking tinyvec v0.3.4
-    Checking matches v0.1.8
-   Compiling httparse v1.3.4
-    Checking hashbrown v0.9.0
-   Compiling serde v1.0.116
-    Checking futures-task v0.3.5
-   Compiling native-tls v0.2.4
-    Checking futures-sink v0.3.5
-    Checking pin-utils v0.1.0
-    Checking try-lock v0.2.3
-   Compiling ryu v1.0.5
-    Checking openssl-probe v0.1.2
-   Compiling encoding_rs v0.8.24
-   Compiling serde_json v1.0.57
-    Checking httpdate v0.3.2
-    Checking tower-service v0.3.0
-    Checking percent-encoding v2.1.0
-    Checking dtoa v0.4.6
-    Checking mime v0.3.16
-    Checking ipnet v2.3.0
-    Checking base64 v0.12.3
-    Checking tracing-core v0.1.16
-    Checking futures-channel v0.3.5
-    Checking foreign-types v0.3.2
-    Checking http v0.2.1
-    Checking unicode-bidi v0.3.4
-   Compiling indexmap v1.6.0
-    Checking unicode-normalization v0.1.13
-   Compiling unicase v2.6.0
-    Checking tracing v0.1.19
-    Checking want v0.3.0
-   Compiling quote v1.0.7
-   Compiling openssl-sys v0.9.58
-   Compiling mime_guess v2.0.3
-    Checking iovec v0.1.4
-    Checking net2 v0.2.35
-    Checking signal-hook-registry v1.2.1
-    Checking num_cpus v1.13.0
-    Checking socket2 v0.3.15
-    Checking idna v0.2.0
-    Checking mio v0.6.22
+# ...
     Checking url v2.1.1
 error: failed to run custom build command for `openssl-sys v0.9.58`
 
@@ -162,11 +105,9 @@ reqwest = { version = "0.10", features = ["json"] }
 tokio = { version = "0.2", features = ["full"] }
 ```
 
-## 解法
+## 解决方案
 
-```bash
-sudo apt install pkg-config
-```
+在[Crate openssl automatic](https://docs.rs/openssl/0.10.36/openssl/#automatic)中提到，在ubuntu中可以`sudo apt-get install pkg-config libssl-dev`安装依赖
 
 参考：
 
