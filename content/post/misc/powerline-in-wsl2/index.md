@@ -2,6 +2,7 @@
 title: "Powerline in WSL2"
 date: 2021-10-17T16:19:48+08:00
 draft: false
+tags: [shell, powerline, vscode, terminal, wsl]
 ---
 
 在wsl2中使用zsh主题出现乱码时需要安装powerline字体才能显示，windows terminal使用的Cascadia Code字体也支持powerline版本[Cascadia Code](https://github.com/microsoft/cascadia-code#installation)，常用的还有[powerline/fonts](https://github.com/powerline/fonts)
