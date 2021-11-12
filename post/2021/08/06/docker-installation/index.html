@@ -1,0 +1,351 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>docker installation - navyd的个人博客</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="navyd"><meta name=description content="在 Install Docker Engine on Ubuntu提供了安装教程，同时提供一个直接运行的脚本 Install using the convenience script 1 2 curl -fsSL https://get.docker.com -o get-docker.sh sudo sh get-docker.sh Manage Docker as a non-root user 在安装完成后不能使用非root用户"><meta name=keywords content="Hugo,blog,navyd">
+<meta name=generator content="Hugo 0.89.2 with theme even">
+<link rel=canonical href=https://blog.navyd.xyz/post/2021/08/06/docker-installation/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.cb68f97bc9cece255d217346d970e3c62623408634e500c330a62fadabbbe77c.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="docker installation">
+<meta property="og:description" content="在 Install Docker Engine on Ubuntu提供了安装教程，同时提供一个直接运行的脚本 Install using the convenience script 1 2 curl -fsSL https://get.docker.com -o get-docker.sh sudo sh get-docker.sh Manage Docker as a non-root user 在安装完成后不能使用非root用户">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.navyd.xyz/post/2021/08/06/docker-installation/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-08-06T17:30:53+08:00">
+<meta property="article:modified_time" content="2021-08-06T17:30:53+08:00">
+<meta itemprop=name content="docker installation">
+<meta itemprop=description content="在 Install Docker Engine on Ubuntu提供了安装教程，同时提供一个直接运行的脚本 Install using the convenience script 1 2 curl -fsSL https://get.docker.com -o get-docker.sh sudo sh get-docker.sh Manage Docker as a non-root user 在安装完成后不能使用非root用户"><meta itemprop=datePublished content="2021-08-06T17:30:53+08:00">
+<meta itemprop=dateModified content="2021-08-06T17:30:53+08:00">
+<meta itemprop=wordCount content="748">
+<meta itemprop=keywords content="docker,wsl2,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="docker installation">
+<meta name=twitter:description content="在 Install Docker Engine on Ubuntu提供了安装教程，同时提供一个直接运行的脚本 Install using the convenience script 1 2 curl -fsSL https://get.docker.com -o get-docker.sh sudo sh get-docker.sh Manage Docker as a non-root user 在安装完成后不能使用非root用户"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>主页</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>归档</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>标签</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>分类</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>navyd的个人博客</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>主页</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>归档</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>标签</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>分类</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>docker installation</h1>
+<div class=post-meta>
+<span class=post-time> 2021-08-06 </span>
+<span class=more-meta> 约 748 字 </span>
+<span class=more-meta> 预计阅读 2 分钟 </span>
+<span id=busuanzi_container_page_pv class=more-meta> <span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#manage-docker-as-a-non-root-user>Manage Docker as a non-root user</a>
+<ul>
+<li><a href=#rootless-mode>Rootless mode</a></li>
+</ul>
+</li>
+<li><a href=#配置wsl2-docker自启动>配置wsl2 docker自启动</a></li>
+<li><a href=#docker更换国内镜像>docker更换国内镜像</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-outdated>
+<div class=hint>
+<p>【注意】最后更新于 <span class=timeago datetime=2021-08-06T17:30:53 title="August 6, 2021">August 6, 2021</span>，文中内容可能已过时，请谨慎使用。</p>
+</div>
+</div>
+<div class=post-content>
+<p>在
+<a href=https://docs.docker.com/engine/install/ubuntu/>Install Docker Engine on Ubuntu</a>提供了安装教程，同时提供一个直接运行的脚本
+<a href=https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script>Install using the convenience script</a></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=manage-docker-as-a-non-root-user>Manage Docker as a non-root user</h2>
+<p>在安装完成后不能使用非root用户运行，可能遇到下面的问题：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ docker stats
+Got permission denied <span class=k>while</span> trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get <span class=s2>&#34;http://%2Fvar%2Frun%2Fdocker.sock/v1.24/version&#34;</span>: dial unix /var/run/docker.sock: connect: permission denied
+</code></pre></td></tr></table>
+</div>
+</div><p>可以为当前用户添加到docker组中解决</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo groupadd docker
+sudo usermod -aG docker <span class=s2>&#34;</span><span class=nv>$USER</span><span class=s2>&#34;</span>
+<span class=c1>#  Change user&#39;s primary group membership or logout and login again or reboot</span>
+newgrp docker
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=rootless-mode>Rootless mode</h3>
+<p>在
+<a href=https://docs.docker.com/engine/security/rootless/#install>Run the Docker daemon as a non-root user (Rootless mode)</a>中可以不作为root用户运行，在Docker Engine v20.10发布</p>
+<p>在ubuntu上可以直接运行<code>dockerd-rootless-setuptool.sh install</code>或下载运行<code>curl -fsSL https://get.docker.com/rootless | sh</code></p>
+<p>但是在wsl2中存在问题，要使用<code>dockerd-rootless-setuptool.sh install --skip-iptables</code>禁用iptables检查，运行后提示成功：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>
+$ dockerd-rootless-setuptool.sh install --skip-iptables
+<span class=o>[</span>INFO<span class=o>]</span> systemd not detected, dockerd-rootless.sh needs to be started manually:
+
+<span class=nv>PATH</span><span class=o>=</span>/usr/bin:/sbin:/usr/sbin:<span class=nv>$PATH</span> dockerd-rootless.sh  --iptables<span class=o>=</span><span class=nb>false</span>
+
+<span class=o>[</span>INFO<span class=o>]</span> Creating CLI context <span class=s2>&#34;rootless&#34;</span>
+Successfully created context <span class=s2>&#34;rootless&#34;</span>
+
+<span class=o>[</span>INFO<span class=o>]</span> Make sure the following environment variables are <span class=nb>set</span> <span class=o>(</span>or add them to ~/.bashrc<span class=o>)</span>:
+
+<span class=nb>export</span> <span class=nv>PATH</span><span class=o>=</span>/usr/bin:<span class=nv>$PATH</span>
+<span class=nb>export</span> <span class=nv>DOCKER_HOST</span><span class=o>=</span>unix:///mnt/wslg/runtime-dir/docker.sock
+</code></pre></td></tr></table>
+</div>
+</div><p>但是DOCKER_HOST不合理，docker没有被安装在wslg中，运行<code>docker stats</code>失败<code>Rootless mode</code>在wsl中不可用</p>
+<p>参考：</p>
+<ul>
+<li>
+<a href=https://stackoverflow.com/a/48957722/8566831>How to fix docker: Got permission denied issue</a></li>
+<li>
+<a href=https://docs.docker.com/engine/install/linux-postinstall/>Manage Docker as a non-root user</a></li>
+</ul>
+<h2 id=配置wsl2-docker自启动>配置wsl2 docker自启动</h2>
+<p>wsl2没有systemd，不能使用官方教程
+<a href=https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot>Configure Docker to start on boot</a>，只能使用service启动。</p>
+<p>配置sudo在运行service命令时不会请求密码</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>echo &#34;$USER ALL=(ALL:ALL) NOPASSWD: /usr/sbin/service&#34; | sudo tee -a &#34;/etc/sudoers.d/$USER&#34;
+</code></pre></td></tr></table>
+</div>
+</div><p>然后在<code>~/.zshrc</code>中启动docker</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>service docker status &gt; /dev/null <span class=o>||</span> sudo service docker start
+</code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<ul>
+<li>
+<a href=https://blog.csdn.net/weiyi556/article/details/78980139>sudo visudo 退出保存</a></li>
+<li>
+<a href=https://askubuntu.com/a/878705>Execute sudo without Password?</a></li>
+</ul>
+<h2 id=docker更换国内镜像>docker更换国内镜像</h2>
+<p>配置文件启动Docker,修改<code>/etc/docker/daemon.json</code></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=p>{</span>
+    <span class=nt>&#34;registry-mirrors&#34;</span><span class=p>:</span> <span class=p>[</span>
+        <span class=s2>&#34;http://hub-mirror.c.163.com/&#34;</span><span class=p>,</span>
+        <span class=s2>&#34;https://docker.mirrors.ustc.edu.cn/&#34;</span>
+    <span class=p>]</span>
+<span class=p>}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>修改保存后，重启 Docker 以使配置生效。<code>docker info</code>查看</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ sudo service docker restart
+
+$ docker info <span class=p>|</span> grep -i mirror
+ Registry Mirrors:
+  http://hub-mirror.c.163.com/
+  https://docker.mirrors.ustc.edu.cn/
+</code></pre></td></tr></table>
+</div>
+</div>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>文章作者</span>
+<span class=item-content>navyd</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>上次更新</span>
+<span class=item-content>
+2021-08-06
+</span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/docker/>docker</a>
+<a href=/tags/wsl2/>wsl2</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/2021/08/06/git%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">git常用操作</span>
+<span class="prev-text nav-mobile">上一篇</span>
+</a>
+<a class=next href=/post/2021/08/06/github-actions-in-hugo/>
+<span class="next-text nav-default">github actions in hugo</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script>
+<noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://blog.navyd.xyz/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<div class=busuanzi-footer>
+<span id=busuanzi_container_site_pv> 本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次 </span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv> 本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人 </span>
+</div>
+<span class=copyright-year>
+&copy;
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="zh-cn".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-JKFZ31HBBS','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+</body>
+</html>
