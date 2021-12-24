@@ -154,6 +154,10 @@ Warning: Stopping systemd-networkd.service, but it can still be activated by:
   systemd-networkd.socket
 ```
 
+更新：
+
+在主路由关DHCP后可能存在raspi4无法连接网关的情况，可能是路由表的问题，在不同的设备中情况不一样，比如asus中可以配置默认网关，就不需要在raspi4中配置DHCP了。如果无法配置默认网关，只能手动配置代理了
+
 参考：
 
 * [[N1盒子] N1网关模式(旁路由)详细设置指南-搭配主路由华为AX3Pro](https://www.right.com.cn/forum/thread-4035785-1-1.html)
