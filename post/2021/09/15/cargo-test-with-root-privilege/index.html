@@ -14,7 +14,7 @@
 <meta name=author content="navyd"><meta name=description content="在一些系统应用中需要访问root权限的资源，直接运行可能出现权限错误：
 1 2  $ cargo test --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture [2021-09-15T05:39:57Z INFO cmd_lib::child] Fatal: can&amp;#39;t open lock file /run/xtables.lock: Permission denied   rust源码使用 cmd_lib，编译成std::processapi：
 1 2 3  fn run(table: &amp;amp;str,chain: &amp;amp;str)-&amp;gt; Result&amp;lt;()&amp;gt;{run_cmd!(iptables-t&amp;#34;$table&amp;#34;-DOUTPUT-j&amp;#34;$chain&amp;#34;)}  "><meta name=keywords content="Hugo,blog,navyd">
-<meta name=generator content="Hugo 0.91.1 with theme even">
+<meta name=generator content="Hugo 0.92.2 with theme even">
 <link rel=canonical href=https://blog.navyd.xyz/post/2021/09/15/cargo-test-with-root-privilege/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
@@ -350,7 +350,8 @@ sudoe cargo <span class=nb>test</span> --package <span class=nv>$crate</span> --
 </div>
 <span class=copyright-year>
 &copy;
-2021<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
+2021 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
 </span>
 </div>
 </footer>
