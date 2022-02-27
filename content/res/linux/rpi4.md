@@ -280,7 +280,7 @@ docker update --restart=no openwrt
             - 192.168.93.1
     ```
 
-2. 修改country code将`/etc/default/crda`中替换为`REGDOMAIN=CN`
+2. 修改country code将`/etc/default/crda`中替换为`REGDOMAIN=CN`。如果无法确定对应的wifi的code，可使用`sudo iw dev wlan0 scan | grep Country`找出
 
     ```sh
     # 查询REGDOMAIN对应代码
@@ -294,7 +294,7 @@ docker update --restart=no openwrt
     sudo netplan try
     # 如果出现这种错误可以忽略
     # An error occurred: Command '['systemctl', 'stop', 'systemd-networkd.service', # 'netplan-wpa-*.service']' returned non-zero exit status 1.
-    # 
+    #
     # Reverting.
     # Warning: Stopping systemd-networkd.service, but it can still be activated by:
     #   systemd-networkd.socket
