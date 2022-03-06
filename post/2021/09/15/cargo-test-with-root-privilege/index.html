@@ -2,8 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>使用root权限运行cargo test - navyd的个人博客</title>
-<meta name=renderer content="webkit">
+<title>使用root权限运行cargo test - navyd的个人博客</title><meta name=renderer content="webkit">
 <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta http-equiv=cache-control content="no-transform">
 <meta http-equiv=cache-control content="no-siteapp">
@@ -14,7 +13,7 @@
 <meta name=author content="navyd"><meta name=description content="在一些系统应用中需要访问root权限的资源，直接运行可能出现权限错误：
 1 2  $ cargo test --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture [2021-09-15T05:39:57Z INFO cmd_lib::child] Fatal: can&amp;#39;t open lock file /run/xtables.lock: Permission denied   rust源码使用 cmd_lib，编译成std::processapi：
 1 2 3  fn run(table: &amp;amp;str,chain: &amp;amp;str)-&amp;gt; Result&amp;lt;()&amp;gt;{run_cmd!(iptables-t&amp;#34;$table&amp;#34;-DOUTPUT-j&amp;#34;$chain&amp;#34;)}  "><meta name=keywords content="Hugo,blog,navyd">
-<meta name=generator content="Hugo 0.92.2 with theme even">
+<meta name=generator content="Hugo 0.93.2 with theme even">
 <link rel=canonical href=https://blog.navyd.xyz/post/2021/09/15/cargo-test-with-root-privilege/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
@@ -113,37 +112,26 @@ fn run(table: &str, chain: &str) -> Result<()> {
 
 "><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
-</head>
-<body>
+</head><body>
 <div id=mobile-navbar class=mobile-navbar>
 <div class=mobile-header-logo>
 <a href=/ class=logo>navyd的个人博客</a>
-</div>
-<div class=mobile-navbar-icon>
+</div><div class=mobile-navbar-icon>
 <span></span>
 <span></span>
 <span></span>
-</div>
-</div>
-<nav id=mobile-menu class="mobile-menu slideout-menu">
+</div></div><nav id=mobile-menu class="mobile-menu slideout-menu">
 <ul class=mobile-menu-list>
 <a href=/>
-<li class=mobile-menu-item>主页</li>
-</a><a href=/post/>
-<li class=mobile-menu-item>归档</li>
-</a><a href=/tags/>
-<li class=mobile-menu-item>标签</li>
-</a><a href=/categories/>
-<li class=mobile-menu-item>分类</li>
-</a>
-</ul>
-</nav>
-<div class=container id=mobile-panel>
+<li class=mobile-menu-item>主页</li></a><a href=/post/>
+<li class=mobile-menu-item>归档</li></a><a href=/tags/>
+<li class=mobile-menu-item>标签</li></a><a href=/categories/>
+<li class=mobile-menu-item>分类</li></a>
+</ul></nav><div class=container id=mobile-panel>
 <header id=header class=header>
 <div class=logo-wrapper>
 <a href=/ class=logo>navyd的个人博客</a>
-</div>
-<nav class=site-navbar>
+</div><nav class=site-navbar>
 <ul id=menu class=menu>
 <li class=menu-item>
 <a class=menu-item-link href=/>主页</a>
@@ -153,164 +141,97 @@ fn run(table: &str, chain: &str) -> Result<()> {
 <a class=menu-item-link href=/tags/>标签</a>
 </li><li class=menu-item>
 <a class=menu-item-link href=/categories/>分类</a>
-</li>
-</ul>
-</nav>
-</header>
-<main id=main class=main>
+</li></ul></nav></header><main id=main class=main>
 <div class=content-wrapper>
 <div id=content class=content>
 <article class=post>
 <header class=post-header>
-<h1 class=post-title>使用root权限运行cargo test</h1>
-<div class=post-meta>
+<h1 class=post-title>使用root权限运行cargo test</h1><div class=post-meta>
 <span class=post-time> 2021-09-15 </span>
 <span class=more-meta> 约 1085 字 </span>
 <span class=more-meta> 预计阅读 3 分钟 </span>
 <span id=busuanzi_container_page_pv class=more-meta> <span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读 </span>
-</div>
-</header>
-<div class=post-toc id=post-toc>
-<h2 class=post-toc-title>文章目录</h2>
-<div class="post-toc-content always-active">
+</div></header><div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active">
 <nav id=TableOfContents>
 <ul>
 <li>
 <ul>
-<li><a href=#分析>分析</a></li>
-<li><a href=#解决方案>解决方案</a></li>
-</ul>
-</li>
-</ul>
-</nav>
-</div>
-</div>
-<div class=post-outdated>
+<li><a href=#分析>分析</a></li><li><a href=#解决方案>解决方案</a></li></ul></li></ul></nav></div></div><div class=post-outdated>
 <div class=hint>
-<p>【注意】最后更新于 <span class=timeago datetime=2021-09-15T13:34:37 title="September 15, 2021">September 15, 2021</span>，文中内容可能已过时，请谨慎使用。</p>
-</div>
-</div>
-<div class=post-content>
-<p>在一些系统应用中需要访问root权限的资源，直接运行可能出现权限错误：</p>
-<div class=highlight><div class=chroma>
+<p>【注意】最后更新于 <span class=timeago datetime=2021-09-15T13:34:37 title="September 15, 2021">September 15, 2021</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content>
+<p>在一些系统应用中需要访问root权限的资源，直接运行可能出现权限错误：</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ cargo <span class=nb>test</span> --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
-<span class=o>[</span>2021-09-15T05:39:57Z INFO  cmd_lib::child<span class=o>]</span> Fatal: can<span class=err>&#39;</span>t open lock file /run/xtables.lock: Permission denied
-</code></pre></td></tr></table>
-</div>
-</div><p>rust源码使用
-<a href=https://crates.io/crates/cmd_lib>cmd_lib</a>，编译成<code>std::process</code>api：</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ cargo <span class=nb>test</span> --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
+</span></span><span class=line><span class=cl><span class=o>[</span>2021-09-15T05:39:57Z INFO  cmd_lib::child<span class=o>]</span> Fatal: can<span class=err>&#39;</span>t open lock file /run/xtables.lock: Permission denied
+</span></span></code></pre></td></tr></table></div></div><p>rust源码使用
+<a href=https://crates.io/crates/cmd_lib>cmd_lib</a>，编译成<code>std::process</code>api：</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=k>fn</span> <span class=nf>run</span><span class=p>(</span><span class=n>table</span>: <span class=kp>&amp;</span><span class=kt>str</span><span class=p>,</span><span class=w> </span><span class=n>chain</span>: <span class=kp>&amp;</span><span class=kt>str</span><span class=p>)</span><span class=w> </span>-&gt; <span class=nb>Result</span><span class=o>&lt;</span><span class=p>()</span><span class=o>&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
-</span><span class=w>    </span><span class=n>run_cmd</span><span class=o>!</span><span class=w> </span><span class=p>(</span><span class=n>iptables</span><span class=w> </span><span class=o>-</span><span class=n>t</span><span class=w> </span><span class=s>&#34;$table&#34;</span><span class=w> </span><span class=o>-</span><span class=n>D</span><span class=w> </span><span class=n>OUTPUT</span><span class=w> </span><span class=o>-</span><span class=n>j</span><span class=w> </span><span class=s>&#34;$chain&#34;</span><span class=p>)</span><span class=w>
-</span><span class=w></span><span class=p>}</span><span class=w>
-</span></code></pre></td></tr></table>
-</div>
-</div><h2 id=分析>分析</h2>
-<p>直接上sudo提权出现命令无法找到的问题</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=k>fn</span> <span class=nf>run</span><span class=p>(</span><span class=n>table</span>: <span class=kp>&amp;</span><span class=kt>str</span><span class=p>,</span><span class=w> </span><span class=n>chain</span>: <span class=kp>&amp;</span><span class=kt>str</span><span class=p>)</span><span class=w> </span>-&gt; <span class=nb>Result</span><span class=o>&lt;</span><span class=p>()</span><span class=o>&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>run_cmd</span><span class=o>!</span><span class=w> </span><span class=p>(</span><span class=n>iptables</span><span class=w> </span><span class=o>-</span><span class=n>t</span><span class=w> </span><span class=s>&#34;$table&#34;</span><span class=w> </span><span class=o>-</span><span class=n>D</span><span class=w> </span><span class=n>OUTPUT</span><span class=w> </span><span class=o>-</span><span class=n>j</span><span class=w> </span><span class=s>&#34;$chain&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=分析>分析</h2><p>直接上sudo提权出现命令无法找到的问题</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ sudo cargo <span class=nb>test</span> --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
-sudo: cargo: <span class=nb>command</span> not found
-</code></pre></td></tr></table>
-</div>
-</div><p>要解决可以看我之前的文章：
-<a href=https://blog.navyd.xyz/post/2021/09/13/how-to-keep-environment-variables-when-using-sudo/>在sudo时如何保持当前环境变量</a>解决了环境权限问题，正常使用iptables，下面的错误并不是iptables权限的问题 忽略</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ sudo cargo <span class=nb>test</span> --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
+</span></span><span class=line><span class=cl>sudo: cargo: <span class=nb>command</span> not found
+</span></span></code></pre></td></tr></table></div></div><p>要解决可以看我之前的文章：
+<a href=https://blog.navyd.xyz/post/2021/09/13/how-to-keep-environment-variables-when-using-sudo/>在sudo时如何保持当前环境变量</a>解决了环境权限问题，正常使用iptables，下面的错误并不是iptables权限的问题 忽略</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ sudo -E <span class=nv>PATH</span><span class=o>=</span><span class=nv>$PATH</span> env cargo <span class=nb>test</span> --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
-<span class=o>[</span>2021-09-15T05:45:16Z INFO  cmd_lib::child<span class=o>]</span> iptables v1.8.4 <span class=o>(</span>legacy<span class=o>)</span>: Couldn<span class=s1>&#39;t load target `CLASH&#39;</span>:No such file or directory
-</code></pre></td></tr></table>
-</div>
-</div><p>另外，cargo会不会有解决方法呢？</p>
-<p>cargo提供了一个配置参数<code>target.&lt;triple>.runner</code></p>
-<blockquote>
-<p>If a runner is provided, executables for the target &lt;triple> will be executed by invoking the specified runner with the actual executable passed as an argument. This applies to cargo run, cargo test and cargo bench commands. By default, compiled executables are executed directly.</p>
-</blockquote>
-<p>可以在cargo的配置文件中添加sudo命令去运行cargo test，cargo的可配置的文件在这：
-<a href=https://doc.rust-lang.org/cargo/reference/config.html#hierarchical-structure>Hierarchical structure</a>，这里使用<code>your_project/.cargo/config.toml</code>添加配置：</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ sudo -E <span class=nv>PATH</span><span class=o>=</span><span class=nv>$PATH</span> env cargo <span class=nb>test</span> --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
+</span></span><span class=line><span class=cl><span class=o>[</span>2021-09-15T05:45:16Z INFO  cmd_lib::child<span class=o>]</span> iptables v1.8.4 <span class=o>(</span>legacy<span class=o>)</span>: Couldn<span class=s1>&#39;t load target `CLASH&#39;</span>:No such file or directory
+</span></span></code></pre></td></tr></table></div></div><p>另外，cargo会不会有解决方法呢？</p><p>cargo提供了一个配置参数<code>target.&lt;triple>.runner</code></p><blockquote>
+<p>If a runner is provided, executables for the target &lt;triple> will be executed by invoking the specified runner with the actual executable passed as an argument. This applies to cargo run, cargo test and cargo bench commands. By default, compiled executables are executed directly.</p></blockquote><p>可以在cargo的配置文件中添加sudo命令去运行cargo test，cargo的可配置的文件在这：
+<a href=https://doc.rust-lang.org/cargo/reference/config.html#hierarchical-structure>Hierarchical structure</a>，这里使用<code>your_project/.cargo/config.toml</code>添加配置：</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-toml data-lang=toml><span class=p>[</span><span class=nx>target</span><span class=p>.</span><span class=nx>x86_64-unknown-linux-gnu</span> <span class=p>]</span>
-<span class=nx>runner</span> <span class=p>=</span> <span class=s1>&#39;sudo -E&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>注意一下，使用sudo要求在ide命令行输入密码，在clion rust运行时将一直被阻塞<code>instantiating tests</code>，也没有提示输入，可能不支持这种方式。而vscode rust-analyzer是可以正常使用提示输入的</p>
-<p><img loading=lazy src=https://blog.navyd.xyz/post/2021/09/15/cargo-test-with-root-privilege/2021-09-15-14-24-35.png alt="clion rust">
-<img loading=lazy src=https://blog.navyd.xyz/post/2021/09/15/cargo-test-with-root-privilege/2021-09-15-14-28-49.png alt="vscode rust-analyzer"></p>
-<p>如果是shell还可以使用<code>-S</code>选项从stdin中密码<code>sudo -S &lt;&lt;&lt; $YOUR_PASS</code>，使用了环境变量避免了明文密码，但cargo runner无法解析sh语法运行<code>echo PASS | sudo -E</code>。</p>
-<p>退一步，如果要是sudo需要输入密码时直接失败不阻塞<code>-n</code>选项，但配置了<code>sudo -nE</code>了实际在clion rust是一直失败的，可能是在wsl中使用ssh，sudo的认证是关联了session的，无法在clion remote ssh中执行<code>sudo -v</code>刷新认证，在clion自带的终端执行也没用，但这个思路应该是没错的。等待后续方案 </p>
-<p>这里提一下rust所有内置支持target：
-<a href=https://doc.rust-lang.org/nightly/rustc/platform-support.html>Platform Support</a>，可以使用<code>rustc --print target-list</code>查看， <code>rustup target list --installed</code>查看当前安装的target</p>
-<h2 id=解决方案>解决方案</h2>
-<p>这两种方法都是可行的，由于需求的不同选择，如在ide中运行test选择cargo配置较好，不用手动输入命令，但是不是所有test都要root权限的，而且有时会存在sudo环境问题，使用root用户运行可能出错。</p>
-<p>根据最小特权原则，使用sudo单独运行个别测试用例更好</p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-toml data-lang=toml><span class=line><span class=cl><span class=p>[</span><span class=nx>target</span><span class=p>.</span><span class=nx>x86_64-unknown-linux-gnu</span> <span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=nx>runner</span> <span class=p>=</span> <span class=s1>&#39;sudo -E&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><p>注意一下，使用sudo要求在ide命令行输入密码，在clion rust运行时将一直被阻塞<code>instantiating tests</code>，也没有提示输入，可能不支持这种方式。而vscode rust-analyzer是可以正常使用提示输入的</p><p><img loading=lazy src=https://blog.navyd.xyz/post/2021/09/15/cargo-test-with-root-privilege/2021-09-15-14-24-35.png alt="clion rust">
+<img loading=lazy src=https://blog.navyd.xyz/post/2021/09/15/cargo-test-with-root-privilege/2021-09-15-14-28-49.png alt="vscode rust-analyzer"></p><p>如果是shell还可以使用<code>-S</code>选项从stdin中密码<code>sudo -S &lt;&lt;&lt; $YOUR_PASS</code>，使用了环境变量避免了明文密码，但cargo runner无法解析sh语法运行<code>echo PASS | sudo -E</code>。</p><p>退一步，如果要是sudo需要输入密码时直接失败不阻塞<code>-n</code>选项，但配置了<code>sudo -nE</code>了实际在clion rust是一直失败的，可能是在wsl中使用ssh，sudo的认证是关联了session的，无法在clion remote ssh中执行<code>sudo -v</code>刷新认证，在clion自带的终端执行也没用，但这个思路应该是没错的。等待后续方案 </p><p>这里提一下rust所有内置支持target：
+<a href=https://doc.rust-lang.org/nightly/rustc/platform-support.html>Platform Support</a>，可以使用<code>rustc --print target-list</code>查看， <code>rustup target list --installed</code>查看当前安装的target</p><h2 id=解决方案>解决方案</h2><p>这两种方法都是可行的，由于需求的不同选择，如在ide中运行test选择cargo配置较好，不用手动输入命令，但是不是所有test都要root权限的，而且有时会存在sudo环境问题，使用root用户运行可能出错。</p><p>根据最小特权原则，使用sudo单独运行个别测试用例更好</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># alias sudoe=&#39;sudo -E PATH=$PATH env&#39;;</span>
-sudoe cargo <span class=nb>test</span> --package <span class=nv>$crate</span> --lib -- <span class=nv>$module_path</span> --exact --nocapture
-</code></pre></td></tr></table>
-</div>
-</div><p>参考：</p>
-<ul>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># alias sudoe=&#39;sudo -E PATH=$PATH env&#39;;</span>
+</span></span><span class=line><span class=cl>sudoe cargo <span class=nb>test</span> --package <span class=nv>$crate</span> --lib -- <span class=nv>$module_path</span> --exact --nocapture
+</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul>
 <li>
-<a href=https://github.com/nix-rust/nix/issues/963>cargo test with root privilege #963</a></li>
-<li>
-<a href=https://github.com/rust-lang/cargo/issues/5999#issuecomment-419972497>Running tests with elevated privileges #5999</a></li>
-<li>
-<a href="https://doc.rust-lang.org/cargo/reference/config.html?highlight=runner#targettriplerunner">The Cargo Book Configuration target.&lt;triple>.runner</a></li>
-<li>
-<a href=https://doc.rust-lang.org/nightly/rustc/targets/built-in.html>rust Built-in Targets</a></li>
-<li>
-<a href=https://superuser.com/questions/67765/sudo-with-password-in-one-command-line>sudo with password in one command line?</a></li>
-</ul>
-</div>
-<div class=post-copyright>
+<a href=https://github.com/nix-rust/nix/issues/963>cargo test with root privilege #963</a></li><li>
+<a href=https://github.com/rust-lang/cargo/issues/5999#issuecomment-419972497>Running tests with elevated privileges #5999</a></li><li>
+<a href="https://doc.rust-lang.org/cargo/reference/config.html?highlight=runner#targettriplerunner">The Cargo Book Configuration target.&lt;triple>.runner</a></li><li>
+<a href=https://doc.rust-lang.org/nightly/rustc/targets/built-in.html>rust Built-in Targets</a></li><li>
+<a href=https://superuser.com/questions/67765/sudo-with-password-in-one-command-line>sudo with password in one command line?</a></li></ul></div><div class=post-copyright>
 <p class=copyright-item>
 <span class=item-title>文章作者</span>
 <span class=item-content>navyd</span>
-</p>
-<p class=copyright-item>
+</p><p class=copyright-item>
 <span class=item-title>上次更新</span>
 <span class=item-content>
 2021-09-15
 </span>
-</p>
-</div>
-<footer class=post-footer>
+</p></div><footer class=post-footer>
 <div class=post-tags>
 <a href=/tags/linux/>linux</a>
 <a href=/tags/rust/>rust</a>
 <a href=/tags/cargo/>cargo</a>
 <a href=/tags/sudo/>sudo</a>
-</div>
-<nav class=post-nav>
+</div><nav class=post-nav>
 <a class=prev href=/post/2021/09/15/access-to-last-command-in-shell/>
 <i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">在shell中访问上次运行的命令</span>
@@ -321,20 +242,12 @@ sudoe cargo <span class=nb>test</span> --package <span class=nv>$crate</span> --
 <span class="next-text nav-mobile">下一篇</span>
 <i class="iconfont icon-right"></i>
 </a>
-</nav>
-</footer>
-</article>
-</div>
-<script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script>
-<noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript>
-</div>
-</main>
-<footer id=footer class=footer>
+</nav></footer></article></div><script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script>
+<noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript></div></main><footer id=footer class=footer>
 <div class=social-links>
 <a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
 <a href=https://blog.navyd.xyz/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
-</div>
-<div class=copyright>
+</div><div class=copyright>
 <span class=power-by>
 由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
 </span>
@@ -347,26 +260,20 @@ sudoe cargo <span class=nb>test</span> --package <span class=nv>$crate</span> --
 <span id=busuanzi_container_site_pv> 本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次 </span>
 <span class=division>|</span>
 <span id=busuanzi_container_site_uv> 本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人 </span>
-</div>
-<span class=copyright-year>
+</div><span class=copyright-year>
 &copy;
 2021 -
 2022<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
 </span>
-</div>
-</footer>
-<div class=back-to-top id=back-to-top>
+</div></footer><div class=back-to-top id=back-to-top>
 <i class="iconfont icon-up"></i>
-</div>
-</div>
-<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+</div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
-<script>var languageCode="zh-cn".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
-<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-JKFZ31HBBS','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(t,e){return t.replace(e,e.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-JKFZ31HBBS","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script>
 <script async src=https://www.google-analytics.com/analytics.js></script>
-</body>
-</html>
+</body></html>

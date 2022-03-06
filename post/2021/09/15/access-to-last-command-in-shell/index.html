@@ -2,8 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>在shell中访问上次运行的命令 - navyd的个人博客</title>
-<meta name=renderer content="webkit">
+<title>在shell中访问上次运行的命令 - navyd的个人博客</title><meta name=renderer content="webkit">
 <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta http-equiv=cache-control content="no-transform">
 <meta http-equiv=cache-control content="no-siteapp">
@@ -12,7 +11,7 @@
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
 <meta name=author content="navyd"><meta name=description content="如何在shell中使用快捷键运行上次命令 快捷键运行sh脚本命令 在绑定key的时候需要找到对应键位的ascii码，对于特殊的键位可能很难找到，"><meta name=keywords content="Hugo,blog,navyd">
-<meta name=generator content="Hugo 0.92.2 with theme even">
+<meta name=generator content="Hugo 0.93.2 with theme even">
 <link rel=canonical href=https://blog.navyd.xyz/post/2021/09/15/access-to-last-command-in-shell/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
 <link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
@@ -36,37 +35,26 @@
 <meta name=twitter:title content="在shell中访问上次运行的命令">
 <meta name=twitter:description content="如何在shell中使用快捷键运行上次命令 快捷键运行sh脚本命令 在绑定key的时候需要找到对应键位的ascii码，对于特殊的键位可能很难找到，"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
-</head>
-<body>
+</head><body>
 <div id=mobile-navbar class=mobile-navbar>
 <div class=mobile-header-logo>
 <a href=/ class=logo>navyd的个人博客</a>
-</div>
-<div class=mobile-navbar-icon>
+</div><div class=mobile-navbar-icon>
 <span></span>
 <span></span>
 <span></span>
-</div>
-</div>
-<nav id=mobile-menu class="mobile-menu slideout-menu">
+</div></div><nav id=mobile-menu class="mobile-menu slideout-menu">
 <ul class=mobile-menu-list>
 <a href=/>
-<li class=mobile-menu-item>主页</li>
-</a><a href=/post/>
-<li class=mobile-menu-item>归档</li>
-</a><a href=/tags/>
-<li class=mobile-menu-item>标签</li>
-</a><a href=/categories/>
-<li class=mobile-menu-item>分类</li>
-</a>
-</ul>
-</nav>
-<div class=container id=mobile-panel>
+<li class=mobile-menu-item>主页</li></a><a href=/post/>
+<li class=mobile-menu-item>归档</li></a><a href=/tags/>
+<li class=mobile-menu-item>标签</li></a><a href=/categories/>
+<li class=mobile-menu-item>分类</li></a>
+</ul></nav><div class=container id=mobile-panel>
 <header id=header class=header>
 <div class=logo-wrapper>
 <a href=/ class=logo>navyd的个人博客</a>
-</div>
-<nav class=site-navbar>
+</div><nav class=site-navbar>
 <ul id=menu class=menu>
 <li class=menu-item>
 <a class=menu-item-link href=/>主页</a>
@@ -76,49 +64,26 @@
 <a class=menu-item-link href=/tags/>标签</a>
 </li><li class=menu-item>
 <a class=menu-item-link href=/categories/>分类</a>
-</li>
-</ul>
-</nav>
-</header>
-<main id=main class=main>
+</li></ul></nav></header><main id=main class=main>
 <div class=content-wrapper>
 <div id=content class=content>
 <article class=post>
 <header class=post-header>
-<h1 class=post-title>在shell中访问上次运行的命令</h1>
-<div class=post-meta>
+<h1 class=post-title>在shell中访问上次运行的命令</h1><div class=post-meta>
 <span class=post-time> 2021-09-15 </span>
 <span class=more-meta> 约 912 字 </span>
 <span class=more-meta> 预计阅读 2 分钟 </span>
 <span id=busuanzi_container_page_pv class=more-meta> <span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读 </span>
-</div>
-</header>
-<div class=post-toc id=post-toc>
-<h2 class=post-toc-title>文章目录</h2>
-<div class="post-toc-content always-active">
+</div></header><div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active">
 <nav id=TableOfContents>
 <ul>
 <li>
 <ul>
-<li><a href=#快捷键运行sh脚本命令>快捷键运行sh脚本命令</a></li>
-<li><a href=#获取上次命令的参数>获取上次命令的参数</a></li>
-<li><a href=#快捷键运行上次执行的命令>快捷键运行上次执行的命令</a></li>
-</ul>
-</li>
-</ul>
-</nav>
-</div>
-</div>
-<div class=post-outdated>
+<li><a href=#快捷键运行sh脚本命令>快捷键运行sh脚本命令</a></li><li><a href=#获取上次命令的参数>获取上次命令的参数</a></li><li><a href=#快捷键运行上次执行的命令>快捷键运行上次执行的命令</a></li></ul></li></ul></nav></div></div><div class=post-outdated>
 <div class=hint>
-<p>【注意】最后更新于 <span class=timeago datetime=2021-09-15T21:40:47 title="September 15, 2021">September 15, 2021</span>，文中内容可能已过时，请谨慎使用。</p>
-</div>
-</div>
-<div class=post-content>
-<p>如何在shell中使用快捷键运行上次命令</p>
-<h2 id=快捷键运行sh脚本命令>快捷键运行sh脚本命令</h2>
-<p>在绑定key的时候需要找到对应键位的ascii码，对于特殊的键位可能很难找到，linux中提供了<code>showkey -a</code>可以查询ascii码。下面是键入<code>F10, ctrl+d</code>两个快捷键的输出：</p>
-<div class=highlight><div class=chroma>
+<p>【注意】最后更新于 <span class=timeago datetime=2021-09-15T21:40:47 title="September 15, 2021">September 15, 2021</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content>
+<p>如何在shell中使用快捷键运行上次命令</p><h2 id=快捷键运行sh脚本命令>快捷键运行sh脚本命令</h2><p>在绑定key的时候需要找到对应键位的ascii码，对于特殊的键位可能很难找到，linux中提供了<code>showkey -a</code>可以查询ascii码。下面是键入<code>F10, ctrl+d</code>两个快捷键的输出：</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -130,30 +95,22 @@
 </span><span class=lnt> 8
 </span><span class=lnt> 9
 </span><span class=lnt>10
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ showkey -a
-
-Press any keys - Ctrl-D will terminate this program
-
-^<span class=o>[[</span>21~   <span class=m>27</span> <span class=m>0033</span> 0x1b
-         <span class=m>91</span> <span class=m>0133</span> 0x5b
-         <span class=m>50</span> <span class=m>0062</span> 0x32
-         <span class=m>49</span> <span class=m>0061</span> 0x31
-        <span class=m>126</span> <span class=m>0176</span> 0x7e
-^D        <span class=m>4</span> <span class=m>0004</span> 0x04
-</code></pre></td></tr></table>
-</div>
-</div><p>zsh中内置了bindkey使用快捷键，在<code>man zshzle</code>中可以找到。</p>
-<blockquote>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ showkey -a
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Press any keys - Ctrl-D will terminate this program
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>^<span class=o>[[</span>21~   <span class=m>27</span> <span class=m>0033</span> 0x1b
+</span></span><span class=line><span class=cl>         <span class=m>91</span> <span class=m>0133</span> 0x5b
+</span></span><span class=line><span class=cl>         <span class=m>50</span> <span class=m>0062</span> 0x32
+</span></span><span class=line><span class=cl>         <span class=m>49</span> <span class=m>0061</span> 0x31
+</span></span><span class=line><span class=cl>        <span class=m>126</span> <span class=m>0176</span> 0x7e
+</span></span><span class=line><span class=cl>^D        <span class=m>4</span> <span class=m>0004</span> 0x04
+</span></span></code></pre></td></tr></table></div></div><p>zsh中内置了bindkey使用快捷键，在<code>man zshzle</code>中可以找到。</p><blockquote>
 <p>bindkey [ options ] -s in-string out-string
 Bind each in-string to each out-string. When in-string is typed, out-string will be pushed back
-and treated as input to the line editor. When -R is also used, interpret the in-strings as ranges.</p>
-<p>Note that both in-string and out-string are subject to the same form of interpretation, as de‐
-scribed below.</p>
-</blockquote>
-<p>下面是演示绑定命令与脚本文件：</p>
-<div class=highlight><div class=chroma>
+and treated as input to the line editor. When -R is also used, interpret the in-strings as ranges.</p><p>Note that both in-string and out-string are subject to the same form of interpretation, as de‐
+scribed below.</p></blockquote><p>下面是演示绑定命令与脚本文件：</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -165,55 +122,40 @@ scribed below.</p>
 </span><span class=lnt> 8
 </span><span class=lnt> 9
 </span><span class=lnt>10
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># 绑定F10</span>
-$ bindkey -s <span class=s1>&#39;^[[21~&#39;</span> <span class=s1>&#39;echo test\n&#39;</span>
-<span class=c1># 键入F10 自动输入</span>
-$ <span class=nb>echo</span> <span class=nb>test</span>
-<span class=nb>test</span>
-
-<span class=c1># test.sh: echo test</span>
-$ bindkey -s <span class=s1>&#39;^[[21~&#39;</span> <span class=s2>&#34;</span><span class=k>$(</span><span class=nb>pwd</span><span class=k>)</span><span class=s2>/test.sh\n&#34;</span>
-$ /home/navyd/Workspaces/projects/navyd.github.io/test.sh
-<span class=nb>test</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>参考：</p>
-<ul>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 绑定F10</span>
+</span></span><span class=line><span class=cl>$ bindkey -s <span class=s1>&#39;^[[21~&#39;</span> <span class=s1>&#39;echo test\n&#39;</span>
+</span></span><span class=line><span class=cl><span class=c1># 键入F10 自动输入</span>
+</span></span><span class=line><span class=cl>$ <span class=nb>echo</span> <span class=nb>test</span>
+</span></span><span class=line><span class=cl><span class=nb>test</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># test.sh: echo test</span>
+</span></span><span class=line><span class=cl>$ bindkey -s <span class=s1>&#39;^[[21~&#39;</span> <span class=s2>&#34;</span><span class=k>$(</span><span class=nb>pwd</span><span class=k>)</span><span class=s2>/test.sh\n&#34;</span>
+</span></span><span class=line><span class=cl>$ /home/navyd/Workspaces/projects/navyd.github.io/test.sh
+</span></span><span class=line><span class=cl><span class=nb>test</span>
+</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul>
 <li>
-<a href=https://superuser.com/a/248568>Show keys pressed in Linux [closed]</a></li>
-<li>
-<a href=https://jdhao.github.io/2019/06/13/zsh_bind_keys/>Binding Keys in Zsh</a></li>
-<li>
-<a href=https://unix.stackexchange.com/a/226062>How can I use bindkey to run a script?</a></li>
-</ul>
-<h2 id=获取上次命令的参数>获取上次命令的参数</h2>
-<p>在shell使用时可能需要上次命令中的某些参数，避免重复输入如：</p>
-<div class=highlight><div class=chroma>
+<a href=https://superuser.com/a/248568>Show keys pressed in Linux [closed]</a></li><li>
+<a href=https://jdhao.github.io/2019/06/13/zsh_bind_keys/>Binding Keys in Zsh</a></li><li>
+<a href=https://unix.stackexchange.com/a/226062>How can I use bindkey to run a script?</a></li></ul><h2 id=获取上次命令的参数>获取上次命令的参数</h2><p>在shell使用时可能需要上次命令中的某些参数，避免重复输入如：</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>$ ls -al ~/.local
-<span class=c1># 想要的效果：du -sh ~/.local</span>
-$ du -sh !$
-<span class=c1># 输入!$后回车不会执行而是替换成</span>
-$ du -sh ~/.local
-</code></pre></td></tr></table>
-</div>
-</div><p>在shell中<code>!</code>用法可以直接在<code>man bash</code>中搜索<code>\!!</code>如下：</p>
-<blockquote>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ ls -al ~/.local
+</span></span><span class=line><span class=cl><span class=c1># 想要的效果：du -sh ~/.local</span>
+</span></span><span class=line><span class=cl>$ du -sh !$
+</span></span><span class=line><span class=cl><span class=c1># 输入!$后回车不会执行而是替换成</span>
+</span></span><span class=line><span class=cl>$ du -sh ~/.local
+</span></span></code></pre></td></tr></table></div></div><p>在shell中<code>!</code>用法可以直接在<code>man bash</code>中搜索<code>\!!</code>如下：</p><blockquote>
 <p>Word Designators
 Word designators are used to select desired words from the event. A : separates the event specification from the
 word designator. It may be omitted if the word designator begins with a ^, $, *, -, or %. Words are numbered
 from the beginning of the line, with the first word being denoted by 0 (zero). Words are inserted into the cur‐
-rent line separated by single spaces.</p>
-<pre><code>  0 (zero)
+rent line separated by single spaces.</p><pre><code>  0 (zero)
          The zeroth word.  For the shell, this is the command word.
   n      The nth word.
   ^      The first argument.  That is, word 1.
@@ -225,23 +167,12 @@ rent line separated by single spaces.</p>
          just one word in the event; the empty string is returned in that case.
   x*     Abbreviates x-$.
   x-     Abbreviates x-$ like x*, but omits the last word
-</code></pre>
-</blockquote>
-<p>具体的用法后面慢慢探索</p>
-<p>参考：</p>
-<ul>
+</code></pre></blockquote><p>具体的用法后面慢慢探索</p><p>参考：</p><ul>
 <li>
-<a href=https://stackoverflow.com/a/25305091/8566831>Access to last command in Zsh (not previous command line)</a></li>
-<li>
-<a href=https://www.gnu.org/software/bash/manual/html_node/Word-Designators.html#Word-Designators>bash Word Designators</a></li>
-<li>
-<a href=https://unix.stackexchange.com/a/151110>Is there a shortcut for repeat the second proximate command in bash?</a></li>
-<li>
-<a href=https://stackoverflow.com/a/38176552/8566831>Re run previous command with different arguments</a></li>
-</ul>
-<h2 id=快捷键运行上次执行的命令>快捷键运行上次执行的命令</h2>
-<p>读取上次命令可以使用zsh内置<code>fc -ln -1</code>，结合上面的<code>bindkey -s</code>使用，发现无法工作</p>
-<div class=highlight><div class=chroma>
+<a href=https://stackoverflow.com/a/25305091/8566831>Access to last command in Zsh (not previous command line)</a></li><li>
+<a href=https://www.gnu.org/software/bash/manual/html_node/Word-Designators.html#Word-Designators>bash Word Designators</a></li><li>
+<a href=https://unix.stackexchange.com/a/151110>Is there a shortcut for repeat the second proximate command in bash?</a></li><li>
+<a href=https://stackoverflow.com/a/38176552/8566831>Re run previous command with different arguments</a></li></ul><h2 id=快捷键运行上次执行的命令>快捷键运行上次执行的命令</h2><p>读取上次命令可以使用zsh内置<code>fc -ln -1</code>，结合上面的<code>bindkey -s</code>使用，发现无法工作</p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
@@ -252,22 +183,18 @@ rent line separated by single spaces.</p>
 </span><span class=lnt>7
 </span><span class=lnt>8
 </span><span class=lnt>9
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>bindkey -s <span class=s1>&#39;^[[21~&#39;</span> <span class=s1>&#39;fc -ln -1\n\n&#39;</span>
-
-$ <span class=nb>echo</span> <span class=nb>test</span>
-<span class=nb>test</span>
-<span class=c1># 键入F10</span>
-$ <span class=nb>fc</span> -ln -1 <span class=c1>#\n</span>
-<span class=nb>echo</span> <span class=nb>test</span>
-$ <span class=c1>#\n</span>
-$
-</code></pre></td></tr></table>
-</div>
-</div><p>在网上找到答案，可以参考
-<a href=https://zsh.sourceforge.io/Guide/zshguide04.html>zsh zle Chapter 4: The Z-Shell Line Editor</a></p>
-<div class=highlight><div class=chroma>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>bindkey -s <span class=s1>&#39;^[[21~&#39;</span> <span class=s1>&#39;fc -ln -1\n\n&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ <span class=nb>echo</span> <span class=nb>test</span>
+</span></span><span class=line><span class=cl><span class=nb>test</span>
+</span></span><span class=line><span class=cl><span class=c1># 键入F10</span>
+</span></span><span class=line><span class=cl>$ <span class=nb>fc</span> -ln -1 <span class=c1>#\n</span>
+</span></span><span class=line><span class=cl><span class=nb>echo</span> <span class=nb>test</span>
+</span></span><span class=line><span class=cl>$ <span class=c1>#\n</span>
+</span></span><span class=line><span class=cl>$
+</span></span></code></pre></td></tr></table></div></div><p>在网上找到答案，可以参考
+<a href=https://zsh.sourceforge.io/Guide/zshguide04.html>zsh zle Chapter 4: The Z-Shell Line Editor</a></p><div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -282,50 +209,38 @@ $
 </span><span class=lnt>11
 </span><span class=lnt>12
 </span><span class=lnt>13
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=c1># define function that retrieves and runs last command</span>
-<span class=k>function</span> run-again <span class=o>{</span>
-    <span class=c1># get previous history item</span>
-    zle up-history
-    <span class=c1># confirm command</span>
-    zle accept-line
-<span class=o>}</span>
-<span class=c1># define run-again widget from function of the same name</span>
-zle -N run-again
-<span class=c1># bind widget to Ctrl+X in viins mode</span>
-<span class=c1># bindkey -M viins &#39;^E&#39; run-again</span>
-<span class=c1># bind widget to Ctrl+X in vicmd mode</span>
-bindkey <span class=s1>&#39;^[[21~&#39;</span> run-again
-</code></pre></td></tr></table>
-</div>
-</div><p>参考：</p>
-<ul>
+</span></code></pre></td><td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># define function that retrieves and runs last command</span>
+</span></span><span class=line><span class=cl><span class=k>function</span> run-again <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1># get previous history item</span>
+</span></span><span class=line><span class=cl>    zle up-history
+</span></span><span class=line><span class=cl>    <span class=c1># confirm command</span>
+</span></span><span class=line><span class=cl>    zle accept-line
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=c1># define run-again widget from function of the same name</span>
+</span></span><span class=line><span class=cl>zle -N run-again
+</span></span><span class=line><span class=cl><span class=c1># bind widget to Ctrl+X in viins mode</span>
+</span></span><span class=line><span class=cl><span class=c1># bindkey -M viins &#39;^E&#39; run-again</span>
+</span></span><span class=line><span class=cl><span class=c1># bind widget to Ctrl+X in vicmd mode</span>
+</span></span><span class=line><span class=cl>bindkey <span class=s1>&#39;^[[21~&#39;</span> run-again
+</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul>
 <li>
-<a href=https://stackoverflow.com/a/28938270/8566831>In zsh how do I bind a keyboard shortcut to run the last command?</a></li>
-<li>
-<a href=https://askubuntu.com/a/530687>Rerun previous command under sudo</a></li>
-</ul>
-</div>
-<div class=post-copyright>
+<a href=https://stackoverflow.com/a/28938270/8566831>In zsh how do I bind a keyboard shortcut to run the last command?</a></li><li>
+<a href=https://askubuntu.com/a/530687>Rerun previous command under sudo</a></li></ul></div><div class=post-copyright>
 <p class=copyright-item>
 <span class=item-title>文章作者</span>
 <span class=item-content>navyd</span>
-</p>
-<p class=copyright-item>
+</p><p class=copyright-item>
 <span class=item-title>上次更新</span>
 <span class=item-content>
 2021-09-15
 </span>
-</p>
-</div>
-<footer class=post-footer>
+</p></div><footer class=post-footer>
 <div class=post-tags>
 <a href=/tags/linux/>linux</a>
 <a href=/tags/shell/>shell</a>
 <a href=/tags/zsh/>zsh</a>
-</div>
-<nav class=post-nav>
+</div><nav class=post-nav>
 <a class=prev href=/post/2021/10/01/install-rust-binary-by-cargo/>
 <i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">使用cargo安装rust二进制文件</span>
@@ -336,20 +251,12 @@ bindkey <span class=s1>&#39;^[[21~&#39;</span> run-again
 <span class="next-text nav-mobile">下一篇</span>
 <i class="iconfont icon-right"></i>
 </a>
-</nav>
-</footer>
-</article>
-</div>
-<script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script>
-<noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript>
-</div>
-</main>
-<footer id=footer class=footer>
+</nav></footer></article></div><script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script>
+<noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript></div></main><footer id=footer class=footer>
 <div class=social-links>
 <a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
 <a href=https://blog.navyd.xyz/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
-</div>
-<div class=copyright>
+</div><div class=copyright>
 <span class=power-by>
 由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
 </span>
@@ -362,26 +269,20 @@ bindkey <span class=s1>&#39;^[[21~&#39;</span> run-again
 <span id=busuanzi_container_site_pv> 本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次 </span>
 <span class=division>|</span>
 <span id=busuanzi_container_site_uv> 本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人 </span>
-</div>
-<span class=copyright-year>
+</div><span class=copyright-year>
 &copy;
 2021 -
 2022<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
 </span>
-</div>
-</footer>
-<div class=back-to-top id=back-to-top>
+</div></footer><div class=back-to-top id=back-to-top>
 <i class="iconfont icon-up"></i>
-</div>
-</div>
-<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+</div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
-<script>var languageCode="zh-cn".replace(/-/g,'_').replace(/_(.*)/,function(b,a){return b.replace(a,a.toUpperCase())});timeago().render(document.querySelectorAll('.timeago'),languageCode),timeago.cancel()</script>
-<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-JKFZ31HBBS','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(t,e){return t.replace(e,e.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script>
+<script type=text/javascript src=/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-JKFZ31HBBS","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script>
 <script async src=https://www.google-analytics.com/analytics.js></script>
-</body>
-</html>
+</body></html>
