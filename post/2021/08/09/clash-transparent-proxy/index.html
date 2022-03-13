@@ -1,104 +1,15 @@
-<!doctype html><html lang=zh-cn>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>Clash透明代理 - navyd的个人博客</title><meta name=renderer content="webkit">
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=theme-color content="#f8f5ec">
-<meta name=msapplication-navbutton-color content="#f8f5ec">
-<meta name=apple-mobile-web-app-capable content="yes">
-<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="navyd"><meta name=description content="Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。
-"><meta name=keywords content="Hugo,blog,navyd">
-<meta name=generator content="Hugo 0.93.2 with theme even">
-<link rel=canonical href=https://blog.navyd.xyz/post/2021/08/09/clash-transparent-proxy/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/manifest.json>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.cb68f97bc9cece255d217346d970e3c62623408634e500c330a62fadabbbe77c.css rel=stylesheet>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content="Clash透明代理">
-<meta property="og:description" content="
-Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://blog.navyd.xyz/post/2021/08/09/clash-transparent-proxy/"><meta property="article:section" content="post">
-<meta property="article:published_time" content="2021-08-09T19:31:12+08:00">
-<meta property="article:modified_time" content="2021-08-09T19:31:12+08:00">
-<meta itemprop=name content="Clash透明代理">
-<meta itemprop=description content="
-Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。"><meta itemprop=datePublished content="2021-08-09T19:31:12+08:00">
-<meta itemprop=dateModified content="2021-08-09T19:31:12+08:00">
-<meta itemprop=wordCount content="2684">
-<meta itemprop=keywords content="clash,proxy,linux,tool,docker,"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Clash透明代理">
-<meta name=twitter:description content="
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Clash透明代理 - navyd的个人博客</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="navyd"><meta name=description content="Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。
+"><meta name=keywords content="Hugo,blog,navyd"><meta name=generator content="Hugo 0.94.2 with theme even"><link rel=canonical href=https://blog.navyd.xyz/post/2021/08/09/clash-transparent-proxy/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.cb68f97bc9cece255d217346d970e3c62623408634e500c330a62fadabbbe77c.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Clash透明代理"><meta property="og:description" content="
+Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。"><meta property="og:type" content="article"><meta property="og:url" content="https://blog.navyd.xyz/post/2021/08/09/clash-transparent-proxy/"><meta property="article:section" content="post"><meta property="article:published_time" content="2021-08-09T19:31:12+08:00"><meta property="article:modified_time" content="2021-08-09T19:31:12+08:00"><meta itemprop=name content="Clash透明代理"><meta itemprop=description content="
+Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。"><meta itemprop=datePublished content="2021-08-09T19:31:12+08:00"><meta itemprop=dateModified content="2021-08-09T19:31:12+08:00"><meta itemprop=wordCount content="2684"><meta itemprop=keywords content="clash,proxy,linux,tool,docker,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Clash透明代理"><meta name=twitter:description content="
 Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
-</head><body>
-<div id=mobile-navbar class=mobile-navbar>
-<div class=mobile-header-logo>
-<a href=/ class=logo>navyd的个人博客</a>
-</div><div class=mobile-navbar-icon>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>navyd的个人博客</a></div><div class=mobile-navbar-icon><span></span>
 <span></span>
-<span></span>
-<span></span>
-</div></div><nav id=mobile-menu class="mobile-menu slideout-menu">
-<ul class=mobile-menu-list>
-<a href=/>
-<li class=mobile-menu-item>主页</li></a><a href=/post/>
-<li class=mobile-menu-item>归档</li></a><a href=/tags/>
-<li class=mobile-menu-item>标签</li></a><a href=/categories/>
-<li class=mobile-menu-item>分类</li></a>
-</ul></nav><div class=container id=mobile-panel>
-<header id=header class=header>
-<div class=logo-wrapper>
-<a href=/ class=logo>navyd的个人博客</a>
-</div><nav class=site-navbar>
-<ul id=menu class=menu>
-<li class=menu-item>
-<a class=menu-item-link href=/>主页</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/post/>归档</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/tags/>标签</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/categories/>分类</a>
-</li></ul></nav></header><main id=main class=main>
-<div class=content-wrapper>
-<div id=content class=content>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title>Clash透明代理</h1><div class=post-meta>
-<span class=post-time> 2021-08-09 </span>
-<span class=more-meta> 约 2684 字 </span>
-<span class=more-meta> 预计阅读 6 分钟 </span>
-<span id=busuanzi_container_page_pv class=more-meta> <span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读 </span>
-</div></header><div class=post-toc id=post-toc>
-<h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active">
-<nav id=TableOfContents>
-<ul>
-<li>
-<ul>
-<li><a href=#docker部署>docker部署</a></li><li><a href=#代理方式>代理方式</a>
-<ul>
-<li><a href=#tcp-redir--udp-tproxy>TCP redir + UDP TPROXY</a></li><li><a href=#tcpudp-tproxy>TCP&UDP TPROXY</a></li><li><a href=#tun>TUN</a></li><li><a href=#已知问题>已知问题</a></li></ul></li><li><a href=#linux透明代理原理>Linux透明代理原理</a></li><li><a href=#相关工具>相关工具</a>
-<ul>
-<li><a href=#配置文件>配置文件</a></li><li><a href=#订阅转换subconverter>订阅转换subconverter</a>
-<ul>
-<li><a href=#docker部署-1>docker部署</a></li></ul></li></ul></li></ul></li></ul></nav></div></div><div class=post-outdated>
-<div class=hint>
-<p>【注意】最后更新于 <span class=timeago datetime=2021-08-09T19:31:12 title="August 9, 2021">August 9, 2021</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content>
-<p><img loading=lazy src=https://github.com/Dreamacro/clash/raw/master/docs/logo.png alt></p><p>Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。</p><h2 id=docker部署>docker部署</h2><p>在docker内启动时使用iptables操作，stop时清理iptables。</p><ul>
-<li>
-<a href=https://hub.docker.com/r/navyd/clash>自用docker镜像</a></li><li>
-<a href=https://github.com/NavyD/docker-clash>NavyD/docker-clash</a></li></ul><h2 id=代理方式>代理方式</h2><h3 id=tcp-redir--udp-tproxy>TCP redir + UDP TPROXY</h3><p>redir模式。对转发流量使用tcp redir, udp tproxy方式代理。本机仅代理tcp，支持docker内部代理。支持fakeip但存在icmp无法回应的问题（tcp udp没有问题），tun-fakeip可以提供更好的服务。</p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>navyd的个人博客</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Clash透明代理</h1><div class=post-meta><span class=post-time>2021-08-09</span>
+<span class=more-meta>约 2684 字</span>
+<span class=more-meta>预计阅读 6 分钟</span>
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#docker部署>docker部署</a></li><li><a href=#代理方式>代理方式</a><ul><li><a href=#tcp-redir--udp-tproxy>TCP redir + UDP TPROXY</a></li><li><a href=#tcpudp-tproxy>TCP&UDP TPROXY</a></li><li><a href=#tun>TUN</a></li><li><a href=#已知问题>已知问题</a></li></ul></li><li><a href=#linux透明代理原理>Linux透明代理原理</a></li><li><a href=#相关工具>相关工具</a><ul><li><a href=#配置文件>配置文件</a></li><li><a href=#订阅转换subconverter>订阅转换subconverter</a><ul><li><a href=#docker部署-1>docker部署</a></li></ul></li></ul></li></ul></li></ul></nav></div></div><div class=post-outdated><div class=hint><p>【注意】最后更新于 <span class=timeago datetime=2021-08-09T19:31:12 title="August 9, 2021">August 9, 2021</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content><p><img loading=lazy src=https://github.com/Dreamacro/clash/raw/master/docs/logo.png alt></p><p>Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。</p><h2 id=docker部署>docker部署</h2><p>在docker内启动时使用iptables操作，stop时清理iptables。</p><ul><li><a href=https://hub.docker.com/r/navyd/clash>自用docker镜像</a></li><li><a href=https://github.com/NavyD/docker-clash>NavyD/docker-clash</a></li></ul><h2 id=代理方式>代理方式</h2><h3 id=tcp-redir--udp-tproxy>TCP redir + UDP TPROXY</h3><p>redir模式。对转发流量使用tcp redir, udp tproxy方式代理。本机仅代理tcp，支持docker内部代理。支持fakeip但存在icmp无法回应的问题（tcp udp没有问题），tun-fakeip可以提供更好的服务。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -136,8 +47,7 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 </span><span class=lnt>36
 </span><span class=lnt>37
 </span><span class=lnt>38
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># local </span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># local </span>
 </span></span><span class=line><span class=cl><span class=c1># 接管clash宿主机内部流量</span>
 </span></span><span class=line><span class=cl>iptables -t nat -N CLASH
 </span></span><span class=line><span class=cl>iptables -t nat -F CLASH
@@ -175,26 +85,15 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 </span></span><span class=line><span class=cl><span class=c1># route udp</span>
 </span></span><span class=line><span class=cl>ip rule add fwmark <span class=nv>$MARK_ID</span> table <span class=nv>$TABLE_ID</span>
 </span></span><span class=line><span class=cl>ip route add <span class=nb>local</span> default dev lo table <span class=nv>$TABLE_ID</span>
-</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul>
-<li>
-<a href=https://lancellc.gitbook.io/clash/start-clash/clash-udp-tproxy-support>Clash TProxy Mode</a></li><li>
-<a href=https://github.com/Dreamacro/clash/issues/555#issuecomment-595064646>clash本机做透明代理iptables规则请教</a></li><li>
-<a href=https://github.com/Dreamacro/clash/issues/1047>Fake IP 模式如何直接转发icmp包（无法Ping任何网站）</a></li><li>
-<a href=https://lev.shield.asia/index.php/Ops/31.html>iptables处理icmp转发</a></li><li>
-<a href=https://blog.lilydjwg.me/2018/7/16/transparent-proxy-for-tcp-and-udp-with-iptables.213139.html>使用 iptables 透明代理 TCP 与 UDP</a></li></ul><p>注意：</p><p>TPROXY 是一个 Linux 内核模块，在 Linux 2.6.28 后进入官方内核。一般正常的发行版都没有裁剪 TPROXY 模块，TPROXY 模块缺失问题主要出现在无线路由固件上（某些精简型发行版也会去掉 TPROXY 模块，比如 Alpine）。使用以下方法可以检测当前内核是否包含 TPROXY 模块。</p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul><li><a href=https://lancellc.gitbook.io/clash/start-clash/clash-udp-tproxy-support>Clash TProxy Mode</a></li><li><a href=https://github.com/Dreamacro/clash/issues/555#issuecomment-595064646>clash本机做透明代理iptables规则请教</a></li><li><a href=https://github.com/Dreamacro/clash/issues/1047>Fake IP 模式如何直接转发icmp包（无法Ping任何网站）</a></li><li><a href=https://lev.shield.asia/index.php/Ops/31.html>iptables处理icmp转发</a></li><li><a href=https://blog.lilydjwg.me/2018/7/16/transparent-proxy-for-tcp-and-udp-with-iptables.213139.html>使用 iptables 透明代理 TCP 与 UDP</a></li></ul><p>注意：</p><p>TPROXY 是一个 Linux 内核模块，在 Linux 2.6.28 后进入官方内核。一般正常的发行版都没有裁剪 TPROXY 模块，TPROXY 模块缺失问题主要出现在无线路由固件上（某些精简型发行版也会去掉 TPROXY 模块，比如 Alpine）。使用以下方法可以检测当前内核是否包含 TPROXY 模块。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 查找 TPROXY 模块</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 查找 TPROXY 模块</span>
 </span></span><span class=line><span class=cl>$ find /lib/modules/<span class=k>$(</span>uname -r<span class=k>)</span> -type f -name <span class=s1>&#39;xt_TPROXY.ko*&#39;</span>
 </span></span><span class=line><span class=cl><span class=c1># 正常情况下的输出</span>
 </span></span><span class=line><span class=cl>/lib/modules/4.16.8-1-ARCH/kernel/net/netfilter/xt_TPROXY.ko.xz
-</span></span></code></pre></td></tr></table></div></div><p>在WSL2 Ubuntu上没有TPROXY模块：</p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><p>在WSL2 Ubuntu上没有TPROXY模块：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -204,8 +103,7 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 </span><span class=lnt> 8
 </span><span class=lnt> 9
 </span><span class=lnt>10
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ find /lib/modules/<span class=k>$(</span>uname -r<span class=k>)</span> -type f -name <span class=s1>&#39;xt_TPROXY.ko*&#39;</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ find /lib/modules/<span class=k>$(</span>uname -r<span class=k>)</span> -type f -name <span class=s1>&#39;xt_TPROXY.ko*&#39;</span>
 </span></span><span class=line><span class=cl>find: ‘/lib/modules/5.10.16.3-microsoft-standard-WSL2’: No such file or directory
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>$ zgrep TPROXY /proc/config.gz
@@ -215,22 +113,11 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 </span></span><span class=line><span class=cl><span class=c1># CONFIG_NF_TPROXY_IPV6 is not set</span>
 </span></span><span class=line><span class=cl>$ sudo lsmod
 </span></span><span class=line><span class=cl>Module                  Size  Used by
-</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul>
-<li>
-<a href=https://stackoverflow.com/a/14382864/8566831>View Linux Kernel Config Options [closed]</a></li><li>
-<a href=https://www.jianshu.com/p/9a1909bcc54f>记一次在suse上遇到的TPROXY的坑。</a></li><li>
-<a href=https://www.cnblogs.com/linengier/p/9956517.html>linux系统管理（1）之 内核编译选项查看</a></li><li>
-<a href=https://unix.stackexchange.com/a/83327>Where are the current kernel build options stored?</a></li><li>
-<a href=https://github.com/zfl9/ss-tproxy/wiki/Linux-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86#tproxy>Linux 透明代理 tproxy</a></li></ul><h3 id=tcpudp-tproxy>TCP&UDP TPROXY</h3><p>clash支持tcp tproxy，可以使用tcp tproxy避免在nat中重定向定义多个chain</p><p>在配置文件config.yaml中增加：</p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul><li><a href=https://stackoverflow.com/a/14382864/8566831>View Linux Kernel Config Options [closed]</a></li><li><a href=https://www.jianshu.com/p/9a1909bcc54f>记一次在suse上遇到的TPROXY的坑。</a></li><li><a href=https://www.cnblogs.com/linengier/p/9956517.html>linux系统管理（1）之 内核编译选项查看</a></li><li><a href=https://unix.stackexchange.com/a/83327>Where are the current kernel build options stored?</a></li><li><a href=https://github.com/zfl9/ss-tproxy/wiki/Linux-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86#tproxy>Linux 透明代理 tproxy</a></li></ul><h3 id=tcpudp-tproxy>TCP&UDP TPROXY</h3><p>clash支持tcp tproxy，可以使用tcp tproxy避免在nat中重定向定义多个chain</p><p>在配置文件config.yaml中增加：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c># Transparent proxy server port for Linux (TProxy TCP and TProxy UDP)</span><span class=w>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c># Transparent proxy server port for Linux (TProxy TCP and TProxy UDP)</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>tproxy-port</span><span class=p>:</span><span class=w> </span><span class=m>7893</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><p>本机代理与TCP redir相似，下面是透明代理</p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></span></code></pre></td></tr></table></div></div><p>本机代理与TCP redir相似，下面是透明代理</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -246,8 +133,7 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 </span><span class=lnt>14
 </span><span class=lnt>15
 </span><span class=lnt>16
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># ROUTE RULES</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># ROUTE RULES</span>
 </span></span><span class=line><span class=cl>ip rule add fwmark <span class=nv>$MARK_ID</span> table <span class=nv>$TABLE_ID</span>
 </span></span><span class=line><span class=cl>ip route add <span class=nb>local</span> default dev lo table <span class=nv>$TABLE_ID</span>
 </span></span><span class=line><span class=cl>
@@ -263,13 +149,7 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=c1># REDIRECT</span>
 </span></span><span class=line><span class=cl>iptables -t mangle -A PREROUTING -j clash
-</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul>
-<li>
-<a href=https://github.com/Dreamacro/clash/pull/1049>Add TCP TPROXY support</a></li><li>
-<a href=https://www.wogong.net/blog/2020/11/clash-transparent-proxy>Clash 作为网关的透明代理</a></li><li>
-<a href=https://guide.v2fly.org/app/tproxy.html>v2ray 透明代理(TPROXY)</a></li></ul><h3 id=tun>TUN</h3><p>适用于tun-redir,tun-fakeip，代理本机与外部流量。在iptables mangle中设置mark并过滤内部私有地址、过滤指定运行clash uid的流量防止循环。</p><p><del>本机docker内部网络无法直接被代理，如果不<code>-s 172.16.0.0/12 -j RETURN</code>则docker内部无法ping到外部网络，可能是在mangle表后路由到tun设备后无法被iptables nat中的DOCKER链处理。</del></p><p>使用<code>-i "$TUN_NAME" -j RETURN</code>防止docker内部流量被mark循环到tun接口。具体可行原因未知<code>todo</code> </p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul><li><a href=https://github.com/Dreamacro/clash/pull/1049>Add TCP TPROXY support</a></li><li><a href=https://www.wogong.net/blog/2020/11/clash-transparent-proxy>Clash 作为网关的透明代理</a></li><li><a href=https://guide.v2fly.org/app/tproxy.html>v2ray 透明代理(TPROXY)</a></li></ul><h3 id=tun>TUN</h3><p>适用于tun-redir,tun-fakeip，代理本机与外部流量。在iptables mangle中设置mark并过滤内部私有地址、过滤指定运行clash uid的流量防止循环。</p><p><del>本机docker内部网络无法直接被代理，如果不<code>-s 172.16.0.0/12 -j RETURN</code>则docker内部无法ping到外部网络，可能是在mangle表后路由到tun设备后无法被iptables nat中的DOCKER链处理。</del></p><p>使用<code>-i "$TUN_NAME" -j RETURN</code>防止docker内部流量被mark循环到tun接口。具体可行原因未知<code>todo</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -303,8 +183,7 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 </span><span class=lnt>32
 </span><span class=lnt>33
 </span><span class=lnt>34
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 代理本机与外部流量。在iptables mangle中设置mark并过滤内部私有地址、</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 代理本机与外部流量。在iptables mangle中设置mark并过滤内部私有地址、</span>
 </span></span><span class=line><span class=cl><span class=c1># 过滤指定运行clash uid的流量防止循环。允许本机与docker通过代理</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=c1>## 接管clash宿主机内部流量</span>
@@ -338,50 +217,12 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 </span></span><span class=line><span class=cl><span class=c1># 排除 rp_filter 的故障 反向路由</span>
 </span></span><span class=line><span class=cl>sysctl -w net.ipv4.conf.<span class=s2>&#34;</span><span class=nv>$TUN_NAME</span><span class=s2>&#34;</span>.rp_filter<span class=o>=</span><span class=m>0</span> 2&gt; /dev/null
 </span></span><span class=line><span class=cl>sysctl -w net.ipv4.conf.all.rp_filter<span class=o>=</span><span class=m>0</span> 2&gt; /dev/null
-</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul>
-<li>
-<a href=https://comzyh.gitbook.io/clash/real-ip-tun-example>Real-IP Tun Example</a></li><li>
-<a href=https://lancellc.gitbook.io/clash/start-clash/clash-tun-mode>Clash TUN mode</a></li></ul><h3 id=已知问题>已知问题</h3><ol>
-<li>TPROXY 不能用于 OUTPUT 链，无法用于本机代理。在
+</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul><li><a href=https://comzyh.gitbook.io/clash/real-ip-tun-example>Real-IP Tun Example</a></li><li><a href=https://lancellc.gitbook.io/clash/start-clash/clash-tun-mode>Clash TUN mode</a></li></ul><h3 id=已知问题>已知问题</h3><ol><li>TPROXY 不能用于 OUTPUT 链，无法用于本机代理。在
 <a href=https://guide.v2fly.org/app/tproxy.html#%E9%85%8D%E7%BD%AE%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86%E8%A7%84%E5%88%99>v2ray 配置透明代理规则</a>中可以通过标记重路由的方式代理本机，但是在clash要对clash源码在socket上标记<code>SO_MARK</code>。查看了openclash源码也没有对<code>UDP TPROXY</code>的解决方法，在使用TPROXY时只能代理本机tcp流量。尝试使用<code>--owner-uid</code>的方式过滤clash发出的流量，但是没有用，可能是与OUTPUT重路由到PREROUTING链不同，原理不清</li><li><del>TUN方式在docker使用时bridge网络无法解析dns到外部网络，
-<a href=https://github.com/springzfx/cgproxy/issues/10>容器(docker)桥接(bridge)模式时的代理问题</a>有相关讨论。fakeip直接启动时不设置只是作为dns网关使用时，docker bridge网络可以正常使用。<code>TCP TPROXY</code>的方式可以bridge网络可正常使用</del></li></ol><p>shell实现参考：</p><ul>
-<li>
-<a href=https://github.com/juewuy/ShellClash/blob/master/scripts/start.sh>shellclash start.sh</a></li><li>
-<a href=https://github.com/vernesong/OpenClash/blob/master/luci-app-openclash/root/etc/init.d/openclash>OpenClash openclash</a></li><li>
-<a href=https://github.com/Kr328/clash-premium-installer/blob/master/scripts/setup-tun.sh>clash-premium-installer setup-tun.sh</a></li></ul><p>参考：</p><ul>
-<li>
-<a href=https://stackoverflow.com/a/17538964>How to check if a variable is set in Bash?</a></li><li>
-<a href=https://github.com/Kr328/clash-premium-installer>Clash Premiun Installer</a></li><li>
-<a href=https://segmentfault.com/a/1190000022971054>你的 docker stop，它优雅吗？</a></li><li>
-<a href=https://stackoverflow.com/a/60699262>Unable to trap signals in docker entrypoint script</a></li><li>
-<a href=https://www.cnblogs.com/bakari/p/10449664.html>Linux 网络工具详解之 ip tuntap 和 tunctl 创建 tap/tun 设备</a></li><li>
-<a href=https://github.com/juewuy/ShellClash>ShellClash</a></li><li>
-<a href=https://blog.skk.moe/post/what-happend-to-dns-in-proxy/>浅谈在代理环境中的 DNS 解析行为</a></li><li>
-<a href=https://github.com/springzfx/cgproxy/issues/10>容器(docker)桥接(bridge)模式时的代理问题</a></li><li>
-<a href=https://github.com/springzfx/cgproxy/blob/aaa628a76b2911018fc93b2e3276c177e85e0861/readme.md#known-issues>Transparent Proxy powered by cgroup v2</a></li></ul><p>相关项目：</p><ul>
-<li>
-<a href=https://github.com/Dreamacro/clash>go Dreamacro/clash</a></li><li>
-<a href=https://github.com/comzyh/clash>go tun comzyh/clash</a></li><li>
-<a href=https://github.com/lazytiger/trojan-rs>rust Trojan-rs</a></li></ul><h2 id=linux透明代理原理>Linux透明代理原理</h2><p>参考：</p><ul>
-<li>
-<a href=https://powerdns.org/tproxydoc/tproxy.md.html>Linux transparent proxy support</a></li><li>
-<a href=https://github.com/ahupowerdns/tproxydoc/blob/master/tproxy.md>Linux transparent proxy support github</a></li><li>
-<a href=https://www.codenong.com/js5393fb5e2c87/>透明代理 UDP 为什么要用 TProxy？</a></li><li>
-<a href=https://github.com/lazytiger/trojan-rs/blob/master/PRINCIPLE.md>透明代理的基本原理</a></li><li>
-<a href=https://vvl.me/2018/06/from-ss-redir-to-linux-nat/>从 ss-redir 的实现到 Linux NAT</a></li></ul><h2 id=相关工具>相关工具</h2><h3 id=配置文件>配置文件</h3><ul>
-<li>
-<a href=https://cdn.jsdelivr.net/gh/Hackl0us/SS-Rule-Snippet@master/LAZY_RULES/clash.yaml>fake-ip-filter规则</a></li><li>
-<a href=https://github.com/ACL4SSR/ACL4SSR/tree/master/Clash>ACL4SSR 分流规则</a></li><li>
-<a href=https://github.com/Loyalsoldier/clash-rules>clash-rules Clash Premium Provider可直接使用</a></li></ul><p>相关项目参考：</p><ul>
-<li>
-<a href=https://github.com/Hackl0us/SS-Rule-Snippet>SS-Rule-Snippet</a></li><li>
-<a href=https://github.com/ACL4SSR/ACL4SSR/tree/master>SSR去广告规则/GFWList规则/Clash规则碎片</a></li><li>
-<a href=https://github.com/Loyalsoldier/clash-rules>clash-rules</a></li></ul><p>注意：
+<a href=https://github.com/springzfx/cgproxy/issues/10>容器(docker)桥接(bridge)模式时的代理问题</a>有相关讨论。fakeip直接启动时不设置只是作为dns网关使用时，docker bridge网络可以正常使用。<code>TCP TPROXY</code>的方式可以bridge网络可正常使用</del></li></ol><p>shell实现参考：</p><ul><li><a href=https://github.com/juewuy/ShellClash/blob/master/scripts/start.sh>shellclash start.sh</a></li><li><a href=https://github.com/vernesong/OpenClash/blob/master/luci-app-openclash/root/etc/init.d/openclash>OpenClash openclash</a></li><li><a href=https://github.com/Kr328/clash-premium-installer/blob/master/scripts/setup-tun.sh>clash-premium-installer setup-tun.sh</a></li></ul><p>参考：</p><ul><li><a href=https://stackoverflow.com/a/17538964>How to check if a variable is set in Bash?</a></li><li><a href=https://github.com/Kr328/clash-premium-installer>Clash Premiun Installer</a></li><li><a href=https://segmentfault.com/a/1190000022971054>你的 docker stop，它优雅吗？</a></li><li><a href=https://stackoverflow.com/a/60699262>Unable to trap signals in docker entrypoint script</a></li><li><a href=https://www.cnblogs.com/bakari/p/10449664.html>Linux 网络工具详解之 ip tuntap 和 tunctl 创建 tap/tun 设备</a></li><li><a href=https://github.com/juewuy/ShellClash>ShellClash</a></li><li><a href=https://blog.skk.moe/post/what-happend-to-dns-in-proxy/>浅谈在代理环境中的 DNS 解析行为</a></li><li><a href=https://github.com/springzfx/cgproxy/issues/10>容器(docker)桥接(bridge)模式时的代理问题</a></li><li><a href=https://github.com/springzfx/cgproxy/blob/aaa628a76b2911018fc93b2e3276c177e85e0861/readme.md#known-issues>Transparent Proxy powered by cgroup v2</a></li></ul><p>相关项目：</p><ul><li><a href=https://github.com/Dreamacro/clash>go Dreamacro/clash</a></li><li><a href=https://github.com/comzyh/clash>go tun comzyh/clash</a></li><li><a href=https://github.com/lazytiger/trojan-rs>rust Trojan-rs</a></li></ul><h2 id=linux透明代理原理>Linux透明代理原理</h2><p>参考：</p><ul><li><a href=https://powerdns.org/tproxydoc/tproxy.md.html>Linux transparent proxy support</a></li><li><a href=https://github.com/ahupowerdns/tproxydoc/blob/master/tproxy.md>Linux transparent proxy support github</a></li><li><a href=https://www.codenong.com/js5393fb5e2c87/>透明代理 UDP 为什么要用 TProxy？</a></li><li><a href=https://github.com/lazytiger/trojan-rs/blob/master/PRINCIPLE.md>透明代理的基本原理</a></li><li><a href=https://vvl.me/2018/06/from-ss-redir-to-linux-nat/>从 ss-redir 的实现到 Linux NAT</a></li></ul><h2 id=相关工具>相关工具</h2><h3 id=配置文件>配置文件</h3><ul><li><a href=https://cdn.jsdelivr.net/gh/Hackl0us/SS-Rule-Snippet@master/LAZY_RULES/clash.yaml>fake-ip-filter规则</a></li><li><a href=https://github.com/ACL4SSR/ACL4SSR/tree/master/Clash>ACL4SSR 分流规则</a></li><li><a href=https://github.com/Loyalsoldier/clash-rules>clash-rules Clash Premium Provider可直接使用</a></li></ul><p>相关项目参考：</p><ul><li><a href=https://github.com/Hackl0us/SS-Rule-Snippet>SS-Rule-Snippet</a></li><li><a href=https://github.com/ACL4SSR/ACL4SSR/tree/master>SSR去广告规则/GFWList规则/Clash规则碎片</a></li><li><a href=https://github.com/Loyalsoldier/clash-rules>clash-rules</a></li></ul><p>注意：
 <a href=https://github.com/Loyalsoldier/clash-rules>clash-rules</a>可能存在google play无法下载的问题，解决方法：
 <a href=https://blog.navyd.xyz/post/2021/08/09/play-store-failed-to-download-in-clash-proxy/>Google Play Store Failed to Download in Clash Proxy</a></p><h3 id=订阅转换subconverter>订阅转换subconverter</h3><p>clash提供
-<a href=https://lancellc.gitbook.io/clash/clash-config-file/proxy-provider>Proxy Provider</a>功能，可以方便的分离代理节点为单个url资源，自动更新订阅节点等如：</p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+<a href=https://lancellc.gitbook.io/clash/clash-config-file/proxy-provider>Proxy Provider</a>功能，可以方便的分离代理节点为单个url资源，自动更新订阅节点等如：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -410,8 +251,7 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 </span><span class=lnt>27
 </span><span class=lnt>28
 </span><span class=lnt>29
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c>#port: 8888</span><span class=w>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=c>#port: 8888</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=c>#socks-port: 8889</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=c># ...</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=c># proxy provider start here</span><span class=w>
@@ -441,89 +281,45 @@ Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核�
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=c>#    server: 127.0.0.1</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=c>#    udp: true</span><span class=w>
 </span></span></span></code></pre></td></tr></table></div></div><p>在使用机场提供的clash文件时通常只会使用到其中的proxies，还有过滤节点等需求，clash不支持过滤节点。而
-<a href=https://github.com/tindy2013/subconverter/blob/master/README-cn.md#%E8%AF%B4%E6%98%8E%E7%9B%AE%E5%BD%95>subconverter</a>提供了订阅转换与过滤等必要的功能</p><h4 id=docker部署-1>docker部署</h4><p>使用docker安装</p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>docker run -d --restart<span class=o>=</span>always -p 25500:25500 tindy2013/subconverter:latest
-</span></span></code></pre></td></tr></table></div></div><p>subconverter参数：</p><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+<a href=https://github.com/tindy2013/subconverter/blob/master/README-cn.md#%E8%AF%B4%E6%98%8E%E7%9B%AE%E5%BD%95>subconverter</a>提供了订阅转换与过滤等必要的功能</p><h4 id=docker部署-1>docker部署</h4><p>使用docker安装</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>docker run -d --restart<span class=o>=</span>always -p 25500:25500 tindy2013/subconverter:latest
+</span></span></code></pre></td></tr></table></div></div><p>subconverter参数：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
 </span><span class=lnt>6
 </span><span class=lnt>7
-</span></code></pre></td><td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>target=clash	# 转换结果为 clash 配置
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>target=clash	# 转换结果为 clash 配置
 </span></span><span class=line><span class=cl>url=xxx	# 机场订阅链接
 </span></span><span class=line><span class=cl>include=(TW|台湾|台灣)	# 只匹配台湾节点
 </span></span><span class=line><span class=cl>list=true	# 生成 provider 链接
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl># 将urlencoded 参数拼接起来得到新的订阅链接——只包含台湾节点的 provider 链接
 </span></span><span class=line><span class=cl>https://localhost:25500/sub?target=clash&amp;url=https%3a%2f%2fnfnf.xyz%2flink%2fabcdefg%3fmu%3d4&amp;include=(TW%7c%e5%8f%b0%e6%b9%be%7c%e5%8f%b0%e7%81%a3)&amp;list=true
-</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul>
-<li>
-<a href=https://10101.io/2020/02/12/use-clash-proxy-provider-with-subconverter>Clash proxy-provider 搭配 subconverter 使用小记</a></li></ul></div><div class=post-copyright>
-<p class=copyright-item>
-<span class=item-title>文章作者</span>
-<span class=item-content>navyd</span>
-</p><p class=copyright-item>
-<span class=item-title>上次更新</span>
-<span class=item-content>
-2021-08-09
-</span>
-</p></div><footer class=post-footer>
-<div class=post-tags>
-<a href=/tags/clash/>clash</a>
+</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul><li><a href=https://10101.io/2020/02/12/use-clash-proxy-provider-with-subconverter>Clash proxy-provider 搭配 subconverter 使用小记</a></li></ul></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>navyd</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>2021-08-09</span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/clash/>clash</a>
 <a href=/tags/proxy/>proxy</a>
 <a href=/tags/linux/>linux</a>
 <a href=/tags/tool/>tool</a>
-<a href=/tags/docker/>docker</a>
-</div><nav class=post-nav>
-<a class=prev href=/post/2021/08/26/common-softwares/>
-<i class="iconfont icon-left"></i>
+<a href=/tags/docker/>docker</a></div><nav class=post-nav><a class=prev href=/post/2021/08/26/common-softwares/><i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">常用软件</span>
-<span class="prev-text nav-mobile">上一篇</span>
-</a>
-<a class=next href=/post/2021/08/09/play-store-failed-to-download-in-clash-proxy/>
-<span class="next-text nav-default">clash代理在Google Play Store下载时失败</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/2021/08/09/play-store-failed-to-download-in-clash-proxy/><span class="next-text nav-default">clash代理在Google Play Store下载时失败</span>
 <span class="next-text nav-mobile">下一篇</span>
-<i class="iconfont icon-right"></i>
-</a>
-</nav></footer></article></div><script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script>
-<noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript></div></main><footer id=footer class=footer>
-<div class=social-links>
-<a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
-<a href=https://blog.navyd.xyz/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
-</div><div class=copyright>
-<span class=power-by>
-由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
-</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script><noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://blog.navyd.xyz/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
 <span class=division>|</span>
-<span class=theme-info>
-主题 -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
-</span>
-<div class=busuanzi-footer>
-<span id=busuanzi_container_site_pv> 本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次 </span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
 <span class=division>|</span>
-<span id=busuanzi_container_site_uv> 本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人 </span>
-</div><span class=copyright-year>
-&copy;
+<span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
 2021 -
-2022<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span>
-</span>
-</div></footer><div class=back-to-top id=back-to-top>
-<i class="iconfont icon-up"></i>
-</div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
-<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(t,e){return t.replace(e,e.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script>
-<script type=text/javascript src=/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js></script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-JKFZ31HBBS","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-</body></html>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(t,e){return t.replace(e,e.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-JKFZ31HBBS","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
