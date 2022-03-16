@@ -1,0 +1,193 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>No Main Manifest Attribute in XXX.Jar - navyd的个人博客</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="navyd"><meta name=description content="在使用maven直接构建的jar包无法被java执行：
+1 2  $ java -jar target/hello-maven-0.0.1.jar no main manifest attribute, in target/hello-maven-0.0.1.jar   "><meta name=keywords content="Hugo,blog,navyd"><meta name=generator content="Hugo 0.94.2 with theme even"><link rel=canonical href=https://blog.navyd.xyz/post/2022/03/15/no-main-manifest-attribute-in-jar/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.cb68f97bc9cece255d217346d970e3c62623408634e500c330a62fadabbbe77c.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="No Main Manifest Attribute in XXX.Jar"><meta property="og:description" content="在使用maven直接构建的jar包无法被java执行：
+
+
+1
+2
+
+
+$ java -jar target/hello-maven-0.0.1.jar
+no main manifest attribute, in target/hello-maven-0.0.1.jar
+
+
+"><meta property="og:type" content="article"><meta property="og:url" content="https://blog.navyd.xyz/post/2022/03/15/no-main-manifest-attribute-in-jar/"><meta property="article:section" content="post"><meta property="article:published_time" content="2022-03-15T23:30:06+08:00"><meta property="article:modified_time" content="2022-03-15T23:30:06+08:00"><meta itemprop=name content="No Main Manifest Attribute in XXX.Jar"><meta itemprop=description content="在使用maven直接构建的jar包无法被java执行：
+
+
+1
+2
+
+
+$ java -jar target/hello-maven-0.0.1.jar
+no main manifest attribute, in target/hello-maven-0.0.1.jar
+
+
+"><meta itemprop=datePublished content="2022-03-15T23:30:06+08:00"><meta itemprop=dateModified content="2022-03-15T23:30:06+08:00"><meta itemprop=wordCount content="512"><meta itemprop=keywords content="java,jar,maven,package,"><meta name=twitter:card content="summary"><meta name=twitter:title content="No Main Manifest Attribute in XXX.Jar"><meta name=twitter:description content="在使用maven直接构建的jar包无法被java执行：
+
+
+1
+2
+
+
+$ java -jar target/hello-maven-0.0.1.jar
+no main manifest attribute, in target/hello-maven-0.0.1.jar
+
+
+"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>navyd的个人博客</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>navyd的个人博客</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>No Main Manifest Attribute in XXX.Jar</h1><div class=post-meta><span class=post-time>2022-03-15</span>
+<span class=more-meta>约 512 字</span>
+<span class=more-meta>预计阅读 2 分钟</span>
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#分析>分析</a></li><li><a href=#解决>解决</a></li></ul></li></ul></nav></div></div><div class=post-content><p>在使用maven直接构建的jar包无法被java执行：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>$ java -jar target/hello-maven-0.0.1.jar
+</span></span><span class=line><span class=cl>no main manifest attribute, in target/hello-maven-0.0.1.jar
+</span></span></code></pre></td></tr></table></div></div><p>下面是pom.xml与java文件</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;project</span> <span class=na>xmlns=</span><span class=s>&#34;http://maven.apache.org/POM/4.0.0&#34;</span> <span class=na>xmlns:xsi=</span><span class=s>&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span> <span class=na>xsi:schemaLocation=</span><span class=s>&#34;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;modelVersion&gt;</span>4.0.0<span class=nt>&lt;/modelVersion&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;groupId&gt;</span>xyz.navyd<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;artifactId&gt;</span>hello-maven<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;version&gt;</span>0.0.1<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;name&gt;</span>test<span class=nt>&lt;/name&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;build&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;plugins&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;plugin&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;groupId&gt;</span>org.apache.maven.plugins<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;artifactId&gt;</span>maven-compiler-plugin<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;version&gt;</span>3.10.1<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;configuration&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=nt>&lt;source&gt;</span>11<span class=nt>&lt;/source&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=nt>&lt;target&gt;</span>11<span class=nt>&lt;/target&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;/configuration&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;/plugin&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/plugins&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;/build&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/project&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span> <span class=nn>xyz.navyd.hello_maven</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>public</span> <span class=kd>class</span> <span class=nc>HelloWorld</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kd>static</span> <span class=kt>void</span> <span class=nf>main</span><span class=o>(</span><span class=n>String</span><span class=o>[]</span> <span class=n>args</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>System</span><span class=o>.</span><span class=na>out</span><span class=o>.</span><span class=na>println</span><span class=o>(</span><span class=s>&#34;hello world maven!&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=分析>分析</h2><p>在pom.xml中没有配置打包的plugin，maven默认使用
+<a href=https://maven.apache.org/shared/maven-archiver/index.html>Apache Maven Archiver</a>打包，可以在target中看到maven-archiver的配置</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>$ tree -L <span class=m>2</span> target
+</span></span><span class=line><span class=cl>target
+</span></span><span class=line><span class=cl>├── classes
+</span></span><span class=line><span class=cl>│  └── xyz
+</span></span><span class=line><span class=cl>├── generated-sources
+</span></span><span class=line><span class=cl>│  └── annotations
+</span></span><span class=line><span class=cl>├── generated-test-sources
+</span></span><span class=line><span class=cl>│  └── test-annotations
+</span></span><span class=line><span class=cl>├── maven-archiver
+</span></span><span class=line><span class=cl>│  └── pom.properties
+</span></span><span class=line><span class=cl>├── maven-status
+</span></span><span class=line><span class=cl>│  └── maven-compiler-plugin
+</span></span><span class=line><span class=cl>├── test-classes
+</span></span><span class=line><span class=cl>└── hello-maven-0.0.1.jar
+</span></span></code></pre></td></tr></table></div></div><p>通过Maven Archiver打包的默认Manifest</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Manifest-Version: 1.0
+</span></span><span class=line><span class=cl>Created-By: Apache Maven ${maven.version}
+</span></span><span class=line><span class=cl>Build-Jdk: ${java.version}
+</span></span></code></pre></td></tr></table></div></div><p>jar包文件</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl><span class=c1># 过滤size=0的文件夹</span>
+</span></span><span class=line><span class=cl>$ unzip -l target/hello-maven-0.0.1.jar <span class=p>|</span> grep -vE <span class=s1>&#39;^\s+0&#39;</span>
+</span></span><span class=line><span class=cl>Archive:  target/hello-maven-0.0.1.jar
+</span></span><span class=line><span class=cl>  Length      Date    Time    Name
+</span></span><span class=line><span class=cl>---------  ---------- -----   ----
+</span></span><span class=line><span class=cl>      <span class=m>129</span>  2022-03-15 22:36   META-INF/MANIFEST.MF
+</span></span><span class=line><span class=cl>      <span class=m>584</span>  2022-03-15 22:36   xyz/navyd/hello_maven/HelloWorld.class
+</span></span><span class=line><span class=cl>      <span class=m>836</span>  2022-03-15 22:36   META-INF/maven/xyz.navyd/hello-maven/pom.xml
+</span></span><span class=line><span class=cl>      <span class=m>105</span>  2022-03-15 22:36   META-INF/maven/xyz.navyd/hello-maven/pom.properties
+</span></span><span class=line><span class=cl>---------                     -------
+</span></span><span class=line><span class=cl>     <span class=m>1654</span>                     <span class=m>11</span> files
+</span></span></code></pre></td></tr></table></div></div><p>下面是打包后jar中的MANIFEST.MF文件内容</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Manifest-Version: 1.0
+</span></span><span class=line><span class=cl>Archiver-Version: Plexus Archiver
+</span></span><span class=line><span class=cl>Created-By: Apache Maven 3.8.4
+</span></span><span class=line><span class=cl>Built-By: navyd
+</span></span><span class=line><span class=cl>Build-Jdk: 11.0.14
+</span></span></code></pre></td></tr></table></div></div><p>在
+<a href=https://docs.oracle.com/en/java/javase/17/docs/specs/jar/jar.html#main-attributes>jar规范</a>中提到可运行的jar包必要Main-Class属性，也就是说需要调整打包配置Manifest</p><h2 id=解决>解决</h2><p><a href=https://www.baeldung.com/executable-jar-with-maven>How to Create an Executable JAR with Maven</a></p><p>参考：</p><ul><li><a href=https://docs.oracle.com/en/java/javase/17/docs/specs/jar/jar.html#jar-manifest>JAR Manifest</a></li><li><a href=https://maven.apache.org/plugins/maven-jar-plugin/index.html>Apache Maven JAR Plugin</a></li><li><a href=https://maven.apache.org/shared/maven-archiver/examples/manifest.html>Apache Maven Archiver/Manifest</a></li><li><a href=https://www.baeldung.com/executable-jar-with-maven>How to Create an Executable JAR with Maven</a></li></ul></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>navyd</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>2022-03-15</span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/java/>java</a>
+<a href=/tags/jar/>jar</a>
+<a href=/tags/maven/>maven</a>
+<a href=/tags/package/>package</a></div><nav class=post-nav><a class=next href=/post/2022/03/13/why-there-only-value-passing-in-java/><span class="next-text nav-default">为什么 Java 中只有值传递</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script><noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://blog.navyd.xyz/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
+<span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
+2021 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(t,e){return t.replace(e,e.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-JKFZ31HBBS","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
