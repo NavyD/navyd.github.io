@@ -4,6 +4,9 @@
     href="{{.Destination | safeURL}}"
 {{else if findRE "^/.*" .Destination 1 | len | eq 1 }} {{/* local absolutely path */}}
     {{ errorf "unsupported absolutely link: %s" .Destination }}
+{{else if strings.HasPrefix .Destination "#" }}
+    {{/* parse markdown anchor. all ids are lowercase in hugo */}}
+    href="{{ .Destination | strings.ToLower | safeURL }}"
 {{else if path.Join .Page.File.Dir .Destination | fileExists | not }}
     {{/* Check if the local file exists. The .Destination file path is treated as relative to the current MD file */}}
     {{ errorf "the `%s` link file does not exist in `%s`" .Destination .Page.File.Path }}
