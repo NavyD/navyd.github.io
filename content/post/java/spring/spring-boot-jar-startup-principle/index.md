@@ -1,5 +1,5 @@
 ---
-title: "Spring Boot Jar Startup Principle"
+title: "Spring Boot Jar启动解析"
 date: 2022-03-19T19:28:53+08:00
 draft: false
 tags: [java, spring boot, spring, jar]
@@ -90,13 +90,32 @@ $ java -classpath lab-39-demo-2.2.2.RELEASE.jar cn.iocoder.springboot.lab39.skyw
 
 当然实际还有一个更重要的原因，Java 规定可执行器的 `jar` 包禁止嵌套其它 `jar` 包。但是我们可以看到 `BOOT-INF/lib` 目录下，实际有 Spring Boot 应用依赖的所有 `jar` 包。因此，`spring-boot-loader` 项目自定义实现了 ClassLoader 实现类 [LaunchedURLClassLoader](https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/LaunchedURLClassLoader.java)，支持加载 `BOOT-INF/classes` 目录下的 `.class` 文件，以及 `BOOT-INF/lib` 目录下的 `jar` 包。
 
+## Debug
+
+在看具体实现之前，如何才能直观的 debug 到 Spring Boot Loader 的执行过程呢？下面使用idea与maven配置debug
+
+在典型的Spring boot应用（Spring initializr）的pom.xml中添加spring-boot-loader依赖并打包`mvn package`得到`target/xxx.jar`
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-loader</artifactId>
+</dependency>
+```
+
+然后在Idea的Run/Debug Configurations中配置Jar Application的Path to JAR为打包的`xxx.jar`路径
+
+![](2022-03-20-12-10-28.png)
+
+最后在maven依赖中找到spring-boot-loader jar中的JarLauncher断点debug运行即可
+
 ## JarLauncher实现
 
-[JarLauncher](https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/JarLauncher.java) 类是针对 Spring Boot `jar` 包的启动类，整体类图如下所示：
+[JarLauncher](https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/JarLauncher.java) 类是针对 Spring Boot `jar` 包的启动类，整体类图如下所示：
 
-![](http://www.iocoder.cn/images/Spring-Boot/2019-01-07/11.png)
+![](2022-03-20-12-14-16.png)
 
-> 友情提示：[WarLauncher](https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/WarLauncher.java) 类，是针对 Spring Boot `war` 包的启动类，后续胖友可以自己瞅瞅，差别并不大哈~
+> 友情提示：[WarLauncher](https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/WarLauncher.java) 类，是针对 Spring Boot `war` 包的启动类，后续胖友可以自己瞅瞅，差别并不大哈~
 
 [JarLauncher 的源码](https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/JarLauncher.java#L64)比较简单
 
@@ -117,6 +136,35 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	}
 }
 ```
+
+### createArchive
+
+在 [ExecutableArchiveLauncher#ExecutableArchiveLauncher()](https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/ExecutableArchiveLauncher.java#L51) 的构造方法中调用了父类[Launcher#createArchive()](https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/Launcher.java#L124:26)，代码如下：
+
+```java
+protected final Archive createArchive() throws Exception {
+	ProtectionDomain protectionDomain = getClass().getProtectionDomain();
+	CodeSource codeSource = protectionDomain.getCodeSource();
+	URI location = (codeSource != null) ? codeSource.getLocation().toURI() : null;
+	String path = (location != null) ? location.getSchemeSpecificPart() : null;
+	if (path == null) {
+		throw new IllegalStateException("Unable to determine code source archive");
+	}
+	File root = new File(path);
+	if (!root.exists()) {
+		throw new IllegalStateException(
+				"Unable to determine code source archive from " + root);
+	}
+	return (root.isDirectory() ? new ExplodedArchive(root)
+			: new JarFileArchive(root));
+}
+```
+
+根据根路径**是否为目录**的情况，创建 ExplodedArchive 或 JarFileArchive 对象。那么问题就来了，这里的 `root` 是什么呢？
+
+通过debug发现`root` 路径为 `jar` 包的绝对地址，也就是说创建 JarFileArchive 对象。原因是，Launcher 所在包为 `org` 下，它的根目录当然是 `jar` 包的绝对路径哈！
+
+### Launcher::launch
 
 通过 `#main(String[] args)` 方法，创建 JarLauncher 对象，并调用其 `#launch(String[] args)` 方法进行启动。整体的启动逻辑，其实是由父类 [Launcher#launch(String[] args)](https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/Launcher.java#L51)提供：
 
@@ -204,26 +252,6 @@ protected void postProcessClassPathArchives(List<Archive> archives) throws Excep
 
 友情提示：这里我们会看到一个接口[Archive](https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/archive/Archive.java#L34) 对象，先可以暂时理解成一个一个的**档案**，稍后会清晰认识的~
 
-#### isSearchCandidate
-
-`this::isSearchCandidate` 代码段创建了 EntryFilter 用于过滤 `jar` 包不需要的目录。这里在它的内部，实际调用了其实现类[JarLauncher#isNestedArchive(Archive.Entry entry)](https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/JarLauncher.java#L55)。目的就是过滤获得，`BOOT-INF/classes/` 目录下的类，以及 `BOOT-INF/lib/` 的内嵌 `jar` 包。代码如下：
-
-```java
-static final EntryFilter NESTED_ARCHIVE_ENTRY_FILTER = (entry) -> {
-	if (entry.isDirectory()) {
-		return entry.getName().equals("BOOT-INF/classes/");
-	}
-	return entry.getName().startsWith("BOOT-INF/lib/");
-};
-
-@Override
-protected boolean isNestedArchive(Archive.Entry entry) {
-	return NESTED_ARCHIVE_ENTRY_FILTER.matches(entry);
-}
-```
-
-#### archive.getNestedArchives
-
 ```java
 public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	//。。。
@@ -240,74 +268,34 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 }
 ```
 
-`this.archive.getNestedArchives` 代码段，调用 Archive 的 `#getNestedArchives(EntryFilter filter)` 方法，获得 `archive` 内嵌的 Archive 集合。
+#### archive.getNestedArchives
 
-在 [ExecutableArchiveLauncher#ExecutableArchiveLauncher()](https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/ExecutableArchiveLauncher.java#L51) 的构造方法中调用了父类[Launcher#createArchive()](https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/Launcher.java#L124:26)，代码如下：
-
-```java
-protected final Archive createArchive() throws Exception {
-	ProtectionDomain protectionDomain = getClass().getProtectionDomain();
-	CodeSource codeSource = protectionDomain.getCodeSource();
-	URI location = (codeSource != null) ? codeSource.getLocation().toURI() : null;
-	String path = (location != null) ? location.getSchemeSpecificPart() : null;
-	if (path == null) {
-		throw new IllegalStateException("Unable to determine code source archive");
-	}
-	File root = new File(path);
-	if (!root.exists()) {
-		throw new IllegalStateException(
-				"Unable to determine code source archive from " + root);
-	}
-	return (root.isDirectory() ? new ExplodedArchive(root)
-			: new JarFileArchive(root));
-}
-```
-
-根据根路径**是否为目录**的情况，创建 ExplodedArchive 或 JarFileArchive 对象。那么问题就来了，这里的 `root` 是什么呢？艿艿一波骚操作，终于输出了答案，如下图所示：
-
-![](http://www.iocoder.cn/images/Spring-Boot/2019-01-07/15.png)
-
-`root` 路径为 `jar` 包的绝对地址，也就是说创建 JarFileArchive 对象。原因是，Launcher 所在包为 `org` 下，它的根目录当然是 `jar` 包的绝对路径哈！
-
-现在是不是对 Archive 稍微有点感觉落？继续附加如下代码，打印 JarFileArchive 的 `#getNestedArchives(EntryFilter filter)` 方法的执行结果。
+`this::isSearchCandidate` 代码段创建了 EntryFilter 用于过滤 `jar` 包不需要的目录。这里在它的内部，实际调用了其实现类JarLauncher，目的就是过滤获得，`BOOT-INF/` 目录下的类及 `jar` 包
 
 ```java
-Archive archive = new JarFileArchive(root);
-
-Archive.EntryFilter filter = new Archive.EntryFilter() {
-
-    static final String BOOT_INF_CLASSES = "BOOT-INF/classes/";
-
-    static final String BOOT_INF_LIB = "BOOT-INF/lib/";
-
-    @Override
-    public boolean matches(Archive.Entry entry) {
-        
-        if (entry.isDirectory()) {
-            return entry.getName().equals(BOOT_INF_CLASSES);
-        }
-        
-        return entry.getName().startsWith(BOOT_INF_LIB);
-    }
-
+static final EntryFilter NESTED_ARCHIVE_ENTRY_FILTER = (entry) -> {
+	if (entry.isDirectory()) {
+		return entry.getName().equals("BOOT-INF/classes/");
+	}
+	return entry.getName().startsWith("BOOT-INF/lib/");
 };
 
-for (Archive item : archive.getNestedArchives(filter)) {
-    System.out.println(item.getUrl());
+@Override
+protected boolean isSearchCandidate(Archive.Entry entry) {
+	return entry.getName().startsWith("BOOT-INF/");
 }
 
-// jar:file:/Users/yunai/Java/SpringBoot-Labs/lab-39/lab-39-demo/target/lab-39-demo-2.2.2.RELEASE.jar!/BOOT-INF/classes!/
-// jar:file:/Users/yunai/Java/SpringBoot-Labs/lab-39/lab-39-demo/target/lab-39-demo-2.2.2.RELEASE.jar!/BOOT-INF/lib/spring-boot-starter-web-2.2.2.RELEASE.jar!/
-// jar:file:/Users/yunai/Java/SpringBoot-Labs/lab-39/lab-39-demo/target/lab-39-demo-2.2.2.RELEASE.jar!/BOOT-INF/lib/spring-boot-starter-2.2.2.RELEASE.jar!/
-// jar:file:/Users/yunai/Java/SpringBoot-Labs/lab-39/lab-39-demo/target/lab-39-demo-2.2.2.RELEASE.jar!/BOOT-INF/lib/spring-boot-2.2.2.RELEASE.jar!/
-// ... 省略其他 jar 包
+@Override
+protected boolean isNestedArchive(Archive.Entry entry) {
+	return NESTED_ARCHIVE_ENTRY_FILTER.matches(entry);
+}
 ```
 
-从执行结果可以看出，`BOOT-INF/classes/` 目录被归类为**一个** Archive 对象，而 `BOOT-INF/lib/` 目录下的**每个**内嵌 `jar` 包都对应**一个** Archive 对象。
-
-来来来，回过头来看看 [JarFileArchive#getNestedArchives(EntryFilter filter)](https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/archive/JarFileArchive.java#L110) 方法的源码
+`this.archive.getNestedArchives` 代码段，实际在iterator中通过[JarFileArchive.NestedArchiveIterator#adapt](https://github.com/spring-projects/spring-boot/blob/bce247eafb48c13eadca00f12704e755fc98518b/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/archive/JarFileArchive.java#L272)调用 Archive 的 [JarFileArchive#getNestedArchives(EntryFilter filter)](https://github.com/spring-projects/spring-boot/blob/bce247eafb48c13eadca00f12704e755fc98518b/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/archive/JarFileArchive.java#L110) 方法，获得 `archive` 内嵌的 Archive 集合
 
 ```java
+private static final String UNPACK_MARKER = "UNPACK:";
+
 protected Archive getNestedArchive(Entry entry) throws IOException {
 	JarEntry jarEntry = ((JarFileEntry) entry).getJarEntry();
 	if (jarEntry.getComment().startsWith(UNPACK_MARKER)) {
@@ -323,9 +311,25 @@ protected Archive getNestedArchive(Entry entry) throws IOException {
 }
 ```
 
-什么对应classes与lib？？？？？？？？？？？？
+尝试debug打印 JarFileArchive 的 `#getNestedArchives` 方法的执行结果。
 
-现在是不是明白了噢！良心如我，哈哈哈！
+```java
+// Iterator<Archive> archives = this.archive.getNestedArchives(searchFilter,
+// 		(entry) -> isNestedArchive(entry) && !isEntryIndexed(entry));
+for (Archive item : archives) {
+    System.out.println(item.getUrl());
+}
+
+// jar:file:/Users/yunai/Java/SpringBoot-Labs/lab-39/lab-39-demo/target/lab-39-demo-2.2.2.RELEASE.jar!/BOOT-INF/classes!/
+// jar:file:/Users/yunai/Java/SpringBoot-Labs/lab-39/lab-39-demo/target/lab-39-demo-2.2.2.RELEASE.jar!/BOOT-INF/lib/spring-boot-starter-web-2.2.2.RELEASE.jar!/
+// jar:file:/Users/yunai/Java/SpringBoot-Labs/lab-39/lab-39-demo/target/lab-39-demo-2.2.2.RELEASE.jar!/BOOT-INF/lib/spring-boot-starter-2.2.2.RELEASE.jar!/
+// jar:file:/Users/yunai/Java/SpringBoot-Labs/lab-39/lab-39-demo/target/lab-39-demo-2.2.2.RELEASE.jar!/BOOT-INF/lib/spring-boot-2.2.2.RELEASE.jar!/
+// ... 省略其他 jar 包
+```
+
+从执行结果可以看出，`BOOT-INF/classes/` 目录被归类为**一个** Archive 对象，而 `BOOT-INF/lib/` 目录下的**每个**内嵌 `jar` 包都对应**一个** Archive 对象。
+
+注意，通过debug，一般的spring jar包在`jarEntry.getComment().startsWith(UNPACK_MARKER) == false`，不会执行`getUnpackedNestedArchive`。但在[JarFileArchiveTests#getNestedUnpackedArchive](https://github.com/spring-projects/spring-boot/blob/bce247eafb48c13eadca00f12704e755fc98518b/spring-boot-project/spring-boot-tools/spring-boot-loader/src/test/java/org/springframework/boot/loader/archive/JarFileArchiveTests.java#L108)测试中才能看到jar comment为`UNPACK_MARKER`，几次尝试都找不到如何才能使comment为`UNPACK_MARKER`！！
 
 ### createClassLoader
 
@@ -463,10 +467,10 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 我们主要来看看它是如何从 `jar` 包中加载类的[LaunchedURLClassLoader#loadClass](https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/LaunchedURLClassLoader.java#L120)
 
-![](http://www.iocoder.cn/images/Spring-Boot/2019-01-07/21.png)
+![](2022-03-20-13-26-06.png)
 
 1. 在通过**父类**的 `#getPackage(String name)` 方法获取不到指定类所在的包时，**会通过遍历 `urls` 数组，从 `jar` 包中加载类所在的包**。当找到包时，会调用 `#definePackage(String name, Manifest man, URL url)` 方法，设置包所在的 **Archive** 对应的 `url`。
-1. 调用**父类**的 `#loadClass(String name, boolean resolve)` 方法，加载对应的类。
+2. 调用**父类**的 `#loadClass(String name, boolean resolve)` 方法，加载对应的类。
 
 如此，我们就实现了通过 LaunchedURLClassLoader 加载 `jar` 包中内嵌的类。
 
@@ -474,26 +478,26 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 总体来说，Spring Boot `jar` 启动的原理是非常清晰的，整体如下图所示：
 
-![](http://www.iocoder.cn/images/Spring-Boot/2019-01-07/30.png)
+![](2022-03-20-13-26-31.png)
 
 **红色**部分，解决 `jar` 包中的**类加载**问题：
 
-* 通过 [Archive](https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/archive/Archive.java)，实现 `jar` 包的**遍历**，将 `META-INF/classes` 目录和 `META-INF/lib` 的每一个内嵌的 `jar` 解析成一个 Archive 对象。
-* 通过 [Handler](https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/jar/Handler.java)，处理 `jar:` 协议的 URL 的资源**读取**，也就是读取了每个 Archive 里的内容。
-* 通过 [LaunchedURLClassLoader](https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/LaunchedURLClassLoader.java)，实现 `META-INF/classes` 目录下的类和 `META-INF/classes` 目录下内嵌的 `jar` 包中的类的加载。具体的 URL 来源，是通过 Archive 提供；具体 URL 的读取，是通过 Handler 提供。
+* 通过 [Archive](https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/archive/Archive.java)，实现 `jar` 包的**遍历**，将 `META-INF/classes` 目录和 `META-INF/lib` 的每一个内嵌的 `jar` 解析成一个 Archive 对象。
+* 通过 [Handler](https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/jar/Handler.java)，处理 `jar:` 协议的 URL 的资源**读取**，也就是读取了每个 Archive 里的内容。
+* 通过 [LaunchedURLClassLoader](https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/LaunchedURLClassLoader.java)，实现 `META-INF/classes` 目录下的类和 `META-INF/classes` 目录下内嵌的 `jar` 包中的类的加载。具体的 URL 来源，是通过 Archive 提供；具体 URL 的读取，是通过 Handler 提供。
 
 **橘色**部分，解决 Spring Boot 应用的**启动**问题：
 
-* 通过 [MainMethodRunner](https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/MainMethodRunner.java) ，实现 Spring Boot 应用的启动类的执行。
+* 通过 [MainMethodRunner](https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/MainMethodRunner.java) ，实现 Spring Boot 应用的启动类的执行。
 
-当然，上述的一切都是通过 [Launcher](https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/Launcher.java) 来完成引导和启动，通过 `MANIFEST.MF` 进行具体配置。
+当然，上述的一切都是通过 [Launcher](https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/Launcher.java) 来完成引导和启动，通过 `MANIFEST.MF` 进行具体配置。
 
 😈 生活如此美好，本文就此结束！
 
 另外，本文有两个部分，胖友可以自己再去撸一撸，玩一玩：
 
-* [WarLauncher](https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/WarLauncher.java) 类：实现 Spring Boot `war` 包的启动。
-* [`org.springframework.boot.loader.jar`](https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/jar/) 包：具体读取 `jar` 的逻辑。
+* [WarLauncher](https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/WarLauncher.java) 类：实现 Spring Boot `war` 包的启动。
+* [`org.springframework.boot.loader.jar`](https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/jar/) 包：具体读取 `jar` 的逻辑。
 
 参考：
 
