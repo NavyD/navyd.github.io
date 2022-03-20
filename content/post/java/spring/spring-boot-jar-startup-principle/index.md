@@ -186,6 +186,10 @@ protected void launch(String[] args) throws Exception {
 
 简单来说，就是整一个可以读取 `jar` 包中类的加载器，保证 `BOOT-INF/lib` 目录下的类和 `BOOT-classes` 内嵌的 `jar` 中的类能够被正常加载到，之后执行 Spring Boot 应用的启动。
 
+下面是`Launcher::launch`的时序图：
+
+![](2022-03-20-15-36-51.png)
+
 下面，我们逐行代码来看看噢。即将代码多多，保持淡定，嘿嘿~
 
 ### registerUrlProtocolHandler
