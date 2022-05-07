@@ -1,6 +1,7 @@
 ---
 title: "Certificate Verify Failed in Docker"
 date: 2022-05-01T12:26:57+08:00
+tags: [rust, docker]
 draft: false
 ---
 
