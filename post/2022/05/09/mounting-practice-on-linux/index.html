@@ -1,0 +1,127 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Mounting Practice on Linux - navyd的个人博客</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="navyd"><meta name=description content="有一个需求，由于raspi4 home目录所在的dev空间容量不足达到90%，需要更换更大容量的dev。当前在系统中已挂载了一个4T的USB dev在/mnt/share/中，想在USB dev中直接划分一个目录挂载到/home中即可，mount的bind最合适
+但是，在挂载后出现问题无法执行bin：mount zsh: permission denied: bin
+1 2 3 4  $ mount --bind /mnt/share/home/navyd /home/navyd $ bin mount zsh: permission denied: bin   "><meta name=keywords content="Hugo,blog,navyd"><meta name=generator content="Hugo 0.98.0 with theme even"><link rel=canonical href=https://blog.navyd.xyz/post/2022/05/09/mounting-practice-on-linux/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.cb68f97bc9cece255d217346d970e3c62623408634e500c330a62fadabbbe77c.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Mounting Practice on Linux"><meta property="og:description" content="有一个需求，由于raspi4 home目录所在的dev空间容量不足达到90%，需要更换更大容量的dev。当前在系统中已挂载了一个4T的USB dev在/mnt/share/中，想在USB dev中直接划分一个目录挂载到/home中即可，mount的bind最合适
+但是，在挂载后出现问题无法执行bin：mount zsh: permission denied: bin
+
+
+1
+2
+3
+4
+
+
+$ mount --bind /mnt/share/home/navyd /home/navyd
+
+$ bin
+mount zsh: permission denied: bin
+
+
+"><meta property="og:type" content="article"><meta property="og:url" content="https://blog.navyd.xyz/post/2022/05/09/mounting-practice-on-linux/"><meta property="article:section" content="post"><meta property="article:published_time" content="2022-05-09T22:49:19+08:00"><meta property="article:modified_time" content="2022-05-09T22:49:19+08:00"><meta itemprop=name content="Mounting Practice on Linux"><meta itemprop=description content="有一个需求，由于raspi4 home目录所在的dev空间容量不足达到90%，需要更换更大容量的dev。当前在系统中已挂载了一个4T的USB dev在/mnt/share/中，想在USB dev中直接划分一个目录挂载到/home中即可，mount的bind最合适
+但是，在挂载后出现问题无法执行bin：mount zsh: permission denied: bin
+
+
+1
+2
+3
+4
+
+
+$ mount --bind /mnt/share/home/navyd /home/navyd
+
+$ bin
+mount zsh: permission denied: bin
+
+
+"><meta itemprop=datePublished content="2022-05-09T22:49:19+08:00"><meta itemprop=dateModified content="2022-05-09T22:49:19+08:00"><meta itemprop=wordCount content="726"><meta itemprop=keywords content="linux,dev,mount,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Mounting Practice on Linux"><meta name=twitter:description content="有一个需求，由于raspi4 home目录所在的dev空间容量不足达到90%，需要更换更大容量的dev。当前在系统中已挂载了一个4T的USB dev在/mnt/share/中，想在USB dev中直接划分一个目录挂载到/home中即可，mount的bind最合适
+但是，在挂载后出现问题无法执行bin：mount zsh: permission denied: bin
+
+
+1
+2
+3
+4
+
+
+$ mount --bind /mnt/share/home/navyd /home/navyd
+
+$ bin
+mount zsh: permission denied: bin
+
+
+"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>navyd的个人博客</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>navyd的个人博客</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Mounting Practice on Linux</h1><div class=post-meta><span class=post-time>2022-05-09</span>
+<span class=more-meta>约 726 字</span>
+<span class=more-meta>预计阅读 2 分钟</span>
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#分析>分析</a><ul><li><a href=#访问挂载点的原始内容>访问挂载点的原始内容</a></li></ul></li><li><a href=#解决>解决</a></li></ul></li></ul></nav></div></div><div class=post-content><p>有一个需求，由于raspi4 home目录所在的dev空间容量不足达到90%，需要更换更大容量的dev。当前在系统中已挂载了一个4T的USB dev在/mnt/share/中，想在USB dev中直接划分一个目录挂载到/home中即可，mount的bind最合适</p><p>但是，在挂载后出现问题无法执行bin：<code>mount zsh: permission denied: bin</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>$ mount --bind /mnt/share/home/navyd /home/navyd
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ bin
+</span></span><span class=line><span class=cl>mount zsh: permission denied: bin
+</span></span></code></pre></td></tr></table></div></div><h2 id=分析>分析</h2><p>出现问题后首先想到的是回滚，卸掉/home/navyd</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl><span class=c1># avoid busy device</span>
+</span></span><span class=line><span class=cl><span class=nb>cd</span> /
+</span></span><span class=line><span class=cl>sudo umount -f /home/navyd
+</span></span></code></pre></td></tr></table></div></div><p>然后在<code>/mnt/share/</code>挂载点测试是否可以执行bin文件，结果也无法执行bin，可能是挂载配置的问题。在
+<a href=https://stackoverflow.com/a/51234415/8566831>这里</a>了解到可能是mount选项为noexec，查询下当前的mount配置</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>$ mount -t ext4
+</span></span><span class=line><span class=cl>/dev/sda1 on /mnt/share <span class=nb>type</span> ext4 <span class=o>(</span>rw,nosuid,nodev,noexec,relatime<span class=o>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>下面是/etc/fstab配置</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl># ...
+</span></span><span class=line><span class=cl>UUID=5d0-x-x /mnt/share ext4 defaults,auto,rw,nofail,users,x-systemd.device-timeout=5 0 0
+</span></span></code></pre></td></tr></table></div></div><p>果然是mount的问题，修改fstab增加选项<code>exec,dev,suid</code>并重新挂载查询，可以正常执行bin文件。然后试试重新bind /home/navyd看看，也可以正常使用了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl><span class=c1># UUID=5d0-x-x /mnt/share ext4 defaults,auto,rw,nofail,users,exec,dev,suid,x-systemd.device-timeout=5 0 0</span>
+</span></span><span class=line><span class=cl>$ sudo mount -o remount /mnt/share
+</span></span><span class=line><span class=cl>$ mount -t ext4
+</span></span><span class=line><span class=cl>/dev/sda1 on /mnt/share <span class=nb>type</span> ext4 <span class=o>(</span>rw,relatime<span class=o>)</span>
+</span></span><span class=line><span class=cl>$ <span class=nb>cd</span> /mnt/share
+</span></span><span class=line><span class=cl>$ bin
+</span></span><span class=line><span class=cl><span class=c1># ...</span>
+</span></span></code></pre></td></tr></table></div></div><p>另外提一点，tar确实是最合适linux的备份工具，symlink可以完整的保留，而cp在默认是不会保留link的</p><h3 id=访问挂载点的原始内容>访问挂载点的原始内容</h3><p>在挂载后旧目录的内容被覆盖，无法通过原来的目录访问。但linux通过bind挂载仍然可以访问原有目录，如这里我想访问所有占用达到90%磁盘，并删除其中的内容。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>mkdir -p /mnt/home
+</span></span><span class=line><span class=cl>mount --bind /home /mnt/home
+</span></span><span class=line><span class=cl><span class=c1># 原始目录</span>
+</span></span><span class=line><span class=cl>rm -rf /mnt/home/navyd
+</span></span></code></pre></td></tr></table></div></div><h2 id=解决>解决</h2><p>在/etc/fstab中配置</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>UUID=5d0-x-x /mnt/share ext4 defaults,auto,rw,nofail,users,exec,dev,suid,x-systemd.device-timeout=5 0 0
+</span></span><span class=line><span class=cl>/mnt/share/home/navyd /home/navyd ext4 defaults,bind 0 0
+</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul><li><a href=https://stackoverflow.com/a/19969471/8566831>How to unmount a busy device [closed]</a></li><li><a href=https://stackoverflow.com/a/51234415/8566831>Can&rsquo;t execute a .sh script from mounted disk (Ubuntu 18.04): zsh: permission denied</a></li><li><a href=https://superuser.com/a/99637>Can&rsquo;t execute a script on a mounted external drive</a></li><li><a href=https://askubuntu.com/a/175742>How do I remount a filesystem as read/write?</a></li><li><a href=https://serverfault.com/a/613184>How do I do &lsquo;mount &ndash;bind&rsquo; in /etc/fstab?</a></li><li><a href=https://unix.stackexchange.com/a/4428>Access to original contents of mount point</a></li><li><a href=https://man7.org/linux/man-pages/man5/fstab.5.html>fstab fileds: defaults</a></li><li><a href=https://unix.stackexchange.com/a/4428>Access to original contents of mount point</a></li></ul></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>navyd</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>2022-05-09</span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>linux</a>
+<a href=/tags/dev/>dev</a>
+<a href=/tags/mount/>mount</a></div><nav class=post-nav><a class=next href=/post/2022/05/01/certificate-verify-failed-in-docker/><span class="next-text nav-default">Certificate Verify Failed in Docker</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script><noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://blog.navyd.xyz/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
+<span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
+2021 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(t,e){return t.replace(e,e.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.64437849d125a2d603b3e71d6de5225d641a32d17168a58106e0b61852079683.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-JKFZ31HBBS","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
