@@ -1,0 +1,204 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Zsh History Encoding - navyd的个人博客</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="navyd"><meta name=description content="在使用python读取zsh_history输出时出现编码问题
+1 2 3 4 5 6 $ python3 -c &amp;#39;import sys; print(sys.stdin.read())&amp;#39; &amp;lt;~/.zsh_history # Traceback (most recent call last): # File &amp;#34;&amp;lt;string&amp;gt;&amp;#34;, line 1, in &amp;lt;module&amp;gt; # File &amp;#34;/usr/lib/python3.9/codecs.py&amp;#34;, line 322, in decode # (result, consumed) = self._buffer_decode(data, self.errors, final) # UnicodeDecodeError: &amp;#39;utf-8&amp;#39; codec can&amp;#39;t decode byte 0x81 in position 292191: invalid start by "><meta name=keywords content="Hugo,blog,navyd"><meta name=generator content="Hugo 0.102.3 with theme even"><link rel=canonical href=https://blog.navyd.xyz/post/2022/09/11/zsh-history-encoding/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.cb68f97bc9cece255d217346d970e3c62623408634e500c330a62fadabbbe77c.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Zsh History Encoding"><meta property="og:description" content="在使用python读取zsh_history输出时出现编码问题
+
+
+1
+2
+3
+4
+5
+6
+
+
+$ python3 -c 'import sys; print(sys.stdin.read())' <~/.zsh_history
+# Traceback (most recent call last):
+#   File &#34;<string>&#34;, line 1, in <module>
+#   File &#34;/usr/lib/python3.9/codecs.py&#34;, line 322, in decode
+#     (result, consumed) = self._buffer_decode(data, self.errors, final)
+# UnicodeDecodeError: 'utf-8' codec can't decode byte 0x81 in position 292191: invalid start by
+
+
+"><meta property="og:type" content="article"><meta property="og:url" content="https://blog.navyd.xyz/post/2022/09/11/zsh-history-encoding/"><meta property="article:section" content="post"><meta property="article:published_time" content="2022-09-11T15:35:01+08:00"><meta property="article:modified_time" content="2022-09-11T15:35:01+08:00"><meta itemprop=name content="Zsh History Encoding"><meta itemprop=description content="在使用python读取zsh_history输出时出现编码问题
+
+
+1
+2
+3
+4
+5
+6
+
+
+$ python3 -c 'import sys; print(sys.stdin.read())' <~/.zsh_history
+# Traceback (most recent call last):
+#   File &#34;<string>&#34;, line 1, in <module>
+#   File &#34;/usr/lib/python3.9/codecs.py&#34;, line 322, in decode
+#     (result, consumed) = self._buffer_decode(data, self.errors, final)
+# UnicodeDecodeError: 'utf-8' codec can't decode byte 0x81 in position 292191: invalid start by
+
+
+"><meta itemprop=datePublished content="2022-09-11T15:35:01+08:00"><meta itemprop=dateModified content="2022-09-11T15:35:01+08:00"><meta itemprop=wordCount content="612"><meta itemprop=keywords content="zsh,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Zsh History Encoding"><meta name=twitter:description content="在使用python读取zsh_history输出时出现编码问题
+
+
+1
+2
+3
+4
+5
+6
+
+
+$ python3 -c 'import sys; print(sys.stdin.read())' <~/.zsh_history
+# Traceback (most recent call last):
+#   File &#34;<string>&#34;, line 1, in <module>
+#   File &#34;/usr/lib/python3.9/codecs.py&#34;, line 322, in decode
+#     (result, consumed) = self._buffer_decode(data, self.errors, final)
+# UnicodeDecodeError: 'utf-8' codec can't decode byte 0x81 in position 292191: invalid start by
+
+
+"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>navyd的个人博客</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>navyd的个人博客</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Zsh History Encoding</h1><div class=post-meta><span class=post-time>2022-09-11</span>
+<span class=more-meta>约 612 字</span>
+<span class=more-meta>预计阅读 2 分钟</span>
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#分析>分析</a></li><li><a href=#解决方案>解决方案</a></li></ul></li></ul></nav></div></div><div class=post-content><p>在使用python读取zsh_history输出时出现编码问题</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ python3 -c <span class=s1>&#39;import sys; print(sys.stdin.read())&#39;</span> &lt;~/.zsh_history
+</span></span><span class=line><span class=cl><span class=c1># Traceback (most recent call last):</span>
+</span></span><span class=line><span class=cl><span class=c1>#   File &#34;&lt;string&gt;&#34;, line 1, in &lt;module&gt;</span>
+</span></span><span class=line><span class=cl><span class=c1>#   File &#34;/usr/lib/python3.9/codecs.py&#34;, line 322, in decode</span>
+</span></span><span class=line><span class=cl><span class=c1>#     (result, consumed) = self._buffer_decode(data, self.errors, final)</span>
+</span></span><span class=line><span class=cl><span class=c1># UnicodeDecodeError: &#39;utf-8&#39; codec can&#39;t decode byte 0x81 in position 292191: invalid start by</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=分析>分析</h2><p>找出当前出现问题的行后发现无法使用utf-8解码中文，打开是乱码，但使用history命令又是正常的</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl><span class=c1># ...</span>
+</span></span><span class=line><span class=cl>: 16......93:0<span class=p>;</span>z Workspaces/learnings/惾�它�-箃...
+</span></span><span class=line><span class=cl>: 16...8...6:0<span class=p>;</span>bat 第14课丨3僯�...�解.docx
+</span></span><span class=line><span class=cl><span class=c1># ...</span>
+</span></span></code></pre></td></tr></table></div></div><p>在这里
+<a href=https://github.com/rsalmei/zsh-history-to-fish/issues/2>UnicodeDecodeError: &lsquo;utf-8&rsquo; codec can&rsquo;t decode byte 0xb8 in position 27: invalid start byte #2</a>提到这不是一个bug，是作为一种格式存储的：</p><blockquote><p>the history file is saved in metafied format</p></blockquote><p>如果要解码，可以使用其提供的一个简单c程序</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#define Meta ((char) 0x83)
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=cp>#define _GNU_SOURCE
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdlib.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=cm>/* from zsh utils.c */</span>
+</span></span><span class=line><span class=cl><span class=kt>char</span> <span class=o>*</span><span class=nf>unmetafy</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=n>s</span><span class=p>,</span> <span class=kt>int</span> <span class=o>*</span><span class=n>len</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kt>char</span> <span class=o>*</span><span class=n>p</span><span class=p>,</span> <span class=o>*</span><span class=n>t</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=k>for</span> <span class=p>(</span><span class=n>p</span> <span class=o>=</span> <span class=n>s</span><span class=p>;</span> <span class=o>*</span><span class=n>p</span> <span class=o>&amp;&amp;</span> <span class=o>*</span><span class=n>p</span> <span class=o>!=</span> <span class=n>Meta</span><span class=p>;</span> <span class=n>p</span><span class=o>++</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=k>for</span> <span class=p>(</span><span class=n>t</span> <span class=o>=</span> <span class=n>p</span><span class=p>;</span> <span class=p>(</span><span class=o>*</span><span class=n>t</span> <span class=o>=</span> <span class=o>*</span><span class=n>p</span><span class=o>++</span><span class=p>);)</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=o>*</span><span class=n>t</span><span class=o>++</span> <span class=o>==</span> <span class=n>Meta</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=n>t</span><span class=p>[</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span> <span class=o>=</span> <span class=o>*</span><span class=n>p</span><span class=o>++</span> <span class=o>^</span> <span class=mi>32</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=p>(</span><span class=n>len</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=o>*</span><span class=n>len</span> <span class=o>=</span> <span class=n>t</span> <span class=o>-</span> <span class=n>s</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=n>s</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>argv</span><span class=p>[])</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kt>char</span> <span class=o>*</span><span class=n>line</span> <span class=o>=</span> <span class=nb>NULL</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=n>size_t</span> <span class=n>size</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=k>while</span> <span class=p>(</span><span class=n>getline</span><span class=p>(</span><span class=o>&amp;</span><span class=n>line</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>size</span><span class=p>,</span> <span class=n>stdin</span><span class=p>)</span> <span class=o>!=</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>unmetafy</span><span class=p>(</span><span class=n>line</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>printf</span><span class=p>(</span><span class=s>&#34;%s&#34;</span><span class=p>,</span> <span class=n>line</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=p>(</span><span class=n>line</span><span class=p>)</span> <span class=n>free</span><span class=p>(</span><span class=n>line</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=n>EXIT_SUCCESS</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>下面是一个python版本
+<a href=https://gist.github.com/max747/4029742>max747/pyzhist zsh history file decoder</a>，但实测没法解决开始提到的<code>0x81</code>错误</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>decodehist</span><span class=p>(</span><span class=n>_in</span><span class=p>,</span> <span class=n>out</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>change</span> <span class=o>=</span> <span class=kc>False</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>_c</span> <span class=ow>in</span> <span class=n>_in</span><span class=o>.</span><span class=n>read</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>        <span class=n>c</span> <span class=o>=</span> <span class=nb>ord</span><span class=p>(</span><span class=n>_c</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>c</span> <span class=o>!=</span> <span class=mh>0x83</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>d</span> <span class=o>=</span> <span class=n>c</span><span class=o>^</span><span class=mi>32</span> <span class=k>if</span> <span class=n>change</span> <span class=k>else</span> <span class=n>c</span>
+</span></span><span class=line><span class=cl>            <span class=n>out</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=nb>chr</span><span class=p>(</span><span class=n>d</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>            <span class=n>change</span> <span class=o>=</span> <span class=kc>False</span>
+</span></span><span class=line><span class=cl>        <span class=k>else</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>change</span> <span class=o>=</span> <span class=kc>True</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s2>&#34;__main__&#34;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=kn>import</span> <span class=nn>sys</span>
+</span></span><span class=line><span class=cl>    <span class=n>decodehist</span><span class=p>(</span><span class=n>sys</span><span class=o>.</span><span class=n>stdin</span><span class=p>,</span> <span class=n>sys</span><span class=o>.</span><span class=n>stdout</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=解决方案>解决方案</h2><p>考虑到我的实际需求并不是转换zsh history，而是解析是否存在内容并备份，不需要解析utf-8，可以在python作为byte处理即可</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>sys</span>
+</span></span><span class=line><span class=cl><span class=n>reader</span> <span class=o>=</span> <span class=n>sys</span><span class=o>.</span><span class=n>stdin</span><span class=o>.</span><span class=n>buffer</span>
+</span></span><span class=line><span class=cl><span class=n>writer</span> <span class=o>=</span> <span class=n>sys</span><span class=o>.</span><span class=n>stdout</span><span class=o>.</span><span class=n>buffer</span>
+</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul><li><a href=https://www.zsh.org/mla/users/2011/msg00154.html>Re: Fw: ZSH history file VS. UTF-8 data</a></li><li><a href=https://segmentfault.com/q/1010000002517754>如何更改 zsh 历史记录的编码？</a></li><li><a href=https://github.com/rsalmei/zsh-history-to-fish/issues/2>UnicodeDecodeError: &lsquo;utf-8&rsquo; codec can&rsquo;t decode byte 0xb8 in position 27: invalid start byte #2</a></li><li><a href=https://gist.github.com/max747/4029742>max747/pyzhist zsh history file decoder</a></li></ul></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>navyd</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>2022-09-11</span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/zsh/>zsh</a></div><nav class=post-nav><a class=next href=/post/2022/07/01/python-installed-from-mstore-not-found-in-terminal/><span class="next-text nav-default">Python Installed From Mstore Not Found in Terminal</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script><noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://blog.navyd.xyz/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
+<span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
+2021 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(e,t){return e.replace(t,t.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-JKFZ31HBBS","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
