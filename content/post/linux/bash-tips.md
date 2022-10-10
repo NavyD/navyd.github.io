@@ -40,3 +40,49 @@ EOF
 * [How can I write a heredoc to a file in Bash script?](https://stackoverflow.com/a/2954835/8566831)
 * [Advanced Bash-Scripting Guide: Chapter 19. Here Documents](https://tldp.org/LDP/abs/html/here-docs.html)
 * [wiki: Here 文档](https://zh.wikipedia.org/wiki/Here%E6%96%87%E6%A1%A3)
+
+## subshell with pipe
+
+在子shell中使用pipe的时候通常希望获取命令的exit code或设置环境变量如
+
+```bash
+# get command exit code in pipe
+unset retcode
+retcode=0
+{ eval "sh -c 'echo test; exit 121'" 2>&1; retcode=$?; }
+test "$retcode" -eq "121" # true
+
+unset retcode
+{ eval "sh -c 'echo test; exit 121'" 2>&1; retcode=$?; } | while IFS= read -r line; do echo "$line"; done
+test "$retcode" -eq "121" # false
+
+
+###### test fun######
+retcode=0
+run() { eval "sh -c 'echo test; exit 121'" 2>&1; retcode=$?; }
+run | while IFS= read -r line; do echo "$line"; done
+test "$retcode" -eq "121" # false
+```
+
+在正常的subshell中是可以正常修改变量的，但是，在子shell pipe中设置的变量在子shell 之外不可用，所以retcode为空。同样，bash函数中修改变量在pipe中也不会生效
+
+要在pipe中获取命令的退出code可以参考[Get exit status of process that's piped to another](https://unix.stackexchange.com/a/73180)，有3种方式
+
+```bash
+# Pipefail
+$ set -o pipefail
+$ false | true; echo $?
+
+# $PIPESTATUS
+$ false | true; echo "${PIPESTATUS[@]}"
+
+# Separate executions
+$ OUTPUT="$(echo foo)"
+$ STATUS_ECHO="$?"
+```
+
+参考：
+
+* [var was modified in a subshell. That change might be lost.](https://www.shellcheck.net/wiki/SC2031)
+* [How do you catch error codes in a shell pipe?](https://stackoverflow.com/a/4959616/8566831)
+* [Get exit status of process that's piped to another](https://unix.stackexchange.com/a/73180)
