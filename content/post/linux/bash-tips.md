@@ -87,6 +87,33 @@ test实现了命令的旧的可移植语法。在几乎所有shell中（最古�
 <!-- markdownlint-disable MD033 -->
 <table><tbody><tr><td><p><strong>Feature</strong></p></td><td><p><strong>new test</strong> <tt>[[</tt></p></td><td><p><strong>old test</strong> <tt>[</tt></p></td><td><p><strong>Example</strong></p></td></tr><tr><td colspan="1" rowspan="4"><p>string comparison</p></td><td><p><tt>&gt;</tt></p></td><td><p><tt>\&gt;</tt> <a href="http://mywiki.wooledge.org/BashFAQ/031#np">(*)</a></p></td><td><p><tt>[[a&gt;&nbsp;b&nbsp;]]&nbsp;||&nbsp;echo&nbsp;"a&nbsp;does&nbsp;not&nbsp;come&nbsp;after&nbsp;b"</tt></p></td></tr><tr><td><p><tt>&lt;</tt></p></td><td><p><tt>\&lt;</tt> <a href="http://mywiki.wooledge.org/BashFAQ/031#np">(*)</a></p></td><td><p><tt>[[az&nbsp;&lt;&nbsp;za]]&nbsp;&amp;&amp;&nbsp;echo&nbsp;"az&nbsp;comes&nbsp;before&nbsp;za"</tt></p></td></tr><tr><td><p><tt>=</tt> (or <tt>==</tt>)</p></td><td><p><tt>=</tt></p></td><td><p><tt>[[a&nbsp;=&nbsp;a]]&nbsp;&amp;&amp;&nbsp;echo&nbsp;"a&nbsp;equals&nbsp;a"</tt></p></td></tr><tr><td><p><tt>!=</tt></p></td><td><p><tt>!=</tt></p></td><td><p><tt>[[a&nbsp;!=&nbsp;b]]&nbsp;&amp;&amp;&nbsp;echo&nbsp;"a&nbsp;is&nbsp;not&nbsp;equal&nbsp;to&nbsp;b"</tt></p></td></tr><tr><td colspan="1" rowspan="6"><p>integer comparison</p></td><td><p><tt>-gt</tt></p></td><td><p><tt>-gt</tt></p></td><td><p><tt>[[5&nbsp;-gt&nbsp;10]]&nbsp;||&nbsp;echo&nbsp;"5&nbsp;is&nbsp;not&nbsp;bigger&nbsp;than&nbsp;10"</tt></p></td></tr><tr><td><p><tt>-lt</tt></p></td><td><p><tt>-lt</tt></p></td><td><p><tt>[[8&nbsp;-lt&nbsp;9]]&nbsp;&amp;&amp;&nbsp;echo&nbsp;"8&nbsp;is&nbsp;less&nbsp;than&nbsp;9"</tt></p></td></tr><tr><td><p><tt>-ge</tt></p></td><td><p><tt>-ge</tt></p></td><td><p><tt>[[3&nbsp;-ge&nbsp;3]]&nbsp;&amp;&amp;&nbsp;echo&nbsp;"3&nbsp;is&nbsp;greater&nbsp;than&nbsp;or&nbsp;equal&nbsp;to&nbsp;3"</tt></p></td></tr><tr><td><p><tt>-le</tt></p></td><td><p><tt>-le</tt></p></td><td><p><tt>[[3&nbsp;-le&nbsp;8]]&nbsp;&amp;&amp;&nbsp;echo&nbsp;"3&nbsp;is&nbsp;less&nbsp;than&nbsp;or&nbsp;equal&nbsp;to&nbsp;8"</tt></p></td></tr><tr><td><p><tt>-eq</tt></p></td><td><p><tt>-eq</tt></p></td><td><p><tt>[[5&nbsp;-eq&nbsp;05]]&nbsp;&amp;&amp;&nbsp;echo&nbsp;"5&nbsp;equals&nbsp;05"</tt></p></td></tr><tr><td><p><tt>-ne</tt></p></td><td><p><tt>-ne</tt></p></td><td><p><tt>[[6&nbsp;-ne&nbsp;20]]&nbsp;&amp;&amp;&nbsp;echo&nbsp;"6&nbsp;is&nbsp;not&nbsp;equal&nbsp;to&nbsp;20"</tt></p></td></tr><tr><td colspan="1" rowspan="2"><p>conditional evaluation</p></td><td><p><tt>&amp;&amp;</tt></p></td><td><p><tt>-a</tt> <a href="http://mywiki.wooledge.org/BashFAQ/031#np2">(**)</a></p></td><td><p><tt>[[-n&nbsp;$var&nbsp;&amp;&amp;&nbsp;-f&nbsp;$var]]&nbsp;&amp;&amp;&nbsp;echo&nbsp;"$var&nbsp;is&nbsp;a&nbsp;file"</tt></p></td></tr><tr><td><p><tt>||</tt></p></td><td><p><tt>-o</tt> <a href="http://mywiki.wooledge.org/BashFAQ/031#np2">(**)</a></p></td><td><p><tt>[[-b&nbsp;$var&nbsp;||&nbsp;-c&nbsp;$var]]&nbsp;&amp;&amp;&nbsp;echo&nbsp;"$var&nbsp;is&nbsp;a&nbsp;device"</tt></p></td></tr><tr><td><p>expression grouping</p></td><td><p><tt>(...)</tt></p></td><td><p><tt>\(...&nbsp;\)</tt> <a href="http://mywiki.wooledge.org/BashFAQ/031#np2">(**)</a></p></td><td><p><tt>[[$var&nbsp;=&nbsp;img*&nbsp;&amp;&amp;&nbsp;($var&nbsp;=&nbsp;*.png&nbsp;||&nbsp;$var&nbsp;=&nbsp;*.jpg)&nbsp;]]&nbsp;&amp;&amp;</tt><br><tt>echo&nbsp;"$var&nbsp;starts&nbsp;with&nbsp;img&nbsp;and&nbsp;ends&nbsp;with&nbsp;.jpg&nbsp;or&nbsp;.png"</tt></p></td></tr><tr><td><p>Pattern matching</p></td><td><p><tt>=</tt> (or <tt>==</tt>)</p></td><td><p>(not available)</p></td><td><p><tt>[[$name&nbsp;=&nbsp;a*]]&nbsp;||&nbsp;echo&nbsp;"name&nbsp;does&nbsp;not&nbsp;start&nbsp;with&nbsp;an'a':&nbsp;$name"</tt></p></td></tr><tr><td><p><a href="http://mywiki.wooledge.org/RegularExpression">RegularExpression</a> matching</p></td><td><p><tt>=~</tt></p></td><td><p>(not available)</p></td><td><p><tt>[[$(date)&nbsp;=~&nbsp;^Fri\&nbsp;...\&nbsp;13&nbsp;]]&nbsp;&amp;&amp;&nbsp;echo&nbsp;"It's&nbsp;Friday&nbsp;the&nbsp;13th!"</tt></p></td></tr></tbody></table>
 
+## make background jobs quiet
+
+在使用bash或zsh后台任务时会出现提示
+
+```bash
+$ { sleep 1; echo finished; } &
+[1] 19510
+$ finished
+
+[1]+  Done                    { sleep 1; echo finished; }
+```
+
+有时这样的输出可能干扰，有什么方式可以禁止后台任务输出？
+
+bash提供了一个选项`+m`禁止任务控制，但是启用后无法使用jobs查看当前运行的任务了，可以参考这里[Is there a way to make bash job control quiet?](https://stackoverflow.com/a/38278291/8566831)
+
+<!-- markdownlint-disable MD014 -->
+```bash
+# $ [[ -o monitor ]] && set +m && monitor_enabled=true # unset option monitor if was set
+$ { { sleep 2 && echo finished; } & } 2>/dev/null # turn job-control option off and launch quietly
+$ finished
+
+# $ [ -n "$monitor_enabled" ] && set -m # set monitor if was set
+```
+
+另外zsh后台任务提示可以看这里[auto-run-shell-commands-in-zsh-after-entering-the-directory](auto-run-shell-commands-in-zsh-after-entering-the-directory.md)
+
 ## 引用
 <!-- heredoc -->
 * [How can I write a heredoc to a file in Bash script?](https://stackoverflow.com/a/2954835/8566831)
@@ -99,3 +126,10 @@ test实现了命令的旧的可移植语法。在几乎所有shell中（最古�
   <!-- test and brackets -->
 * [Are double square brackets `[[ ]]` preferable over single square brackets `[ ]` in Bash?](https://stackoverflow.com/a/669486/8566831)
 * [What is the difference between test, `[` and `[[` ?](http://mywiki.wooledge.org/BashFAQ/031)
+  <!-- background jobs quiet -->
+* [Is there a way to make bash job control quiet?](https://stackoverflow.com/a/38278291/8566831)
+* [man bash: Job Control](https://www.gnu.org/software/bash/manual/bash.html#Job-Control)
+* [man bash shopt: 4.3.2 The Shopt Builtin](https://www.gnu.org/software/bash/manual/html_node/The-Shopt-Builtin.html)
+* [man bash set: 4.3.1 The Set Builtin](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html#index-set)
+* [man bash: 6.4 Bash Conditional Expressions -o](https://www.gnu.org/software/bash/manual/html_node/Bash-Conditional-Expressions.html)
+* [How do I wait for background jobs in the background?](https://unix.stackexchange.com/a/323878)
