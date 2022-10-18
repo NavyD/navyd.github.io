@@ -1,0 +1,152 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>进入目录后自动运行shell命令 - navyd的个人博客</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="navyd"><meta name=description content="在使用hugo时需要启动服务实时查看本地渲染情况，每次启动都要键入命令hugo server -D比较麻烦，有没有一种方式在hugo博客目录时自动运行命令"><meta name=keywords content="Hugo,blog,navyd"><meta name=generator content="Hugo 0.104.3 with theme even"><link rel=canonical href=https://blog.navyd.xyz/post/2021/10/01/auto-run-shell-commands-in-zsh-after-entering-the-directory/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.cb68f97bc9cece255d217346d970e3c62623408634e500c330a62fadabbbe77c.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="进入目录后自动运行shell命令"><meta property="og:description" content="在使用hugo时需要启动服务实时查看本地渲染情况，每次启动都要键入命令hugo server -D比较麻烦，有没有一种方式在hugo博客目录时自动运行命令"><meta property="og:type" content="article"><meta property="og:url" content="https://blog.navyd.xyz/post/2021/10/01/auto-run-shell-commands-in-zsh-after-entering-the-directory/"><meta property="article:section" content="post"><meta property="article:published_time" content="2021-10-01T02:22:59+08:00"><meta property="article:modified_time" content="2021-10-01T02:22:59+08:00"><meta itemprop=name content="进入目录后自动运行shell命令"><meta itemprop=description content="在使用hugo时需要启动服务实时查看本地渲染情况，每次启动都要键入命令hugo server -D比较麻烦，有没有一种方式在hugo博客目录时自动运行命令"><meta itemprop=datePublished content="2021-10-01T02:22:59+08:00"><meta itemprop=dateModified content="2021-10-01T02:22:59+08:00"><meta itemprop=wordCount content="1189"><meta itemprop=keywords content="zsh,hugo,cd,"><meta name=twitter:card content="summary"><meta name=twitter:title content="进入目录后自动运行shell命令"><meta name=twitter:description content="在使用hugo时需要启动服务实时查看本地渲染情况，每次启动都要键入命令hugo server -D比较麻烦，有没有一种方式在hugo博客目录时自动运行命令"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>navyd的个人博客</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>主页</li></a><a href=/post/><li class=mobile-menu-item>归档</li></a><a href=/tags/><li class=mobile-menu-item>标签</li></a><a href=/categories/><li class=mobile-menu-item>分类</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>navyd的个人博客</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>主页</a></li><li class=menu-item><a class=menu-item-link href=/post/>归档</a></li><li class=menu-item><a class=menu-item-link href=/tags/>标签</a></li><li class=menu-item><a class=menu-item-link href=/categories/>分类</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>进入目录后自动运行shell命令</h1><div class=post-meta><span class=post-time>2021-10-01</span>
+<span class=more-meta>约 1189 字</span>
+<span class=more-meta>预计阅读 3 分钟</span>
+<span id=busuanzi_container_page_pv class=more-meta><span id=busuanzi_value_page_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次阅读</span></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#分析>分析</a></li><li><a href=#方案>方案</a><ul><li><a href=#zsh-defer>zsh-defer</a></li><li><a href=#ohmyzsh-dotenv>ohmyzsh dotenv</a></li><li><a href=#background-jobs>background jobs</a></li><li><a href=#参考>参考</a></li></ul></li></ul></li></ul></nav></div></div><div class=post-outdated><div class=warn><p>【注意】最后更新于 <span class=timeago datetime=2021-10-01T02:22:59 title="October 1, 2021">October 1, 2021</span>，文中内容可能已过时，请谨慎使用。</p></div></div><div class=post-content><p>在使用hugo时需要启动服务实时查看本地渲染情况，每次启动都要键入命令<code>hugo server -D</code>比较麻烦，有没有一种方式在hugo博客目录时自动运行命令。</p><p>另外，通常会检查当前目录是否是一个git项目，并自动运行相关命令</p><h2 id=分析>分析</h2><p>在编写博客时通常要进入命令行（vscode terminal），只要在cd后自动运行就行了。zsh提供了一个hook函数<code>chpwd()</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=k>function</span> chpwd<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    emulate -L zsh
+</span></span><span class=line><span class=cl>    ls -a
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>实际在zsh中使用chpwd_functions定义当改变目录时运行多个function，对于耗时的任务需要后台运行</p><p>注意</p><p>在使用子shell时环境变量修改应该谨慎，在后台任务subshell无法修改其环境变量，可能需要其它方式与当前shell通信，如使用缓存文件替换环境变量</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nb>declare</span> -A <span class=nv>_onefetch_repos</span><span class=o>=()</span>
+</span></span><span class=line><span class=cl><span class=c1># 注意：不要使用后台任务更新vars，无效</span>
+</span></span><span class=line><span class=cl><span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=nv>ONEFETCH_TIMEOUT</span><span class=o>=</span><span class=s2>&#34;</span><span class=si>${</span><span class=nv>ONEFETCH_TIMEOUT</span><span class=p>:=10</span><span class=si>}</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>    timeout <span class=s2>&#34;</span><span class=si>${</span><span class=nv>ONEFETCH_TIMEOUT</span><span class=si>}</span><span class=s2>&#34;</span> onefetch <span class=o>&amp;&amp;</span> _onefetch_repos<span class=o>[</span><span class=s2>&#34;</span><span class=nv>$cur_repo</span><span class=s2>&#34;</span><span class=o>]=</span><span class=m>1</span>
+</span></span><span class=line><span class=cl><span class=o>}</span> <span class=p>&amp;</span>
+</span></span><span class=line><span class=cl><span class=c1># _onefetch_repos 无法被更新</span>
+</span></span></code></pre></td></tr></table></div></div><p>不要使用wait后台任务等待另一个后台任务。由于前一个任务修改了setopt nomonitor，禁止了任务输出，如果在后台任务中最后setopt monitor会出现任务输出，所以想要使用下一个后台任务去<code>setopt monitor</code>，但是这样的后台任务的方式一定是会出现任务输出。且不能在subshell中使用wait</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 禁止zsh 任务控制</span>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=o>[[</span> -o monitor <span class=o>]]</span><span class=p>;</span> <span class=k>then</span>
+</span></span><span class=line><span class=cl>    <span class=nb>local</span> -r <span class=nv>monitor_enabled</span><span class=o>=</span><span class=nb>true</span>
+</span></span><span class=line><span class=cl>    setopt nomonitor
+</span></span><span class=line><span class=cl><span class=k>fi</span>
+</span></span><span class=line><span class=cl><span class=o>{</span>
+</span></span><span class=line><span class=cl>    sleep <span class=m>3</span> <span class=o>&amp;&amp;</span> <span class=nb>echo</span> <span class=nb>test</span>
+</span></span><span class=line><span class=cl>    <span class=c1># [ -n &#34;$monitor_enabled&#34; ] &amp;&amp; setopt monitor # 将会出现任务输出：</span>
+</span></span><span class=line><span class=cl>    <span class=c1># [7]  + exit 1     { ... }</span>
+</span></span><span class=line><span class=cl><span class=o>}</span> <span class=p>&amp;</span>
+</span></span><span class=line><span class=cl><span class=c1># wait %% # 等待</span>
+</span></span><span class=line><span class=cl><span class=c1># 尝试重启用任务控制，任务输出还是会出现的</span>
+</span></span><span class=line><span class=cl><span class=c1># { sleep 4; [ -n &#34;$monitor_enabled&#34; ] &amp;&amp; setopt monitor } &amp;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 无法在subshell中使用wait另一个job</span>
+</span></span><span class=line><span class=cl>$ sleep <span class=m>21</span> <span class=p>&amp;</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>1<span class=o>]</span> <span class=m>27095</span>
+</span></span><span class=line><span class=cl>$ <span class=o>{</span> <span class=nb>wait</span> 27095<span class=p>;</span> <span class=nb>echo</span> aa<span class=p>;</span> <span class=o>}</span> <span class=p>&amp;</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>2<span class=o>]</span> <span class=m>27378</span>
+</span></span><span class=line><span class=cl>wait: pid <span class=m>27095</span> is not a child of this shell
+</span></span></code></pre></td></tr></table></div></div><p>另外，
+<a href=https://github.com/romkatv/zsh-defer>zsh-defer: Deferred execution of zsh commands</a>使用zsh-defer异步运行job，同时可以修改shell变量，但只能运行完成后才能响应键入命令</p><blockquote><p>zsh-defer defers execution of a zsh command until zsh has nothing else to do and is waiting for user input. Its intended purpose is staged zsh startup. It works similarly to Turbo mode in zinit.</p></blockquote><h2 id=方案>方案</h2><p>对于使用chpwd，可以参考这里使用了相关的zsh hook：
+<a href=https://github.com/direnv/direnv/blob/c74bab86d2c547364c0f5c282ff41d76f1ebadde/internal/cmd/shell_zsh.go#L10-L22>direnv/direnv: internal/cmd/shell_zsh.go</a>，
+<a href=https://github.com/ajeetdsouza/zoxide/blob/main/templates/zsh.txt>ajeetdsouza/zoxide: templates/zsh.txt</a></p><h3 id=zsh-defer>zsh-defer</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nb>declare</span> -A <span class=nv>_onefetch_repos</span><span class=o>=()</span>
+</span></span><span class=line><span class=cl>_onefetch_hook_chpwd<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    emulate -L zsh
+</span></span><span class=line><span class=cl>    <span class=k>if</span> git rev-parse 2&gt;/dev/null<span class=p>;</span> <span class=k>then</span>
+</span></span><span class=line><span class=cl>        <span class=nv>_onefetch_cur_repo</span><span class=o>=</span><span class=s2>&#34;</span><span class=k>$(</span>git rev-parse --show-toplevel <span class=p>|</span> xargs basename<span class=k>)</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>[</span> ! <span class=s2>&#34;</span><span class=si>${</span><span class=nv>_onefetch_repos</span><span class=p>[</span><span class=s2>&#34;</span><span class=nv>$_onefetch_cur_repo</span><span class=s2>&#34;</span><span class=p>]</span><span class=si>}</span><span class=s2>&#34;</span> <span class=o>]</span><span class=p>;</span> <span class=k>then</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> timeout 0.8 onefetch<span class=p>;</span> <span class=k>then</span>
+</span></span><span class=line><span class=cl>                _onefetch_repos<span class=o>[</span><span class=s2>&#34;</span><span class=nv>$_onefetch_cur_repo</span><span class=s2>&#34;</span><span class=o>]=</span><span class=m>1</span>
+</span></span><span class=line><span class=cl>            <span class=k>else</span>
+</span></span><span class=line><span class=cl>                <span class=c1># for key val in &#34;${(@kv)_onefetch_repos}&#34;; do echo &#34;$key -&gt; $val&#34;; done</span>
+</span></span><span class=line><span class=cl>                <span class=nb>echo</span> <span class=s2>&#34;defering onefetch timeout </span><span class=si>${</span><span class=nv>ONEFETCH_TIMEOUT</span><span class=p>:=10</span><span class=si>}</span><span class=s2> for </span><span class=nv>$_onefetch_cur_repo</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=c1># -12: enable redir to stdin/stderr https://github.com/romkatv/zsh-defer#usage</span>
+</span></span><span class=line><span class=cl>                <span class=c1># +p: Call zle reset-prompt，即在最后模拟键入enter刷新prompt</span>
+</span></span><span class=line><span class=cl>                zsh-defer -12 -c <span class=s1>&#39;timeout &#34;${ONEFETCH_TIMEOUT:=2}&#34; onefetch &amp;&amp; _onefetch_repos[&#34;$_onefetch_cur_repo&#34;]=1&#39;</span> <span class=c1># eval</span>
+</span></span><span class=line><span class=cl>            <span class=k>fi</span>
+</span></span><span class=line><span class=cl>        <span class=k>fi</span>
+</span></span><span class=line><span class=cl>    <span class=k>fi</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=o>[[</span> -z <span class=s2>&#34;</span><span class=si>${</span><span class=nv>chpwd_functions</span><span class=p>[(r)_onefetch_hook_chpwd]+1</span><span class=si>}</span><span class=s2>&#34;</span> <span class=o>]]</span><span class=p>;</span> <span class=k>then</span>
+</span></span><span class=line><span class=cl>    <span class=nv>chpwd_functions</span><span class=o>=(</span> _onefetch_hook_chpwd <span class=s2>&#34;</span><span class=si>${</span><span class=nv>chpwd_functions</span><span class=p>[@]</span><span class=si>}</span><span class=s2>&#34;</span> <span class=o>)</span>
+</span></span><span class=line><span class=cl><span class=k>fi</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=ohmyzsh-dotenv>ohmyzsh dotenv</h3><p><a href=https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/dotenv>ohmyzsh/plugins/dotenv</a>提供了类似的方式自动加载.env文件，可以使用.env文件实现</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># project/.env</span>
+</span></span><span class=line><span class=cl><span class=c1># auto start hugo server in entering dir of this project</span>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=nb>command</span> -v hugo &gt;/dev/null <span class=o>&amp;&amp;</span> ! pidof hugo &gt;/dev/null<span class=p>;</span> <span class=k>then</span>
+</span></span><span class=line><span class=cl>    <span class=nb>echo</span> <span class=s1>&#39;hugo serving&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=c1># in the shell session background</span>
+</span></span><span class=line><span class=cl>    hugo server -D &gt;/dev/null <span class=p>&amp;</span>
+</span></span><span class=line><span class=cl><span class=k>fi</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=background-jobs>background jobs</h3><p>TODO：使用缓存文件替换环境变量</p><h3 id=参考>参考</h3><ul><li><a href=https://stackoverflow.com/a/3964198/8566831>ZSH: automatically run ls after every cd</a></li><li><a href=https://unix.stackexchange.com/a/21364>Execute bash scripts on entering a directory</a></li><li><a href=https://unix.stackexchange.com/a/227411>zsh wait for jobs to complete</a></li><li><a href=https://unix.stackexchange.com/a/122743>zsh: How to check if an option is enabled</a></li><li><a href=https://zsh.sourceforge.io/Doc/Release/Functions.html>9 Functions - zsh 9.3.1 Hook Functions chpwd</a></li><li><a href=https://github.com/direnv/direnv/blob/c74bab86d2c547364c0f5c282ff41d76f1ebadde/internal/cmd/shell_zsh.go#L10-L22>direnv/direnv: internal/cmd/shell_zsh.go</a></li><li><a href=https://github.com/ajeetdsouza/zoxide/blob/main/templates/zsh.txt>ajeetdsouza/zoxide: templates/zsh.txt</a></li><li><a href=https://www.shellcheck.net/wiki/SC2031>SC2031 – ShellCheck Wiki var was modified in a subshell. That change might be lost.</a></li><li><a href=https://github.com/romkatv/zsh-defer>zsh-defer: Deferred execution of zsh commands</a></li><li><a href=https://superuser.com/a/1237504>Iterating over keys (or k/v pairs) in zsh associative array?</a></li></ul></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>navyd</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>2021-10-01</span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/zsh/>zsh</a>
+<a href=/tags/hugo/>hugo</a>
+<a href=/tags/cd/>cd</a></div><nav class=post-nav><a class=prev href=/post/2021/10/17/powerline-in-wsl2/><i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Powerline in WSL2</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/post/2021/10/01/install-rust-binary-by-cargo/><span class="next-text nav-default">使用cargo安装rust二进制文件</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><script src=https://utteranc.es/client.js repo=navyd/navyd.github.io issue-term=pathname theme=github-light crossorigin=anonymous async></script><noscript>Please enable JavaScript to view the <a href=https://github.com/utterance>comments powered by utterances.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=https://github.com/NavyD/navyd.github.io class="iconfont icon-github" title=github></a>
+<a href=https://blog.navyd.xyz/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
+<span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>本站总访问量 <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> 次</span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv>本站总访客数 <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> 人</span></div><span class=copyright-year>&copy;
+2021 -
+2022<span class=heart><i class="iconfont icon-heart"></i></span><span>navyd</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.min.js integrity="sha256-jwCP0NAdCBloaIWTWHmW4i3snUNMHUNO+jr9rYd2iOI=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/timeago.js@3.0.2/dist/timeago.locales.min.js integrity="sha256-ZwofwC1Lf/faQCzN7nZtfijVV6hSwxjQMwXL4gn9qU8=" crossorigin=anonymous></script>
+<script>var languageCode="zh-cn".replace(/-/g,"_").replace(/_(.*)/,function(e,t){return e.replace(t,t.toUpperCase())});timeago().render(document.querySelectorAll(".timeago"),languageCode),timeago.cancel()</script><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-JKFZ31HBBS","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
