@@ -114,6 +114,20 @@ $ finished
 
 另外zsh后台任务提示可以看这里[auto-run-shell-commands-in-zsh-after-entering-the-directory](auto-run-shell-commands-in-zsh-after-entering-the-directory.md)
 
+## Read a line which may not end
+
+在使用while read读取行数据时，如果文件只有一行且没有line break`\n`如：`printf 'aa\nbb' | while IFS= read -r line; do echo $line; done`，将无法读取`bb`这一行
+
+可以考虑判断line是否存在即可参考[Read a line-oriented file which may not end](https://unix.stackexchange.com/a/418067)
+
+```bash
+printf 'aa\nbb' | while IFS= read -r line || [ -n "$line" ]; do echo $line; done
+
+cat "/tmp/urlFile" | while read url || [ -n "$url" ]; do
+    echo $url
+done
+```
+
 ## 引用
 <!-- heredoc -->
 * [How can I write a heredoc to a file in Bash script?](https://stackoverflow.com/a/2954835/8566831)
