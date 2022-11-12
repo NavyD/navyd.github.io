@@ -232,6 +232,144 @@ EOF
 # ...
 ```
 
+### Error while loading /usr/sbin/dpkg-split: No such file or directory
+
+重装了系统后，不知道什么原因，在安装了mybuilder后无法正常构建，出现问题：dpkg-split: No such file or directory
+
+```bash
+$ docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t navyd/nginx --push -f nginx.Dockerfile .
+[+] Building 96.1s (30/34)                                                                               
+ => [internal] load build definition from nginx.Dockerfile                                          0.1s
+# ...
+ => => resolve docker.io/library/nginx:1.23-alpine@sha256:bd1ef87802f41785f48862616c1b89fdce091cd3  0.4s
+ => [linux/arm64 stage-3 1/3] FROM docker.io/library/nginx:1.23-alpine@sha256:bd1ef87802f41785f488  0.5s
+ => => resolve docker.io/library/nginx:1.23-alpine@sha256:bd1ef87802f41785f48862616c1b89fdce091cd3  0.4s
+ => CACHED [linux/arm64 base 2/2] RUN set -eu;     sed -ri "s@^([^#]*)http[s]?://[^/\.]+(\.[^/\.]+  0.0s
+ => CACHED [linux/arm64 base-ariang 1/1] RUN set -eu;     curl -m 10 -o ariang.zip -L "https://git  0.0s
+ => CACHED [linux/arm64 stage-3 2/3] COPY --from=base-ariang /public /var/www/a.navyd.xyz/public    0.0s
+ => CACHED [linux/arm64 base-yacd 1/1] RUN set -eu;     curl -m 10 -L "https://github.com/haishanh  0.0s
+ => CACHED [linux/arm64 stage-3 3/3] COPY --from=base-yacd /public /var/www/c.navyd.xyz/public      0.0s
+ => CACHED [linux/arm/v7 base 2/2] RUN set -eu;     sed -ri "s@^([^#]*)http[s]?://[^/\.]+(\.[^/\.]  0.0s
+ => CACHED [linux/arm/v7 base-ariang 1/1] RUN set -eu;     curl -m 10 -o ariang.zip -L "https://gi  0.0s
+ => CACHED [linux/arm/v7 stage-3 2/3] COPY --from=base-ariang /public /var/www/a.navyd.xyz/public   0.0s
+ => CACHED [linux/arm/v7 base-yacd 1/1] RUN set -eu;     curl -m 10 -L "https://github.com/haishan  0.0s
+ => CACHED [linux/arm/v7 stage-3 3/3] COPY --from=base-yacd /public /var/www/c.navyd.xyz/public     0.0s
+ => ERROR [linux/amd64 base 2/2] RUN set -eu;     sed -ri "s@^([^#]*)http[s]?://[^/\.]+(\.[^/\.]+  77.7s
+------
+ > [linux/amd64 base 2/2] RUN set -eu;     sed -ri "s@^([^#]*)http[s]?://[^/\.]+(\.[^/\.]+)+@\1http://mirrors.ustc.edu.cn@g" /etc/apt/sources.list &&     apt-get update &&     apt-get install -y unzip curl xz-utils &&     rm -rf /var/lib/apt/lists/* &&     mkdir -p "/public":
+#0 2.244 Get:1 http://mirrors.ustc.edu.cn/debian bullseye InRelease [116 kB]
+# ...
+#0 71.61 Get:17 http://mirrors.ustc.edu.cn/debian bullseye/main amd64 unzip amd64 6.0-26+deb11u1 [172 kB]
+#0 75.53 debconf: delaying package configuration, since apt-utils is not installed
+#0 76.21 Fetched 3382 kB in 2s (2119 kB/s)
+#0 76.43 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.44 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.45 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/00-openssl_1.1.1n-0+deb11u3_amd64.deb (--unpack):
+#0 76.45  dpkg-deb --control subprocess returned error exit status 1
+#0 76.46 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.47 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.47 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/01-ca-certificates_20210119_all.deb (--unpack):
+#0 76.47  dpkg-deb --control subprocess returned error exit status 1
+#0 76.48 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.49 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.49 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/02-xz-utils_5.2.5-2.1~deb11u1_amd64.deb (--unpack):
+#0 76.49  dpkg-deb --control subprocess returned error exit status 1
+#0 76.51 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.52 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.52 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/03-libbrotli1_1.0.9-2+b2_amd64.deb (--unpack):
+#0 76.52  dpkg-deb --control subprocess returned error exit status 1
+#0 76.53 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.54 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.55 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/04-libsasl2-modules-db_2.1.27+dfsg-2.1+deb11u1_amd64.deb (--unpack):
+#0 76.55  dpkg-deb --control subprocess returned error exit status 1
+#0 76.56 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.57 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.57 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/05-libsasl2-2_2.1.27+dfsg-2.1+deb11u1_amd64.deb (--unpack):
+#0 76.57  dpkg-deb --control subprocess returned error exit status 1
+#0 76.58 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.59 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.59 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/06-libldap-2.4-2_2.4.57+dfsg-3+deb11u1_amd64.deb (--unpack):
+#0 76.59  dpkg-deb --control subprocess returned error exit status 1
+#0 76.60 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.61 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.61 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/07-libnghttp2-14_1.43.0-1_amd64.deb (--unpack):
+#0 76.61  dpkg-deb --control subprocess returned error exit status 1
+#0 76.63 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.64 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.64 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/08-libpsl5_0.21.0-1.2_amd64.deb (--unpack):
+#0 76.64  dpkg-deb --control subprocess returned error exit status 1
+#0 76.64 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.66 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.66 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/09-librtmp1_2.4+20151223.gitfa8646d.1-2+b2_amd64.deb (--unpack):
+#0 76.66  dpkg-deb --control subprocess returned error exit status 1
+#0 76.67 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.68 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.68 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/10-libssh2-1_1.9.0-2_amd64.deb (--unpack):
+#0 76.68  dpkg-deb --control subprocess returned error exit status 1
+#0 76.69 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.70 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.70 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/11-libcurl4_7.74.0-1.3+deb11u3_amd64.deb (--unpack):
+#0 76.70  dpkg-deb --control subprocess returned error exit status 1
+#0 76.71 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.72 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.72 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/12-curl_7.74.0-1.3+deb11u3_amd64.deb (--unpack):
+#0 76.72  dpkg-deb --control subprocess returned error exit status 1
+#0 76.73 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.74 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.74 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/13-libldap-common_2.4.57+dfsg-3+deb11u1_all.deb (--unpack):
+#0 76.74  dpkg-deb --control subprocess returned error exit status 1
+#0 76.75 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.76 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.76 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/14-libsasl2-modules_2.1.27+dfsg-2.1+deb11u1_amd64.deb (--unpack):
+#0 76.76  dpkg-deb --control subprocess returned error exit status 1
+#0 76.77 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.78 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.78 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/15-publicsuffix_20220811.1734-0+deb11u1_all.deb (--unpack):
+#0 76.78  dpkg-deb --control subprocess returned error exit status 1
+#0 76.79 Error while loading /usr/sbin/dpkg-split: No such file or directory
+#0 76.80 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+#0 76.80 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/16-unzip_6.0-26+deb11u1_amd64.deb (--unpack):
+#0 76.80  dpkg-deb --control subprocess returned error exit status 1
+#0 76.86 Errors were encountered while processing:
+#0 76.86  /tmp/apt-dpkg-install-Az6LcO/00-openssl_1.1.1n-0+deb11u3_amd64.deb
+#0 76.86  /tmp/apt-dpkg-install-Az6LcO/01-ca-certificates_20210119_all.deb
+#0 76.86  /tmp/apt-dpkg-install-Az6LcO/02-xz-utils_5.2.5-2.1~deb11u1_amd64.deb
+#0 76.86  /tmp/apt-dpkg-install-Az6LcO/03-libbrotli1_1.0.9-2+b2_amd64.deb
+#0 76.86  /tmp/apt-dpkg-install-Az6LcO/04-libsasl2-modules-db_2.1.27+dfsg-2.1+deb11u1_amd64.deb
+#0 76.86  /tmp/apt-dpkg-install-Az6LcO/05-libsasl2-2_2.1.27+dfsg-2.1+deb11u1_amd64.deb
+#0 76.86  /tmp/apt-dpkg-install-Az6LcO/06-libldap-2.4-2_2.4.57+dfsg-3+deb11u1_amd64.deb
+#0 76.86  /tmp/apt-dpkg-install-Az6LcO/07-libnghttp2-14_1.43.0-1_amd64.deb
+#0 76.86  /tmp/apt-dpkg-install-Az6LcO/08-libpsl5_0.21.0-1.2_amd64.deb
+#0 76.86  /tmp/apt-dpkg-install-Az6LcO/09-librtmp1_2.4+20151223.gitfa8646d.1-2+b2_amd64.deb
+#0 76.87  /tmp/apt-dpkg-install-Az6LcO/10-libssh2-1_1.9.0-2_amd64.deb
+#0 76.87  /tmp/apt-dpkg-install-Az6LcO/11-libcurl4_7.74.0-1.3+deb11u3_amd64.deb
+#0 76.87  /tmp/apt-dpkg-install-Az6LcO/12-curl_7.74.0-1.3+deb11u3_amd64.deb
+#0 76.87  /tmp/apt-dpkg-install-Az6LcO/13-libldap-common_2.4.57+dfsg-3+deb11u1_all.deb
+#0 76.87  /tmp/apt-dpkg-install-Az6LcO/14-libsasl2-modules_2.1.27+dfsg-2.1+deb11u1_amd64.deb
+#0 76.87  /tmp/apt-dpkg-install-Az6LcO/15-publicsuffix_20220811.1734-0+deb11u1_all.deb
+#0 76.87  /tmp/apt-dpkg-install-Az6LcO/16-unzip_6.0-26+deb11u1_amd64.deb
+#0 77.17 E: Sub-process /usr/bin/dpkg returned an error code (1)
+------
+nginx.Dockerfile:7
+--------------------
+   6 |         DEBIAN_FRONTEND="noninteractive"
+   7 | >>> RUN set -eu; \
+   8 | >>>     sed -ri "s@^([^#]*)http[s]?://[^/\.]+(\.[^/\.]+)+@\1${APT_MIRROR}@g" /etc/apt/sources.list && \
+   9 | >>>     apt-get update && \
+  10 | >>>     apt-get install -y unzip curl xz-utils && \
+  11 | >>>     rm -rf /var/lib/apt/lists/* && \
+  12 | >>>     mkdir -p "/public"
+  13 |     
+--------------------
+ERROR: failed to solve: process "/dev/.buildkit_qemu_emulator /bin/sh -c set -eu;     sed -ri \"s@^([^#]*)http[s]?://[^/\\.]+(\\.[^/\\.]+)+@\\1${APT_MIRROR}@g\" /etc/apt/sources.list &&     apt-get update &&     apt-get install -y unzip curl xz-utils &&     rm -rf /var/lib/apt/lists/* &&     mkdir -p \"/public\"" did not complete successfully: exit code: 100
+```
+
+在这里[Error building python 3.6 slim #495](https://github.com/docker/buildx/issues/495#issuecomment-991603416)了解到再次更新binfmt安装即可
+
+```bash
+docker run --rm --privileged tonistiigi/binfmt:latest --install all
+```
+
 参考：
 
 * [Multi-platform image](https://github.com/docker/build-push-action/blob/master/docs/advanced/multi-platform.md)
@@ -245,3 +383,4 @@ EOF
 * [基于 BuildKit 优化 Dockerfile 的构建](https://www.kubernetes.org.cn/9059.html)
 * [Dockerfile reference syntax](https://docs.docker.com/engine/reference/builder/#syntax)
 * [Docker buildx 报错了，求大神看看](https://www.v2ex.com/t/839204)
+* [Error building python 3.6 slim #495](https://github.com/docker/buildx/issues/495#issuecomment-991603416)
