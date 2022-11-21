@@ -370,6 +370,26 @@ ERROR: failed to solve: process "/dev/.buildkit_qemu_emulator /bin/sh -c set -eu
 docker run --rm --privileged tonistiigi/binfmt:latest --install all
 ```
 
+### Persisting ENV and ARG settings to all later stages in multi-stage builds
+
+在dockerfile多阶段构建中通常需要使用同一个变量在所有stage中，但是，对于无关的两个stage是无法直接使用之前stage的变量的
+
+在这里[Persisting ENV and ARG settings to all later stages in multi-stage builds #37345](https://github.com/moby/moby/issues/37345#issuecomment-400245466)使用ARG声明可以达到这种效果
+
+```dockerfile
+ARG version_default=v1
+
+FROM alpine:latest as base1
+ARG version_default
+ENV version=$version_default
+RUN echo ${version}
+RUN echo ${version_default}
+
+FROM alpine:latest as base2
+ARG version_default
+RUN echo ${version_default}
+```
+
 参考：
 
 * [Multi-platform image](https://github.com/docker/build-push-action/blob/master/docs/advanced/multi-platform.md)
@@ -384,3 +404,4 @@ docker run --rm --privileged tonistiigi/binfmt:latest --install all
 * [Dockerfile reference syntax](https://docs.docker.com/engine/reference/builder/#syntax)
 * [Docker buildx 报错了，求大神看看](https://www.v2ex.com/t/839204)
 * [Error building python 3.6 slim #495](https://github.com/docker/buildx/issues/495#issuecomment-991603416)
+* [Persisting ENV and ARG settings to all later stages in multi-stage builds #37345](https://github.com/moby/moby/issues/37345#issuecomment-400245466)
