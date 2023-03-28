@@ -12,3 +12,4 @@ public/
 .env
 # building files from v0.89.0 https://github.com/gohugoio/hugo/releases/tag/v0.89.0
 .hugo_build.lock
+resources/_gen
