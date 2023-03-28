@@ -10,7 +10,7 @@ buildExpired = false
 
 googleAnalytics = "G-JKFZ31HBBS"
 
-ignoreFiles = ['content/res/*']
+ignoreFiles = ['content/res/']
 languageCode = "zh-cn"
 defaultContentLanguage = "zh"
 hasCJKLanguage = true

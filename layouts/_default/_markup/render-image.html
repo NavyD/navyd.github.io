@@ -1,7 +1,0 @@
-<img loading="lazy"
-{{if findRE "^.+://.+" .Destination 1 | len | eq 1 }} {{/* isHyperLink */}}
-src="{{ .Destination | safeURL }}"
-{{else}}
-src="{{ printf "%s%s" .Page.Permalink .Destination | safeURL }}" {{/* to hyper link url */}}
-{{end}}
-alt="{{ .Text }}" {{ with .Title}} title="{{ . }}" {{ end }} />
