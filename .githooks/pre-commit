@@ -2,49 +2,98 @@
 
 # [Can Git hook scripts be managed along with the repository?](https://stackoverflow.com/a/37861972/8566831)
 
-import sys
+from datetime import datetime
+import logging
+import os
 from typing import List
 from git import Repo
-from pathlib import Path
 import re
 import yaml
 
 
-def check(data):
-    exists_keys = ['tags']
-    for key in exists_keys:
-        if key not in data:
-            raise Exception(f'not found key: {key}')
-    if not data['tags']:
-        raise Exception(f'empty tags')
-
-
-def run_check(paths: List[str]):
-    ppat = re.compile(r'.*content/posts?/(.+?/)*.+\.md')
-    md_meta_pat = re.compile(
-        r'^---\s*(?:\n|\r\n?)((^.*(?:\n|\r\n?))*?)^---\s*$', re.MULTILINE)
-    for path in paths:
-        if ppat.match(path):
-            txt = Path(path).read_text()
-            if m := md_meta_pat.match(txt):
-                print(f'checking for {path}')
-                yml_txt = m.group(1)
-                d = yaml.safe_load(yml_txt)
-                try:
-                    check(d)
-                except Exception as e:
-                    print(f'invalid {str(path)}: {e}', file=sys.stderr)
-                    exit(1)
-
-
 def find_diff_paths() -> List[str]:
     repo = Repo()
+    logging.info(f'finding git diff files in {repo.git_dir}')
     # How to get list of staged files for commit ? (fullpaths): https://stackoverflow.com/a/44117990/8566831
     return [d.a_path for d in repo.index.diff("HEAD")]
 
 
+class Checker:
+    def __init__(self) -> None:
+        # check only match this paths
+        self._pat_path = re.compile(
+            fr'.*content{os.sep}posts?{os.sep}(.+?{os.sep})*.+\.md')
+        self._pat_md_meta = re.compile(
+            r'^---\s*(?:\n|\r\n?)((^.*(?:\n|\r\n?))*?)^---\s*$', re.MULTILINE)
+        self.log = logging.getLogger(__name__)
+
+    def do_check(self, paths: List[str]):
+        for path in paths:
+            if self._pat_path.match(path):
+                self.check(path)
+            else:
+                self.log.debug(f'skip check file {path}')
+
+    def check(self, path: str):
+        self.log.debug(f'reading all content from {path}')
+        with open(path) as f:
+            txt = f.read()
+        self.log.debug(f'{len(txt)} chars have been read')
+
+        if m := self._pat_md_meta.match(txt):
+            yml_txt = m.group(1)
+            data = yaml.safe_load(yml_txt)
+            self.log.info(f'checking for {path}')
+            self.check_metadata(data)
+            self.check_date_dir(path, data)
+        else:
+            self.log.debug(f'skipped check for {path}')
+
+    def check_metadata(self, data):
+        exists_keys = ['tags', 'date', 'title', 'author', 'draft']
+        # self.log.debug(f'checking if keys {exists_keys} exists')
+        for key in exists_keys:
+            if key not in data:
+                raise Exception(f'not found key: {key}')
+            elif data[key] is None or data[key] == '':
+                raise Exception(f'empty value for {key}')
+
+        if data['draft']:
+            raise Exception(f'invalid draft post')
+
+    def check_date_dir(self, path: str, data):
+        post_date = data['date']
+        # [Can't compare naive and aware datetime.now() <= challenge.datetime_end](https://stackoverflow.com/a/32926295/8566831)
+        now = datetime.now(post_date.tzinfo)
+        if now < post_date:
+            raise Exception(
+                f'Illegal relative to now {now.isoformat()} future time {post_date.isoformat()} in {path}')
+        # [How to convert a timezone aware string to datetime in Python without dateutil?](https://stackoverflow.com/a/13182163/8566831)
+        # date = datetime.fromisoformat(v) # parse post date string
+
+        # path tempate: **/2023/03/**
+        tmp = f'{post_date.year}{os.sep}{post_date.month:02d}{os.sep}'
+        if tmp not in path:
+            raise Exception(
+                f'invalid dir {tmp} and date {post_date.isoformat()} in file {path}')
+
+
+def config_log(level=logging.CRITICAL, stream=None):
+    logging.basicConfig(format='%(asctime)s.%(msecs)03d [%(levelname)-5s] [%(name)s.%(funcName)s]: %(message)s',
+                        level=level,
+                        stream=stream,
+                        datefmt='%Y-%m-%d %H:%M:%S')
+
+
 if __name__ == '__main__':
-    print('running pre commit')
+    config_log(level=logging.INFO)
+
     paths = find_diff_paths()
-    print(f'found {len(paths)} diff files')
-    run_check(paths)
+    logging.debug(f'found {len(paths)} diff files: {paths}')
+
+    c = Checker()
+    try:
+        c.do_check(paths)
+    except Exception as e:
+        logging.fatal(f'failed to check: {e}')
+        exit(1)

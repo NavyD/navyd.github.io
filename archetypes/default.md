@@ -18,6 +18,11 @@ cover:
     relative: false # when using page bundles set this to true
     hidden: true # only hide on current single page
 */}}
+
+{{- /*
+# other options
+searchHidden: false # To hide a particular page from being searched
+*/}}
 ---
 
 ***Summary***

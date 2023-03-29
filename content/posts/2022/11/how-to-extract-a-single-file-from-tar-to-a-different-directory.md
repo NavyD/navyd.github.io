@@ -1,7 +1,9 @@
 ---
 title: "How to Extract a Single File From Tar to a Different Directory"
 date: 2022-11-21T17:57:04+08:00
-draft: true
+draft: false
+tags: [linux, tar, shell]
+author: [navyd]
 ---
 
 在使用tar时如何解压其中某个文件到指定的目录

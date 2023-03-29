@@ -2,7 +2,7 @@
 title: Intel Gpu Support for Wsl2
 date: 2023-03-29T11:50:19+08:00
 draft: false
-tags: [wsl2, gpu, docker, intel]
+tags: [wsl2, gpu, docker, intel, linux]
 author: [navyd]
 cover:
     useFirstImageIfNone: true
