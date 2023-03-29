@@ -1,9 +1,16 @@
 ---
 title: "Docker Multi Platform Build"
 date: 2021-08-08T20:07:10+08:00
-draft: true
-tags: [docker]
+draft: false
+tags: [docker, linux]
+author: [navyd]
+cover:
+  useFirstImageIfNone: true
 ---
+
+Docker多平台构建
+
+![](https://cdn2.stereolabs.com/docs/docker/images/emulation_workflow2.png)
 
 ## github actions
 
