@@ -1,6 +1,6 @@
 baseURL = "https://blog.navyd.xyz"
 title = "navyd的个人博客"
-# paginate = 5
+paginate = 5
 theme = "PaperMod"
 
 enableRobotsTXT = true
@@ -46,7 +46,7 @@ author = ["navyd"]                           # multiple authors
 images = []                                  # ["<link or path of image for opengraph, twitter-cards>"]
 DateFormat = "2006-01-02"
 defaultTheme = "auto"                        # dark, light
-disableThemeToggle = true
+disableThemeToggle = false
 
 ShowReadingTime = true
 ShowShareButtons = false              # Displays Share Buttons at Bottom of each post
@@ -67,6 +67,7 @@ tocopen = false
 [params.assets]
 # disableHLJS: true # to disable highlight.js
 # disableFingerprinting: true
+enableScrollJS = true
 favicon = "/favicon.ico"
 favicon16x16 = "/favicon-16x16.ico"
 favicon32x32 = "/favicon-32x32.png"
