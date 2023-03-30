@@ -1,7 +1,8 @@
 ---
 title: "源码分析：代码计数工具及其效率与准确度"
 date: 2021-10-12T23:36:56+08:00
-draft: true
+draft: false
+tags: [cli, statistics, code]
 ---
 
 原文地址 [tinylab.org](http://tinylab.org/source-code-analysis-the-best-code-counting-tool/)

@@ -2,7 +2,7 @@
 title: "Clash透明代理"
 date: 2021-08-09T19:31:12+08:00
 draft: false
-tags: [clash, proxy, linux, tool, docker]
+tags: [clash, proxy, linux, docker, iptables, cli]
 ---
 
 ![](https://github.com/Dreamacro/clash/raw/master/docs/logo.png)

@@ -14,8 +14,9 @@ import yaml
 def find_diff_paths() -> List[str]:
     repo = Repo()
     logging.info(f'finding git diff files in {repo.git_dir}')
+    data = repo.index.diff("HEAD")
     # How to get list of staged files for commit ? (fullpaths): https://stackoverflow.com/a/44117990/8566831
-    return [d.a_path for d in repo.index.diff("HEAD")]
+    return [d.a_path for d in data]
 
 
 class Checker:
@@ -50,7 +51,7 @@ class Checker:
             self.log.debug(f'skipped check for {path}')
 
     def check_metadata(self, data):
-        exists_keys = ['tags', 'date', 'title', 'author', 'draft']
+        exists_keys = ['tags', 'date', 'title', 'draft']
         # self.log.debug(f'checking if keys {exists_keys} exists')
         for key in exists_keys:
             if key not in data:

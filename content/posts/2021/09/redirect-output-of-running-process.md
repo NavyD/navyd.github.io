@@ -2,6 +2,7 @@
 title: "重定向已启动程序的输出"
 date: 2021-09-06T12:22:01+08:00
 draft: false
+tags: [linux, shell, bash, clash, cli, docker, pipe]
 ---
 
 在使用[clash](https://github.com/Dreamacro/clash)时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。

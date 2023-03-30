@@ -1,7 +1,8 @@
 ---
 title: git submodule in hugo
-date: 2021-08-06T16:39:24+0800
+date: 2021-08-06T16:39:24+08:00
 draft: false
+tags: [hugo, git, theme, submodule]
 ---
 ## 问题
 

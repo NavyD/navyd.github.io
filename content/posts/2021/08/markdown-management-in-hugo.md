@@ -2,6 +2,7 @@
 title: "在hugo中管理markdown文件"
 date: 2021-08-27T18:38:09+08:00
 draft: false
+tags: [hugo, markdown, template, vscode]
 ---
 
 使用markdown写作有一个痛点，如何链接本地文件。如图片、本地md文件链接、其它博文相关文件log等，一般在workspace目录中放置一个`assets/images`目录，md文件会链接到该路径。
@@ -80,8 +81,8 @@ myblog/
   - 2021-08-04-23-17-08.png
 
 -->
-[vim_wordpress_esc](myblog/vim_wordpress_esc)
-![](myblog/2021-08-04-23-17-08.png)
+[vim_wordpress_esc](my-hugo-blog/vim_wordpress_esc)
+![](my-hugo-blog/2021-08-04-23-17-08.png)
 ```
 
 对于上面的两个本地链接，hugo 构建后
@@ -89,7 +90,7 @@ myblog/
 ```html
 <a href="myblog/vim_wordpress_esc">vim_wordpress_esc</a>
 <!-- 配置了 fancybox = true -->
-<a class="fancybox" href="http://localhost:1313/post/myblog/myblog/2021-08-04-23-17-08.png" data-fancybox="gallery" data-caption=""><img src="myblog/2021-08-04-23-17-08.png" alt=""></a>
+<a class="fancybox" href="http://localhost:1313/post/myblog/myblog/2021-08-04-23-17-08.png" data-fancybox="gallery" data-caption=""><img src="my-hugo-blog/2021-08-04-23-17-08.png" alt=""></a>
 ```
 
 很明显，blog.md被hugo后本地路径已经与`myblog/`文件夹一级，而其中的相对路径链接还是没有变化，应该移除对应的filename前缀如：`<a href="vim_wordpress_esc">vim_wordpress_esc</a>`

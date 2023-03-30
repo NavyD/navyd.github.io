@@ -2,6 +2,7 @@
 title: "github actions in hugo"
 date: 2021-08-06T17:30:53+08:00
 draft: false
+tags: [hugo, git, markdown, lint, github, actions]
 ---
 
 ## 问题

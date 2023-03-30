@@ -1,8 +1,8 @@
 ---
 title: "Port Forwarding in Wsl2"
 date: 2021-11-14T22:30:49+08:00
-draft: true
-tags: [wsl2, port-forwarding]
+draft: false
+tags: [wsl2, port-forwarding, linux, windows, powershell, hyper-v]
 ---
 
 在wsl2中使用docker跑一个简单的ngnix时，发现只有宿主机使用`localhost:8080`可以用浏览器打开，而内网内其他电脑则没办法使用宿主机内网ip访问ngnix界面

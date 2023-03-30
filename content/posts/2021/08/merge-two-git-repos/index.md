@@ -2,7 +2,7 @@
 title: "Merge Two Git Repos"
 date: 2021-08-08T01:49:33+08:00
 draft: false
-tags: [git, git merge, git subtree, git submodule]
+tags: [git, git merge, git subtree, git submodule, cli, hugo]
 ---
 
 ## 问题
