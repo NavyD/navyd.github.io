@@ -55,7 +55,7 @@ ShowBreadCrumbs = true
 ShowCodeCopyButtons = true
 ShowWordCount = true
 ShowRssButtonInSectionTermList = true
-UseHugoToc = true
+UseHugoToc = false
 disableSpecial1stPost = false
 disableScrollToTop = false
 comments = false
@@ -138,11 +138,11 @@ threshold = 0.4
 minMatchCharLength = 0
 keys = ["title", "permalink", "summary", "content"]
 
-[[menu.main]]
-identifier = "categories"
-name = "分类"
-url = "/categories/"
-weight = 10
+# [[menu.main]]
+# identifier = "categories"
+# name = "分类"
+# url = "/categories/"
+# weight = 10
 
 [[menu.main]]
 identifier = "tags"
