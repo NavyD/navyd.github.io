@@ -23,6 +23,10 @@
             {{/* 移除并解析front matter */}}
             {{ if gt (len $parts) 1 }}
                 {{ $front_matter = index $parts 0 | unmarshal }}
+                {{/* 跳过draft */}}
+                {{ if and $front_matter.draft (not $.Site.BuildDrafts) }}
+                    {{ continue }}
+                {{ end }}
                 {{ $content_val = delimit (after 1 $parts) "" }}
             {{ else }}
                 {{ fmt.Errorf "Not found %s end of front matter sep %s" $front_matter_sep_end $front_matter_sep_start }}
@@ -40,7 +44,7 @@
             {{ if $groups }}
                 {{ $title = index (index $groups 0) 1 }}
             {{ else }}
-                {{ $title = replace (path.Base $curr_path) "-" " " | title }}
+                {{ $title = replace (path.BaseName $curr_path) "-" " " | title }}
             {{ end }}
         {{ end }}
 
@@ -69,6 +73,8 @@
             {{/* 配置标签到params中 */}}
             {{ if $front_matter.tags }}
                 {{ $params = dict "tags" $front_matter.tags | merge $params }}
+            {{ else }}
+                {{ fmt.Warnf "Not found any tags in post %s" $curr_path }}
             {{ end }}
         {{ end }}
 
@@ -102,8 +108,10 @@
                     获取最多4倍的字节长度的substr，分离为char后找出指定长度的字符串。
 
                     参考[Get char codes or generate an integer from string](https://discourse.gohugo.io/t/get-char-codes-or-generate-an-integer-from-string/37119)
+                    {{ fmt.Warnf "desc slice end %#v of path %s" $desc_len $curr_path }}
                 */}}
-                {{ $desc = slicestr $content_val 0 (math.Min (mul $summary_len 4) (len $content_val)) }}
+                {{ $desc_len := math.Min (mul $summary_len 4) (len $content_val) }}
+                {{ $desc = substr $content_val 0 $desc_len }}
             {{ end }}
             {{/* FIXME: desc是md源码会包含如链接等字符导致未渲染的问题，transform.Markdownify不支持在这个阶段使用 */}}
             {{/* 移除链接替换为alt文本 https://stackoverflow.com/questions/37462126/regex-match-markdown-link#comment138813679_61330354 */}}
@@ -145,5 +153,5 @@
 {{ end }}
 
 {{/*
-{{ fmt.Warnf "data: %#v" (slicestr "test" 0 55)}}
+{{ fmt.Warnf "data: %#v" (.Site.BuildDrafts)}}
 */}}
