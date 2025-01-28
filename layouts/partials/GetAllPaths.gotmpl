@@ -1,0 +1,16 @@
+{{- $curr_path := . -}}
+{{- $paths := slice -}}
+{{- $curr_stat := os.Stat $curr_path -}}
+{{- if $curr_stat.IsDir -}}
+    {{- range os.ReadDir $curr_path -}}
+        {{- $sub_path := path.Join $curr_path .Name -}}
+        {{- $paths = append $sub_path $paths -}}
+        {{- if .IsDir -}}
+            {{- $sub_paths := partial "GetAllPaths.gotmpl" $sub_path -}}
+            {{- $paths = append $sub_paths $paths -}}
+        {{- end -}}
+    {{- end -}}
+{{- else -}}
+    {{- $paths = append $curr_path $paths }}
+{{- end }}
+{{- return $paths -}}

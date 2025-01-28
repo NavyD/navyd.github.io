@@ -1,0 +1,83 @@
+baseURL = "https://blog.navyd.xyz"
+title = "navyd的个人博客"
+theme = "hugo-theme-stack"
+ignoreFiles = ['content/res/', 'content/post/']
+favicon = "/favicon.ico"
+# summaryLength = 7
+enableGitInfo = true
+languageCode = "zh-cn"
+defaultContentLanguage = "zh-cn"
+hasCJKLanguage = true
+
+[pagination]
+pagerSize = 10
+
+[menu]
+[[menu.main]]
+name = "Home"
+weight = 10
+[menu.main.params]
+icon = "home"
+
+[[menu.social]]
+identifier = "github"
+name = "GitHub"
+url = "https://github.com/NavyD"
+[menu.social.params]
+icon = "brand-github"
+[[menu.social]]
+identifier = "bilibili"
+name = "Bilibili"
+url = "https://space.bilibili.com/47808239"
+params.icon = "brand-bilibili"
+[[menu.social]]
+identifier = "twitter"
+name = "Twitter"
+url = "https://x.com/NavyD_hello"
+params.icon = "brand-twitter"
+
+[params]
+mainSections = ["posts"]
+[params.dateFormat]
+published = "2006年1月2日15:04"
+lastUpdated = "2006-01-02 15:04:01 CST"
+
+[params.sidebar]
+emoji = '🐧'
+subtitle = "Hello World!"
+[params.sidebar.avatar]
+enabled = true
+local = false
+src = "https://avatars.githubusercontent.com/u/22490764"
+
+[params.article]
+toc = true
+readingTime = true
+
+[[params.widgets.homepage]]
+type = "search"
+
+# [[params.widgets.homepage]]
+# type = "archives"
+# [params.widgets.homepage.params]
+# limit = 5
+#
+# [[params.widgets.homepage]]
+# type = "categories"
+# [params.widgets.homepage.params]
+# limit = 10
+
+[[params.widgets.homepage]]
+type = "tag-cloud"
+[params.widgets.homepage.params]
+limit = 50
+
+[[params.widgets.page]]
+type = "toc"
+
+[params.colorScheme]
+toggle = true
+
+
+[security]
+enableInlineShortcodes = true
