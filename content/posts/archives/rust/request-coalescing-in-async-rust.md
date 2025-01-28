@@ -1,6 +1,6 @@
 ---
 title: "Request coalescing in async Rust"
-date: 2022-3-14T05:07:15+08:00
+date: 2022-03-14T05:07:15+08:00
 tags: [rust, http, tracing, tokio, axum]
 draft: true
 ---
