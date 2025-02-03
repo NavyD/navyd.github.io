@@ -1,13 +1,14 @@
 baseURL = "https://blog.navyd.xyz"
-title = "navyd的个人博客"
 theme = "hugo-theme-stack"
-ignoreFiles = ['content/res/', 'content/post/']
+ignoreFiles = ['content/res/']
 favicon = "/favicon.ico"
-# summaryLength = 7
 enableGitInfo = true
-languageCode = "zh-cn"
 defaultContentLanguage = "zh-cn"
 hasCJKLanguage = true
+
+[languages.zh-cn]
+languageName = "中文"
+title = "NavyD的个人博客"
 
 [pagination]
 pagerSize = 10
@@ -38,6 +39,7 @@ params.icon = "brand-twitter"
 
 [params]
 mainSections = ["posts"]
+
 [params.dateFormat]
 published = "2006年1月2日15:04"
 lastUpdated = "2006-01-02 15:04:01 CST"
@@ -77,7 +79,3 @@ type = "toc"
 
 [params.colorScheme]
 toggle = true
-
-
-[security]
-enableInlineShortcodes = true
