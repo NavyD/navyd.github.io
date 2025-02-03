@@ -1,0 +1,135 @@
+[project]
+name = "hugodynctx"
+version = "0.1.0"
+description = "build hugo content"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "jinja2>=3.1.5",
+    "lxml>=5.3.0",
+    "python-box>=7.3.2",
+    "pyyaml>=6.0.2",
+    "typer>=0.15.1",
+    "typer-slim[standard]>=0.15.1",
+]
+
+[project.scripts]
+hugodynctx = "hugodynctx:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+# [Init project without src #6293](https://github.com/astral-sh/uv/issues/6293)
+packages = ["hugodynctx/hugodynctx"]
+
+[tool.ruff]
+line-length = 89
+include = ["hugodynctx"]
+[tool.ruff.lint]
+select = [
+    # pycodestyle https://github.com/PyCQA/pycodestyle
+    # Simple Python style checker in one Python file
+    "E",
+    # Pyflakes https://github.com/PyCQA/pyflakes
+    # A simple program which checks Python source files for errors
+    "F",
+    # pyupgrade https://github.com/asottile/pyupgrade
+    # A tool (and pre-commit hook) to automatically upgrade syntax for newer versions of the language.
+    "UP",
+    # flake8-bugbear https://github.com/PyCQA/flake8-bugbear
+    # A plugin for Flake8 finding likely bugs and design problems in your program. Contains warnings that don't belong in pyflakes and pycodestyle.
+    "B",
+    # flake8-simplify https://github.com/MartinThoma/flake8-simplify
+    # A flake8 plugin that helps you to simplify code
+    "SIM",
+    # isort https://github.com/PyCQA/isort
+    # A Python utility / library to sort imports.
+    "I",
+    # pycodestyle Warn
+    "W",
+    # pep8-naming https://github.com/PyCQA/pep8-naming
+    "N",
+    # pydocstyle https://docs.astral.sh/ruff/rules/#pydocstyle-d
+    # "D",
+    # https://github.com/sco1/flake8-annotations
+    "ANN",
+    # https://github.com/python-trio/flake8-async
+    "ASYNC",
+    # Automated security testing using bandit and flake8.
+    # https://github.com/tylerwince/flake8-bandit
+    "S",
+    # https://github.com/elijahandrews/flake8-blind-except
+    "BLE",
+    # https://docs.astral.sh/ruff/rules/#flake8-boolean-trap-fbt
+    # 禁用避免频繁提示fn中存在bool参数
+    # "FBT",
+    # flake8-builtins
+    "A",
+    # A flake8 plugin that helps you write better list/set/dict comprehensions.
+    "C4",
+    # A plugin for flake8 to ban the usage of unsafe naive datetime class.
+    "DTZ",
+    # A checker for Flake8 that helps format nice error messages.
+    # https://docs.astral.sh/ruff/rules/#flake8-errmsg-em
+    "EM",
+    # flake8-future-annotations (FA)
+    "FA",
+    # flake8-implicit-str-concat (ISC)
+    "ISC",
+    # flake8-import-conventions
+    "ICN",
+    # flake8-logging (LOG)
+    "LOG",
+    # flake8-logging-format (G)
+    "G",
+    # A flake8 extension that implements misc. lints
+    "PIE",
+    # flake8-pytest-style (PT)
+    "PT",
+    # flake8-quotes (Q)
+    "Q",
+    # flake8-raise (RSE) https://docs.astral.sh/ruff/rules/#flake8-raise-rse
+    "RSE",
+    # flake8-commas (COM)
+    # "COM", # 禁用避免ruff格式化冲突 https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+    # flake8-return (RET)
+    "RET",
+    # flake8-self (SLF)
+    "SLF",
+    # flake8-slots: A Flake8 plugin to require __slots__ to be defined for subclasses of immutable types.
+    "SLOT",
+    # flake8-tidy-imports
+    "TID",
+    # flake8-type-checking
+    # "tch",
+    # flake8-use-pathlib
+    # "pth",
+    # # prevent exception handling antipatterns in python: https://github.com/guilatrova/tryceratops
+    # "try",
+    # # flynt (fly): flynt - string formatting converter
+    # "fly",
+    # # perflint: a linter for performance anti-patterns
+    # "perf",
+    # # A tool for refurbishing and modernizing Python codebases. https://github.com/dosisod/refurb
+    "FURB",
+    # # Pydoclint is a Python docstring linter to check whether a docstring's sections (arguments, returns, raises, ...) match the function signature or function implementation.
+    # # NOTE: preview
+    # # "DOC",
+    # Ruff-specific rules
+    "RUF",
+]
+ignore = [
+    # "ANN201",
+    # "RUF001",
+    # 忽略doc中的全角字符如`，`
+    "RUF002",
+    # 忽略doc`：`
+    "RUF003",
+    # 禁用contextlib.suppress替换try-except-pass性能不好
+    "SIM105",
+    # 忽略检查subprocess args输入
+    "S603",
+]

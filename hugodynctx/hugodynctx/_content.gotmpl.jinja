@@ -1,0 +1,58 @@
+{{ '{{ $section := "%s" }}' % hugo.section }}
+{{ '{{ $environment := "%s" }}' % hugo.environment }}
+
+{% raw %}
+{{ if or (not $environment) (eq hugo.Environment $environment) }}
+
+    {{ .EnableAllLanguages }}
+
+    {{ $front_matter_sep_start := "---" }}
+    {{ $front_matter_sep_end := "---" }}
+
+    {{/* 获取数据`data/$section/$section.json|yaml|toml` */}}
+    {{ $dyn_content_data := index (index .Site.Data $section) $section }}
+
+    {{ range $src_path, $dyn_ctn := $dyn_content_data.src_contents }}
+        {{ $content_val := os.ReadFile $src_path }}
+        {{ if strings.HasPrefix $content_val $front_matter_sep_start }}
+            {{/* 移除front matter */}}
+            {{ $parts := strings.Split (strings.Substr $content_val (len $front_matter_sep_start)) $front_matter_sep_end }}
+            {{ if gt (len $parts) 1 }}
+                {{/* 分离出多个部分时，连接从1开始所有的部分，避免存在多个---时被分离掉 */}}
+                {{ $content_val = delimit (after 1 $parts) "" }}
+            {{ else }}
+                {{ fmt.Errorf "Not found %s end of front matter sep %s" $front_matter_sep_end $front_matter_sep_start }}
+            {{ end }}
+        {{ end }}
+
+        {{ $dyn_ctn_page := $dyn_ctn.page }}
+
+        {{/* 配置日期 */}}
+        {{ $dates := newScratch }}
+        {{ $dyn_page_dates := default dict $dyn_ctn_page.dates }}
+        {{ if $dyn_page_dates.date }}
+            {{ time.AsTime $dyn_page_dates.date | $dates.Set "date" }}
+        {{ end }}
+        {{ if $dyn_page_dates.lastmod }}
+            {{ time.AsTime $dyn_page_dates.lastmod | $dates.Set "lastmod" }}
+        {{ end }}
+        {{ if $dyn_page_dates.expiryDate }}
+            {{ time.AsTime $dyn_page_dates.expiryDate | $dates.Set "expiryDate" }}
+        {{ end }}
+        {{ if $dyn_page_dates.publishDate }}
+            {{ time.AsTime $dyn_page_dates.publishDate | $dates.Set "publishDate" }}
+        {{ end }}
+        {{ $dates = $dates.Values }}
+
+        {{ $page := dict
+            "content" (dict "value" $content_val)
+            "params" $dyn_ctn_page.params
+            "path" $dyn_ctn_page.path
+            "title" $dyn_ctn_page.title
+            "dates" $dates
+        }}
+        {{ $.AddPage $page }}
+    {{ end }}
+
+{{ end }}
+{% endraw %}

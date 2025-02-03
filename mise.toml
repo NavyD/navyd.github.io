@@ -1,0 +1,14 @@
+[tools]
+python = "3.13"
+uv = "0.5"
+
+[env]
+_.python.venv = { path = ".venv", create = true }
+_.file = ".env"
+
+# pytest 多线程测试 https://github.com/pytest-dev/pytest-xdist
+PYTEST_ADDOPTS = '-n auto'
+
+# uv pip在所有索引中搜索每个包，并从组合的候选版本中选择最佳版本
+# https://docs.astral.sh/uv/configuration/indexes/#searching-across-multiple-indexes
+UV_INDEX_STRATEGY = "unsafe-best-match"
