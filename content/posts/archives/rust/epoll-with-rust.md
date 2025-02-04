@@ -4,9 +4,9 @@ date: 2022-04-11T23:39:05+08:00
 draft: true
 ---
 
-> 原文链接: [https://www.zupzup.org/epoll-with-rust/index.html](https://www.zupzup.org/epoll-with-rust/index.html)  
-> **翻译：[BK0717](https://github.com/hyuuko)**  
-> 选题：[trdthg](https://github.com/trdthg)  
+> 原文链接: [https://www.zupzup.org/epoll-with-rust/index.html](https://www.zupzup.org/epoll-with-rust/index.html)
+> **翻译：[BK0717](https://github.com/hyuuko)**
+> 选题：[trdthg](https://github.com/trdthg)
 > 本文由 [Rustt](https://rustt.org/) 翻译，[StudyRust](https://studyrust.org/) 荣誉推出
 
 我已经在许多语言中（比如 JavaScript (Node.js)、Java/Kotlin 和 Rust）使用异步或非阻塞 IO 许多年了。
@@ -26,7 +26,7 @@ draft: true
 
 首先，让我们定义一个从 mio 复制过来的辅助用的宏，用来调用 libc 的系统调用并且用 `Result` 包装结果。
 
-```
+```rust
 #[allow(unused_macros)]
 macro_rules! syscall {
     ($fn: ident ( $($arg: expr),* $(,)* ) ) => {{
@@ -44,7 +44,7 @@ macro_rules! syscall {
 
 接下来，我们需要在 `127.0.0.1:8000` 启动一个 TCP 服务器，我们可以稍候进行测试：
 
-```
+```rust
 use std::os::unix::io::{AsRawFd, RawFd};
 use std::io;
 use std::io::prelude::*;
@@ -73,7 +73,7 @@ fn main() -> io::Result<()> {
 
 接下来，让我们设置我们的 epoll 事件队列。
 
-```
+```rust
 fn main() -> io::Result<()> {
     ...
 
@@ -97,7 +97,7 @@ fn epoll_create() -> io::Result<RawFd> {
 
 一步一步来，现在我们已经有了 epoll，我们想要添加一个对传入的连接的兴趣。
 
-```
+```rust
 const READ_FLAGS: i32 = libc::EPOLLONESHOT | libc::EPOLLIN;
 const WRITE_FLAGS: i32 = libc::EPOLLONESHOT | libc::EPOLLOUT;
 
@@ -131,7 +131,7 @@ fn listener_read_event(key: u64) -> libc::epoll_event {
 
 我们的服务器已经建立起来了，epoll 队列和对新的连接的兴趣也有了，下一步就是我们的事件循环！
 
-```
+```rust
 fn main() -> io::Result<()> {
     ...
     let mut events: Vec<libc::epoll_event> = Vec::with_capacity(1024);
@@ -180,7 +180,7 @@ fn main() -> io::Result<()> {
 
 首先，我们简单的迭代 `events` 并匹配 `events` 里的 u64 值，这是我们对感兴趣的每个文件描述符提供的唯一的 key。
 
-```
+```rust
 #[derive(Debug)]
 pub struct RequestContext {
     pub stream: TcpStream,
@@ -243,7 +243,7 @@ fn modify_interest(epoll_fd: RawFd, fd: RawFd, mut event: libc::epoll_event) -> 
 
 好的，这就是接受连接的部分。下一步是将传入的 HTTP 请求读入一个缓冲区，然后写回一个请求 —— 全部以非阻塞方式。
 
-```
+```rust
 fn main() -> io::Result<()> {
     ...
                 key => {
@@ -277,7 +277,7 @@ fn main() -> io::Result<()> {
 
 我们先处理 `read` 的情况，也就是 `EPOLLIN`。在此例中，我们在这个 `RequestContext` 上调用 `read_cb` 方法：
 
-```
+```rust
 impl RequestContext {
 ...
     fn read_cb(&mut self, key: u64, epoll_fd: RawFd) -> io::Result<()> {
@@ -339,7 +339,7 @@ impl RequestContext {
 
 在注册了对写就绪事件的兴趣后，我们期待 `EPOLLOUT` 标志会被设置：
 
-```
+```rust
 fn main() -> io::Result<()> {
     ...
                             v if v as i32 & libc::EPOLLOUT == libc::EPOLLOUT => {
@@ -353,7 +353,7 @@ fn main() -> io::Result<()> {
 
 如果 `EPOLLOUT` 标志被设置了，我们就调用 `write_cb`，并将该 `RequestContext` 标记为待删除，这是因为我们完成数据写入后，我们的工作就做完了，该进行清理工作了。
 
-```
+```rust
 impl RequestContext {
 ...
     fn write_cb(&mut self, key: u64, epoll_fd: RawFd) -> io::Result<()> {
@@ -402,7 +402,7 @@ fn remove_interest(epoll_fd: RawFd, fd: RawFd) -> io::Result<()> {
 
 因此，让我们向服务器发送一些运行的更长的请求：
 
-```
+```sh
 while true; do curl --location --request \
 POST 'http://localhost:8000/upload' \
 --form 'file=@/home/somewhere/some_image.png' \
