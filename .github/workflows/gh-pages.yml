@@ -68,3 +68,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
+          # 在gh-pages分支只保留最后一個提交，避免过去的pages提交增加仓库大小
+          force_orphan: true
