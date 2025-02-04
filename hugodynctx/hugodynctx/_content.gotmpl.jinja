@@ -14,10 +14,16 @@
 
     {{ range $src_path, $dyn_ctn := $dyn_content_data.src_contents }}
         {{ $content_val := os.ReadFile $src_path }}
+        {{ $front_matter := dict }}
         {{ if strings.HasPrefix $content_val $front_matter_sep_start }}
             {{/* 移除front matter */}}
             {{ $parts := strings.Split (strings.Substr $content_val (len $front_matter_sep_start)) $front_matter_sep_end }}
             {{ if gt (len $parts) 1 }}
+                {{ $front_matter = index $parts 0 | unmarshal }}
+                {{/* 跳过draft */}}
+                {{ if and $front_matter.draft (not $.Site.BuildDrafts) }}
+                    {{ continue }}
+                {{ end }}
                 {{/* 分离出多个部分时，连接从1开始所有的部分，避免存在多个---时被分离掉 */}}
                 {{ $content_val = delimit (after 1 $parts) "" }}
             {{ else }}
