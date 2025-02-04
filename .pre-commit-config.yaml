@@ -1,0 +1,98 @@
+# https://pre-commit.com/#adding-pre-commit-plugins-to-your-project
+ci:
+  autofix_prs: false
+# pre-commit install --hook-type pre-commit --hook-type pre-push
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+  - post-checkout
+  - post-merge
+  - pre-push
+fail_fast: true
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-illegal-windows-names
+        stages: [pre-commit]
+      - id: check-case-conflict
+        stages: [pre-commit]
+      - id: trailing-whitespace
+        stages: [pre-commit]
+      - id: check-json
+        stages: [pre-commit]
+      - id: check-toml
+        stages: [pre-commit]
+      - id: check-xml
+        stages: [pre-commit]
+      - id: check-executables-have-shebangs
+        stages: [pre-commit]
+      - id: name-tests-test
+        stages: [pre-commit]
+        args: [--pytest-test-first]
+      # Checks for symlinks which do not point to anything.
+      - id: check-symlinks
+        stages: [pre-commit]
+      # for windows create symlink in this repo
+      - id: destroyed-symlinks
+        stages: [pre-commit]
+      - id: check-added-large-files
+        stages: [pre-commit]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.4
+    hooks:
+      - id: ruff
+        stages: [pre-commit]
+        args: [--fix]
+      - id: ruff-format
+        stages: [pre-commit]
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    # uv version.
+    rev: 0.5.27
+    hooks:
+      # Update the uv lockfile
+      - id: uv-lock
+        stages: [pre-commit]
+      - id: uv-export
+        stages: [pre-commit]
+        name: uv-run-mypy
+        description: run mypy check with uv
+        entry: uv run mypy
+        language: python
+        # 清空覆盖原有配置，使用types_or选择文件类型
+        files: ""
+        types_or: [python, pyi]
+        # 覆盖，通过文件名作为参数
+        pass_filenames: true
+        # 单进程执行 if true this hook will execute using a single process instead of in parallel.
+        require_serial: true
+        args: []
+  # Protect and discover secrets using Gitleaks
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.23.3
+    hooks:
+      - id: gitleaks
+        stages: [pre-commit]
+  # Static checker for GitHub Actions workflow files
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.7
+    hooks:
+      - id: actionlint
+        stages: [pre-commit]
+  # check code for common misspellings
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        stages: [pre-commit]
+        args:
+          - --ignore-words-list
+          - rime,Rime
+  # Create committing rules for projects 🚀 auto bump versions ⬆️ and auto changelog generation
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.1.1
+    hooks:
+      - id: commitizen
+      # - id: commitizen-branch
+
