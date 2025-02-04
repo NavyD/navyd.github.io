@@ -60,7 +60,7 @@ jobs:
         run: uv cache prune --ci
 
       - name: Build
-        run: hugo --minify
+        run: hugo --minify --environment production
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
@@ -70,3 +70,5 @@ jobs:
           publish_dir: ./public
           # 在gh-pages分支只保留最后一個提交，避免过去的pages提交增加仓库大小
           force_orphan: true
+          # TODO: 自定义域名
+          # cname: blog.navyd.xyz

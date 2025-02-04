@@ -1,4 +1,3 @@
-baseURL = "https://blog.navyd.xyz"
 theme = "hugo-theme-stack"
 ignoreFiles = ['content/res/']
 favicon = "/favicon.ico"
