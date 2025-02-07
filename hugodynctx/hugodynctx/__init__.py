@@ -217,7 +217,7 @@ class GenerateContext(abc.ABC):
             raise FrontMatterParseError(first_line, post_path)
 
     def generate(self) -> tuple[str, ContentAdapter]:
-        self.log.debug("Loading html from %s", self.html_path)
+        self.log.debug("Generating context for post %s", self.post_path)
         with open(self.html_path) as hf:
             doc = bs4.BeautifulSoup(hf, "lxml")
 
@@ -307,20 +307,28 @@ class GenerateContext4StackTheme(GenerateContext):
         summary = ""
         head_doc = content_doc.select_one("h1[id],h2[id]")
         if head_doc:
+            # 取head前的内容
             for sib in reversed(list(head_doc.previous_siblings)):
                 summary += sib.text
             summary = summary.strip()
             if isinstance(summ_len := self.config.data.summarylength, int):
                 if not summary:
-                    summary = head_doc.text.lstrip()
+                    summary = head_doc.text.strip()
+                    if summary == page.get("title", "").strip():
+                        # 如果h1/h2前无内容且与title一样，则移除h1本身避免重复
+                        summary = ""
+                    # 取head后内容直到满足len
                     for sib in head_doc.next_siblings:
                         if len(summary) >= summ_len:
                             break
                         summary += sib.text
                     summary = summary.rstrip()
                 padding = "..."
-                if summ_len > len(padding) and summ_len < len(summary):
-                    summary = f"{summary[: summ_len - len(padding)]}{padding}"
+                # 截取超出长度的部分
+                if (summ_pad_len := summ_len - len(padding)) > 0 and summ_len < len(
+                    summary
+                ):
+                    summary = f"{summary[:summ_pad_len]}{padding}"
         else:
             summary = None
         params["description"] = summary
@@ -447,9 +455,7 @@ class ContentBuilder:
             self._hugo_conf.binpath,
             "build",
             "--buildDrafts",
-            "--cleanDestinationDir",
             "--buildExpired",
-            "--gc",
             *(("--environment", environment) if environment else ()),
         ]
         self.log.info("Build hugo with args: %s", args)
