@@ -209,7 +209,14 @@ class GenerateContext(abc.ABC):
                     front_matter_text = f"{front_matter_text}{line}"
                 self.log.debug("Loading yaml front matter data")
                 # NOTE: 使用定制的date解析为str避免默认的datetime导致需要格式化
-                return yaml.load(front_matter_text, Loader=DateLoader)  # noqa: S506
+                front_matter = yaml.load(front_matter_text, Loader=DateLoader)  # noqa: S506
+                if not isinstance(front_matter, dict):
+                    self.log.error(
+                        "Expecting front_matter to be dict but actually of type %s",
+                        type(front_matter),
+                    )
+                    raise TypeError(front_matter)
+                return front_matter
 
             self.log.error(
                 "Unsupported front matter %s for file %s", first_line, post_path
@@ -329,9 +336,7 @@ class GenerateContext4StackTheme(GenerateContext):
                     summary
                 ):
                     summary = f"{summary[:summ_pad_len]}{padding}"
-        else:
-            summary = None
-        params["description"] = summary
+        params["description"] = summary or None
 
         # 获取第1个image作为cover
         cover = None
@@ -339,8 +344,7 @@ class GenerateContext4StackTheme(GenerateContext):
         for path in post_dir.glob("*"):
             ty, _ = mimetypes.guess_type(path)
             if ty and ty.startswith("image"):
-                cover = path.relative_to(post_dir)
-                cover = str(cover)
+                cover = str(path.relative_to(post_dir))
                 break
         # 不存在本地image时获取首个img元素链接作为cover
         if not cover and (img_doc := article_doc.select_one("img[src][loading]")):
@@ -435,7 +439,11 @@ class ContentBuilder:
             ).is_file()
             or (
                 sect_dir.is_dir()
-                and (sect_paths := set(sect_dir.glob("*")))
+                and (
+                    sect_paths := {  # type: ignore[assignment]
+                        str(p) for p in sect_dir.glob("*")
+                    }
+                )
                 != {".gitignore", self._ctx_gotmpl_name}
             )
         ):
@@ -552,13 +560,13 @@ class ContentBuilder:
 
 
 @typing.overload
-def json_dump(data: object, file: typing.IO) -> None: ...
+def json_dump(data: object, file: typing.IO[str]) -> None: ...
 @typing.overload
 def json_dump(data: object) -> str: ...
-def json_dump(data: object, file: typing.IO | None = None) -> str | None:
+def json_dump(data: object, file: typing.IO[str] | None = None) -> str | None:
     # NOTE: [Make the Python json encoder support Python's new dataclasses](https://stackoverflow.com/a/51286749/8566831)
     # NOTE: [Saving UTF-8 texts with json.dumps as UTF-8, not as a \u escape sequence](https://stackoverflow.com/a/18337754/8566831)
-    opt = {"ensure_ascii": False, "indent": 2}
+    opt: dict[str, typing.Any] = {"ensure_ascii": False, "indent": 2}
     if file:
         json.dump(data, file, **opt)
         return None

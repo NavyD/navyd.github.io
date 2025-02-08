@@ -14,6 +14,13 @@ dependencies = [
     "typer-slim[standard]>=0.15.1",
 ]
 
+[dependency-groups]
+dev = [
+    "mypy<2.0.0,>=1.11.2",
+    "types-beautifulsoup4>=4.12.0.20250204",
+    "types-pyyaml>=6.0.12.20241230",
+]
+
 [project.scripts]
 hugodynctx = "hugodynctx:main"
 
@@ -132,4 +139,11 @@ ignore = [
     "SIM105",
     # 忽略检查subprocess args输入
     "S603",
+]
+
+[tool.mypy]
+strict = true
+exclude = [
+    # 忽略所有非py项目目录
+    '^(?!hugodynctx[/\\]?).*$',
 ]
