@@ -167,6 +167,10 @@ class GenerateContext(abc.ABC):
             rel_section_html_path = rel_section_path.with_suffix("").joinpath(
                 "index.html"
             )
+        # 如果存在空格则替换为-避免无法找到对应html目录
+        rel_section_html_path = rel_section_html_path.parent.with_name(
+            rel_section_html_path.parent.name.replace(" ", "-")
+        ).joinpath(rel_section_html_path.name)
         return self.config.public_dir.joinpath(rel_section_html_path)
 
     @cached_property
