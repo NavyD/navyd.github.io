@@ -2,8 +2,12 @@
 date: 2025-02-04T15:40:12+08:00
 tags:
   - hugo
+  - actions
+  - github
 ---
 # hugo博客实践
+
+![](20250204223346.png)
 
 ## hugo new content
 
@@ -66,3 +70,40 @@ hugo new "posts/$(Get-Date -Format 'yyyy/MM')/my posts"
 在github上发现大部分都是使用解析一个data.json文件添加到page，而不是复杂的解析md文件，问题就变成了解析md文件到json再使用`_content.gotmpl`解析添加到page
 
 由于hugo不支持调用外部命令运行[Configuration option to invoke a command upon build #9460](https://github.com/gohugoio/hugo/issues/9460)，在`hugo server|build`等命令运行前需要处理好data.json避免部分数据更新无效的问题
+
+## 部署gh-pages
+
+
+### gh-pages分支
+
+在gh-pages分支中保留当前构建的static页面，默认情况下会保留deploy的提交，可能导致仓库大小激增。
+
+![](20250204224213.png)
+
+在[actions-gh-pages #Force orphan `force_orphan`](https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-force-orphan-force_orphan)中提到可以使用`force_orphan: true`仅保留最新提交
+
+```yaml
+- name: Deploy
+  uses: peaceiris/actions-gh-pages@v4
+  with:
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+    publish_dir: ./public
+    force_orphan: true
+```
+
+### baseUrl
+
+如果域名根目录指向主页，无需设置baseUrl
+
+参考：
+
+* [How put the URL base?](https://discourse.gohugo.io/t/how-put-the-url-base/45920)
+* [hugo: Host on GitHub Pages](https://gohugo.io/hosting-and-deployment/hosting-on-github/)
+
+## Obsidian
+
+### hugo兼容ob链接
+
+目前未找到兼容`![[img]]`,`[[post.md]]`转换为标准md链接的方式，只能修改obsidian从默认wiki方式转为标准的md链接避免这个问题
+
+![](20250204233158.png)
