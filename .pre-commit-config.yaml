@@ -80,19 +80,29 @@ repos:
     hooks:
       - id: actionlint
         stages: [pre-commit]
-  # check code for common misspellings
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.17.2
     hooks:
-      - id: codespell
+      - id: markdownlint-cli2
+        args: [--fix]
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.29.5
+    hooks:
+      - id: typos
+  - repo: local
+    hooks:
+      - id: autocorrect-fix
         stages: [pre-commit]
-        args:
-          - --ignore-words-list
-          - rime,Rime
+        name: autocorrect-fix
+        entry: autocorrect --fix
+        language: system
+        types: [markdown, text]
+        files: ^content/
+        pass_filenames: true
+        require_serial: true
   # Create committing rules for projects 🚀 auto bump versions ⬆️ and auto changelog generation
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.1.1
     hooks:
       - id: commitizen
       # - id: commitizen-branch
-

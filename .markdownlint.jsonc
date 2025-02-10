@@ -1,0 +1,7 @@
+// 兼容
+// - https://github.com/DavidAnson/vscode-markdownlint
+// - https://github.com/DavidAnson/markdownlint-cli2
+{
+    // disable line length
+    "MD013": false
+}
