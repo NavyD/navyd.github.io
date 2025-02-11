@@ -155,7 +155,9 @@ ignore = [
 strict = true
 exclude = [
     # 忽略所有非py项目目录
-    '^(?!hugodynctx[/\\]?).*$',
+    '^(?!hugodynctx).*$',
+    # 忽略tests目录
+    '^hugodynctx/tests/.*$'
 ]
 
 [tool.pytest.ini_options]

@@ -58,13 +58,13 @@ repos:
         stages: [pre-commit]
         name: uv-run-mypy
         description: run mypy check with uv
-        entry: uv run mypy
+        entry: uv run mypy .
         language: python
         # 清空覆盖原有配置，使用types_or选择文件类型
         files: ""
         types_or: [python, pyi]
         # 覆盖，通过文件名作为参数
-        pass_filenames: true
+        pass_filenames: false
         # 单进程执行 if true this hook will execute using a single process instead of in parallel.
         require_serial: true
         args: []
