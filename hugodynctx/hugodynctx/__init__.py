@@ -13,8 +13,6 @@ import subprocess
 import sys
 import tempfile
 import typing
-import urllib
-import urllib.parse
 import uuid
 from collections.abc import Sequence
 from functools import cached_property
@@ -103,6 +101,10 @@ class HugoConfig:
     def config_dir(self) -> pathlib.Path:
         return self.workingdir.joinpath("config")
 
+    @property
+    def root_dir(self) -> pathlib.Path:
+        return self.workingdir
+
     def get_section_dir(self, section: str | os.PathLike[str]) -> pathlib.Path:
         return self.content_dir.joinpath(section)
 
@@ -155,14 +157,26 @@ DateLoader.add_constructor("tag:yaml.org,2002:timestamp", front_matter_date_cons
 
 class PostContext:
     def __init__(self, post_path: str | os.PathLike[str], config: HugoConfig) -> None:
-        self.post_path = pathlib.Path(post_path)
+        # 检查并转换 post_path 为基于 config.root_dir 的路径
+        post_path = pathlib.Path(post_path)
+        if not post_path.is_file():
+            raise FileNotFoundError(post_path)
+        if not post_path.is_absolute():
+            if (cwd := pathlib.Path.cwd()) != config.root_dir:
+                raise ValueError(post_path, cwd, config.root_dir)
+            post_path = config.root_dir.joinpath(post_path)
+        if not post_path.is_relative_to(config.content_dir):
+            raise ValueError(post_path, config.content_dir)
+        self.post_path = post_path
         self.config = config
         self.log = LOG.getChild(self.__class__.__name__)
 
     @cached_property
     def post_abs_path(self) -> str:
-        # 当前post相对于hugo项目根目录的绝对路径，用于gotmpl中的`os.ReadFile`读取使用
-        return urllib.parse.urljoin("/", str(self.post_path))
+        """当前post相对于hugo项目根目录的绝对路径，用于gotmpl中的`os.ReadFile`读取使用"""
+        return str(
+            pathlib.Path("/").joinpath(self.post_path.relative_to(self.config.root_dir))
+        )
 
     @cached_property
     def html_path(self) -> pathlib.Path:
