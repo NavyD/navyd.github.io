@@ -163,22 +163,12 @@ exclude = [
 [tool.pytest.ini_options]
 # https://docs.pytest.org/en/7.3.x/explanation/goodpractices.html#tests-outside-application-code
 addopts = [
-    # 当assert fail时输出比较结果
-    # "-vv",
-    # pytest-xdist 多线程测试
-    # NOTE: Due to how pytest-xdist is implemented, the -s/--capture=no option does not work.
-    # "-n=auto",
+    #  Show N slowest setup/test durations
     "--durations=10",
-    # 快速失败 or -x
-    # "--exitfirst",
-    "--import-mode=importlib",
     # [pytest-cov Reference](https://pytest-cov.readthedocs.io/en/latest/config.html#reference)
-    "--cov=hugodynctx",
+    "--cov=hugodynctx/hugodynctx",
     # 同时输出html到指定路径中 与 term终端
-    "--cov-report=html:hugodynctx/htmlcov",
+    # "--cov-report=html:hugodynctx/htmlcov",
+    "--cov-report=html",
     "--cov-report=term",
 ]
-# pytest import mechanisms and sys.path/PYTHONPATH: https://docs.pytest.org/en/7.1.x/explanation/pythonpath.html#pytest-import-mechanisms-and-sys-path-pythonpath
-pythonpath = ["hugodynctx"]
-# 避免pytest-timeout测试时fixture超时 https://github.com/pytest-dev/pytest-timeout#avoiding-timeouts-in-fixtures
-timeout_func_only = true
