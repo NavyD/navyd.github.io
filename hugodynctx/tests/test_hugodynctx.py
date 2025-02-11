@@ -60,8 +60,12 @@ class TestPostContext:
 
     @pytest.fixture
     def mock_post_context(self, post_path, hugo_config, mocker: MockerFixture):
-        with mocker.patch(get_fullname(pathlib.Path.is_file), return_value=True):
-            return PostContext(post_path, hugo_config)
+        mock_isfile = mocker.patch(get_fullname(pathlib.Path.is_file), return_value=True)
+        ctx = PostContext(post_path, hugo_config)
+        # NOTE: 提前终止mock避免影响后续执行
+        mocker.stop(mock_isfile)
+        yield ctx
+        mock_isfile.assert_called_once()
 
     @pytest.mark.parametrize(
         "post_path",
@@ -87,10 +91,8 @@ class TestPostContext:
         rel_post_path = hugo_config.content_dir.relative_to(
             hugo_config.root_dir
         ).joinpath("posts/fuck.md")
-        with (
-            mocker.patch(get_fullname(pathlib.Path.is_file), return_value=True),
-            pytest.raises(ValueError) as exc,
-        ):
+        mocker.patch(get_fullname(pathlib.Path.is_file), return_value=True)
+        with pytest.raises(ValueError) as exc:
             PostContext(rel_post_path, hugo_config)
         assert exc.value.args[0] == rel_post_path
         assert exc.value.args[1] == new_cwd
@@ -100,10 +102,8 @@ class TestPostContext:
         self, tmp_path: Path, hugo_config: HugoConfig, mocker: MockerFixture
     ):
         abs_post_path = tmp_path.joinpath(uuid.uuid4().hex[:8]).joinpath("fuck post.md")
-        with (
-            mocker.patch(get_fullname(pathlib.Path.is_file), return_value=True),
-            pytest.raises(ValueError) as exc,
-        ):
+        mocker.patch(get_fullname(pathlib.Path.is_file), return_value=True)
+        with pytest.raises(ValueError) as exc:
             PostContext(abs_post_path, hugo_config)
         assert exc.value.args[0] == abs_post_path
 
@@ -115,8 +115,8 @@ class TestPostContext:
         ],
     )
     def test_post_abs_path(self, mocker: MockerFixture, hugo_config, post_path, expect):
-        with mocker.patch(get_fullname(pathlib.Path.is_file), return_value=True):
-            ctx = PostContext(post_path, hugo_config)
+        mocker.patch(get_fullname(pathlib.Path.is_file), return_value=True)
+        ctx = PostContext(post_path, hugo_config)
         assert ctx.post_abs_path == str(Path(expect))
 
     @pytest.mark.parametrize(
