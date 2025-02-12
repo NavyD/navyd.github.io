@@ -34,25 +34,37 @@ def merge_dict(a: dict, b: dict, path: list[str] | None = None):
 
 class TestPostContext:
     @pytest.fixture
-    def hugo_config(self, mocker: MockerFixture, tmp_path):
+    def hugo_config(
+        self, mocker: MockerFixture, tmp_path: Path, request: pytest.FixtureRequest
+    ):
+        param = getattr(request, "param", None)
+        config: dict | None = None
+        cwd = tmp_path
+        if param:
+            if not isinstance(param, dict):
+                raise TypeError(param)
+            config = param.get("config", config)
+            cwd = param.get("cwd", cwd)
+
+        default_config = {
+            "contentdir": "content",
+            "datadir": "data",
+            "publishdir": "public",
+            "workingdir": str(cwd),
+        }
         mock_which = mocker.patch(
             get_fullname(shutil.which), return_value="/mock/path/to/bin/hugo"
         )
         mock_output = mocker.patch(
             get_fullname(subprocess.check_output),
-            return_value=json.dumps(
-                {
-                    "contentdir": "content",
-                    "datadir": "data",
-                    "publishdir": "public",
-                }
-            ).encode(),
+            return_value=json.dumps(merge_dict(default_config, config or {})).encode(),
         )
+
         # 避免后续路径出错
         old_cwd = os.getcwd()
-        os.chdir(tmp_path)
+        os.chdir(cwd)
 
-        yield HugoConfig(work_dir=tmp_path)
+        yield HugoConfig()
 
         os.chdir(old_cwd)
         mock_output.assert_called_once()
@@ -79,33 +91,30 @@ class TestPostContext:
         with pytest.raises(FileNotFoundError):
             PostContext(post_path, hugo_config)
 
-    def test_init_error_when_cwd_is_not_config_root_dir(
-        self, hugo_config: HugoConfig, tmp_path: Path, mocker: MockerFixture
-    ):
-        # assert tmp_path != Path.cwd()
-        # NOTE: tmp_path与fixture时的tmp_path一样可能导致未改变cwd
-        new_cwd = tmp_path.joinpath(uuid.uuid4().hex[:8])
-        new_cwd.mkdir(parents=True)
-        os.chdir(new_cwd)
-
-        rel_post_path = hugo_config.content_dir.relative_to(
-            hugo_config.root_dir
-        ).joinpath("posts/fuck.md")
-        mocker.patch(get_fullname(pathlib.Path.is_file), return_value=True)
-        with pytest.raises(ValueError) as exc:
-            PostContext(rel_post_path, hugo_config)
-        assert exc.value.args[0] == rel_post_path
-        assert exc.value.args[1] == new_cwd
-        assert exc.value.args[2] == hugo_config.root_dir
-
+    @pytest.mark.parametrize(
+        "post_path",
+        [
+            pytest.param(
+                "c:/mock/post.md",
+                marks=pytest.mark.skipif(os.name != "nt", reason="跳过win的绝对路径"),
+            ),
+            pytest.param(
+                "/mock/post.md",
+                marks=pytest.mark.skipif(os.name == "nt", reason="跳过非win的绝对路径"),
+            ),
+            # 使用相对路径
+            "fuck/post.md",
+            "post.md",
+        ],
+    )
     def test_init_error_when_post_path_not_relative_to_config_content_dir(
-        self, tmp_path: Path, hugo_config: HugoConfig, mocker: MockerFixture
+        self, hugo_config: HugoConfig, mocker: MockerFixture, post_path
     ):
-        abs_post_path = tmp_path.joinpath(uuid.uuid4().hex[:8]).joinpath("fuck post.md")
+        post_path = Path(post_path).absolute()
         mocker.patch(get_fullname(pathlib.Path.is_file), return_value=True)
         with pytest.raises(ValueError) as exc:
-            PostContext(abs_post_path, hugo_config)
-        assert exc.value.args[0] == abs_post_path
+            PostContext(post_path, hugo_config)
+        assert exc.value.args[0] == post_path
 
     @pytest.mark.parametrize(
         ("post_path", "expect"),

@@ -46,7 +46,6 @@ class HugoConfig:
         work_dir: str | os.PathLike[str] = ".",
         binpath: str = "hugo",
     ) -> None:
-        self._work_dir = pathlib.Path(work_dir)
         self.log = LOG.getChild(self.__class__.__name__)
 
         hugo_bin_path = shutil.which(binpath)
@@ -65,7 +64,8 @@ class HugoConfig:
         s = subprocess.check_output(conf_args, cwd=work_dir).decode()
         self._config: dict[str, typing.Any] = json.loads(s)
         self._environment = environment
-        self._work_dir = pathlib.Path(work_dir)
+        # NOTE: 避免使用resolve()可能由于解析link与post_path不一致
+        self._work_dir = pathlib.Path(work_dir).absolute()
 
     @property
     def environment(self) -> str | None:
@@ -81,8 +81,8 @@ class HugoConfig:
 
     @property
     def workingdir(self) -> pathlib.Path:
-        # return pathlib.Path(self._config["workingdir"])
         # NOTE: workingdir是绝对路径，可能会于work_dir不一致
+        # return pathlib.Path(self._config["workingdir"])
         return self._work_dir
 
     @property
@@ -161,10 +161,7 @@ class PostContext:
         post_path = pathlib.Path(post_path)
         if not post_path.is_file():
             raise FileNotFoundError(post_path)
-        if not post_path.is_absolute():
-            if (cwd := pathlib.Path.cwd()) != config.root_dir:
-                raise ValueError(post_path, cwd, config.root_dir)
-            post_path = config.root_dir.joinpath(post_path)
+        post_path = post_path.absolute()
         if not post_path.is_relative_to(config.content_dir):
             raise ValueError(post_path, config.content_dir)
         self.post_path = post_path
@@ -610,8 +607,10 @@ class ContentBuilder:
         )
 
         ctn_gotmpl_path = section_dir.joinpath(self._ctx_gotmpl_name)
-        self.log.debug(
-            "Writing %s length to %s", len(dyn_ctx_gotmpl_str), ctn_gotmpl_path
+        self.log.info(
+            "Generating content adapter template with %s chars into %s",
+            len(dyn_ctx_gotmpl_str),
+            ctn_gotmpl_path,
         )
         with open(ctn_gotmpl_path, "w+") as f:
             f.write(dyn_ctx_gotmpl_str)
