@@ -2,6 +2,7 @@ import abc
 import concurrent
 import concurrent.futures
 import datetime
+import errno
 import json
 import logging
 import mimetypes
@@ -157,6 +158,7 @@ DateLoader.add_constructor("tag:yaml.org,2002:timestamp", front_matter_date_cons
 
 class PostContext:
     def __init__(self, post_path: str | os.PathLike[str], config: HugoConfig) -> None:
+        """post_path: 相对于hugo root的相对路径或绝对路径"""
         # 检查并转换 post_path 为基于 config.root_dir 的路径
         post_path = pathlib.Path(post_path)
         if not post_path.is_file():
@@ -188,7 +190,26 @@ class PostContext:
         rel_section_html_path = rel_section_html_path.parent.with_name(
             rel_section_html_path.parent.name.replace(" ", "-")
         ).joinpath(rel_section_html_path.name)
-        return self.config.public_dir.joinpath(rel_section_html_path)
+        html_path = self.config.public_dir.joinpath(rel_section_html_path)
+        if not html_path.is_file():
+            pub_html_paths = list(self.config.public_dir.rglob("*.html"))
+            self.log.error(
+                "Not found html path %s of post path %s "
+                "in %s html paths under public dir %s: %s",
+                html_path,
+                self.post_path,
+                len(pub_html_paths),
+                self.config.public_dir,
+                pub_html_paths,
+            )
+            raise FileNotFoundError(
+                errno.ENOENT,
+                os.strerror(errno.ENOENT),
+                html_path,
+                errno.WSAEACCES if os.name == "nt" else None,
+                self.post_path,
+            )
+        return html_path
 
     @cached_property
     def front_matter(self) -> box.Box:

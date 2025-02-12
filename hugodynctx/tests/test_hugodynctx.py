@@ -64,7 +64,11 @@ class TestPostContext:
         old_cwd = os.getcwd()
         os.chdir(cwd)
 
-        yield HugoConfig()
+        hc = HugoConfig()
+        for p in {hc.config_dir, hc.content_dir, hc.data_dir}:
+            p.mkdir(parents=True, exist_ok=True)
+
+        yield hc
 
         os.chdir(old_cwd)
         mock_output.assert_called_once()
@@ -142,8 +146,40 @@ class TestPostContext:
             ),
         ],
     )
-    def test_html_path(self, mock_post_context: PostContext, expect):
+    def test_html_path(self, mock_post_context: PostContext, expect, mocker):
         expect = Path(expect)
         if not expect.is_absolute():
             expect = mock_post_context.config.root_dir.joinpath(expect)
+        mock_isfile = mocker.patch(get_fullname(Path.is_file), return_value=True)
         assert mock_post_context.html_path == expect
+        mock_isfile.assert_called_once()
+
+    @pytest.mark.parametrize(
+        ("post_path", "files_in_public_dir"),
+        [
+            ("content/section/post.md", None),
+            (
+                "content/section/fuck   a post  /index.md",
+                ["public/section/a.html", "public/img.jpg"],
+            ),
+        ],
+    )
+    def test_html_path_error_when_html_path_not_found(
+        self,
+        mock_post_context: PostContext,
+        files_in_public_dir: list[str | os.PathLike[str]] | None,
+        mocker: MockerFixture,
+    ):
+        files_in_public_dir = files_in_public_dir or []
+        mock_rglob = mocker.patch(
+            get_fullname(Path.rglob), return_value=iter(files_in_public_dir)
+        )
+        with pytest.raises(FileNotFoundError) as exc:
+            _ = mock_post_context.html_path
+        mocker.stop(mock_rglob)
+
+        mock_rglob.assert_called_once()
+        assert isinstance(exc.value.filename, Path)
+        assert exc.value.filename.is_relative_to(mock_post_context.config.public_dir)
+        assert isinstance(exc.value.filename2, Path)
+        assert exc.value.filename2 == mock_post_context.post_path
