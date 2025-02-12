@@ -140,9 +140,22 @@ class TestPostContext:
                 "content/posts/this is a post.md",
                 "public/posts/this-is-a-post/index.html",
             ),
+            # 连续的空格
             (
                 "content/posts/test      asdf     sdf -    sfa b     .md",
                 "public/posts/test------asdf-----sdf------sfa-b-----/index.html",
+            ),
+            (
+                "content/posts/IS CAPITAL  大　    小 　　　   a　　  　　写  letters/index.md",  # noqa: E501
+                "public/posts/is-capital--大----小----a--写--letters/index.html",
+            ),
+            (
+                "content/posts/this  IS CAPITAL  大　    小 　   a　写  letters  name.md",  # noqa: E501
+                "public/posts/this--is-capital--大----小----a-写--letters--name/index.html",
+            ),
+            (
+                "content/posts/2025/02/大　　　空　 　　格.md",
+                "public/posts/2025/02/大-空-格/index.html",
             ),
         ],
     )

@@ -9,6 +9,7 @@ import mimetypes
 import multiprocessing
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -179,18 +180,23 @@ class PostContext:
 
     @cached_property
     def html_path(self) -> pathlib.Path:
-        rel_section_path = self.post_path.relative_to(self.config.content_dir)
-        if rel_section_path.name == "index.md":
-            rel_section_html_path = rel_section_path.with_suffix(".html")
-        else:
-            rel_section_html_path = rel_section_path.with_suffix("").joinpath(
-                "index.html"
-            )
-        # 如果存在空格则替换为-避免无法找到对应html目录
-        rel_section_html_path = rel_section_html_path.parent.with_name(
-            rel_section_html_path.parent.name.replace(" ", "-")
-        ).joinpath(rel_section_html_path.name)
-        html_path = self.config.public_dir.joinpath(rel_section_html_path)
+        logical_path = self.post_path.relative_to(self.config.content_dir).parent
+        # logical-path https://gohugo.io/methods/page/path/
+        if self.post_path.name != "index.md":
+            # 1. Strips the file extension
+            name = self.post_path.stem
+            # TODO: 2. Strips the language identifie
+            logical_path = logical_path.joinpath(name)
+        # 3. Converts the result to lower case
+        # 4. Replaces spaces with hyphens
+        # logical_path_str = logical_path.as_posix().lower().replace(" ", "-")
+        logical_path_str = re.sub(
+            r"[\u3000]*\s[\u3000]*", "-", logical_path.as_posix().lower()
+        )
+
+        html_path = self.config.public_dir.joinpath(logical_path_str).joinpath(
+            "index.html"
+        )
         if not html_path.is_file():
             pub_html_paths = list(self.config.public_dir.rglob("*.html"))
             self.log.error(
