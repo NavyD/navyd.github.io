@@ -4,6 +4,7 @@
 [Site Variables](https://gohugo.io/variables/site/)
 [Sample Page.md](https://github.com/adityatelange/hugo-PaperMod/wiki/Installation#sample-pagemd)
 */}}
+title: {{ replace .Name "-" " " | title }}
 date: {{ .Date }}
 draft: true
 tags: []
@@ -12,5 +13,3 @@ tags: []
 ***Summary***
 
 <!--more-->
-
-# Title
