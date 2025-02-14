@@ -78,3 +78,7 @@ type = "toc"
 
 [params.colorScheme]
 toggle = true
+
+[markup.goldmark.renderer]
+# 渲染在md内的html元素： https://gohugo.io/getting-started/configuration-markup/#rendererunsafe
+unsafe = true

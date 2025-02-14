@@ -2,6 +2,13 @@
 // - https://github.com/DavidAnson/vscode-markdownlint
 // - https://github.com/DavidAnson/markdownlint-cli2
 {
+    "MD033": {
+        // 仅允许collapsible section
+        "allowed_elements": [
+            "details",
+            "summary"
+        ]
+    },
     // disable line length
     "MD013": false
 }
