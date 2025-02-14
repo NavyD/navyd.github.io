@@ -1,0 +1,61 @@
+{{/* $isHyperLink := or (hasPrefix (strings.TrimPrefix " " .Destination) "http://") (hasPrefix (strings.TrimPrefix " " .Destination) "https://") */}}
+{{/* TODO: 根据当前应用的主题动态切换link属性。[.Site.Theme?](https://discourse.gohugo.io/t/site-theme/33200) */}}
+<a  {{/* stack主题属性 */}}
+    class="link"
+{{ if findRE `^\s*.+://.+` .Destination 1 | len | eq 1 }} {{/* isHyperLink */}}
+    href="{{.Destination | safeURL}}"
+    {{/* stack主题属性 */}}
+    target="_blank"
+    rel="noopener"
+{{ else if findRE `^\s*/.*` .Destination 1 | len | eq 1 }} {{/* local absolutely path */}}
+    {{ errorf "unsupported absolutely link: %s" .Destination }}
+{{ else if findRE `^\s*#[^#]+` .Destination }}
+    {{/* parse markdown anchor. all ids are urlize in hugo */}}
+    href="{{ urls.URLize .Destination | safeURL }}"
+{{ else }} {{/* for relatively file path */}}
+    {{/* 对于内部文件链接转换为page链接 */}}
+    {{ $link_path := (urls.Parse .Destination).Path }}
+    {{ with .Page.GetPage $link_path }}
+        {{/*
+        NOTE: 在content adapter中的page无法获取其关联的page资源`.[Rel]Permalink`，
+        使用逻辑path代替即可
+        {{ warnf "the `%s` file   %s       a%s not managed by hugo in page `%s` of source file `%s`: %s" $link_path .Permalink .RelPermalink .Page.Path .Page.File.Path (.Page.Resources.Match "**") }}
+        */}}
+        href="{{ default .Path .RelPermalink | safeURL }}"
+    {{ else with .Page.Resources.Get $link_path }}
+        href="{{ .RelPermalink | safeURL }}"
+    {{ else }}
+        {{/*
+        对于 html,md 等内容资源会被视为page，实际文件名与page加载后的logical path可能不一致。
+        另外，leaf bundle中的page资源不会加载，这里直接过滤page类型即可
+        */}}
+        {{ $page_res := "" }}
+        {{ range .Page.Resources.ByType "page" }}
+            {{/* NOTE: 仅用于当前leaf bundule中的page资源，无法作用如`../../test.html`的page资源，
+                但对于这样的page资源会事先被`.Page.GetPage path`获取，所以无需处理
+            */}}
+            {{ if hasSuffix . $link_path }}
+                {{ $page_res = . }}
+                {{ break }}
+            {{ end }}
+        {{ end }}
+        {{ with $page_res }}
+            {{ $publishPath := urls.JoinPath $.Page.RelPermalink .Name }}
+            {{/* 发布一个page资源到public目录 */}}
+            {{ $page_res_permalink := (.Content | resources.FromString $publishPath).Permalink }}
+            {{ warnf "Published a link `%s` of page %s from `%s` to `%s`" $link_path $.Page.Permalink . $page_res_permalink }}
+            href="{{$page_res_permalink | safeURL}}"
+            {{/*
+            {{ warnf "the `%s` file not managed by hugo in page `%s` of source file `%s`: %s" $link_path .Page.Path (path.Split .Page.File.Path) (.Page.Resources.Match "**") }}
+            .Page.File.Path | urls.JoinPath "/" | hasPrefix .Page.Path
+             */}}
+        {{ else }}
+            {{/* 处理非page资源 */}}
+            href="{{ path.Join (urls.Parse .Page.Permalink).Path $link_path | absURL | safeURL }}"
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{ with .Title }}
+    title="{{ . }}"
+{{ end }}
+>{{ .Text | safeHTML }}</a>
