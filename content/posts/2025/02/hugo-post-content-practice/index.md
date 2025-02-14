@@ -15,9 +15,9 @@ tags:
 
 ## hugo new content
 
-在使用`hugo new content posts/your-post.md`创建一个md文件`content/posts/your-post.md`，但更好的博客目录结构可以使用`posts/2025/01/your-post/index.md`这种
+在使用`hugo new content posts/your-post.md`创建一个 md 文件`content/posts/your-post.md`，但更好的博客目录结构可以使用`posts/2025/01/your-post/index.md`这种
 
-根据[leaf-bundles](https://gohugo.io/content-management/archetypes/#leaf-bundles)自动创建叶子结点目录结构，根据常用的shell使用下面的命令运行即可
+根据[leaf-bundles](https://gohugo.io/content-management/archetypes/#leaf-bundles)自动创建叶子结点目录结构，根据常用的 shell 使用下面的命令运行即可
 
 ```bash
 hugo new posts/$(date +'%Y/%m')/'your post'
@@ -33,20 +33,20 @@ hugo new "posts/$(Get-Date -Format 'yyyy/MM')/my posts"
 - [“Hugo way” to create new content in year/month/subfolders?](https://discourse.gohugo.io/t/hugo-way-to-create-new-content-in-year-month-subfolders/36557)
 - [Dates in post filenames](https://discourse.gohugo.io/t/dates-in-post-filenames/26219)
 - [搭建好博客之后，纠结怎么组织文章的目录结构](https://linux.do/t/topic/206540)
-- [Page resources not working (as expected) with extract date and slug from filename funtionality #4558](https://github.com/gohugoio/hugo/issues/4558)
+- [Page resources not working (as expected) with extract date and slug from filename functionality #4558](https://github.com/gohugoio/hugo/issues/4558)
 - [Add a date to default filename](https://discourse.gohugo.io/t/add-a-date-to-default-filename/31059)
 
 ## 如何兼容多种主题
 
-由于多种主题间的params是不兼容的，一旦在md的[front matter](https://gohugo.io/content-management/front-matter/)中指定了主题的配置，会导致切换主题后无效。如果允许动态的修改front matter中的主题的配置，能轻易的兼容多种主题
+由于多种主题间的 params 是不兼容的，一旦在 md 的[front matter](https://gohugo.io/content-management/front-matter/)中指定了主题的配置，会导致切换主题后无效。如果允许动态的修改 front matter 中的主题的配置，能轻易的兼容多种主题
 
 ### 模板
 
-从模板中通过[Override the base template](https://gohugo.io/templates/base/#define-the-base-template)和[Template lookup order](https://gohugo.io/templates/lookup-order/)重置`.Site.Params`变量是不可行的，这是由于所有全局模板变量基本是只读的，无法更新，如果使用[hugo.Store](https://gohugo.io/functions/hugo/store/)允许更新但无法覆盖params api
+从模板中通过[Override the base template](https://gohugo.io/templates/base/#define-the-base-template)和[Template lookup order](https://gohugo.io/templates/lookup-order/)重置`.Site.Params`变量是不可行的，这是由于所有全局模板变量基本是只读的，无法更新，如果使用[hugo.Store](https://gohugo.io/functions/hugo/store/)允许更新但无法覆盖 params api
 
-在[Theme components](https://gohugo.io/hugo-modules/theme-components/)中提到允许指定`theme = ['my-shortcodes', 'base-theme']`覆盖主题，尽管也允许使用[Merge configuration from themes](https://gohugo.io/getting-started/configuration/)参考示例[Allow smarter merging of config (esp. params) from themes #8633](https://github.com/gohugoio/hugo/issues/8633)合并主题配置，但有这样一种需求是无法满足的：**当前post中如果存在1个图片链接则作为文章cover**
+在[Theme components](https://gohugo.io/hugo-modules/theme-components/)中提到允许指定`theme = ['my-shortcodes', 'base-theme']`覆盖主题，尽管也允许使用[Merge configuration from themes](https://gohugo.io/getting-started/configuration/)参考示例[Allow smarter merging of config (esp. params) from themes #8633](https://github.com/gohugoio/hugo/issues/8633)合并主题配置，但有这样一种需求是无法满足的：**当前 post 中如果存在 1 个图片链接则作为文章 cover**
 
-大多数主题都有cover图片配置参数，但这样的逻辑处理却需要动态处理，只能修改主题的处理逻辑。但如果可以在build page时修改front matter动态的设置cover就可以避免修改主题也能达成类似的效果
+大多数主题都有 cover 图片配置参数，但这样的逻辑处理却需要动态处理，只能修改主题的处理逻辑。但如果可以在 build page 时修改 front matter 动态的设置 cover 就可以避免修改主题也能达成类似的效果
 
 参考：
 
@@ -58,7 +58,7 @@ hugo new "posts/$(Get-Date -Format 'yyyy/MM')/my posts"
 - [Could I add Front Matter auto based on markdown file information #8638](https://github.com/gohugoio/hugo/issues/8638)
 - [Setting page params/variables from a template](https://discourse.gohugo.io/t/setting-page-params-variables-from-a-template/9505)
 
-#### hooks模板问题
+#### hooks 模板问题
 
 ##### 如何访问题部分中的 Config.toml 值
 
@@ -77,25 +77,25 @@ TODO
 
 ### Content adapters
 
-根据[Content adapters](https://gohugo.io/content-management/content-adapters/)通过go模板`content/$section/_content.gotmpl`在构建时动态添加page生成静态页面
+根据[Content adapters](https://gohugo.io/content-management/content-adapters/)通过 go 模板`content/$section/_content.gotmpl`在构建时动态添加 page 生成静态页面
 
 #### 问题
 
-`_content.gotmpl`模板只能在构建时使用，其相对于主题中能使用的众多模板Methods相当有限[content-adapters/#methods](https://gohugo.io/content-management/content-adapters/#methods)，只要是与[Page](https://gohugo.io/methods/page/)相关都不可用，如[Site.Config](https://gohugo.io/methods/page/)。
+`_content.gotmpl`模板只能在构建时使用，其相对于主题中能使用的众多模板 Methods 相当有限[content-adapters/#methods](https://gohugo.io/content-management/content-adapters/#methods)，只要是与[Page](https://gohugo.io/methods/page/)相关都不可用，如[Site.Config](https://gohugo.io/methods/page/)。
 
-想要动态生成元数据就需要解析md文件，但hugo目前不提供在构建阶段解析markdown,html的方法，如[transform.Markdownify](https://gohugo.io/functions/transform/markdownify/)在这个阶段使用将会出现`this method cannot be called before the site is fully initialized`错误。
+想要动态生成元数据就需要解析 md 文件，但 hugo 目前不提供在构建阶段解析 markdown,html 的方法，如[transform.Markdownify](https://gohugo.io/functions/transform/markdownify/)在这个阶段使用将会出现`this method cannot be called before the site is fully initialized`错误。
 
-另外，如果只用go模板，一旦代码规模稍大其可维护性必然很糟糕。
+另外，如果只用 go 模板，一旦代码规模稍大其可维护性必然很糟糕。
 
-在github上发现大部分都是使用解析一个data.json文件添加到page，而不是复杂的解析md文件，问题就变成了解析md文件到json再使用`_content.gotmpl`解析添加到page
+在 github 上发现大部分都是使用解析一个 data.json 文件添加到 page，而不是复杂的解析 md 文件，问题就变成了解析 md 文件到 json 再使用`_content.gotmpl`解析添加到 page
 
-由于hugo不支持调用外部命令运行[Configuration option to invoke a command upon build #9460](https://github.com/gohugoio/hugo/issues/9460)，在`hugo server|build`等命令运行前需要处理好data.json避免部分数据更新无效的问题
+由于 hugo 不支持调用外部命令运行[Configuration option to invoke a command upon build #9460](https://github.com/gohugoio/hugo/issues/9460)，在`hugo server|build`等命令运行前需要处理好 data.json 避免部分数据更新无效的问题
 
-## 部署gh-pages
+## 部署 gh-pages
 
-### gh-pages分支
+### gh-pages 分支
 
-在gh-pages分支中保留当前构建的static页面，默认情况下会保留deploy的提交，可能导致仓库大小激增。
+在 gh-pages 分支中保留当前构建的 static 页面，默认情况下会保留 deploy 的提交，可能导致仓库大小激增。
 
 ![branch commits](20250204224213.png)
 
@@ -112,7 +112,7 @@ TODO
 
 ### baseUrl
 
-如果域名根目录指向主页，无需设置baseUrl
+如果域名根目录指向主页，无需设置 baseUrl
 
 参考：
 
@@ -126,20 +126,20 @@ TODO
 - Wiki 链接风格：`[[运动三定律]]`
 - Markdown 链接风格：`[运动三定律](运动三定律.md)`
 
-### 兼容wiki链接
+### 兼容 wiki 链接
 
-目前未找到兼容`![[img]]`,`[[post.md]]`转换为标准md链接的方式，参考 [Support wiki-style internal page links #3606](https://github.com/gohugoio/hugo/issues/3606#issuecomment-1555955974) 只能修改obsidian从默认wiki方式转为标准的md链接避免这个问题
+目前未找到兼容`![[img]]`,`[[post.md]]`转换为标准 md 链接的方式，参考 [Support wiki-style internal page links #3606](https://github.com/gohugoio/hugo/issues/3606#issuecomment-1555955974) 只能修改 obsidian 从默认 wiki 方式转为标准的 md 链接避免这个问题
 
 ![toggle wiki button](20250204233158.png)
 
-虽然可以尝试使用 [Content adapters](https://gohugo.io/content-management/content-adapters/) 在模板中替换 `[[link]]` 作为标准的 `[text](link)` 链接即可，但由于markdown比较复杂，无法用简单的正则表达式正确地做到这一点，有许多边缘情况需要考虑，过于复杂的正则也可能导致文本匹配性能问题。
+虽然可以尝试使用 [Content adapters](https://gohugo.io/content-management/content-adapters/) 在模板中替换 `[[link]]` 作为标准的 `[text](link)` 链接即可，但由于 markdown 比较复杂，无法用简单的正则表达式正确地做到这一点，有许多边缘情况需要考虑，过于复杂的正则也可能导致文本匹配性能问题。
 
 参考：
 
 - [Regex match markdown link](https://stackoverflow.com/a/67138593/8566831)
 - [Which is better- WikiLinks or Markdown links?](https://www.reddit.com/r/ObsidianMD/comments/k0po5z/which_is_better_wikilinks_or_markdown_links/)
 
-### 兼容md内部文件链接
+### 兼容 md 内部文件链接
 
 对于如 `content/posts/this is post/index.md` 内部文件有链接如 `[xxx](../other post/index.md)` 应该被解析成 hugo page 链接如 `[xxx](/posts/other-post)` ，但由于正则的复杂性，不应该使用正则替换。
 
@@ -147,7 +147,7 @@ TODO
 
 在 [Link render hooks](https://gohugo.io/render-hooks/links/) 提到可以使用 `layouts/_default/_markup/render-link.html` 覆盖主题配置和 [embedded link render hook](https://github.com/gohugoio/hugo/blob/master/tpl/tplimpl/embedded/templates/_default/_markup/render-link.html) 。
 
-##### 添加HTML文件作为资源
+##### 添加 HTML 文件作为资源
 
 有时需要添加如 `html`, `md`, `txt` 等文件到文章作为链接资源，但 hugo 对于 [Content management Page resources](https://gohugo.io/content-management/page-resources/) 特殊内容资源文件如 `html`, `md` 等视为 page 类型，在 [leaf bundles](https://gohugo.io/quick-reference/glossary/#leaf-bundle) 中的这些文件默认不会加载作为资源文件到 public 目录中。
 
@@ -190,7 +190,7 @@ TODO
 
 ### 转义 hugo shortcode
 
-在markdown源码中使用 `<!-- {{%/*  -->` 与 `<!-- */%}} -->` 可以让这之中的代码转义为原始代码避免被渲染，同时在md文档中隐藏 `{{%/*` 。
+在 markdown 源码中使用 `<!-- {{%/*  -->` 与 `<!-- */%}} -->` 可以让这之中的代码转义为原始代码避免被渲染，同时在 md 文档中隐藏 `{{%/*` 。
 
 参考：
 
@@ -200,7 +200,7 @@ TODO
 
 ### 可折叠内容
 
-[在 GitHub 上写入/使用高级格式/ 使用折叠部分组织信息](https://docs.github.com/zh/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-collapsed-sections#creating-a-collapsed-section) 中可以使用 `<details>` 将内容折叠，直到单击展开详细信息，但在 hugo 中默认不会渲染 html ，但可以在 [configuration-markup/#rendererunsafe](https://gohugo.io/getting-started/configuration-markup/#rendererunsafe) 使用 `markup.goldmark.renderer.unsafe=true` 渲染。
+[在 GitHub 上写入/使用高级格式/ 使用折叠部分组织信息](https://docs.github.com/zh/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-collapsed-sections#creating-a-collapsed-section) 中可以使用 `<details>` 将内容折叠，直到单击展开详细信息，但在 hugo 中默认不会渲染 html，但可以在 [configuration-markup/#rendererunsafe](https://gohugo.io/getting-started/configuration-markup/#rendererunsafe) 使用 `markup.goldmark.renderer.unsafe=true` 渲染。
 
 另外也可以使用 [Shortcodes/Details](https://gohugo.io/shortcodes/details/) 如
 
