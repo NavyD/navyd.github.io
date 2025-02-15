@@ -1,0 +1,4 @@
+# 参考： https://github.com/crate-ci/typos/blob/master/docs/reference.md#config-fields
+[files]
+# 排除 content 中的 log 文件检查
+extend-exclude = ["content/*/**/*.log"]
