@@ -26,6 +26,10 @@ test = [
     "pytest-mock>=3.14.0",
     "pytest-sugar>=1.0.0",
 ]
+build = [
+    # "plumbum>=1.9.0",
+    "psutil>=7.0.0",
+]
 
 [project.scripts]
 hugodynctx = "hugodynctx:main"
