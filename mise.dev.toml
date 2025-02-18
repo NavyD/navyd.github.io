@@ -1,0 +1,115 @@
+[tools]
+# python = "3.13"
+# node = "20"
+# uv = "0.5"
+watchexec = "2.3"
+# "ubi:huacnlee/autocorrect" = "2.13"
+# # NOTE: 如果使用 `pipx:pre-commit` 会在首次安装时与 venv 冲突无法安装
+# pre-commit = "4"
+# actionlint = '1.7'
+# ruff = "0.9"
+# gitleaks = '8.23'
+# markdownlint-cli2 = "0.17"
+# typos = "1.29"
+
+[env]
+# FIXME: create=true 在 CI 中首次安装 uv 时不存在 PATH 中导致创建 venv 失败
+# [Installing pipx package with uv on venv initialization failed #4430](https://github.com/jdx/mise/discussions/4430)
+_.python.venv = { path = ".venv", create = true }
+_.file = ".env"
+# NOTE: python venv 未被 task 中加载，导致无法使用 venv 的 python
+_.path = [
+    "{{config_root}}/.venv/{% if os() == 'windows' %}Scripts{% else %}bin{% endif %}",
+]
+
+# uv pip 在所有索引中搜索每个包，并从组合的候选版本中选择最佳版本
+# https://docs.astral.sh/uv/configuration/indexes/#searching-across-multiple-indexes
+UV_INDEX_STRATEGY = "unsafe-best-match"
+
+[settings]
+# windows_default_inline_shell_args = "powershell -NoProfile -NonInteractive -Command"
+# windows_default_inline_shell_args = "python -c"
+# experimental = true
+
+[tasks.init-venv]
+description = "init build venv"
+# hide = true
+run = ['uv venv .venv', 'uv sync --all-groups']
+sources = ["uv.lock", "pyproject.toml"]
+outputs.auto = true
+
+[tasks.build]
+# shell = "python -c"
+description = "build dyn data"
+sources = ["content/posts/**/*.md"]
+outputs = ["data/posts/posts.json"]
+depends = ["init-venv"]
+# 关闭 server 和 build 可以同时进行，不用等待
+# wait_for = ["close-server"]
+run = 'hugodynctx posts -v'
+
+[tasks.close-server]
+shell = "python -c"
+description = "close hugo server"
+run = '''
+import psutil
+print("Checking if hugo server exists")
+for p in psutil.process_iter():
+    name = p.name()
+    if (psutil.WINDOWS and name.lower() == "hugo.exe") or (
+        not psutil.WINDOWS and name == "hugo"
+    ):
+        print(f"Killing process {p}")
+        p.kill()
+        break
+'''
+
+[tasks.server]
+shell = "python -c"
+description = "start hugo server in background"
+depends = ["close-server", "build"]
+# start-Process -FilePath (Get-Command hugo).Path -ArgumentList server -WindowStyle Hidden -RedirectStandardOutput $(New-TemporaryFile) -RedirectStandardError $(New-TemporaryFile)
+sources = ["content/**", "layouts/**", "themes/**"]
+run = '''
+import subprocess
+import sys
+
+command = [
+    "hugo",
+    "server",
+    "--navigateToChanged",
+    "--buildDrafts",
+    "--environment",
+    "production",
+    "--port",
+    "1313",
+]
+stdout_path = ".hugo-server.log"
+# stderr_path = ".hugo-server.err.log"
+# open(stderr_path, "wb") as stderr,
+with open(stdout_path, "wb") as stdout:
+    stderr = stdout
+    if sys.platform == "win32":
+        proc = subprocess.Popen(
+            command,
+            stdin=subprocess.DEVNULL,
+            stdout=stdout,
+            stderr=stderr,
+            # creationflags=subprocess.DETACHED_PROCESS,
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
+            # close_fds=True,
+        )
+    else:
+        proc = subprocess.Popen(
+            command,
+            start_new_session=True,
+            stdin=subprocess.DEVNULL,
+            stdout=stdout,
+            stderr=stderr,
+        )
+'''
+
+[tasks.lint]
+description = 'lint cached files with lefthook'
+depends = ['init-venv']
+run = 'lefthook run pre-commit'

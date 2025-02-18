@@ -1,0 +1,96 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/evilmartians/lefthook/master/schema.json
+# https://lefthook.dev/configuration/index.html
+min_version: "1.10"
+pre-commit:
+  piped: true
+  jobs:
+    - name: uv lock
+      # https://github.com/astral-sh/uv-pre-commit/blob/main/.pre-commit-hooks.yaml
+      run: uv lock
+      glob:
+        - uv.lock
+        - pyproject.toml
+    - name: lint
+      group:
+        parallel: true
+        jobs:
+          # https://github.com/pre-commit/pre-commit-hooks/blob/main/.pre-commit-hooks.yaml
+          - name: python tests naming
+            run: name-tests-test --pytest-test-first {staged_files}
+            # https://lefthook.dev/configuration/glob.html
+            # `**` 的行为在这就是 `*`
+            glob:
+              - "tests/*.py"
+              - "*/tests/*.py"
+          - name: trailing-whitespace
+            run: trailing-whitespace-fixer {staged_files}
+            file_types:
+              - text
+          - name: check-added-large-files
+            run: check-added-large-files --maxkb 1024 {staged_files}
+          - name: check-case-conflict
+            run: check-case-conflict {staged_files}
+
+          - name: yaml lint
+            # https://github.com/adrienverge/yamllint#usage
+            run: yamllint {staged_files}
+            glob: "*.{yaml,yml}"
+          - name: toml-lint
+            # https://taplo.tamasfe.dev/cli/usage/validation.html
+            run: taplo lint {staged_files}
+            glob: "*.toml"
+          - name: actionlint
+            # https://github.com/rhysd/actionlint/blob/main/docs/usage.md
+            run: actionlint {staged_files}
+            glob: .github/workflows/*.{yaml,yml}
+          - name: uv-run-mypy
+            run: uv run mypy .
+            glob: "*.{py,pyi}"
+          - name: gitleaks
+            # https://github.com/gitleaks/gitleaks/blob/master/.pre-commit-hooks.yaml
+            run: gitleaks git  --pre-commit --redact --staged --verbose
+            file_types:
+              - text
+          - name: typos
+            # https://github.com/crate-ci/typos#custom
+            # https://github.com/crate-ci/typos/blob/master/.pre-commit-hooks.yaml
+            run: typos --force-exclude {staged_files}
+            file_types:
+              - text
+          - name: markdownlint
+            # https://github.com/DavidAnson/markdownlint-cli2#command-line
+            run: markdownlint-cli2 {staged_files}
+            glob: "*.{md,markdown}"
+          - name: ruff-check
+            # https://docs.astral.sh/ruff/integrations/
+            run: ruff check --force-exclude --output-format github {staged_files}
+            glob: "*.{py,pyi}"
+    - name: ruff-format
+      run: ruff format --force-exclude {staged_files}
+      glob: "*.{py,pyi}"
+    - name: autocorrect
+      # https://github.com/huacnlee/autocorrect#use-in-cli
+      run: autocorrect --fix {staged_files}
+      glob: "content/*.{md,markdown}"
+
+commit-msg:
+  parallel: true
+  jobs:
+    - name: typos
+      run: typos --force-exclude --write-changes {1}
+    - name: autocorrect
+      run: autocorrect --fix {1}
+    - name: lint-message
+      # https://github.com/commitizen-tools/commitizen/blob/master/.pre-commit-hooks.yaml
+      run: cz check --allow-abort --commit-msg-file {1}
+
+post-checkout:
+  piped: true
+  jobs:
+    - name: uv-sync
+      run: uv sync --all-groups
+
+post-merge:
+  jobs:
+    - name: uv-sync
+      run: uv sync --all-groups

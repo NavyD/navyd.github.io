@@ -1,0 +1,18 @@
+[tools]
+python = "3.13"
+node = "20"
+uv = "0.5"
+"ubi:huacnlee/autocorrect" = "2.13"
+# NOTE: 如果使用 `pipx:pre-commit` 会在首次安装时与 venv 冲突无法安装
+pre-commit = "4"
+actionlint = '1.7'
+ruff = "0.9"
+gitleaks = '8.23'
+markdownlint-cli2 = "0.17"
+typos = "1.29"
+hugo-extended = "0.143"
+lefthook = "1.10"
+taplo = "0.9"
+yamllint = '1.35'
+"pipx:pre-commit-hooks" = "5"
+"pipx:commitizen" = "4.1"

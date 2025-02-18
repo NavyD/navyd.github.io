@@ -39,58 +39,89 @@ repos:
         stages: [pre-commit]
       - id: check-added-large-files
         stages: [pre-commit]
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.4
+  - repo: local
     hooks:
-      - id: ruff
-        stages: [pre-commit]
-        args: [--fix]
-      - id: ruff-format
-        stages: [pre-commit]
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    # uv version.
-    rev: 0.5.27
-    hooks:
-      # Update the uv lockfile
       - id: uv-lock
+        name: uv-lock
+        description: "Automatically run 'uv lock' on your project dependencies"
+        entry: uv lock
+        language: system
+        files: ^(uv\.lock|pyproject\.toml|uv\.toml)$
+        args: []
+        pass_filenames: false
         stages: [pre-commit]
-      - id: uv-export
+      - id: uv-run-mypy
         stages: [pre-commit]
         name: uv-run-mypy
         description: run mypy check with uv
         entry: uv run mypy .
-        language: python
-        # 清空覆盖原有配置，使用types_or选择文件类型
-        files: ""
-        types_or: [python, pyi]
+        language: system
+        types: [python, pyi]
         # 覆盖，通过文件名作为参数
         pass_filenames: false
         # 单进程执行 if true this hook will execute using a single process instead of in parallel.
         require_serial: true
         args: []
-  # Protect and discover secrets using Gitleaks
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.23.3
-    hooks:
+      # A pre-commit hook for Ruff
+      # https://github.com/astral-sh/ruff-pre-commit/blob/main/.pre-commit-hooks.yaml
+      - id: ruff
+        name: ruff
+        description: "Run 'ruff' for extremely fast Python linting"
+        entry: ruff check --force-exclude
+        language: system
+        types_or: [python, pyi, jupyter]
+        args: []
+        require_serial: true
+        stages: [pre-commit]
+      - id: ruff-format
+        name: ruff-format
+        description: "Run 'ruff format' for extremely fast Python formatting"
+        entry: ruff format --force-exclude
+        language: system
+        types_or: [python, pyi, jupyter]
+        args: []
+        require_serial: true
+        stages: [pre-commit]
+      # Protect and discover secrets using Gitleaks
+      # https://github.com/gitleaks/gitleaks/blob/master/.pre-commit-hooks.yaml
       - id: gitleaks
+        name: Detect hardcoded secrets
+        description: Detect hardcoded secrets using Gitleaks
+        entry: gitleaks git  --pre-commit --redact --staged --verbose
+        language: system
+        pass_filenames: false
         stages: [pre-commit]
-  # Static checker for GitHub Actions workflow files
-  - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.7
-    hooks:
+      # Static checker for GitHub Actions workflow files
+      # https://github.com/rhysd/actionlint/blob/main/.pre-commit-hooks.yaml
       - id: actionlint
+        name: Lint GitHub Actions workflow files
+        description: Runs system-installed actionlint to lint GitHub Actions workflow files
+        language: system
+        types: ["yaml"]
+        files: ^\.github/workflows/
+        entry: actionlint
         stages: [pre-commit]
-  - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.17.2
-    hooks:
+      # A fast, flexible, configuration-based command-line interface for linting Markdown/CommonMark files with the markdownlint library
+      # https://github.com/DavidAnson/markdownlint-cli2/blob/main/.pre-commit-hooks.yaml
       - id: markdownlint-cli2
-        args: [--fix]
-  - repo: https://github.com/crate-ci/typos
-    rev: v1.29.5
-    hooks:
+        name: markdownlint-cli2
+        description: "Checks the style of Markdown/CommonMark files."
+        entry: markdownlint-cli2
+        language: system
+        types: [markdown]
+        stages: [pre-commit]
+      # Source code spell checker
+      # https://github.com/crate-ci/typos/blob/master/.pre-commit-hooks.yaml
       - id: typos
-  - repo: local
-    hooks:
+        name: typos
+        description: Source code spell checker, binary install
+        language: system
+        entry: typos
+        args: [--write-changes, --force-exclude]
+        types: [text]
+        stages: [pre-commit, pre-merge-commit, pre-push, manual]
+      # A linter and formatter to help you to improve copywriting, correct spaces, words, and punctuations between CJK (Chinese, Japanese, Korean).
+      # https://github.com/huacnlee/autocorrect
       - id: autocorrect-fix
         stages: [pre-commit]
         name: autocorrect-fix
