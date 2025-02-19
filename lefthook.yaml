@@ -16,32 +16,32 @@ pre-commit:
         jobs:
           # https://github.com/pre-commit/pre-commit-hooks/blob/main/.pre-commit-hooks.yaml
           - name: python tests naming
-            run: name-tests-test --pytest-test-first {staged_files}
+            run: name-tests-test --pytest-test-first "{staged_files}"
             # https://lefthook.dev/configuration/glob.html
             # `**` 的行为在这就是 `*`
             glob:
               - "tests/*.py"
               - "*/tests/*.py"
           - name: trailing-whitespace
-            run: trailing-whitespace-fixer {staged_files}
+            run: trailing-whitespace-fixer "{staged_files}"
             file_types:
               - text
           - name: check-added-large-files
-            run: check-added-large-files --maxkb 1024 {staged_files}
+            run: check-added-large-files --maxkb 1024 "{staged_files}"
           - name: check-case-conflict
-            run: check-case-conflict {staged_files}
+            run: check-case-conflict "{staged_files}"
 
           - name: yaml lint
             # https://github.com/adrienverge/yamllint#usage
-            run: yamllint {staged_files}
+            run: yamllint "{staged_files}"
             glob: "*.{yaml,yml}"
           - name: toml-lint
             # https://taplo.tamasfe.dev/cli/usage/validation.html
-            run: taplo lint {staged_files}
+            run: taplo lint "{staged_files}"
             glob: "*.toml"
           - name: actionlint
             # https://github.com/rhysd/actionlint/blob/main/docs/usage.md
-            run: actionlint {staged_files}
+            run: actionlint "{staged_files}"
             glob: .github/workflows/*.{yaml,yml}
           - name: uv-run-mypy
             run: uv run mypy .
@@ -54,23 +54,23 @@ pre-commit:
           - name: typos
             # https://github.com/crate-ci/typos#custom
             # https://github.com/crate-ci/typos/blob/master/.pre-commit-hooks.yaml
-            run: typos --force-exclude {staged_files}
+            run: typos --force-exclude "{staged_files}"
             file_types:
               - text
           - name: markdownlint
             # https://github.com/DavidAnson/markdownlint-cli2#command-line
-            run: markdownlint-cli2 {staged_files}
+            run: markdownlint-cli2 "{staged_files}"
             glob: "*.{md,markdown}"
           - name: ruff-check
             # https://docs.astral.sh/ruff/integrations/
-            run: ruff check --force-exclude --output-format github {staged_files}
+            run: ruff check --force-exclude --output-format github "{staged_files}"
             glob: "*.{py,pyi}"
     - name: ruff-format
-      run: ruff format --force-exclude {staged_files}
+      run: ruff format --force-exclude "{staged_files}"
       glob: "*.{py,pyi}"
     - name: autocorrect
       # https://github.com/huacnlee/autocorrect#use-in-cli
-      run: autocorrect --fix {staged_files}
+      run: autocorrect --fix "{staged_files}"
       glob: "content/*.{md,markdown}"
 
 commit-msg:
