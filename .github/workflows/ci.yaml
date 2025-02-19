@@ -7,13 +7,14 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  # NOTE: 不要写为 `~/.cache` 会无效
+  UV_CACHE_DIR: /tmp/.cache/uv
+  MISE_ENV: ci
+
 jobs:
   lint:
     runs-on: ubuntu-latest
-    env:
-      # NOTE: 不要写为 `~/.cache` 会无效
-      UV_CACHE_DIR: /tmp/.cache/uv
-      MISE_ENV: ci
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,8 +31,6 @@ jobs:
             act-${{runner.os}}-mise-${{hashFiles('mise.*.toml', 'mise.toml')}}
             act-${{runner.os}}-mise-
       - uses: jdx/mise-action@v2
-        # with:
-        #   log_level: debug
       # https://docs.astral.sh/uv/guides/integration/github/#caching
       - name: Restore uv cache
         id: uv-cache
@@ -45,6 +44,8 @@ jobs:
       - name: Init venv with uv
         if: ${{ steps.uv-cache.outputs.cache-hit != 'true' }}
         run: uv venv .venv && uv sync
+      - name: Minimize uv cache
+        run: uv cache prune --ci
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v45
@@ -61,4 +62,5 @@ jobs:
           for file in "${changed_files[@]}"; do
               opts+=( "--file" "$file" )
           done
+          set -x
           lefthook run pre-commit "${opts[@]}"

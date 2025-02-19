@@ -5,8 +5,12 @@ on:
   push:
     branches:
       - main # Set a branch to deploy
-  pull_request:
   workflow_dispatch:
+
+env:
+  # NOTE: 不要写为 `~/.cache` 会无效
+  UV_CACHE_DIR: /tmp/.cache/uv
+  MISE_ENV: ci
 
 # Create your workflow: https://github.com/peaceiris/actions-hugo#getting-started
 jobs:
@@ -16,55 +20,51 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     env:
       HUGO_CACHEDIR: /tmp/hugo_cache
-      # Configure a constant location for the uv cache
-      UV_CACHE_DIR: /tmp/.uv-cache
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true # Fetch Hugo themes (true OR recursive)
           fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
-
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3
+      - name: Cache mise
+        id: cache-mise
+        if: ${{ env.ACT }}
+        uses: actions/cache@v4
         with:
-          hugo-version: "0.143.1"
-          extended: true
-
+          path: |
+            ~/.local/share/mise
+          key: act-${{runner.os}}-mise-${{hashFiles('mise.*.toml', 'mise.toml')}}
+          restore-keys: |
+            act-${{runner.os}}-mise-${{hashFiles('mise.*.toml', 'mise.toml')}}
+            act-${{runner.os}}-mise-
+      - uses: jdx/mise-action@v2
+      # https://docs.astral.sh/uv/guides/integration/github/#caching
+      - name: Restore uv cache
+        id: uv-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{env.UV_CACHE_DIR}}
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+            uv-${{ runner.os }}
+      - name: Init venv with uv
+        if: ${{ steps.uv-cache.outputs.cache-hit != 'true' }}
+        run: uv venv .venv && uv sync
       - uses: actions/cache@v4
         with:
           path: ${{ env.HUGO_CACHEDIR }}
           key: ${{ runner.os }}-hugomod-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-hugomod-
-
-      - uses: jdx/mise-action@v2
-        with:
-          # version: 2024.12.14 # [default: latest] mise version to install
-          install: true # [default: true] run `mise install`
-          cache: true # [default: true] cache mise using GitHub's cache
-          # experimental: true # [default: false] enable experimental features
-          # automatically write this mise.toml file
-      - name: Restore uv cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.UV_CACHE_DIR }}
-          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
-          restore-keys: |
-            uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
-            uv-${{ runner.os }}
       - name: Build dynamic posts
-        run: |
-          uv sync
-          uv run hugodynctx posts -v
+        run: uv run hugodynctx posts -v
       - name: Minimize uv cache
         run: uv cache prune --ci
-
       - name: Build
         run: hugo --minify --environment production
-
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
