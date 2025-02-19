@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="转载自： 一个进程最多可以创建多少个线程？ 昨天有位读者 被坑了 问了我这么个问题：\n">
+<title>一个进程最多可以创建多少个线程</title>
+
+<link rel='canonical' href='/posts/archives/linux/how-many-threads-can-be-created-in-a-process-at-most/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="一个进程最多可以创建多少个线程">
+<meta property='og:description' content="转载自： 一个进程最多可以创建多少个线程？ 昨天有位读者 被坑了 问了我这么个问题：\n">
+<meta property='og:url' content='/posts/archives/linux/how-many-threads-can-be-created-in-a-process-at-most/'>
+<meta property='og:site_name' content=''>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2021-09-09T09:59:45&#43;08:00'/><meta property='article:modified_time' content='2025-01-28T18:26:14&#43;08:00'/>
+<meta name="twitter:title" content="一个进程最多可以创建多少个线程">
+<meta name="twitter:description" content="转载自： 一个进程最多可以创建多少个线程？ 昨天有位读者 被坑了 问了我这么个问题：\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    <img src="https://avatars.githubusercontent.com/u/22490764" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/"></a></h1>
+            <h2 class="site-description">Hello World!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/47808239'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/NavyD'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/NavyD_hello'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="/" selected>English</option>
+                                
+                                    <option value="/zh-cn/" >中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/posts/archives/linux/how-many-threads-can-be-created-in-a-process-at-most/">一个进程最多可以创建多少个线程</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2021-09-09T09:59:45&#43;08:00</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    5 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>转载自：
+
+<a  
+    class="link"
+ 
+    href="https://zhuanlan.zhihu.com/p/387673151"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>一个进程最多可以创建多少个线程？</a>
+</p>
+<p>昨天有位读者 <strong>被坑了</strong> 问了我这么个问题：</p>
+<p><img src="https://pic3.zhimg.com/v2-0683917e0fef8ea226f85c3a6ac722ea_r.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><img src="https://pic3.zhimg.com/v2-34a15f1c49e21b8a8b27fcdffde602de_r.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>大致意思就是，他看了一个面经，说虚拟内存是 2G 大小，然后他看了我的图解系统 PDF 里说虚拟内存是 4G，然后他就懵逼了。</p>
+<p>其实他看这个面经很有问题，没有说明是什么操作系统，以及是多少位操作系统。</p>
+<p>因为不同的操作系统和不同位数的操作系统，虚拟内存可能是不一样多。</p>
+<p>Windows 系统我不了解，我就说说 Linux 系统。</p>
+<p>在 Linux 操作系统中，虚拟地址空间的内部又被分为内核空间和用户空间两部分，不同位数的系统，地址 空间的范围也不同。比如最常⻅的 32 位和 64 位系统，如下所示:</p>
+<p><img src="https://pic3.zhimg.com/v2-b582fe256116dfbc8d9181155693e1f6_r.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>通过这里可以看出:</p>
+<ul>
+<li>32 位系统的内核空间占用 1G ，位于最高处，剩下的 3G 是用户空间;</li>
+<li>64 位系统的内核空间和用户空间都是 128T ，分别占据整个内存空间的最高和最低处，剩下的中间部分是未定义的。</li>
+</ul>
+<p>接着，来看看读者那个面经题目：<strong>一个进程最多可以创建多少个线程？</strong></p>
+<p>这个问题跟两个东西有关系：</p>
+<ul>
+<li><strong>进程的虚拟内存空间上限</strong>，因为创建一个线程，操作系统需要为其分配一个栈空间，如果线程数量越多，所需的栈空间就要越大，那么虚拟内存就会占用的越多。</li>
+<li><strong>系统参数限制</strong>，虽然 Linux 并没有内核参数来控制单个进程创建的最大线程个数，但是有系统级别的参数来控制整个系统的最大线程个数。</li>
+</ul>
+<p>我们先看看，在进程里创建一个线程需要消耗多少虚拟内存大小？</p>
+<p>我们可以执行 ulimit -a 这条命令，查看进程创建线程时默认分配的栈空间大小，比如我这台服务器默认分配给线程的栈空间大小为 8M。</p>
+<p><img src="https://pic3.zhimg.com/v2-f1cd6d5ec4ae0b32202d9ec800ff0422_r.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>在前面我们知道，在 32 位 Linux 系统里，一个进程的虚拟空间是 4G，内核分走了 1G，<strong>留给用户用的只有 3G</strong>。</p>
+<p>那么假设创建一个线程需要占用 10M 虚拟内存，总共有 3G 虚拟内存可以使用。于是我们可以算出，最多可以创建差不多 300 个（3G/10M）左右的线程。</p>
+<p>如果你想自己做个实验，你可以找台 32 位的 Linux 系统运行下面这个程序：</p>
+<p><img src="https://pic3.zhimg.com/v2-44bc989fac38aacd8629db85d51428c2_r.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>由于我手上没有 32 位的系统，我这里贴一个网上别人做的测试结果：</p>
+<p><img src="https://pic2.zhimg.com/v2-19b5ccecf0d8ae52fb33cd3df04f8d11_r.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>如果想使得进程创建上千个线程，那么我们可以调整创建线程时分配的栈空间大小，比如调整为 512k：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ulimit -s <span style="color:#ae81ff">512</span>
+</span></span></code></pre></div><p>说完 32 位系统的情况，我们来看看 64 位系统里，一个进程能创建多少线程呢？</p>
+<p>我的测试服务器的配置：</p>
+<ul>
+<li>64 位系统；</li>
+<li>2G 物理内存；</li>
+<li>单核 CPU。</li>
+</ul>
+<p>64 位系统意味着用户空间的虚拟内存最大值是 128T，这个数值是很大的，如果按创建一个线程需占用 10M 栈空间的情况来算，那么理论上可以创建 128T/10M 个线程，也就是 1000 多万个线程，有点魔幻！</p>
+<p>所以按 64 位系统的虚拟内存大小，理论上可以创建无数个线程。</p>
+<p>事实上，肯定创建不了那么多线程，除了虚拟内存的限制，还有系统的限制。</p>
+<p>比如下面这三个内核参数的大小，都会影响创建线程的上限：</p>
+<ul>
+<li><strong><em>/proc/sys/kernel/threads-max</em></strong>，表示系统支持的最大线程数，默认值是 <code>14553</code>；</li>
+<li><strong><em>/proc/sys/kernel/pid_max</em></strong>，表示系统全局的 PID 号数值的限制，每一个进程或线程都有 ID，ID 的值超过这个数，进程或线程就会创建失败，默认值是 <code>32768</code>；</li>
+<li><strong><em>/proc/sys/vm/max_map_count</em></strong>，表示限制一个进程可以拥有的 VMA(虚拟内存区域) 的数量，具体什么意思我也没搞清楚，反正如果它的值很小，也会导致创建线程失败，默认值是 <code>65530</code>。</li>
+</ul>
+<p>那接下针对我的测试服务器的配置，看下一个进程最多能创建多少个线程呢？</p>
+<p>我在这台服务器跑了前面的程序，其结果如下：</p>
+<p><img src="https://pic2.zhimg.com/v2-67b4a44297aa2bab72d4253436aa8e31_r.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>可以看到，创建了 14374 个线程后，就无法在创建了，而且报错是因为资源的限制。</p>
+<p>前面我提到的 <code>threads-max</code> 内核参数，它是限制系统里最大线程数，默认值是 14553。</p>
+<p>我们可以运行那个测试线程数的程序后，看下当前系统的线程数是多少，可以通过 <code>top -H</code> 查看。</p>
+<p><img src="https://pic4.zhimg.com/v2-147e22a9a620a3ab569c3f1b9a54c2a7_r.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>左上角的 Threads 的数量显示是 14553，与 <code>threads-max</code> 内核参数的值相同，所以我们可以认为是因为这个参数导致无法继续创建线程。</p>
+<p>那么，我们可以把 threads-max 参数设置成 <code>99999</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>echo <span style="color:#ae81ff">99999</span> &gt; /proc/sys/kernel/threads-max
+</span></span></code></pre></div><p>设置完 threads-max 参数后，我们重新跑测试线程数的程序，运行后结果如下图：</p>
+<p><img src="https://pic3.zhimg.com/v2-c4d162065be03fbf479e233107a0ed76_r.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>可以看到，当进程创建了 32326 个线程后，就无法继续创建里，且报错是无法继续申请内存。</p>
+<p>此时的上限个数很接近 <code>pid_max</code> 内核参数的默认值（32768），那么我们可以尝试将这个参数设置为 99999：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>echo <span style="color:#ae81ff">99999</span> &gt; /proc/sys/kernel/pid_max
+</span></span></code></pre></div><p>设置完 pid_max 参数后，继续跑测试线程数的程序，运行后结果创建线程的个数还是一样卡在了 32768 了。</p>
+<p>当时我也挺疑惑的，明明 pid_max 已经调整大后，为什么线程个数还是上不去呢？</p>
+<p>后面经过查阅资料发现，<code>max_map_count</code> 这个内核参数也是需要调大的，但是它的数值与最大线程数之间有什么关系，我也不太明白，只是知道它的值是会限制创建线程个数的上限。</p>
+<p>然后，我把 max_map_count 内核参数也设置成后 99999：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>echo <span style="color:#ae81ff">99999</span> &gt; /proc/sys/kernel/pid_max
+</span></span></code></pre></div><p>继续跑测试线程数的程序，结果如下图：</p>
+<p><img src="https://pic3.zhimg.com/v2-aa05b03c05c20d4faf2cebfee8ff638a_b.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>当创建差不多 5 万个线程后，我的服务器就卡住不动了，CPU 都已经被占满了，毕竟这个是单核 CPU，所以现在是 CPU 的瓶颈了。</p>
+<p>我只有这台服务器，如果你们有性能更强的服务器来测试的话，有兴趣的小伙伴可以去测试下。</p>
+<p>接下来，我们换个思路测试下，把创建线程时分配的栈空间调大，比如调大为 100M，在大就会创建线程失败。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ulimit -s <span style="color:#ae81ff">1024000</span>
+</span></span></code></pre></div><p>设置完后，跑测试线程的程序，其结果如下：</p>
+<p><img src="https://pic2.zhimg.com/v2-44ac30a317ef45e8bd7fb058f8c2cb5d_r.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>总共创建了 26390 个线程，然后就无法继续创建了，而且该进程的虚拟内存空间已经高达 25T，要知道这台服务器的物理内存才 2G。</p>
+<p>为什么物理内存只有 2G，进程的虚拟内存却可以使用 25T 呢？</p>
+<p>因为虚拟内存并不是全部都映射到物理内存的，程序是有<strong>局部性的特性</strong>，也就是某一个时间只会执行部分代码，所以只需要映射这部分程序就好。</p>
+<p>你可以从上面那个 top 的截图看到，虽然进程虚拟空间很大，但是物理内存（RES）只有使用了 400M+。</p>
+<p>好了，简单总结下：</p>
+<ul>
+<li>32 位系统，用户态的虚拟空间只有 3G，如果创建线程时分配的栈空间是 10M，那么一个进程最多只能创建 300 个左右的线程。</li>
+<li>64 位系统，用户态的虚拟空间大到有 128T，理论上不会受虚拟内存大小的限制，而会受系统的参数或性能限制。</li>
+</ul>
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on 2025-01-28T18:26:14&#43;08:00
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.2760efe2b07bc1f771820787a816b980000936e884b19441806bce1518d37d8c.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="转载自 phantom-types-in-rust Let&rsquo;s say we have simple wrapper around f64 that encodes distance in meters:\n#[derive(Debug, Clone, Copy)] struct Meter { value: f64 } impl Meter { fn new(value: f64) -&gt; Self { Self { value } } } In our application we want to be able to add and subtract distances, so we would implement Add and Sub traits for convenience:\nuse std::ops::{Add, Sub}; impl Add for Meter { type Output = Meter; fn add(self, another: Meter) -&gt; Self::Output { let value = self.value + another.value; Meter { value } } } impl Sub for Meter { type Output = Meter; fn sub(self, another: Meter) -&gt; Self::Output { let value = self.value - another.value; Meter { value } } } A quick manual test proves it works as expected:\n">
+<title>Phantom Types in Rust</title>
+
+<link rel='canonical' href='/posts/archives/rust/phantom-types-in-rust/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="Phantom Types in Rust">
+<meta property='og:description' content="转载自 phantom-types-in-rust Let&rsquo;s say we have simple wrapper around f64 that encodes distance in meters:\n#[derive(Debug, Clone, Copy)] struct Meter { value: f64 } impl Meter { fn new(value: f64) -&gt; Self { Self { value } } } In our application we want to be able to add and subtract distances, so we would implement Add and Sub traits for convenience:\nuse std::ops::{Add, Sub}; impl Add for Meter { type Output = Meter; fn add(self, another: Meter) -&gt; Self::Output { let value = self.value + another.value; Meter { value } } } impl Sub for Meter { type Output = Meter; fn sub(self, another: Meter) -&gt; Self::Output { let value = self.value - another.value; Meter { value } } } A quick manual test proves it works as expected:\n">
+<meta property='og:url' content='/posts/archives/rust/phantom-types-in-rust/'>
+<meta property='og:site_name' content=''>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2021-10-12T22:37:15&#43;08:00'/><meta property='article:modified_time' content='2025-01-28T18:26:14&#43;08:00'/>
+<meta name="twitter:title" content="Phantom Types in Rust">
+<meta name="twitter:description" content="转载自 phantom-types-in-rust Let&rsquo;s say we have simple wrapper around f64 that encodes distance in meters:\n#[derive(Debug, Clone, Copy)] struct Meter { value: f64 } impl Meter { fn new(value: f64) -&gt; Self { Self { value } } } In our application we want to be able to add and subtract distances, so we would implement Add and Sub traits for convenience:\nuse std::ops::{Add, Sub}; impl Add for Meter { type Output = Meter; fn add(self, another: Meter) -&gt; Self::Output { let value = self.value + another.value; Meter { value } } } impl Sub for Meter { type Output = Meter; fn sub(self, another: Meter) -&gt; Self::Output { let value = self.value - another.value; Meter { value } } } A quick manual test proves it works as expected:\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    <img src="https://avatars.githubusercontent.com/u/22490764" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/"></a></h1>
+            <h2 class="site-description">Hello World!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/47808239'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/NavyD'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/NavyD_hello'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="/" selected>English</option>
+                                
+                                    <option value="/zh-cn/" >中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#welcome-phantom-types-">Welcome phantom types 👻</a></li>
+    <li><a href="#hello-phantomdata">Hello PhantomData</a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/posts/archives/rust/phantom-types-in-rust/">Phantom Types in Rust</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2021-10-12T22:37:15&#43;08:00</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    3 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>转载自
+
+<a  
+    class="link"
+ 
+    href="https://www.greyblake.com/blog/2021-10-11-phantom-types-in-rust/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>phantom-types-in-rust</a>
+</p>
+<p>Let&rsquo;s say we have simple wrapper around <code>f64</code> that encodes distance in meters:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">#[derive(Debug, Clone, Copy)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Meter</span> {
+</span></span><span style="display:flex;"><span>    value: <span style="color:#66d9ef">f64</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> Meter {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(value: <span style="color:#66d9ef">f64</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self { value }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>In our application we want to be able to add and subtract distances, so we would implement <code>Add</code> and <code>Sub</code> traits for convenience:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::ops::{Add, Sub};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> Add <span style="color:#66d9ef">for</span> Meter {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Output</span> <span style="color:#f92672">=</span> Meter;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">add</span>(self, another: <span style="color:#a6e22e">Meter</span>) -&gt; <span style="color:#a6e22e">Self</span>::Output {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> value <span style="color:#f92672">=</span> self.value <span style="color:#f92672">+</span> another.value;
+</span></span><span style="display:flex;"><span>        Meter { value }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> Sub <span style="color:#66d9ef">for</span> Meter {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Output</span> <span style="color:#f92672">=</span> Meter;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">sub</span>(self, another: <span style="color:#a6e22e">Meter</span>) -&gt; <span style="color:#a6e22e">Self</span>::Output {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> value <span style="color:#f92672">=</span> self.value <span style="color:#f92672">-</span> another.value;
+</span></span><span style="display:flex;"><span>        Meter { value }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>A quick manual test proves it works as expected:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> one <span style="color:#f92672">=</span> Meter::new(<span style="color:#ae81ff">1.0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> three <span style="color:#f92672">=</span> Meter::new(<span style="color:#ae81ff">3.0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> four <span style="color:#f92672">=</span> one <span style="color:#f92672">+</span> three;
+</span></span><span style="display:flex;"><span>    dbg!(<span style="color:#f92672">&amp;</span>four);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> two <span style="color:#f92672">=</span> three <span style="color:#f92672">-</span> one;
+</span></span><span style="display:flex;"><span>    dbg!(<span style="color:#f92672">&amp;</span>two);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Output:</p>
+<pre tabindex="0"><code>&amp;four = Meter { value: 4.0, }
+&amp;two = Meter { value: 2.0, }
+</code></pre><p>But later we may decide that we need to introduce similar types: <code>Kilogram</code> to measure weight, <code>Liter</code> to measure volume, and so on. For each of the types, we have to implement the same traits again and again. Of course, we can use macros, but they must be the 
+
+<a  
+    class="link"
+ 
+    href="https://www.youtube.com/watch?v=j0lSpNtjPM8"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>last resort</a>
+ . So, 
+
+<a  
+    class="link"
+ 
+    href="https://www.youtube.com/watch?v=uOfTiTsSnM0"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>is there a better way?</a>
+</p>
+<h2 id="welcome-phantom-types-">Welcome phantom types 👻
+</h2><p>Phantom types are such types that are never used in runtime but help to enforce some constraints at compile time.</p>
+<p>We could introduce a generic type <code>Unit&lt;T&gt;</code> and implement <code>Add</code> and <code>Sub</code> for it. Empty structs <code>MeterType</code> and <code>KilogramType</code> could be used to mark a particular unit. And we could define type aliases <code>Meter</code> and <code>Kilogram</code> for convenience:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Unit</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    value: <span style="color:#66d9ef">f64</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">MeterType</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Meter</span> <span style="color:#f92672">=</span> Unit<span style="color:#f92672">&lt;</span>MeterType<span style="color:#f92672">&gt;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">KilogramType</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Kilogram</span> <span style="color:#f92672">=</span> Unit<span style="color:#f92672">&lt;</span>KilogramType<span style="color:#f92672">&gt;</span>;
+</span></span></code></pre></div><p><code>MeterType</code> and <code>LiterType</code> are zero-sized types and have no runtime impact.</p>
+<p>Sounds like a great idea, but the compiler is less excited than we are:</p>
+<pre tabindex="0"><code>error[E0392]: parameter `T` is never used
+  --&gt; src/main.rs:38:13
+   |
+38 | struct Unit&lt;T&gt; {
+   |             ^ unused parameter
+   = help: consider removing `T`, referring to it in a field, or using a marker such as `PhantomData`
+   = help: if you intended `T` to be a const parameter, use `const T: usize` instead
+</code></pre><p>The compiler does not to like the unused generic parameter. I appreciate this. Let&rsquo;s add <code>unit_type: T</code> field to make the structure use that <code>T</code> type:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Unit</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    value: <span style="color:#66d9ef">f64</span>,
+</span></span><span style="display:flex;"><span>    unit_type: <span style="color:#a6e22e">T</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This solution seem to compile. Let&rsquo;s implement <code>new()</code> constructor for <code>Unit&lt;T&gt;</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">impl</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> Unit<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(value: <span style="color:#66d9ef">f64</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self {
+</span></span><span style="display:flex;"><span>            value,
+</span></span><span style="display:flex;"><span>            unit_type: <span style="color:#75715e">// Oops! Which value should I use here?
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>But now we have to provide a concrete value to initialize <code>unit_type</code>. Let&rsquo;s be stubborn and implement <code>Default</code> trait for <code>MeterType</code> and <code>KilogramType</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> Default <span style="color:#66d9ef">for</span> MeterType {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">default</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        MeterType
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> Default <span style="color:#66d9ef">for</span> KilogramType {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">default</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        KilogramType
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now let&rsquo;s adjust <code>new()</code> to use the <code>default()</code> to set value for <code>unit_type</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">impl</span><span style="color:#f92672">&lt;</span>T: Default<span style="color:#f92672">&gt;</span> Unit<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(value: <span style="color:#66d9ef">f64</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self {
+</span></span><span style="display:flex;"><span>            value,
+</span></span><span style="display:flex;"><span>            unit_type: <span style="color:#a6e22e">T</span>::default(),
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Hooray! This compiles and we can proceed further implementing <code>Add</code> and <code>Sub</code> traits for newly born <code>Unit&lt;T&gt;</code> type:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">impl</span><span style="color:#f92672">&lt;</span>T: Default<span style="color:#f92672">&gt;</span> Add <span style="color:#66d9ef">for</span> Unit<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Output</span> <span style="color:#f92672">=</span> Unit<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">add</span>(self, another: <span style="color:#a6e22e">Unit</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>) -&gt; <span style="color:#a6e22e">Self</span>::Output {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> new_value <span style="color:#f92672">=</span> self.value <span style="color:#f92672">+</span> another.value;
+</span></span><span style="display:flex;"><span>        Unit::new(new_value)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span><span style="color:#f92672">&lt;</span>T: Default<span style="color:#f92672">&gt;</span> Sub <span style="color:#66d9ef">for</span> Unit<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Output</span> <span style="color:#f92672">=</span> Unit<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">sub</span>(self, another: <span style="color:#a6e22e">Unit</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>) -&gt; <span style="color:#a6e22e">Self</span>::Output {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> new_value <span style="color:#f92672">=</span> self.value <span style="color:#f92672">-</span> another.value;
+</span></span><span style="display:flex;"><span>        Unit::new(new_value)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now let us test it. We still can add meters as we could before:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> one_meter <span style="color:#f92672">=</span> Meter::new(<span style="color:#ae81ff">1.0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> two_meters <span style="color:#f92672">=</span> one_meter <span style="color:#f92672">+</span> one_meter;
+</span></span><span style="display:flex;"><span>    dbg!(<span style="color:#f92672">&amp;</span>two_meters);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Output:</p>
+<pre tabindex="0"><code>&amp;two_meters = Unit { value: 2.0, unit_type: MeterType }
+</code></pre><p>But the most important, the compiler does not allow us to mix meters and kilograms now:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> one_meter <span style="color:#f92672">=</span> Meter::new(<span style="color:#ae81ff">1.0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> two_kilograms <span style="color:#f92672">=</span> Kilogram::new(<span style="color:#ae81ff">2.0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> god_knows_what <span style="color:#f92672">=</span> one_meter <span style="color:#f92672">+</span> two_kilograms;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Error message:</p>
+<pre tabindex="0"><code>--&gt; src/main.rs:93:38
+   |
+93 |     let god_knows_what = one_meter + two_kilograms;
+   |                                      ^^^^^^^^^^^^^ expected struct `MeterType`, found struct `KilogramType`
+   |
+   = note: expected struct `Unit&lt;MeterType&gt;`
+              found struct `Unit&lt;KilogramType&gt;`
+</code></pre><p>Looks good. Are we done? Not yet!</p>
+<h2 id="hello-phantomdata">Hello PhantomData
+</h2><p>The problem above could be solved slightly easier with help of 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/std/marker/struct.PhantomData.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>PhantomData</a>
+ from the standard library.</p>
+<p>Actually, the compiler already gave us a hint, when we introduced <code>Unit&lt;T&gt;</code> suggesting to use <code>PhantomData</code>:</p>
+<pre tabindex="0"><code>help: consider removing `T`, referring to it in a field, or using a
+      marker such as `PhantomData`
+</code></pre><p>The documentation defines PhantomData as:</p>
+<blockquote>
+<p>Zero-sized type used to mark things that “act like” they own a T.</p></blockquote>
+<p>And what is also relevant for us:</p>
+<blockquote>
+<p>Though they both have scary names, PhantomData and ‘phantom types’ are related, but not identical. A phantom type parameter is simply a type parameter which is never used. In Rust, this often causes the compiler to complain, and the solution is to add a “dummy” use by way of PhantomData.</p></blockquote>
+<p>Indeed, all that we did before was the &ldquo;dummy&rdquo; use of the phantom type <code>T</code>. Let&rsquo;s use <code>PhantomData</code> for this purpose now and adjust <code>Unit&lt;T&gt;</code> and other code accordingly:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::marker::PhantomData;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#[derive(Debug, Clone, Copy)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Unit</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    value: <span style="color:#66d9ef">f64</span>,
+</span></span><span style="display:flex;"><span>    unit_type: <span style="color:#a6e22e">PhantomData</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> Unit<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(value: <span style="color:#66d9ef">f64</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self {
+</span></span><span style="display:flex;"><span>            value,
+</span></span><span style="display:flex;"><span>            unit_type: <span style="color:#a6e22e">PhantomData</span>,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>You can see the 
+
+<a  
+    class="link"
+ 
+    href="https://play.rust-lang.org/?version=stable&amp;mode=debug&amp;edition=2018&amp;gist=e5438101bfb82eececf25c98fdf61ec0"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>full code example in playground</a>
+ .</p>
+<p>PhantomData gives us at least 2 benefits:</p>
+<ul>
+<li>We can use <code>PhantomData</code> to initialize <code>unit_type</code> field. This means that <code>MeterType</code> and <code>KilogramType</code> do not have to implement <code>Default</code> anymore.</li>
+<li>With <code>PhantomData&lt;T&gt;</code> we communicate explicitly the purpose of the type parameter to other developers.</li>
+</ul>
+<p>That is it for now. This was a little practical introduction to <em>phantom types</em> with Rust. Thank you for reading.</p>
+<p>
+
+<a  
+    class="link"
+ 
+    href="https://www.reddit.com/r/rust/comments/q5r9uy/phantom_types_in_rust/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Dicussion on reddit.</a>
+</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on 2025-01-28T18:26:14&#43;08:00
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.2760efe2b07bc1f771820787a816b980000936e884b19441806bce1518d37d8c.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

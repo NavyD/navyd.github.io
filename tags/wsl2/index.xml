@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Wsl2 on NavyD的个人博客</title><link>/tags/wsl2/</link><description>Recent content in Wsl2 on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 16 Feb 2025 14:33:05 +0800</lastBuildDate><atom:link href="/tags/wsl2/index.xml" rel="self" type="application/rss+xml"/><item><title>Wsl Install Error ERROR_INSTALL_FAILURE</title><link>/posts/2025/02/wsl-install-error-error_install_failure/</link><pubDate>Sun, 16 Feb 2025 13:03:21 +0800</pubDate><guid>/posts/2025/02/wsl-install-error-error_install_failure/</guid><description>&lt;p>之前在
+&lt;a
+class="link"
+href="/posts/2025/02/wsl-update-error-regdb_e_classnotreg/"
+>wsl-update-error-REGDB_E_CLASSNOTREG&lt;/a>
+中解决了更新错误后，莫名其妙开机给我自动更新了 WSL，然后又挂了！&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ wsl
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WSL 正在完成升级...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Warning 1946.Property &amp;#39;System.AppUserModel.ToastActivatorCLSID&amp;#39; for shortcut &amp;#39;WSL.lnk&amp;#39; could not be set.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Warning 1946.Property &amp;#39;System.AppUserModel.IsSystemComponent&amp;#39; for shortcut &amp;#39;WSL Settings.lnk&amp;#39; could not be set.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Could not write value to key \SOFTWARE\Classes\Directory\Background\shell\WSL. Verify that you have sufficient access to that key, or contact your support personnel.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wsl: WSL 安装似乎已损坏 (错误代码： Wsl/CallMsi/Install/ERROR_INSTALL_FAILURE)。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>按任意键修复 WSL，或 CTRL-C 取消。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>此提示将在 60 秒后超时。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>正在将适用于 Linux 的 Windows 子系统更新到版本： 2.4.11。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>$ wsl
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wsl: WSL 安装似乎已损坏 (错误代码： Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG)。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>按任意键修复 WSL，或 CTRL-C 取消。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>此提示将在 60 秒后超时。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>正在将适用于 Linux 的 Windows 子系统更新到版本： 2.4.11。
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>参考
+&lt;a
+class="link"
+href="https://github.com/Microsoft/wsl/issues/12282"
+target="_blank"
+rel="noopener"
+>错误代码：Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG #12282&lt;/a>
+中提到
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/blob/8c61f09e4d28995a3827f71e03332b5257e16418/triage/install-latest-wsl.ps1#L35-L42"
+target="_blank"
+rel="noopener"
+>triage/install-latest-wsl.ps1&lt;/a>
+&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>下载最新的
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/releases"
+target="_blank"
+rel="noopener"
+>WSL/releases&lt;/a>
+&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>以管理员权限打开 powershell&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>修改&lt;code>$target=&amp;quot;your wsl.msi path&amp;quot;&lt;/code>后运行下面的代码&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$target = &lt;span style="color:#e6db74">&amp;#34;C:\Users\xxxx\Downloads\wsl.2.4.11.0.x64.msi&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$MSIArguments = @(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;/i&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $target
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;/qn&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;/norestart&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start-Process -Wait &lt;span style="color:#e6db74">&amp;#34;msiexec.exe&amp;#34;&lt;/span> -ArgumentList $MSIArguments -NoNewWindow -PassThru
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>安装完成后即可正常打开 WSL，但是否像之前一样下次更新又挂了，就看微软给不给力了，到时候别再加更几期大家一起看连续剧！&lt;/p></description></item><item><title>WSL更新出错：Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG</title><link>/posts/2025/02/wsl-update-error-regdb_e_classnotreg/</link><pubDate>Fri, 07 Feb 2025 18:04:54 +0800</pubDate><guid>/posts/2025/02/wsl-update-error-regdb_e_classnotreg/</guid><description>&lt;img src="/posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207180548.png" alt="Featured image of post WSL更新出错：Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG" />&lt;h1 id="wsl更新出错wslcallmsiinstallregdb_e_classnotreg">WSL更新出错：Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG
+&lt;/h1>&lt;p>今天手贱尝试更新&lt;code>wsl --update&lt;/code>，结果更新失败出错&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ wsl --update &lt;span style="color:#75715e"># 或 `wsl --help`,`wsl --status`等&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span># ...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WSL 正在完成升级...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Could not write value to key \SOFTWARE\Classes\Directory\Background\shell\WSL.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Verify that you have sufficient access to that key, or contact your support personnel.wsl:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WSL 安装似乎已损坏 (错误代码： Wsl/CallMsi/Install/ERROR_INSTALL_FAILURE)。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>按任意键修复 WSL，或 CTRL-C 取消。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>此提示将在 60 秒后超时。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>正在将适用于 Linux 的 Windows 子系统更新到版本： 2.3.26。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>没有注册类
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>错误代码: Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>问题参考
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/10882"
+target="_blank"
+rel="noopener"
+># Error code: Wsl/CallMsi/REGDB_E_CLASSNOTREG #10882&lt;/a>
+，无论运行WSL的任何命令和参数，都会出现上述提示。&lt;/p>
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>注意：&lt;em>&lt;strong>一定要事先备份好WSL的磁盘避免数据丢失&lt;/strong>&lt;/em>，参考
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/windows/wsl/disk-space#how-to-locate-the-vhdx-file-and-disk-path-for-your-linux-distribution"
+target="_blank"
+rel="noopener"
+>How to locate the .vhdx file and disk path for your Linux distribution&lt;/a>
+找到&lt;code>.vhdx&lt;/code>文件复制备份好&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 获取wsl distro vhdx文件目录&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>(Get-ChildItem -Path HKCU&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>\Software\Microsoft\Windows\CurrentVersion\Lxss | Where-Object { $_.GetValue(&lt;span style="color:#e6db74">&amp;#34;DistributionName&amp;#34;&lt;/span>) &lt;span style="color:#f92672">-eq&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;lt;distribution-name&amp;gt;&amp;#39;&lt;/span> }).GetValue(&lt;span style="color:#e6db74">&amp;#34;BasePath&amp;#34;&lt;/span>) + &lt;span style="color:#e6db74">&amp;#34;\ext4.vhdx&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/10882#issuecomment-2197198797"
+target="_blank"
+rel="noopener"
+>Error code: Wsl/CallMsi/REGDB_E_CLASSNOTREG #10882&lt;/a>
+，
+&lt;a
+class="link"
+href="https://answers.microsoft.com/zh-hans/windows/forum/all/wsl-install/cd18be19-e2fb-4173-82ad-c5a7600fc18e"
+target="_blank"
+rel="noopener"
+>wsl &amp;ndash;install 报错：灾难性故障&lt;/a>
+&lt;/p>
+&lt;ol>
+&lt;li>关闭wsl功能并重启
+&lt;img src="/posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207182110.png"
+width="415"
+height="312"
+srcset="/posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207182110_hu_2c91a1580d37f6b9.png 480w, /posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207182110_hu_bb2fa3375ec19dcc.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="319px"
+>&lt;/li>
+&lt;li>关闭powertoys避免在安装wsl时出现
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/11276"
+target="_blank"
+rel="noopener"
+>MSI installer &amp;ldquo;Warning: 1946.Property [&amp;hellip;] could not be set.&amp;quot;#11276&lt;/a>
+&lt;/li>
+&lt;li>下载最新或兼容你更新前的版本
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/releases"
+target="_blank"
+rel="noopener"
+>WSL/releases&lt;/a>
+msi文件并安装&lt;/li>
+&lt;li>忽略
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/11697#issuecomment-2168104220"
+target="_blank"
+rel="noopener"
+>Could not write value to key \SOFTWARE\Classes\Drive\shell\WSL #11697&lt;/a>
+问题即可
+&lt;img src="/posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207180548.png"
+width="406"
+height="307"
+srcset="/posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207180548_hu_8134563db0c2dda2.png 480w, /posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207180548_hu_bbcf2ff0b1714ad2.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="132"
+data-flex-basis="317px"
+>&lt;/li>
+&lt;li>检查是否成功
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ wsl --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WSL 版本： 2.4.10.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>内核版本： 5.15.167.4-1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WSLg 版本： 1.0.65
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>MSRDC 版本： 1.2.5716
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Direct3D 版本： 1.611.1-81528511
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DXCore 版本： 10.0.26100.1-240331-1435.ge-release
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Windows 版本： 10.0.26100.3037
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wsl -l
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>适用于 Linux 的 Windows 子系统分发:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Debian (默认)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Ubuntu
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://zhuanlan.zhihu.com/p/11217948712"
+target="_blank"
+rel="noopener"
+>解决问题：WSL升级后无法运行：错误代码: wsl/callmsi/install/error_install_failure&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://blog.csdn.net/weixin_44358931/article/details/143952359"
+target="_blank"
+rel="noopener"
+>WSL2 升级更新失败(退出代码: 1603，错误代码: Wsl/CallMsi/Install/ERROR_INSTALL_FAILURE）解决办法&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Intel Gpu Support for Wsl2</title><link>/posts/2023/03/intel-gpu-support-for-wsl2/</link><pubDate>Wed, 29 Mar 2023 11:50:19 +0800</pubDate><guid>/posts/2023/03/intel-gpu-support-for-wsl2/</guid><description>&lt;img src="https://tomthegreat.com/content/images/size/w960/2022/09/plex_ubuntu_docker.png" alt="Featured image of post Intel Gpu Support for Wsl2" />&lt;p>&lt;img src="https://tomthegreat.com/content/images/size/w960/2022/09/plex_ubuntu_docker.png"
+loading="lazy"
+>&lt;/p>
+&lt;p>在使用docker时应用需要使用gpu加速解码，尝试在wsl2中挂载intel集显设备/dev/dri时无法正常启动，找不到设备文件。&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>在win10 21H2以上开始支持wsl2 gpu，win11肯定是支持的，网上大部分都是NVIDIA的资料，intel集显比较少。&lt;/p>
+&lt;p>在这里
+&lt;a
+class="link"
+href="https://github.com/intel/compute-runtime/blob/master/WSL.md"
+target="_blank"
+rel="noopener"
+>WDDM GPU Paravirtualization support for WSL2&lt;/a>
+提到可能是显卡驱动的问题&lt;/p>
+&lt;blockquote>
+&lt;p>Required driver package (30.0.100.9955) is available here.&lt;/p>&lt;/blockquote>
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>在这里下载新驱动
+&lt;a
+class="link"
+href="https://www.intel.com/content/www/us/en/download/19344/intel-graphics-windows-dch-drivers.html"
+target="_blank"
+rel="noopener"
+>Intel® Graphics – Windows* DCH Drivers&lt;/a>
+，重新安装新的驱动后即可正常挂载设备/dev/dri&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/intel/compute-runtime/blob/master/WSL.md"
+target="_blank"
+rel="noopener"
+>WDDM GPU Paravirtualization support for WSL2&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/windows/ai/directml/gpu-accelerated-training"
+target="_blank"
+rel="noopener"
+>GPU accelerated ML training&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://ubuntu.com/tutorials/enabling-gpu-acceleration-on-ubuntu-on-wsl2-with-the-nvidia-cuda-platform#1-overview"
+target="_blank"
+rel="noopener"
+>Enabling GPU acceleration on Ubuntu on WSL2 with the NVIDIA CUDA Platform&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Port Forwarding in Wsl2</title><link>/posts/2021/11/port-forwarding-in-wsl2/</link><pubDate>Sun, 14 Nov 2021 22:30:49 +0800</pubDate><guid>/posts/2021/11/port-forwarding-in-wsl2/</guid><description>&lt;img src="/posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5.png" alt="Featured image of post Port Forwarding in Wsl2" />&lt;p>在wsl2中使用docker跑一个简单的ngnix时，发现只有宿主机使用&lt;code>localhost:8080&lt;/code>可以用浏览器打开，而内网内其他电脑则没办法使用宿主机内网ip访问ngnix界面&lt;/p>
+&lt;p>再用idea启动一个web服务，还是不能被内网访问&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>wsl2是一个hyper v虚拟机，使用 virtual network adapter进行网络通信，局域网机器访问windows宿主机，windows宿主机转发端口至wsl2&lt;/p>
+&lt;p>&lt;code>netsh interface portproxy add v4tov4 listenport=8080 connectaddress=127.0.0.1 connectport=8080 listenaddress=* protocol=tcp&lt;/code>，但是这段指令还是有个问题我转发的ip是127.0.0.1 这里很明显转发到的是windows宿主机的ip而不是wsl2的ip。&lt;/p>
+&lt;p>但是有个疑问的点是 windows宿主机能够在浏览器直接访问127.0.0.1:8080来访问到wsl2中的http服务。于是事情就变成了 我转发到127.0.0.1是不行的，必须转发到wsl2内部ip也就是172.31.58.132，这里的话问题变成了 wsl2的内部ip是每次重启都会变的。&lt;/p>
+&lt;p>用wsl2虚拟机分配一个ip，使用windows自带的端口转发命令netsh可以实现在获取了虚拟机ip之后转发至wsl2进而进行访问。&lt;/p>
+&lt;h3 id="hyper-v保留端口">hyper-v保留端口
+&lt;/h3>&lt;p>在win10 21H2的wsl2中，已支持端口转发。但使用&lt;code>hugo server -D&lt;/code>启动时在windows端无法访问&lt;code>http://localhost:1313&lt;/code>。在
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/5306#issuecomment-636509302"
+target="_blank"
+rel="noopener"
+>Huge amount of ports are being reserved #5306&lt;/a>
+中提到了hyper-v保留端口的问题：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$ netsh int ipv4 show excludedportrange protocol=tcp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Protocol tcp Port Exclusion Ranges
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start Port &lt;span style="color:#66d9ef">End&lt;/span> Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- --
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1235&lt;/span> &lt;span style="color:#ae81ff">1334&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1435&lt;/span> &lt;span style="color:#ae81ff">1534&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">2096&lt;/span> &lt;span style="color:#ae81ff">2195&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">5357&lt;/span> &lt;span style="color:#ae81ff">5357&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">12278&lt;/span> &lt;span style="color:#ae81ff">12377&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">14512&lt;/span> &lt;span style="color:#ae81ff">14611&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">19455&lt;/span> &lt;span style="color:#ae81ff">19455&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">50000&lt;/span> &lt;span style="color:#ae81ff">50059&lt;/span> *
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* - Administered port exclusions.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>显然hugo监听的端口1313在hyper-v的保留端口范围中&lt;/p>
+&lt;h2 id="解决方案">解决方案
+&lt;/h2>&lt;h3 id="保留端口">保留端口
+&lt;/h3>&lt;p>参考
+&lt;a
+class="link"
+href="https://github.com/docker/for-win/issues/3171#issuecomment-572571882"
+target="_blank"
+rel="noopener"
+>Unable to bind ports: Docker-for-Windows &amp;amp; Hyper-V excluding but not using important port ranges&lt;/a>
+，但一般而言，不需要配置，如果发现无法访问，查看下是否在保留端口中&lt;/p>
+&lt;h3 id="script">script
+&lt;/h3>&lt;p>每次重启来获取wsl2的内部ip并且写入到windows的hosts中&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>获得虚拟机ip&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ ip a | grep eth0 &lt;span style="color:#75715e"># 172.22.58.201&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>5: eth0: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style="color:#ae81ff">1500&lt;/span> qdisc mq state UP group default qlen &lt;span style="color:#ae81ff">1000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> inet 172.22.58.201/20 brd 172.22.63.255 scope global eth0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>设置端口转发（需要管理员权限运行）&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># netsh interface portproxy add v4tov4 listenport=[宿主机windows平台监听端口] listenaddress=[允许进入的地址] connectport=[wsl2平台监听端口] connectaddress=[wsl2平台ip] protocol=tcp&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy add v4tov4 listenport=&lt;span style="color:#ae81ff">8080&lt;/span> connectaddress=&lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 connectport=&lt;span style="color:#ae81ff">8080&lt;/span> listenaddress=* protocol=tcp
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>查看下端口转发状态&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>此时可测试在内网机器上访问成功（先完全关闭win10 defender firewall）&lt;/p>
+&lt;h4 id="删除端口转发">删除端口转发
+&lt;/h4>&lt;p>&lt;code>netsh interface portproxy delete v4tov4 listenport=[port] protocol=tcp&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">9000&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">9000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy delete v4tov4 listenport=&lt;span style="color:#ae81ff">9000&lt;/span> protocol=tcp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="设置windows防火墙">设置Windows防火墙
+&lt;/h3>&lt;p>windows防火墙开启入站规则或者直接关闭防火墙&lt;/p>
+&lt;p>&lt;code>设置--&amp;gt;更新和安全--&amp;gt;Windows安全中心--&amp;gt;防火墙和网络保护--&amp;gt;高级设置--&amp;gt;入站规则--&amp;gt;新建规则--&amp;gt;端口--&amp;gt;TCP,特定本地端口--&amp;gt;允许连接&lt;/code>&lt;/p>
+&lt;p>&lt;img src="/posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5.png"
+width="1047"
+height="757"
+srcset="/posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5_hu_ce1ded6b49e86f55.png 480w, /posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5_hu_15b05e6aa6c5dcae.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="138"
+data-flex-basis="331px"
+>&lt;/p>
+&lt;h3 id="设置powershell-script">设置powershell script
+&lt;/h3>&lt;p>因为每一次重新启动 wsl2的ip都会变动，所以每一次重启都去手动执行端口转发是一件反人类的事情，
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/4150#issuecomment-504209723"
+target="_blank"
+rel="noopener"
+>[WSL 2] NIC Bridge mode 🖧 (Has TCP Workaround🔨) #4150&lt;/a>
+找到一个powershell的脚本能够每一次获取虚拟机ip，并进行指定端口转发&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>使用cmd调用powershell运行脚本，首次执行可能会有报错，因为powershell默认不能直接执行脚本，需要更改一个设置，需在powershell下执行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>Set-ExecutionPolicy RemoteSigned
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>如果没有找到&lt;code>ifconfig&lt;/code>命令，则ubuntu安装&lt;code>sudo apt-get install net-tools&lt;/code>。还有一种方式只用&lt;code>ip&lt;/code>命令：&lt;code>ip a | awk '/^[0-9]+: / {}; /inet.*eth0/ {print gensub(/(.*)\/(.*)/, &amp;quot;\\1&amp;quot;, &amp;quot;g&amp;quot;, $2)}'&lt;/code>，但是ps中不能运行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>bash.exe -c &lt;span style="color:#e6db74">&amp;#34;ip a | awk &amp;#39;/^[0-9]+: / {}; /inet.*eth0/ {print gensub(/(.*)\/(.*)/, &amp;#34;&lt;/span>\\&lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#e6db74">&amp;#34;, &amp;#34;&lt;/span>g&lt;span style="color:#e6db74">&amp;#34;, &lt;/span>$2&lt;span style="color:#e6db74">)}&amp;#39;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>\\&lt;span style="color:#ae81ff">1&lt;/span>, g, )}&lt;span style="color:#e6db74">&amp;#39;: -c: line 0: unexpected EOF while looking for matching `&amp;#39;&amp;#39;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">\\1, g, )}&amp;#39;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> -c: line &lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> syntax error&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> unexpected &lt;span style="color:#66d9ef">end&lt;/span> of file
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>如果提示&lt;code>The requested operation requires elevation (Run as administrator).&lt;/code>，则需要在管理员打开powershell运行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>C:\WINDOWS\system32&amp;gt; C:\Users\navyd\Desktop\wsl2-port-forwarding.ps1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>运行script后，执行netsh interface portproxy show all 查看端口，确认是否有效&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>C:\WINDOWS\system32&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">80&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">443&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">443&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">10000&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">10000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">9000&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">9000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$remoteport = bash.exe -c &lt;span style="color:#e6db74">&amp;#34;ifconfig eth0 | grep &amp;#39;inet &amp;#39;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$found = $remoteport &lt;span style="color:#f92672">-match&lt;/span> &lt;span style="color:#e6db74">&amp;#39;\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span>( $found ){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$remoteport = $matches[&lt;span style="color:#ae81ff">0&lt;/span>];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>} &lt;span style="color:#66d9ef">else&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>echo &lt;span style="color:#e6db74">&amp;#34;The Script Exited, the ip address of WSL 2 cannot be found&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>exit;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[Ports]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#All the ports you want to forward separated by coma&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ports=@(&lt;span style="color:#ae81ff">10000&lt;/span>,&lt;span style="color:#ae81ff">9000&lt;/span>,&lt;span style="color:#ae81ff">8080&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[Static ip]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#You can change the addr to your ip config to listen to a specific address&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$addr=&lt;span style="color:#e6db74">&amp;#39;*&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ports_a = $ports -join &lt;span style="color:#e6db74">&amp;#34;,&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#Remove Firewall Exception Rules&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># iex &amp;#34;Remove-NetFireWallRule -DisplayName &amp;#39;WSL 2 Firewall Unlock&amp;#39; &amp;#34;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#adding Exception Rules for inbound and outbound Rules&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#iex &amp;#34;New-NetFireWallRule -DisplayName &amp;#39;WSL 2 Firewall Unlock&amp;#39; -Direction Outbound -LocalPort $ports_a -Action Allow -Protocol TCP&amp;#34;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#iex &amp;#34;New-NetFireWallRule -DisplayName &amp;#39;WSL 2 Firewall Unlock&amp;#39; -Direction Inbound -LocalPort $ports_a -Action Allow -Protocol TCP&amp;#34;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span>( $i = &lt;span style="color:#ae81ff">0&lt;/span>; $i &lt;span style="color:#f92672">-lt&lt;/span> $ports.length; $i++ ){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$port = $ports[$i];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>iex &lt;span style="color:#e6db74">&amp;#34;netsh interface portproxy delete v4tov4 listenport=&lt;/span>$port&lt;span style="color:#e6db74"> listenaddress=&lt;/span>$addr&lt;span style="color:#e6db74">&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>iex &lt;span style="color:#e6db74">&amp;#34;netsh interface portproxy add v4tov4 listenport=&lt;/span>$port&lt;span style="color:#e6db74"> listenaddress=&lt;/span>$addr&lt;span style="color:#e6db74"> connectport=&lt;/span>$port&lt;span style="color:#e6db74"> connectaddress=&lt;/span>$remoteport&lt;span style="color:#e6db74">&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>注意：尽量不要转发常用端口，如不能转发80端口，可能导致win10 共享等不能工作的异常&lt;/p>
+&lt;h3 id="配置任务计划">配置任务计划
+&lt;/h3>&lt;p>Go to search, search for task scheduler. In the actions menu on the right, click on create task.&lt;/p>
+&lt;p>Enter Name, go to triggers tab. Create a new trigger, with a begin task as you login, set delay to 10s.&lt;/p>
+&lt;p>Go to the actions and add the script. If you are using Laptop, go to settings and enable run on power.&lt;/p>
+&lt;p>
+&lt;a
+class="link"
+href="https://blog.csdn.net/qq_26435977/article/details/106008957"
+target="_blank"
+rel="noopener"
+>WSL2设置内网访问&lt;/a>
+&lt;/p>
+&lt;p>参考&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/4150#issuecomment-504209723"
+target="_blank"
+rel="noopener"
+>[WSL 2] NIC Bridge mode 🖧 (Has TCP Workaround🔨) #4150&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://blog.csdn.net/qq_26435977/article/details/106008957"
+target="_blank"
+rel="noopener"
+>WSL2设置内网访问&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://studygolang.com/articles/29526"
+target="_blank"
+rel="noopener"
+>windows10 2004版使用WSL2并自动转发WSL2中端口&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://zhuanlan.zhihu.com/p/144583887"
+target="_blank"
+rel="noopener"
+>WSL2来了！但是能正常使用并不简单&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.microsoft.com/en-us/windows/wsl/wsl-config#options-for-wslconfig"
+target="_blank"
+rel="noopener"
+>Options for .wslconfig&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/273188/8566831"
+target="_blank"
+rel="noopener"
+>How do I determine if a port is open on a Windows server? [closed]&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/5439"
+target="_blank"
+rel="noopener"
+>WSL2 not forwarding ports #5439&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/5306"
+target="_blank"
+rel="noopener"
+>Huge amount of ports are being reserved #5306&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/docker/for-win/issues/3171"
+target="_blank"
+rel="noopener"
+>Unable to bind ports: Docker-for-Windows &amp;amp; Hyper-V excluding but not using important port ranges #3171&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Powerline in WSL2</title><link>/posts/2021/10/powerline-in-wsl2/</link><pubDate>Sun, 17 Oct 2021 16:19:48 +0800</pubDate><guid>/posts/2021/10/powerline-in-wsl2/</guid><description>&lt;img src="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02.png" alt="Featured image of post Powerline in WSL2" />&lt;p>在wsl2中使用zsh主题出现乱码时需要安装powerline字体才能显示，windows terminal使用的Cascadia Code字体也支持powerline版本
+&lt;a
+class="link"
+href="https://github.com/microsoft/cascadia-code#installation"
+target="_blank"
+rel="noopener"
+>Cascadia Code&lt;/a>
+，常用的还有
+&lt;a
+class="link"
+href="https://github.com/powerline/fonts"
+target="_blank"
+rel="noopener"
+>powerline/fonts&lt;/a>
+&lt;/p>
+&lt;p>对于Cascadia Code字体下载
+&lt;a
+class="link"
+href="https://github.com/microsoft/cascadia-code/releases"
+target="_blank"
+rel="noopener"
+>microsoft/cascadia-code/releases&lt;/a>
+解压安装即可：&lt;/p>
+&lt;p>&lt;img src="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02.png"
+width="836"
+height="385"
+srcset="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02_hu_4005b900ffdf5d0b.png 480w, /posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02_hu_c0c55995f2f387dc.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="217"
+data-flex-basis="521px"
+>&lt;/p>
+&lt;p>对于powerline字体文件可以使用&lt;code>git clone https://github.com/powerline/fonts.git --depth=1&lt;/code>下载后在管理员权限下执行安装
+&lt;a
+class="link"
+href="https://github.com/powerline/fonts/blob/master/install.ps1"
+target="_blank"
+rel="noopener"
+>install.ps1&lt;/a>
+&lt;/p>
+&lt;h2 id="配置使用">配置使用
+&lt;/h2>&lt;ul>
+&lt;li>
+&lt;p>vscode：在settings.json中添加&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;terminal.integrated.fontFamily&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Cascadia Mono PL&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>windows terminal：在settings.json中添加&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;profiles&amp;#34;&lt;/span>: {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;defaults&amp;#34;&lt;/span>: {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;fontFace&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Cascadia Code PL&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> },
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>
+&lt;a
+class="link"
+href="https://docs.microsoft.com/en-us/windows/terminal/tutorials/powerline-setup"
+target="_blank"
+rel="noopener"
+>Tutorial: Set up Powerline in Windows Terminal&lt;/a>
+&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>
+&lt;a
+class="link"
+href="https://code.visualstudio.com/docs/editor/integrated-terminal#_can-i-use-powerline-fonts-in-the-integrated-terminal"
+target="_blank"
+rel="noopener"
+>Can I use Powerline fonts in the integrated terminal?&lt;/a>
+&lt;/p>
+&lt;/li>
+&lt;/ul></description></item><item><title>docker installation</title><link>/posts/archives/docker/docker-installation/</link><pubDate>Fri, 06 Aug 2021 17:30:53 +0800</pubDate><guid>/posts/archives/docker/docker-installation/</guid><description>&lt;p>在
+&lt;a
+class="link"
+href="https://docs.docker.com/engine/install/ubuntu/"
+target="_blank"
+rel="noopener"
+>Install Docker Engine on Ubuntu&lt;/a>
+提供了安装教程，同时提供一个直接运行的脚本
+&lt;a
+class="link"
+href="https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script"
+target="_blank"
+rel="noopener"
+>Install using the convenience script&lt;/a>
+&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>curl -fsSL https://get.docker.com -o get-docker.sh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo sh get-docker.sh
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="manage-docker-as-a-non-root-user">Manage Docker as a non-root user
+&lt;/h2>&lt;p>在安装完成后不能使用非root用户运行，可能遇到下面的问题：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ docker stats
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Got permission denied &lt;span style="color:#66d9ef">while&lt;/span> trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get &lt;span style="color:#e6db74">&amp;#34;http://%2Fvar%2Frun%2Fdocker.sock/v1.24/version&amp;#34;&lt;/span>: dial unix /var/run/docker.sock: connect: permission denied
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>可以为当前用户添加到docker组中解决&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo groupadd docker
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo usermod -aG docker &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$USER&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Change user&amp;#39;s primary group membership or logout and login again or reboot&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>newgrp docker
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="rootless-mode">Rootless mode
+&lt;/h3>&lt;p>在
+&lt;a
+class="link"
+href="https://docs.docker.com/engine/security/rootless/#install"
+target="_blank"
+rel="noopener"
+>Run the Docker daemon as a non-root user (Rootless mode)&lt;/a>
+中可以不作为root用户运行，在Docker Engine v20.10发布&lt;/p>
+&lt;p>在ubuntu上可以直接运行&lt;code>dockerd-rootless-setuptool.sh install&lt;/code>或下载运行&lt;code>curl -fsSL https://get.docker.com/rootless | sh&lt;/code>&lt;/p>
+&lt;p>但是在wsl2中存在问题，要使用&lt;code>dockerd-rootless-setuptool.sh install --skip-iptables&lt;/code>禁用iptables检查，运行后提示成功：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ dockerd-rootless-setuptool.sh install --skip-iptables
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>INFO&lt;span style="color:#f92672">]&lt;/span> systemd not detected, dockerd-rootless.sh needs to be started manually:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PATH&lt;span style="color:#f92672">=&lt;/span>/usr/bin:/sbin:/usr/sbin:$PATH dockerd-rootless.sh --iptables&lt;span style="color:#f92672">=&lt;/span>false
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>INFO&lt;span style="color:#f92672">]&lt;/span> Creating CLI context &lt;span style="color:#e6db74">&amp;#34;rootless&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Successfully created context &lt;span style="color:#e6db74">&amp;#34;rootless&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>INFO&lt;span style="color:#f92672">]&lt;/span> Make sure the following environment variables are set &lt;span style="color:#f92672">(&lt;/span>or add them to ~/.bashrc&lt;span style="color:#f92672">)&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export PATH&lt;span style="color:#f92672">=&lt;/span>/usr/bin:$PATH
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export DOCKER_HOST&lt;span style="color:#f92672">=&lt;/span>unix:///mnt/wslg/runtime-dir/docker.sock
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>但是DOCKER_HOST不合理，docker没有被安装在wslg中，运行&lt;code>docker stats&lt;/code>失败&lt;code>Rootless mode&lt;/code>在wsl中不可用&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/48957722/8566831"
+target="_blank"
+rel="noopener"
+>How to fix docker: Got permission denied issue&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.docker.com/engine/install/linux-postinstall/"
+target="_blank"
+rel="noopener"
+>Manage Docker as a non-root user&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="配置wsl2-docker自启动">配置wsl2 docker自启动
+&lt;/h2>&lt;p>wsl2没有systemd，不能使用官方教程
+&lt;a
+class="link"
+href="https://docs.docker.com/engine/install/linux-postinstall/#configure-docker-to-start-on-boot"
+target="_blank"
+rel="noopener"
+>Configure Docker to start on boot&lt;/a>
+，只能使用service启动。&lt;/p>
+&lt;p>配置sudo在运行service命令时不会请求密码&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-bassh" data-lang="bassh">echo &amp;#34;$USER ALL=(ALL:ALL) NOPASSWD: /usr/sbin/service&amp;#34; | sudo tee -a &amp;#34;/etc/sudoers.d/$USER&amp;#34;
+&lt;/code>&lt;/pre>&lt;p>然后在&lt;code>~/.zshrc&lt;/code>中启动docker&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>service docker status &amp;gt; /dev/null &lt;span style="color:#f92672">||&lt;/span> sudo service docker start
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://blog.csdn.net/weiyi556/article/details/78980139"
+target="_blank"
+rel="noopener"
+>sudo visudo 退出保存&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://askubuntu.com/a/878705"
+target="_blank"
+rel="noopener"
+>Execute sudo without Password?&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="docker更换国内镜像">docker更换国内镜像
+&lt;/h2>&lt;p>配置文件启动Docker,修改&lt;code>/etc/docker/daemon.json&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;registry-mirrors&amp;#34;&lt;/span>: [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;http://hub-mirror.c.163.com/&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;https://docker.mirrors.ustc.edu.cn/&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>修改保存后，重启 Docker 以使配置生效。&lt;code>docker info&lt;/code>查看&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo service docker restart
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ docker info | grep -i mirror
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Registry Mirrors:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> http://hub-mirror.c.163.com/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> https://docker.mirrors.ustc.edu.cn/
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>

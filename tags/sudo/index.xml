@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sudo on NavyD的个人博客</title><link>/tags/sudo/</link><description>Recent content in Sudo on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/sudo/index.xml" rel="self" type="application/rss+xml"/><item><title>使用root权限运行cargo test</title><link>/posts/archives/rust/cargo-test-with-root-privilege/</link><pubDate>Wed, 15 Sep 2021 13:34:37 +0800</pubDate><guid>/posts/archives/rust/cargo-test-with-root-privilege/</guid><description>&lt;img src="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-24-35.png" alt="Featured image of post 使用root权限运行cargo test" />&lt;p>在一些系统应用中需要访问root权限的资源，直接运行可能出现权限错误：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ cargo test --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>2021-09-15T05:39:57Z INFO cmd_lib::child&lt;span style="color:#f92672">]&lt;/span> Fatal: can&lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span>t open lock file /run/xtables.lock: Permission denied
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>rust源码使用
+&lt;a
+class="link"
+href="https://crates.io/crates/cmd_lib"
+target="_blank"
+rel="noopener"
+>cmd_lib&lt;/a>
+，编译成&lt;code>std::process&lt;/code>api：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">run&lt;/span>(table: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">str&lt;/span>, chain: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">str&lt;/span>) -&amp;gt; Result&lt;span style="color:#f92672">&amp;lt;&lt;/span>()&lt;span style="color:#f92672">&amp;gt;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> run_cmd! (iptables &lt;span style="color:#f92672">-&lt;/span>t &lt;span style="color:#e6db74">&amp;#34;$table&amp;#34;&lt;/span> &lt;span style="color:#f92672">-&lt;/span>D &lt;span style="color:#66d9ef">OUTPUT&lt;/span> &lt;span style="color:#f92672">-&lt;/span>j &lt;span style="color:#e6db74">&amp;#34;$chain&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>直接上sudo提权出现命令无法找到的问题&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo cargo test --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo: cargo: command not found
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>要解决可以看我之前的文章：
+&lt;a
+class="link"
+href="/posts/archives/linux/how-to-keep-environment-variables-when-using-sudo/"
+>在sudo时如何保持当前环境变量&lt;/a>
+解决了环境权限问题，正常使用iptables，下面的错误并不是iptables权限的问题 忽略&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo -E PATH&lt;span style="color:#f92672">=&lt;/span>$PATH env cargo test --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>2021-09-15T05:45:16Z INFO cmd_lib::child&lt;span style="color:#f92672">]&lt;/span> iptables v1.8.4 &lt;span style="color:#f92672">(&lt;/span>legacy&lt;span style="color:#f92672">)&lt;/span>: Couldn&lt;span style="color:#e6db74">&amp;#39;t load target `CLASH&amp;#39;&lt;/span>:No such file or directory
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外，cargo会不会有解决方法呢？&lt;/p>
+&lt;p>cargo提供了一个配置参数&lt;code>target.&amp;lt;triple&amp;gt;.runner&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>If a runner is provided, executables for the target &amp;lt;triple&amp;gt; will be executed by invoking the specified runner with the actual executable passed as an argument. This applies to cargo run, cargo test and cargo bench commands. By default, compiled executables are executed directly.&lt;/p>&lt;/blockquote>
+&lt;p>可以在cargo的配置文件中添加sudo命令去运行cargo test，cargo的可配置的文件在这：
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/cargo/reference/config.html#hierarchical-structure"
+target="_blank"
+rel="noopener"
+>Hierarchical structure&lt;/a>
+，这里使用&lt;code>your_project/.cargo/config.toml&lt;/code>添加配置：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">target&lt;/span>.&lt;span style="color:#a6e22e">x86_64-unknown-linux-gnu&lt;/span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">runner&lt;/span> = &lt;span style="color:#e6db74">&amp;#39;sudo -E&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意一下，使用sudo要求在ide命令行输入密码，在clion rust运行时将一直被阻塞&lt;code>instantiating tests&lt;/code>，也没有提示输入，可能不支持这种方式。而vscode rust-analyzer是可以正常使用提示输入的&lt;/p>
+&lt;p>&lt;img src="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-24-35.png"
+width="769"
+height="327"
+srcset="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-24-35_hu_8d512fc4c749555b.png 480w, /posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-24-35_hu_8c8465992e10178d.png 1024w"
+loading="lazy"
+alt="clion rust"
+class="gallery-image"
+data-flex-grow="235"
+data-flex-basis="564px"
+>
+&lt;img src="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-28-49.png"
+width="625"
+height="230"
+srcset="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-28-49_hu_9ac0fc033d094202.png 480w, /posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-28-49_hu_541b79ad3906048f.png 1024w"
+loading="lazy"
+alt="vscode rust-analyzer"
+class="gallery-image"
+data-flex-grow="271"
+data-flex-basis="652px"
+>&lt;/p>
+&lt;p>如果是shell还可以使用&lt;code>-S&lt;/code>选项从stdin中密码&lt;code>sudo -S &amp;lt;&amp;lt;&amp;lt; $YOUR_PASS&lt;/code>，使用了环境变量避免了明文密码，但cargo runner无法解析sh语法运行&lt;code>echo PASS | sudo -E&lt;/code>。&lt;/p>
+&lt;p>退一步，如果要是sudo需要输入密码时直接失败不阻塞&lt;code>-n&lt;/code>选项，但配置了&lt;code>sudo -nE&lt;/code>了实际在clion rust是一直失败的，可能是在wsl中使用ssh，sudo的认证是关联了session的，无法在clion remote ssh中执行&lt;code>sudo -v&lt;/code>刷新认证，在clion自带的终端执行也没用，但这个思路应该是没错的。等待后续方案 &lt;!-- TODO -->&lt;/p>
+&lt;p>这里提一下rust所有内置支持target：
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/nightly/rustc/platform-support.html"
+target="_blank"
+rel="noopener"
+>Platform Support&lt;/a>
+，可以使用&lt;code>rustc --print target-list&lt;/code>查看， &lt;code>rustup target list --installed&lt;/code>查看当前安装的target&lt;/p>
+&lt;h2 id="解决方案">解决方案
+&lt;/h2>&lt;p>这两种方法都是可行的，由于需求的不同选择，如在ide中运行test选择cargo配置较好，不用手动输入命令，但是不是所有test都要root权限的，而且有时会存在sudo环境问题，使用root用户运行可能出错。&lt;/p>
+&lt;p>根据最小特权原则，使用sudo单独运行个别测试用例更好&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># alias sudoe=&amp;#39;sudo -E PATH=$PATH env&amp;#39;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudoe cargo test --package $crate --lib -- $module_path --exact --nocapture
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/nix-rust/nix/issues/963"
+target="_blank"
+rel="noopener"
+>cargo test with root privilege #963&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/rust-lang/cargo/issues/5999#issuecomment-419972497"
+target="_blank"
+rel="noopener"
+>Running tests with elevated privileges #5999&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/cargo/reference/config.html?highlight=runner#targettriplerunner"
+target="_blank"
+rel="noopener"
+>The Cargo Book Configuration target.&amp;lt;triple&amp;gt;.runner&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/nightly/rustc/targets/built-in.html"
+target="_blank"
+rel="noopener"
+>rust Built-in Targets&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://superuser.com/questions/67765/sudo-with-password-in-one-command-line"
+target="_blank"
+rel="noopener"
+>sudo with password in one command line?&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>在sudo时如何保持当前环境变量</title><link>/posts/archives/linux/how-to-keep-environment-variables-when-using-sudo/</link><pubDate>Mon, 13 Sep 2021 20:53:59 +0800</pubDate><guid>/posts/archives/linux/how-to-keep-environment-variables-when-using-sudo/</guid><description>&lt;p>在使用sudo时经常出现环境问题，如命令无法找到&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo poetry;sudo sh -c &lt;span style="color:#e6db74">&amp;#39;echo $VISUAL&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo: poetry: command not found
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ which poetry; echo $VISUAL
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/home/navyd/.local/bin/poetry
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>vim
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>sudo存在一个&lt;code>security policy&lt;/code>不会使用当前用户的环境，提供了&lt;code>-E&lt;/code>启用当前存在的环境变量，&lt;code>--preserve-env=[key,key1,..]&lt;/code>从当前用户环境中保存的环境变量，允许覆盖&lt;/p>
+&lt;p>上面的是在&lt;code>~/.bashrc&lt;/code>中定义的变量&lt;code>PATH, VISUAL&lt;/code>本质是没有被sudo设置，可以保存当前环境变量在 sudo 之后以 &lt;code>ENV=VALUE&lt;/code> 的形式传递被后续命令接受。&lt;/p>
+&lt;p>而&lt;code>env&lt;/code> run a program in a modified environment 是一个接受变量执行命令的命令如&lt;code>env a=b sh -c 'echo $a'&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo --preserve-env&lt;span style="color:#f92672">=&lt;/span>PATH env poetry --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Poetry version 1.1.7
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># or&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo PATH&lt;span style="color:#f92672">=&lt;/span>$PATH env poetry --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo --preserve-env&lt;span style="color:#f92672">=&lt;/span>PATH,VISUAL env sh -c &lt;span style="color:#e6db74">&amp;#39;echo $VISUAL&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>vim
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># or&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo -E --preserve-env&lt;span style="color:#f92672">=&lt;/span>PATH env sh -c &lt;span style="color:#e6db74">&amp;#39;echo $VISUAL&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>vim
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意：不能使用&lt;code>sudo PATH=$PATH cmd&lt;/code>这种方式，前导参数本身视为环境变量赋值使cmd使用PATH变量，但不会影响sudo的可执行文件的搜索路径，sudo无法找到在当前PATH中找到cmd&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 变量传递给了sh&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo -E PATH&lt;span style="color:#f92672">=&lt;/span>$PATH sh -c &lt;span style="color:#e6db74">&amp;#39;which poetry; echo $VISUAL&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/home/navyd/.local/bin/poetry
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>vim
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 变量给了poetry，但sudo是无法在root的PATH中找到poetry的&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo -E PATH&lt;span style="color:#f92672">=&lt;/span>$PATH poetry --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo: poetry: command not found
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>最小特权原则，在&lt;code>~/.bashrc&lt;/code>中添加alias，命名最好不要与&lt;code>sudo&lt;/code>一样，可能导致程序行为不一致出bug&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>alias sudoe&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;sudo -E --preserve-env=PATH env&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/8633575/8566831"
+target="_blank"
+rel="noopener"
+>How to keep environment variables when using sudo&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/83194"
+target="_blank"
+rel="noopener"
+>How to make &lt;code>sudo&lt;/code> preserve $PATH?&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

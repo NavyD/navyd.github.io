@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hyper-V on NavyD的个人博客</title><link>/tags/hyper-v/</link><description>Recent content in Hyper-V on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 30 Mar 2023 19:02:41 +0800</lastBuildDate><atom:link href="/tags/hyper-v/index.xml" rel="self" type="application/rss+xml"/><item><title>Port Forwarding in Wsl2</title><link>/posts/2021/11/port-forwarding-in-wsl2/</link><pubDate>Sun, 14 Nov 2021 22:30:49 +0800</pubDate><guid>/posts/2021/11/port-forwarding-in-wsl2/</guid><description>&lt;img src="/posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5.png" alt="Featured image of post Port Forwarding in Wsl2" />&lt;p>在wsl2中使用docker跑一个简单的ngnix时，发现只有宿主机使用&lt;code>localhost:8080&lt;/code>可以用浏览器打开，而内网内其他电脑则没办法使用宿主机内网ip访问ngnix界面&lt;/p>
+&lt;p>再用idea启动一个web服务，还是不能被内网访问&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>wsl2是一个hyper v虚拟机，使用 virtual network adapter进行网络通信，局域网机器访问windows宿主机，windows宿主机转发端口至wsl2&lt;/p>
+&lt;p>&lt;code>netsh interface portproxy add v4tov4 listenport=8080 connectaddress=127.0.0.1 connectport=8080 listenaddress=* protocol=tcp&lt;/code>，但是这段指令还是有个问题我转发的ip是127.0.0.1 这里很明显转发到的是windows宿主机的ip而不是wsl2的ip。&lt;/p>
+&lt;p>但是有个疑问的点是 windows宿主机能够在浏览器直接访问127.0.0.1:8080来访问到wsl2中的http服务。于是事情就变成了 我转发到127.0.0.1是不行的，必须转发到wsl2内部ip也就是172.31.58.132，这里的话问题变成了 wsl2的内部ip是每次重启都会变的。&lt;/p>
+&lt;p>用wsl2虚拟机分配一个ip，使用windows自带的端口转发命令netsh可以实现在获取了虚拟机ip之后转发至wsl2进而进行访问。&lt;/p>
+&lt;h3 id="hyper-v保留端口">hyper-v保留端口
+&lt;/h3>&lt;p>在win10 21H2的wsl2中，已支持端口转发。但使用&lt;code>hugo server -D&lt;/code>启动时在windows端无法访问&lt;code>http://localhost:1313&lt;/code>。在
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/5306#issuecomment-636509302"
+target="_blank"
+rel="noopener"
+>Huge amount of ports are being reserved #5306&lt;/a>
+中提到了hyper-v保留端口的问题：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$ netsh int ipv4 show excludedportrange protocol=tcp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Protocol tcp Port Exclusion Ranges
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start Port &lt;span style="color:#66d9ef">End&lt;/span> Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- --
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1235&lt;/span> &lt;span style="color:#ae81ff">1334&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1435&lt;/span> &lt;span style="color:#ae81ff">1534&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">2096&lt;/span> &lt;span style="color:#ae81ff">2195&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">5357&lt;/span> &lt;span style="color:#ae81ff">5357&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">12278&lt;/span> &lt;span style="color:#ae81ff">12377&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">14512&lt;/span> &lt;span style="color:#ae81ff">14611&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">19455&lt;/span> &lt;span style="color:#ae81ff">19455&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">50000&lt;/span> &lt;span style="color:#ae81ff">50059&lt;/span> *
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* - Administered port exclusions.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>显然hugo监听的端口1313在hyper-v的保留端口范围中&lt;/p>
+&lt;h2 id="解决方案">解决方案
+&lt;/h2>&lt;h3 id="保留端口">保留端口
+&lt;/h3>&lt;p>参考
+&lt;a
+class="link"
+href="https://github.com/docker/for-win/issues/3171#issuecomment-572571882"
+target="_blank"
+rel="noopener"
+>Unable to bind ports: Docker-for-Windows &amp;amp; Hyper-V excluding but not using important port ranges&lt;/a>
+，但一般而言，不需要配置，如果发现无法访问，查看下是否在保留端口中&lt;/p>
+&lt;h3 id="script">script
+&lt;/h3>&lt;p>每次重启来获取wsl2的内部ip并且写入到windows的hosts中&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>获得虚拟机ip&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ ip a | grep eth0 &lt;span style="color:#75715e"># 172.22.58.201&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>5: eth0: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style="color:#ae81ff">1500&lt;/span> qdisc mq state UP group default qlen &lt;span style="color:#ae81ff">1000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> inet 172.22.58.201/20 brd 172.22.63.255 scope global eth0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>设置端口转发（需要管理员权限运行）&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># netsh interface portproxy add v4tov4 listenport=[宿主机windows平台监听端口] listenaddress=[允许进入的地址] connectport=[wsl2平台监听端口] connectaddress=[wsl2平台ip] protocol=tcp&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy add v4tov4 listenport=&lt;span style="color:#ae81ff">8080&lt;/span> connectaddress=&lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 connectport=&lt;span style="color:#ae81ff">8080&lt;/span> listenaddress=* protocol=tcp
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>查看下端口转发状态&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>此时可测试在内网机器上访问成功（先完全关闭win10 defender firewall）&lt;/p>
+&lt;h4 id="删除端口转发">删除端口转发
+&lt;/h4>&lt;p>&lt;code>netsh interface portproxy delete v4tov4 listenport=[port] protocol=tcp&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">9000&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">9000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy delete v4tov4 listenport=&lt;span style="color:#ae81ff">9000&lt;/span> protocol=tcp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="设置windows防火墙">设置Windows防火墙
+&lt;/h3>&lt;p>windows防火墙开启入站规则或者直接关闭防火墙&lt;/p>
+&lt;p>&lt;code>设置--&amp;gt;更新和安全--&amp;gt;Windows安全中心--&amp;gt;防火墙和网络保护--&amp;gt;高级设置--&amp;gt;入站规则--&amp;gt;新建规则--&amp;gt;端口--&amp;gt;TCP,特定本地端口--&amp;gt;允许连接&lt;/code>&lt;/p>
+&lt;p>&lt;img src="/posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5.png"
+width="1047"
+height="757"
+srcset="/posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5_hu_ce1ded6b49e86f55.png 480w, /posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5_hu_15b05e6aa6c5dcae.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="138"
+data-flex-basis="331px"
+>&lt;/p>
+&lt;h3 id="设置powershell-script">设置powershell script
+&lt;/h3>&lt;p>因为每一次重新启动 wsl2的ip都会变动，所以每一次重启都去手动执行端口转发是一件反人类的事情，
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/4150#issuecomment-504209723"
+target="_blank"
+rel="noopener"
+>[WSL 2] NIC Bridge mode 🖧 (Has TCP Workaround🔨) #4150&lt;/a>
+找到一个powershell的脚本能够每一次获取虚拟机ip，并进行指定端口转发&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>使用cmd调用powershell运行脚本，首次执行可能会有报错，因为powershell默认不能直接执行脚本，需要更改一个设置，需在powershell下执行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>Set-ExecutionPolicy RemoteSigned
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>如果没有找到&lt;code>ifconfig&lt;/code>命令，则ubuntu安装&lt;code>sudo apt-get install net-tools&lt;/code>。还有一种方式只用&lt;code>ip&lt;/code>命令：&lt;code>ip a | awk '/^[0-9]+: / {}; /inet.*eth0/ {print gensub(/(.*)\/(.*)/, &amp;quot;\\1&amp;quot;, &amp;quot;g&amp;quot;, $2)}'&lt;/code>，但是ps中不能运行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>bash.exe -c &lt;span style="color:#e6db74">&amp;#34;ip a | awk &amp;#39;/^[0-9]+: / {}; /inet.*eth0/ {print gensub(/(.*)\/(.*)/, &amp;#34;&lt;/span>\\&lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#e6db74">&amp;#34;, &amp;#34;&lt;/span>g&lt;span style="color:#e6db74">&amp;#34;, &lt;/span>$2&lt;span style="color:#e6db74">)}&amp;#39;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>\\&lt;span style="color:#ae81ff">1&lt;/span>, g, )}&lt;span style="color:#e6db74">&amp;#39;: -c: line 0: unexpected EOF while looking for matching `&amp;#39;&amp;#39;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">\\1, g, )}&amp;#39;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> -c: line &lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> syntax error&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> unexpected &lt;span style="color:#66d9ef">end&lt;/span> of file
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>如果提示&lt;code>The requested operation requires elevation (Run as administrator).&lt;/code>，则需要在管理员打开powershell运行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>C:\WINDOWS\system32&amp;gt; C:\Users\navyd\Desktop\wsl2-port-forwarding.ps1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>运行script后，执行netsh interface portproxy show all 查看端口，确认是否有效&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>C:\WINDOWS\system32&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">80&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">443&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">443&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">10000&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">10000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">9000&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">9000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$remoteport = bash.exe -c &lt;span style="color:#e6db74">&amp;#34;ifconfig eth0 | grep &amp;#39;inet &amp;#39;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$found = $remoteport &lt;span style="color:#f92672">-match&lt;/span> &lt;span style="color:#e6db74">&amp;#39;\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span>( $found ){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$remoteport = $matches[&lt;span style="color:#ae81ff">0&lt;/span>];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>} &lt;span style="color:#66d9ef">else&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>echo &lt;span style="color:#e6db74">&amp;#34;The Script Exited, the ip address of WSL 2 cannot be found&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>exit;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[Ports]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#All the ports you want to forward separated by coma&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ports=@(&lt;span style="color:#ae81ff">10000&lt;/span>,&lt;span style="color:#ae81ff">9000&lt;/span>,&lt;span style="color:#ae81ff">8080&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[Static ip]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#You can change the addr to your ip config to listen to a specific address&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$addr=&lt;span style="color:#e6db74">&amp;#39;*&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ports_a = $ports -join &lt;span style="color:#e6db74">&amp;#34;,&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#Remove Firewall Exception Rules&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># iex &amp;#34;Remove-NetFireWallRule -DisplayName &amp;#39;WSL 2 Firewall Unlock&amp;#39; &amp;#34;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#adding Exception Rules for inbound and outbound Rules&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#iex &amp;#34;New-NetFireWallRule -DisplayName &amp;#39;WSL 2 Firewall Unlock&amp;#39; -Direction Outbound -LocalPort $ports_a -Action Allow -Protocol TCP&amp;#34;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#iex &amp;#34;New-NetFireWallRule -DisplayName &amp;#39;WSL 2 Firewall Unlock&amp;#39; -Direction Inbound -LocalPort $ports_a -Action Allow -Protocol TCP&amp;#34;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span>( $i = &lt;span style="color:#ae81ff">0&lt;/span>; $i &lt;span style="color:#f92672">-lt&lt;/span> $ports.length; $i++ ){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$port = $ports[$i];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>iex &lt;span style="color:#e6db74">&amp;#34;netsh interface portproxy delete v4tov4 listenport=&lt;/span>$port&lt;span style="color:#e6db74"> listenaddress=&lt;/span>$addr&lt;span style="color:#e6db74">&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>iex &lt;span style="color:#e6db74">&amp;#34;netsh interface portproxy add v4tov4 listenport=&lt;/span>$port&lt;span style="color:#e6db74"> listenaddress=&lt;/span>$addr&lt;span style="color:#e6db74"> connectport=&lt;/span>$port&lt;span style="color:#e6db74"> connectaddress=&lt;/span>$remoteport&lt;span style="color:#e6db74">&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>注意：尽量不要转发常用端口，如不能转发80端口，可能导致win10 共享等不能工作的异常&lt;/p>
+&lt;h3 id="配置任务计划">配置任务计划
+&lt;/h3>&lt;p>Go to search, search for task scheduler. In the actions menu on the right, click on create task.&lt;/p>
+&lt;p>Enter Name, go to triggers tab. Create a new trigger, with a begin task as you login, set delay to 10s.&lt;/p>
+&lt;p>Go to the actions and add the script. If you are using Laptop, go to settings and enable run on power.&lt;/p>
+&lt;p>
+&lt;a
+class="link"
+href="https://blog.csdn.net/qq_26435977/article/details/106008957"
+target="_blank"
+rel="noopener"
+>WSL2设置内网访问&lt;/a>
+&lt;/p>
+&lt;p>参考&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/4150#issuecomment-504209723"
+target="_blank"
+rel="noopener"
+>[WSL 2] NIC Bridge mode 🖧 (Has TCP Workaround🔨) #4150&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://blog.csdn.net/qq_26435977/article/details/106008957"
+target="_blank"
+rel="noopener"
+>WSL2设置内网访问&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://studygolang.com/articles/29526"
+target="_blank"
+rel="noopener"
+>windows10 2004版使用WSL2并自动转发WSL2中端口&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://zhuanlan.zhihu.com/p/144583887"
+target="_blank"
+rel="noopener"
+>WSL2来了！但是能正常使用并不简单&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.microsoft.com/en-us/windows/wsl/wsl-config#options-for-wslconfig"
+target="_blank"
+rel="noopener"
+>Options for .wslconfig&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/273188/8566831"
+target="_blank"
+rel="noopener"
+>How do I determine if a port is open on a Windows server? [closed]&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/5439"
+target="_blank"
+rel="noopener"
+>WSL2 not forwarding ports #5439&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/5306"
+target="_blank"
+rel="noopener"
+>Huge amount of ports are being reserved #5306&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/docker/for-win/issues/3171"
+target="_blank"
+rel="noopener"
+>Unable to bind ports: Docker-for-Windows &amp;amp; Hyper-V excluding but not using important port ranges #3171&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

@@ -1,0 +1,879 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Iptables on </title>
+        <link>/tags/iptables/</link>
+        <description>Recent content in Iptables on </description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en</language>
+        <lastBuildDate>Thu, 30 Mar 2023 19:02:41 +0800</lastBuildDate><atom:link href="/tags/iptables/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Clash透明代理</title>
+        <link>/posts/2021/08/clash-transparent-proxy/</link>
+        <pubDate>Mon, 09 Aug 2021 19:31:12 +0800</pubDate>
+        
+        <guid>/posts/2021/08/clash-transparent-proxy/</guid>
+        <description>&lt;p&gt;&lt;img src=&#34;https://github.com/Dreamacro/clash/raw/master/docs/logo.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。&lt;/p&gt;
+&lt;h2 id=&#34;docker部署&#34;&gt;docker部署
+&lt;/h2&gt;&lt;p&gt;在docker内启动时使用iptables操作，stop时清理iptables。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://hub.docker.com/r/navyd/clash&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;自用docker镜像&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/NavyD/docker-clash&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;NavyD/docker-clash&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;代理方式&#34;&gt;代理方式
+&lt;/h2&gt;&lt;h3 id=&#34;tcp-redir--udp-tproxy&#34;&gt;TCP redir + UDP TPROXY
+&lt;/h3&gt;&lt;p&gt;redir模式。对转发流量使用tcp redir, udp tproxy方式代理。本机仅代理tcp，支持docker内部代理。支持fakeip但存在icmp无法回应的问题（tcp udp没有问题），tun-fakeip可以提供更好的服务。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# local &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 接管clash宿主机内部流量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t nat -N CLASH
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t nat -F CLASH
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# private&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;setup_private nat CLASH
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 过滤本机clash流量 避免循环 user无法使用代理&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t nat -A CLASH -m owner --uid-owner &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$RUNNING_UID&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; -j RETURN
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t nat -A CLASH -p tcp -j REDIRECT --to-port &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$REDIR_PORT&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t nat -A OUTPUT -j CLASH
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 转发流量 tcp redir&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t nat -N CLASH_EXTERNAL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t nat -F CLASH_EXTERNAL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# google dns first&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t nat -A CLASH_EXTERNAL -p tcp -d 8.8.8.8 -j REDIRECT --to-port &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$REDIR_PORT&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t nat -A CLASH_EXTERNAL -p tcp -d 8.8.4.4 -j REDIRECT --to-port &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$REDIR_PORT&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# private&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;setup_private nat CLASH_EXTERNAL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# tcp redir&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t nat -A CLASH_EXTERNAL -p tcp -j REDIRECT --to-port &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$REDIR_PORT&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t nat -A PREROUTING -j CLASH_EXTERNAL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 转发流量 udp tproxy&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -N CLASH_EXTERNAL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -F CLASH_EXTERNAL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# private&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;setup_private mangle CLASH_EXTERNAL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# udp tproxy redir&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -A CLASH_EXTERNAL -p udp -j TPROXY --on-port &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$REDIR_PORT&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; --tproxy-mark $MARK_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -A PREROUTING -j CLASH_EXTERNAL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# route udp&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip rule add fwmark $MARK_ID table $TABLE_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip route add local default dev lo table $TABLE_ID
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://lancellc.gitbook.io/clash/start-clash/clash-udp-tproxy-support&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Clash TProxy Mode&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/Dreamacro/clash/issues/555#issuecomment-595064646&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;clash本机做透明代理iptables规则请教&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/Dreamacro/clash/issues/1047&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Fake IP 模式如何直接转发icmp包（无法Ping任何网站）&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://lev.shield.asia/index.php/Ops/31.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;iptables处理icmp转发&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://blog.lilydjwg.me/2018/7/16/transparent-proxy-for-tcp-and-udp-with-iptables.213139.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;使用 iptables 透明代理 TCP 与 UDP&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;注意：&lt;/p&gt;
+&lt;p&gt;TPROXY 是一个 Linux 内核模块，在 Linux 2.6.28 后进入官方内核。一般正常的发行版都没有裁剪 TPROXY 模块，TPROXY 模块缺失问题主要出现在无线路由固件上（某些精简型发行版也会去掉 TPROXY 模块，比如 Alpine）。使用以下方法可以检测当前内核是否包含 TPROXY 模块。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 查找 TPROXY 模块&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ find /lib/modules/&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;uname -r&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -type f -name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;xt_TPROXY.ko*&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 正常情况下的输出&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;/lib/modules/4.16.8-1-ARCH/kernel/net/netfilter/xt_TPROXY.ko.xz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在WSL2 Ubuntu上没有TPROXY模块：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ find /lib/modules/&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;uname -r&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; -type f -name &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;xt_TPROXY.ko*&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;find: ‘/lib/modules/5.10.16.3-microsoft-standard-WSL2’: No such file or directory
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ zgrep TPROXY /proc/config.gz
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# CONFIG_NFT_TPROXY is not set&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# CONFIG_NETFILTER_XT_TARGET_TPROXY is not set&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# CONFIG_NF_TPROXY_IPV4 is not set&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# CONFIG_NF_TPROXY_IPV6 is not set&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ sudo lsmod
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Module                  Size  Used by
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://stackoverflow.com/a/14382864/8566831&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;View Linux Kernel Config Options [closed]&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://www.jianshu.com/p/9a1909bcc54f&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;记一次在suse上遇到的TPROXY的坑。&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://www.cnblogs.com/linengier/p/9956517.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;linux系统管理（1）之 内核编译选项查看&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://unix.stackexchange.com/a/83327&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Where are the current kernel build options stored?&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/zfl9/ss-tproxy/wiki/Linux-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86#tproxy&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Linux 透明代理 tproxy&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;tcpudp-tproxy&#34;&gt;TCP&amp;amp;UDP TPROXY
+&lt;/h3&gt;&lt;p&gt;clash支持tcp tproxy，可以使用tcp tproxy避免在nat中重定向定义多个chain&lt;/p&gt;
+&lt;p&gt;在配置文件config.yaml中增加：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Transparent proxy server port for Linux (TProxy TCP and TProxy UDP)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;tproxy-port&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;7893&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;本机代理与TCP redir相似，下面是透明代理&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ROUTE RULES&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip rule add fwmark $MARK_ID table $TABLE_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip route add local default dev lo table $TABLE_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# CREATE TABLE&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -N clash
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# RETURN LOCAL AND LANS&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;setup_private mangle clash
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# FORWARD ALL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -A clash -p udp -j TPROXY --on-port $REDIR_PORT --tproxy-mark $MARK_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -A clash -p tcp -j TPROXY --on-port $REDIR_PORT --tproxy-mark $MARK_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# REDIRECT&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -A PREROUTING -j clash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/Dreamacro/clash/pull/1049&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Add TCP TPROXY support&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://www.wogong.net/blog/2020/11/clash-transparent-proxy&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Clash 作为网关的透明代理&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://guide.v2fly.org/app/tproxy.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;v2ray 透明代理(TPROXY)&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;tun&#34;&gt;TUN
+&lt;/h3&gt;&lt;p&gt;适用于tun-redir,tun-fakeip，代理本机与外部流量。在iptables mangle中设置mark并过滤内部私有地址、过滤指定运行clash uid的流量防止循环。&lt;/p&gt;
+&lt;p&gt;&lt;del&gt;本机docker内部网络无法直接被代理，如果不&lt;code&gt;-s 172.16.0.0/12 -j RETURN&lt;/code&gt;则docker内部无法ping到外部网络，可能是在mangle表后路由到tun设备后无法被iptables nat中的DOCKER链处理。&lt;/del&gt;&lt;/p&gt;
+&lt;p&gt;使用&lt;code&gt;-i &amp;quot;$TUN_NAME&amp;quot; -j RETURN&lt;/code&gt;防止docker内部流量被mark循环到tun接口。具体可行原因未知&lt;code&gt;todo&lt;/code&gt; &lt;!-- todo --&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 代理本机与外部流量。在iptables mangle中设置mark并过滤内部私有地址、&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 过滤指定运行clash uid的流量防止循环。允许本机与docker通过代理&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;## 接管clash宿主机内部流量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -N CLASH
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -F CLASH
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# filter clash traffic running under uid 注意顺序 owner过滤 要在 set mark之前&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -A CLASH -m owner --uid-owner &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$RUNNING_UID&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; -j RETURN
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# private&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;local_iptables mangle CLASH
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# mark&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -A CLASH -j MARK --set-xmark $MARK_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -A OUTPUT -j CLASH
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;## 接管转发流量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -N CLASH_EXTERNAL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -F CLASH_EXTERNAL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# private&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;local_iptables mangle CLASH_EXTERNAL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# avoid rerouting for local docker&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -A CLASH_EXTERNAL -i &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$TUN_NAME&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; -j RETURN
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# mark&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -A CLASH_EXTERNAL -j MARK --set-xmark $MARK_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;iptables -t mangle -A PREROUTING -j CLASH_EXTERNAL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# utun route table&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip route replace default dev &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$TUN_NAME&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; table &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$TABLE_ID&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip rule add fwmark &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$MARK_ID&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; lookup &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$TABLE_ID&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 排除 rp_filter 的故障 反向路由&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sysctl -w net.ipv4.conf.&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$TUN_NAME&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;.rp_filter&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; 2&amp;gt; /dev/null
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sysctl -w net.ipv4.conf.all.rp_filter&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; 2&amp;gt; /dev/null
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://comzyh.gitbook.io/clash/real-ip-tun-example&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Real-IP Tun Example&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://lancellc.gitbook.io/clash/start-clash/clash-tun-mode&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Clash TUN mode&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;已知问题&#34;&gt;已知问题
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;TPROXY 不能用于 OUTPUT 链，无法用于本机代理。在
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://guide.v2fly.org/app/tproxy.html#%E9%85%8D%E7%BD%AE%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86%E8%A7%84%E5%88%99&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;v2ray 配置透明代理规则&lt;/a&gt;
+中可以通过标记重路由的方式代理本机，但是在clash要对clash源码在socket上标记&lt;code&gt;SO_MARK&lt;/code&gt;。查看了openclash源码也没有对&lt;code&gt;UDP TPROXY&lt;/code&gt;的解决方法，在使用TPROXY时只能代理本机tcp流量。尝试使用&lt;code&gt;--owner-uid&lt;/code&gt;的方式过滤clash发出的流量，但是没有用，可能是与OUTPUT重路由到PREROUTING链不同，原理不清&lt;/li&gt;
+&lt;li&gt;&lt;del&gt;TUN方式在docker使用时bridge网络无法解析dns到外部网络，
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/springzfx/cgproxy/issues/10&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;容器(docker)桥接(bridge)模式时的代理问题&lt;/a&gt;
+有相关讨论。fakeip直接启动时不设置只是作为dns网关使用时，docker bridge网络可以正常使用。&lt;code&gt;TCP TPROXY&lt;/code&gt;的方式可以bridge网络可正常使用&lt;/del&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;shell实现参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/juewuy/ShellClash/blob/master/scripts/start.sh&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;shellclash start.sh&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/vernesong/OpenClash/blob/master/luci-app-openclash/root/etc/init.d/openclash&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;OpenClash openclash&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/Kr328/clash-premium-installer/blob/master/scripts/setup-tun.sh&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;clash-premium-installer setup-tun.sh&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://stackoverflow.com/a/17538964&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;How to check if a variable is set in Bash?&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/Kr328/clash-premium-installer&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Clash Premiun Installer&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://segmentfault.com/a/1190000022971054&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;你的 docker stop，它优雅吗？&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://stackoverflow.com/a/60699262&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Unable to trap signals in docker entrypoint script&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://www.cnblogs.com/bakari/p/10449664.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Linux 网络工具详解之 ip tuntap 和 tunctl 创建 tap/tun 设备&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/juewuy/ShellClash&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;ShellClash&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://blog.skk.moe/post/what-happend-to-dns-in-proxy/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;浅谈在代理环境中的 DNS 解析行为&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/springzfx/cgproxy/issues/10&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;容器(docker)桥接(bridge)模式时的代理问题&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/springzfx/cgproxy/blob/aaa628a76b2911018fc93b2e3276c177e85e0861/readme.md#known-issues&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Transparent Proxy powered by cgroup v2&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;相关项目：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/Dreamacro/clash&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;go Dreamacro/clash&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/comzyh/clash&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;go tun comzyh/clash&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/lazytiger/trojan-rs&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;rust Trojan-rs&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;linux透明代理原理&#34;&gt;Linux透明代理原理
+&lt;/h2&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://powerdns.org/tproxydoc/tproxy.md.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Linux transparent proxy support&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/ahupowerdns/tproxydoc/blob/master/tproxy.md&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Linux transparent proxy support github&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://www.codenong.com/js5393fb5e2c87/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;透明代理 UDP 为什么要用 TProxy？&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/lazytiger/trojan-rs/blob/master/PRINCIPLE.md&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;透明代理的基本原理&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://vvl.me/2018/06/from-ss-redir-to-linux-nat/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;从 ss-redir 的实现到 Linux NAT&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;相关工具&#34;&gt;相关工具
+&lt;/h2&gt;&lt;h3 id=&#34;配置文件&#34;&gt;配置文件
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://cdn.jsdelivr.net/gh/Hackl0us/SS-Rule-Snippet@master/LAZY_RULES/clash.yaml&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;fake-ip-filter规则&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/ACL4SSR/ACL4SSR/tree/master/Clash&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;ACL4SSR 分流规则&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/Loyalsoldier/clash-rules&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;clash-rules Clash Premium Provider可直接使用&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;相关项目参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/Hackl0us/SS-Rule-Snippet&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;SS-Rule-Snippet&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/ACL4SSR/ACL4SSR/tree/master&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;SSR去广告规则/GFWList规则/Clash规则碎片&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/Loyalsoldier/clash-rules&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;clash-rules&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;注意：
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/Loyalsoldier/clash-rules&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;clash-rules&lt;/a&gt;
+可能存在google play无法下载的问题，解决方法：
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    
+    
+    
+        
+        href=&#34;/posts/2021/08/play-store-failed-to-download-in-clash-proxy/&#34;
+    
+
+
+&gt;Google Play Store Failed to Download in Clash Proxy&lt;/a&gt;
+&lt;/p&gt;
+&lt;h3 id=&#34;订阅转换subconverter&#34;&gt;订阅转换subconverter
+&lt;/h3&gt;&lt;p&gt;clash提供
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://lancellc.gitbook.io/clash/clash-config-file/proxy-provider&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Proxy Provider&lt;/a&gt;
+功能，可以方便的分离代理节点为单个url资源，自动更新订阅节点等如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#port: 8888&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#socks-port: 8889&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# proxy provider start here&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;proxy-providers&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;hk&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;http&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;path&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;./hk.yaml&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;url&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;http://remote.lancelinked.icu/files/hk.yaml&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;interval&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;3600&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;health-check&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#f92672&#34;&gt;enable&lt;/span&gt;: &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#f92672&#34;&gt;url&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;http://www.gstatic.com/generate_204&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#f92672&#34;&gt;interval&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;300&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#f92672&#34;&gt;us&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;file&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;path&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;/home/lance/.clash/provider/us.yaml&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;health-check&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#f92672&#34;&gt;enable&lt;/span&gt;: &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#f92672&#34;&gt;url&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;http://www.gstatic.com/generate_204&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#f92672&#34;&gt;interval&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;300&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# proxy provider end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#Proxy:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#  - type: socks5&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#    name: spck&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#    port: 34335&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#    server: 127.0.0.1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#    udp: true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在使用机场提供的clash文件时通常只会使用到其中的proxies，还有过滤节点等需求，clash不支持过滤节点。而
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/tindy2013/subconverter/blob/master/README-cn.md#%E8%AF%B4%E6%98%8E%E7%9B%AE%E5%BD%95&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;subconverter&lt;/a&gt;
+提供了订阅转换与过滤等必要的功能&lt;/p&gt;
+&lt;h4 id=&#34;docker部署-1&#34;&gt;docker部署
+&lt;/h4&gt;&lt;p&gt;使用docker安装&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run -d --restart&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;always -p 25500:25500 tindy2013/subconverter:latest
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;subconverter参数：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;target=clash	# 转换结果为 clash 配置
+url=xxx	# 机场订阅链接
+include=(TW|台湾|台灣)	# 只匹配台湾节点
+list=true	# 生成 provider 链接
+
+# 将urlencoded 参数拼接起来得到新的订阅链接——只包含台湾节点的 provider 链接
+https://localhost:25500/sub?target=clash&amp;amp;url=https%3a%2f%2fnfnf.xyz%2flink%2fabcdefg%3fmu%3d4&amp;amp;include=(TW%7c%e5%8f%b0%e6%b9%be%7c%e5%8f%b0%e7%81%a3)&amp;amp;list=true
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://10101.io/2020/02/12/use-clash-proxy-provider-with-subconverter&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Clash proxy-provider 搭配 subconverter 使用小记&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+        </item>
+        
+    </channel>
+</rss>

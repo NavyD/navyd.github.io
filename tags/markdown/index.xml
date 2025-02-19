@@ -1,0 +1,1753 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Markdown on NavyD的个人博客</title><link>/tags/markdown/</link><description>Recent content in Markdown on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 14 Feb 2025 15:48:25 +0800</lastBuildDate><atom:link href="/tags/markdown/index.xml" rel="self" type="application/rss+xml"/><item><title>hugo 博客实践</title><link>/posts/2025/02/hugo-post-content-practice/</link><pubDate>Tue, 04 Feb 2025 15:40:12 +0800</pubDate><guid>/posts/2025/02/hugo-post-content-practice/</guid><description>&lt;img src="/posts/2025/02/hugo-post-content-practice/20250204223346.png" alt="Featured image of post hugo 博客实践" />&lt;p>&lt;img src="/posts/2025/02/hugo-post-content-practice/20250204223346.png"
+width="1026"
+height="425"
+srcset="/posts/2025/02/hugo-post-content-practice/20250204223346_hu_576638cd89b3cf0c.png 480w, /posts/2025/02/hugo-post-content-practice/20250204223346_hu_6410119bf9932132.png 1024w"
+loading="lazy"
+alt="hugo logo"
+class="gallery-image"
+data-flex-grow="241"
+data-flex-basis="579px"
+>&lt;/p>
+&lt;h2 id="hugo-new-content">hugo new content
+&lt;/h2>&lt;p>在使用&lt;code>hugo new content posts/your-post.md&lt;/code>创建一个 md 文件&lt;code>content/posts/your-post.md&lt;/code>，但更好的博客目录结构可以使用&lt;code>posts/2025/01/your-post/index.md&lt;/code>这种&lt;/p>
+&lt;p>根据
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/archetypes/#leaf-bundles"
+target="_blank"
+rel="noopener"
+>leaf-bundles&lt;/a>
+自动创建叶子结点目录结构，根据常用的 shell 使用下面的命令运行即可&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>hugo new posts/&lt;span style="color:#66d9ef">$(&lt;/span>date +&lt;span style="color:#e6db74">&amp;#39;%Y/%m&amp;#39;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>/&lt;span style="color:#e6db74">&amp;#39;your post&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>hugo new &lt;span style="color:#e6db74">&amp;#34;posts/&lt;/span>$(Get-Date -Format &lt;span style="color:#e6db74">&amp;#39;yyyy/MM&amp;#39;&lt;/span>)&lt;span style="color:#e6db74">/my posts&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/archetypes/"
+target="_blank"
+rel="noopener"
+>content-management archetypes&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/hugo-way-to-create-new-content-in-year-month-subfolders/36557"
+target="_blank"
+rel="noopener"
+>“Hugo way” to create new content in year/month/subfolders?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/dates-in-post-filenames/26219"
+target="_blank"
+rel="noopener"
+>Dates in post filenames&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://linux.do/t/topic/206540"
+target="_blank"
+rel="noopener"
+>搭建好博客之后，纠结怎么组织文章的目录结构&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo/issues/4558"
+target="_blank"
+rel="noopener"
+>Page resources not working (as expected) with extract date and slug from filename functionality #4558&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/add-a-date-to-default-filename/31059"
+target="_blank"
+rel="noopener"
+>Add a date to default filename&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="如何兼容多种主题">如何兼容多种主题
+&lt;/h2>&lt;p>由于多种主题间的 params 是不兼容的，一旦在 md 的
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/front-matter/"
+target="_blank"
+rel="noopener"
+>front matter&lt;/a>
+中指定了主题的配置，会导致切换主题后无效。如果允许动态的修改 front matter 中的主题的配置，能轻易的兼容多种主题&lt;/p>
+&lt;h3 id="模板">模板
+&lt;/h3>&lt;p>从模板中通过
+&lt;a
+class="link"
+href="https://gohugo.io/templates/base/#define-the-base-template"
+target="_blank"
+rel="noopener"
+>Override the base template&lt;/a>
+和
+&lt;a
+class="link"
+href="https://gohugo.io/templates/lookup-order/"
+target="_blank"
+rel="noopener"
+>Template lookup order&lt;/a>
+重置&lt;code>.Site.Params&lt;/code>变量是不可行的，这是由于所有全局模板变量基本是只读的，无法更新，如果使用
+&lt;a
+class="link"
+href="https://gohugo.io/functions/hugo/store/"
+target="_blank"
+rel="noopener"
+>hugo.Store&lt;/a>
+允许更新但无法覆盖 params api&lt;/p>
+&lt;p>在
+&lt;a
+class="link"
+href="https://gohugo.io/hugo-modules/theme-components/"
+target="_blank"
+rel="noopener"
+>Theme components&lt;/a>
+中提到允许指定&lt;code>theme = ['my-shortcodes', 'base-theme']&lt;/code>覆盖主题，尽管也允许使用
+&lt;a
+class="link"
+href="https://gohugo.io/getting-started/configuration/"
+target="_blank"
+rel="noopener"
+>Merge configuration from themes&lt;/a>
+参考示例
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo/issues/8633"
+target="_blank"
+rel="noopener"
+>Allow smarter merging of config (esp. params) from themes #8633&lt;/a>
+合并主题配置，但有这样一种需求是无法满足的：&lt;strong>当前 post 中如果存在 1 个图片链接则作为文章 cover&lt;/strong>&lt;/p>
+&lt;p>大多数主题都有 cover 图片配置参数，但这样的逻辑处理却需要动态处理，只能修改主题的处理逻辑。但如果可以在 build page 时修改 front matter 动态的设置 cover 就可以避免修改主题也能达成类似的效果&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/porting-posts-between-themes/35455"
+target="_blank"
+rel="noopener"
+>Porting posts between themes?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/content-adapters/"
+target="_blank"
+rel="noopener"
+>CONTENT MANAGEMENT Content adapters&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo/issues/5074"
+target="_blank"
+rel="noopener"
+>Build pages from data source #5074&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo/issues/12427"
+target="_blank"
+rel="noopener"
+>Create pages from _content.gotmpl #12427&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo/issues/6098"
+target="_blank"
+rel="noopener"
+>Allow Hugo to parse &amp;ldquo;plain&amp;rdquo; Markdown #6098&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo/issues/8638"
+target="_blank"
+rel="noopener"
+>Could I add Front Matter auto based on markdown file information #8638&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/setting-page-params-variables-from-a-template/9505"
+target="_blank"
+rel="noopener"
+>Setting page params/variables from a template&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="hooks-模板问题">hooks 模板问题
+&lt;/h4>&lt;h5 id="如何访问题部分中的-configtoml-值">如何访问题部分中的 Config.toml 值
+&lt;/h5>&lt;p>有一个简单的想法，在
+&lt;a
+class="link"
+href="https://gohugo.io/render-hooks/links/"
+target="_blank"
+rel="noopener"
+>Link render hooks&lt;/a>
+中检查当前启用的主题设置不同的 link 属性来兼容多种主题。&lt;/p>
+&lt;p>hugo 可以通过
+&lt;a
+class="link"
+href="https://gohugo.io/methods/site/config/"
+target="_blank"
+rel="noopener"
+>Site.Config&lt;/a>
+获取部分配置信息
+&lt;a
+class="link"
+href="https://gohugo.io/about/privacy/"
+target="_blank"
+rel="noopener"
+>Privacy&lt;/a>
+，如果需要所有配置信息则需要主动读取配置文件 &lt;code>{{ $config := os.ReadFile &amp;quot;config.toml&amp;quot; | transform.Unmarshal }}&lt;/code> 或在配置文件中添加需要的信息到 &lt;code>[params]&lt;/code> 中使用
+&lt;a
+class="link"
+href="https://gohugo.io/methods/site/params/"
+target="_blank"
+rel="noopener"
+>.Site.Params&lt;/a>
+获取，读取固定的配置文件由于 hugo 可随时指定配置文件路径导致其稳定性非常脆弱，使用 params 又会导致重复配置的问题&lt;/p>
+&lt;p>目前来看这不是一个着急的问题，毕竟主题不常换&lt;/p>
+&lt;p>TODO&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/access-config-toml-values-in-themes-partial/35999"
+target="_blank"
+rel="noopener"
+>Access Config.toml values in theme’s partial&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/site-theme/33200"
+target="_blank"
+rel="noopener"
+>.Site.Theme?&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="content-adapters">Content adapters
+&lt;/h3>&lt;p>根据
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/content-adapters/"
+target="_blank"
+rel="noopener"
+>Content adapters&lt;/a>
+通过 go 模板&lt;code>content/$section/_content.gotmpl&lt;/code>在构建时动态添加 page 生成静态页面&lt;/p>
+&lt;h4 id="问题">问题
+&lt;/h4>&lt;p>&lt;code>_content.gotmpl&lt;/code>模板只能在构建时使用，其相对于主题中能使用的众多模板 Methods 相当有限
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/content-adapters/#methods"
+target="_blank"
+rel="noopener"
+>content-adapters/#methods&lt;/a>
+，只要是与
+&lt;a
+class="link"
+href="https://gohugo.io/methods/page/"
+target="_blank"
+rel="noopener"
+>Page&lt;/a>
+相关都不可用，如
+&lt;a
+class="link"
+href="https://gohugo.io/methods/page/"
+target="_blank"
+rel="noopener"
+>Site.Config&lt;/a>
+。&lt;/p>
+&lt;p>想要动态生成元数据就需要解析 md 文件，但 hugo 目前不提供在构建阶段解析 markdown,html 的方法，如
+&lt;a
+class="link"
+href="https://gohugo.io/functions/transform/markdownify/"
+target="_blank"
+rel="noopener"
+>transform.Markdownify&lt;/a>
+在这个阶段使用将会出现&lt;code>this method cannot be called before the site is fully initialized&lt;/code>错误。&lt;/p>
+&lt;p>另外，如果只用 go 模板，一旦代码规模稍大其可维护性必然很糟糕。&lt;/p>
+&lt;p>在 github 上发现大部分都是使用解析一个 data.json 文件添加到 page，而不是复杂的解析 md 文件，问题就变成了解析 md 文件到 json 再使用&lt;code>_content.gotmpl&lt;/code>解析添加到 page&lt;/p>
+&lt;p>由于 hugo 不支持调用外部命令运行
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo/issues/9460"
+target="_blank"
+rel="noopener"
+>Configuration option to invoke a command upon build #9460&lt;/a>
+，在&lt;code>hugo server|build&lt;/code>等命令运行前需要处理好 data.json 避免部分数据更新无效的问题&lt;/p>
+&lt;h2 id="部署-gh-pages">部署 gh-pages
+&lt;/h2>&lt;h3 id="gh-pages-分支">gh-pages 分支
+&lt;/h3>&lt;p>在 gh-pages 分支中保留当前构建的 static 页面，默认情况下会保留 deploy 的提交，可能导致仓库大小激增。&lt;/p>
+&lt;p>&lt;img src="/posts/2025/02/hugo-post-content-practice/20250204224213.png"
+width="985"
+height="811"
+srcset="/posts/2025/02/hugo-post-content-practice/20250204224213_hu_50d94e14a4b8060e.png 480w, /posts/2025/02/hugo-post-content-practice/20250204224213_hu_752f2997b60fe1ef.png 1024w"
+loading="lazy"
+alt="branch commits"
+class="gallery-image"
+data-flex-grow="121"
+data-flex-basis="291px"
+>&lt;/p>
+&lt;p>在
+&lt;a
+class="link"
+href="https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-force-orphan-force_orphan"
+target="_blank"
+rel="noopener"
+>actions-gh-pages #Force orphan &lt;code>force_orphan&lt;/code>&lt;/a>
+中提到可以使用&lt;code>force_orphan: true&lt;/code>仅保留最新提交&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Deploy&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">uses&lt;/span>: &lt;span style="color:#ae81ff">peaceiris/actions-gh-pages@v4&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">with&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">github_token&lt;/span>: &lt;span style="color:#ae81ff">${{ secrets.GITHUB_TOKEN }}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">publish_dir&lt;/span>: &lt;span style="color:#ae81ff">./public&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">force_orphan&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="baseurl">baseUrl
+&lt;/h3>&lt;p>如果域名根目录指向主页，无需设置 baseUrl&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/how-put-the-url-base/45920"
+target="_blank"
+rel="noopener"
+>How put the URL base?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/hosting-and-deployment/hosting-on-github/"
+target="_blank"
+rel="noopener"
+>hugo: Host on GitHub Pages&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="obsidian">Obsidian
+&lt;/h2>&lt;p>参考
+&lt;a
+class="link"
+href="https://publish.obsidian.md/help-zh/%E7%BC%96%E8%BE%91%E4%B8%8E%E6%A0%BC%E5%BC%8F%E5%8C%96/%E5%9F%BA%E6%9C%AC%E6%A0%BC%E5%BC%8F%E8%AF%AD%E6%B3%95#%E5%86%85%E9%83%A8%E9%93%BE%E6%8E%A5"
+target="_blank"
+rel="noopener"
+>编辑与格式化/基本格式语法#内部链接&lt;/a>
+支持 2 种风格的链接&lt;/p>
+&lt;ul>
+&lt;li>Wiki 链接风格：&lt;code>[[运动三定律]]&lt;/code>&lt;/li>
+&lt;li>Markdown 链接风格：&lt;code>[运动三定律](运动三定律.md)&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h3 id="兼容-wiki-链接">兼容 wiki 链接
+&lt;/h3>&lt;p>目前未找到兼容&lt;code>![[img]]&lt;/code>,&lt;code>[[post.md]]&lt;/code>转换为标准 md 链接的方式，参考
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo/issues/3606#issuecomment-1555955974"
+target="_blank"
+rel="noopener"
+>Support wiki-style internal page links #3606&lt;/a>
+只能修改 obsidian 从默认 wiki 方式转为标准的 md 链接避免这个问题&lt;/p>
+&lt;p>&lt;img src="/posts/2025/02/hugo-post-content-practice/20250204233158.png"
+width="933"
+height="425"
+srcset="/posts/2025/02/hugo-post-content-practice/20250204233158_hu_ae23a96ddbafc2ad.png 480w, /posts/2025/02/hugo-post-content-practice/20250204233158_hu_a35652c608aab6f9.png 1024w"
+loading="lazy"
+alt="toggle wiki button"
+class="gallery-image"
+data-flex-grow="219"
+data-flex-basis="526px"
+>&lt;/p>
+&lt;p>虽然可以尝试使用
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/content-adapters/"
+target="_blank"
+rel="noopener"
+>Content adapters&lt;/a>
+在模板中替换 &lt;code>[[link]]&lt;/code> 作为标准的 &lt;code>[text](link)&lt;/code> 链接即可，但由于 markdown 比较复杂，无法用简单的正则表达式正确地做到这一点，有许多边缘情况需要考虑，过于复杂的正则也可能导致文本匹配性能问题。&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/67138593/8566831"
+target="_blank"
+rel="noopener"
+>Regex match markdown link&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.reddit.com/r/ObsidianMD/comments/k0po5z/which_is_better_wikilinks_or_markdown_links/"
+target="_blank"
+rel="noopener"
+>Which is better- WikiLinks or Markdown links?&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="兼容-md-内部文件链接">兼容 md 内部文件链接
+&lt;/h3>&lt;p>对于如 &lt;code>content/posts/this is post/index.md&lt;/code> 内部文件有链接如 &lt;code>[xxx](../other post/index.md)&lt;/code> 应该被解析成 hugo page 链接如 &lt;code>[xxx](/posts/other-post)&lt;/code> ，但由于正则的复杂性，不应该使用正则替换。&lt;/p>
+&lt;h4 id="link-render-hooks">Link render hooks
+&lt;/h4>&lt;p>在
+&lt;a
+class="link"
+href="https://gohugo.io/render-hooks/links/"
+target="_blank"
+rel="noopener"
+>Link render hooks&lt;/a>
+提到可以使用 &lt;code>layouts/_default/_markup/render-link.html&lt;/code> 覆盖主题配置和
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo/blob/master/tpl/tplimpl/embedded/templates/_default/_markup/render-link.html"
+target="_blank"
+rel="noopener"
+>embedded link render hook&lt;/a>
+。&lt;/p>
+&lt;h5 id="添加-html-文件作为资源">添加 HTML 文件作为资源
+&lt;/h5>&lt;p>有时需要添加如 &lt;code>html&lt;/code>, &lt;code>md&lt;/code>, &lt;code>txt&lt;/code> 等文件到文章作为链接资源，但 hugo 对于
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/page-resources/"
+target="_blank"
+rel="noopener"
+>Content management Page resources&lt;/a>
+特殊内容资源文件如 &lt;code>html&lt;/code>, &lt;code>md&lt;/code> 等视为 page 类型，在
+&lt;a
+class="link"
+href="https://gohugo.io/quick-reference/glossary/#leaf-bundle"
+target="_blank"
+rel="noopener"
+>leaf bundles&lt;/a>
+中的这些文件默认不会加载作为资源文件到 public 目录中。&lt;/p>
+&lt;p>参考
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo/issues/12274"
+target="_blank"
+rel="noopener"
+>Add a way to identify a non-Page HTML etc. resource #12274&lt;/a>
+需要主动将这种类型的文件发布：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-gotmpl" data-lang="gotmpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#f92672">((&lt;/span>&lt;span style="color:#a6e22e">.Resources.Get&lt;/span> &lt;span style="color:#e6db74">&amp;#34;a.html&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>&lt;span style="color:#a6e22e">.Content&lt;/span> &lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#a6e22e">resources&lt;/span>&lt;span style="color:#a6e22e">.FromString&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/p1/a.html&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>&lt;span style="color:#a6e22e">.RelPermalink&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#f92672">((&lt;/span>&lt;span style="color:#a6e22e">.Resources.Get&lt;/span> &lt;span style="color:#e6db74">&amp;#34;b.html&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>&lt;span style="color:#a6e22e">.Content&lt;/span> &lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#a6e22e">resources&lt;/span>&lt;span style="color:#a6e22e">.FromString&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/p1/b.html&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>&lt;span style="color:#a6e22e">.Permalink&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#f92672">((&lt;/span>&lt;span style="color:#a6e22e">.Resources.Get&lt;/span> &lt;span style="color:#e6db74">&amp;#34;c.html&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>&lt;span style="color:#a6e22e">.Content&lt;/span> &lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#a6e22e">resources&lt;/span>&lt;span style="color:#a6e22e">.FromString&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/p1/c.html&amp;#34;&lt;/span>&lt;span style="color:#f92672">)&lt;/span>&lt;span style="color:#a6e22e">.Publish&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意：由于 page 类型的链接使用的文件名可能会由于
+&lt;a
+class="link"
+href="https://gohugo.io/quick-reference/glossary/#logical-path"
+target="_blank"
+rel="noopener"
+>logical path&lt;/a>
+的转换与原始的文件名不同，如 &lt;code>fuck post.md&lt;/code> 作为 page 时的路径名为 &lt;code>fuck-post.md&lt;/code>，从而导致匹配文件名失败，可以使用
+&lt;a
+class="link"
+href="https://gohugo.io/methods/page/resources/#bytype"
+target="_blank"
+rel="noopener"
+>.Page.Resources.ByType&lt;/a>
+获取当前目录下的所有 page 类型的资源&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-gotmpl" data-lang="gotmpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#a6e22e">$page_res&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">.Page.Resources.ByType&lt;/span> &lt;span style="color:#e6db74">&amp;#34;page&amp;#34;&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">{{/* NOTE: 仅用于当前leaf bundule中的page资源，无法作用如`../../test.html`的page资源，
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> 但对于这样的page资源会事先被`.Page.GetPage path`获取，所以无需处理
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> */}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">hasSuffix&lt;/span> &lt;span style="color:#a6e22e">.&lt;/span> &lt;span style="color:#a6e22e">$link_path&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#a6e22e">$page_res&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">.&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#66d9ef">break&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#66d9ef">end&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#66d9ef">end&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#66d9ef">with&lt;/span> &lt;span style="color:#a6e22e">$page_res&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#a6e22e">$publishPath&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">urls&lt;/span>&lt;span style="color:#a6e22e">.JoinPath&lt;/span> &lt;span style="color:#a6e22e">$.Page.RelPermalink&lt;/span> &lt;span style="color:#a6e22e">.Name&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#a6e22e">$page_res_permalink&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#a6e22e">.Content&lt;/span> &lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#a6e22e">resources&lt;/span>&lt;span style="color:#a6e22e">.FromString&lt;/span> &lt;span style="color:#a6e22e">$publishPath&lt;/span>&lt;span style="color:#f92672">)&lt;/span>&lt;span style="color:#a6e22e">.Permalink&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> href=&amp;#34;&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#a6e22e">$page_res_permalink&lt;/span> &lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#a6e22e">safeURL&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>&amp;#34;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span> &lt;span style="color:#66d9ef">end&lt;/span> &lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/link-to-html-resources/22953"
+target="_blank"
+rel="noopener"
+>Link to .html resources&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/how-do-i-have-an-html-file-as-a-page-resource/37523"
+target="_blank"
+rel="noopener"
+>How do I have an HTML file as a page resource?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/loading-a-page-resources-within-a-page-markdown-page-resource/35195"
+target="_blank"
+rel="noopener"
+>Loading a page resources within a page Markdown page resource&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/how-to-render-markdown-url-with-md-to-correct-link/26372"
+target="_blank"
+rel="noopener"
+>How to render markdown url with .md to correct link&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="扩展语法">扩展语法
+&lt;/h2>&lt;h3 id="转义-hugo-shortcode">转义 hugo shortcode
+&lt;/h3>&lt;p>在 markdown 源码中使用 &lt;code>&amp;lt;!-- {{% --&amp;gt;&lt;/code> 与 &lt;code>&amp;lt;!-- %}} --&amp;gt;&lt;/code> 可以让这之中的代码转义为原始代码避免被渲染，同时在 md 文档中隐藏 &lt;code>{{%&lt;/code> 。&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/62432532/can-i-escape-a-shortcode-from-a-hugo-themebb-bbbbblogdownblogdown%e5%ad%90%e5%ad%90frombb-blogdown"
+target="_blank"
+rel="noopener"
+>Can I escape a shortcode from a Hugo theme from blogdown&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo/issues/10058"
+target="_blank"
+rel="noopener"
+>Escape shortcodes while using RenderString #10058&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/escape-shortcodes-while-using-renderstring/39331"
+target="_blank"
+rel="noopener"
+>Escape shortcodes while using RenderString&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="可折叠内容">可折叠内容
+&lt;/h3>&lt;p>
+&lt;a
+class="link"
+href="https://docs.github.com/zh/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-collapsed-sections#creating-a-collapsed-section"
+target="_blank"
+rel="noopener"
+>在 GitHub 上写入/使用高级格式/ 使用折叠部分组织信息&lt;/a>
+中可以使用 &lt;code>&amp;lt;details&amp;gt;&lt;/code> 将内容折叠，直到单击展开详细信息，但在 hugo 中默认不会渲染 html，但可以在
+&lt;a
+class="link"
+href="https://gohugo.io/getting-started/configuration-markup/#rendererunsafe"
+target="_blank"
+rel="noopener"
+>configuration-markup/#rendererunsafe&lt;/a>
+使用 &lt;code>markup.goldmark.renderer.unsafe=true&lt;/code> 渲染。&lt;/p>
+&lt;p>另外也可以使用
+&lt;a
+class="link"
+href="https://gohugo.io/shortcodes/details/"
+target="_blank"
+rel="noopener"
+>Shortcodes/Details&lt;/a>
+如&lt;/p>
+&lt;!-- {{%/* -->
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-gotmpl" data-lang="gotmpl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&amp;lt;&lt;/span> &lt;span style="color:#a6e22e">details&lt;/span> &lt;span style="color:#a6e22e">summary&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;See the details&amp;#34;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>This is a **bold** word.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">{{&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&amp;lt;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">/&lt;/span>&lt;span style="color:#a6e22e">details&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;gt;&lt;/span>&lt;span style="color:#75715e">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;!-- %}} -->
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/52214187/how-can-i-fold-content-in-github-markdown"
+target="_blank"
+rel="noopener"
+>How can I fold content in Github markdown?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/raw-html-getting-omitted-in-0-60-0/22032"
+target="_blank"
+rel="noopener"
+>Raw HTML getting omitted in 0.60.0&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="在代码块上显示文件名">在代码块上显示文件名
+&lt;/h3>&lt;p>在 hugo 官网上代码块常常包含了文件名很直观&lt;/p>
+&lt;p>&lt;img src="/posts/2025/02/hugo-post-content-practice/20250214115247.png"
+width="771"
+height="134"
+srcset="/posts/2025/02/hugo-post-content-practice/20250214115247_hu_8c37c8a9c19169d0.png 480w, /posts/2025/02/hugo-post-content-practice/20250214115247_hu_5cd1adef9d3b26d8.png 1024w"
+loading="lazy"
+alt="code block with file path"
+class="gallery-image"
+data-flex-grow="575"
+data-flex-basis="1380px"
+>&lt;/p>
+&lt;p>但目前没有相关 markdown 标准可做到，在 hugo 中提供的
+&lt;a
+class="link"
+href="https://gohugo.io/shortcodes/highlight/"
+target="_blank"
+rel="noopener"
+>shortcodes/highlight&lt;/a>
+中建议可能需要创建 &lt;code>layouts/shortcodes/hl.html&lt;/code> 定制 shortcode，但在我这里，应该尽量避免使用平台专有特性以增强兼容性。&lt;/p>
+&lt;p>目前可以需要使用
+&lt;a
+class="link"
+href="https://gohugo.io/render-hooks/code-blocks/"
+target="_blank"
+rel="noopener"
+>Code block render hooks&lt;/a>
+定制主题模板，但是
+TODO&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/filenames-for-code-blocks/32466"
+target="_blank"
+rel="noopener"
+>Filenames for code blocks&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://forum.obsidian.md/t/properly-displaying-config-file-names-in-code-blocks/92009"
+target="_blank"
+rel="noopener"
+>Properly displaying config file names in code blocks&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/in-line-code-highlight/43744"
+target="_blank"
+rel="noopener"
+>In-line code highlight&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>在hugo中管理markdown文件</title><link>/posts/2021/08/markdown-management-in-hugo/</link><pubDate>Fri, 27 Aug 2021 18:38:09 +0800</pubDate><guid>/posts/2021/08/markdown-management-in-hugo/</guid><description>&lt;p>使用markdown写作有一个痛点，如何链接本地文件。如图片、本地md文件链接、其它博文相关文件log等，一般在workspace目录中放置一个&lt;code>assets/images&lt;/code>目录，md文件会链接到该路径。&lt;/p>
+&lt;pre tabindex="0">&lt;code>workspaces/
+- assets/
+- images/
+- files/
+- posts/
+- myblog.md
+- test/a.md
+&lt;/code>&lt;/pre>&lt;p>但是这样存在一个问题，大量文件被放在一个不相关的地方，在需要时很难寻找。一旦md文件目录发生迁移，整个md文件中的链接都失效了。&lt;/p>
+&lt;p>在hugo中目录结构如果md存在多种本地文件链接，则用一个文件夹放入一个index.md与对应文件在同个目录&lt;/p>
+&lt;pre tabindex="0">&lt;code>├── archetypes
+├── config.toml
+├── content
+- posts/
+- blog.md
+- multi-res/
+- index.md
+- a.png
+- b.log
+- c.file
+├── data
+├── layouts
+├── static
+└── themes
+&lt;/code>&lt;/pre>&lt;p>但是这里选择一个&lt;code>filename.md&lt;/code>文件被build后会生成无后缀的&lt;code>filename/&lt;/code>目录，里面存放相关的静态资源文件，如果md没有本地文件链接不需要文件夹。将一个md文件相关资源都放在这样的目录中非常方便：&lt;/p>
+&lt;pre tabindex="0">&lt;code>workspaces/
+- content/posts/
+- alone.md
+- myblog.md
+- myblog/
+- a.log
+- b.html
+- c.png
+- public/
+- ...
+&lt;/code>&lt;/pre>&lt;p>在vscode中配合
+&lt;a
+class="link"
+href="https://github.com/mathiassoeholm/markdown-link-updater"
+target="_blank"
+rel="noopener"
+>Markdown Link Updater&lt;/a>
+重命名文件后对应链接也会被修改&lt;/p>
+&lt;p>使用
+&lt;a
+class="link"
+href="https://github.com/gaurav-nelson/github-action-markdown-link-check"
+target="_blank"
+rel="noopener"
+>GitHub Action - Markdown link check&lt;/a>
+可以在github repo中检查link的有效性&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.isyin.cn/post/2018-05-03-hugo-%E7%9A%84%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E6%96%B9%E6%A1%88/"
+target="_blank"
+rel="noopener"
+>Hugo 的文件管理方案&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/getting-started/directory-structure/"
+target="_blank"
+rel="noopener"
+>Directory Structure&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/sections/"
+target="_blank"
+rel="noopener"
+>CONTENT MANAGEMENT Content Sections&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://olowolo.com/post/hugo-quick-start/"
+target="_blank"
+rel="noopener"
+>Hugo 从入门到会用&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="hugo解决方案">hugo解决方案
+&lt;/h2>&lt;h3 id="预处理markdown-link">预处理markdown link
+&lt;/h3>&lt;p>由于当前目录结构与hugo官方不一致，导致本地相对链接无法正常使用如：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&amp;lt;!-- 结构：
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">myblog.md
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">myblog/
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">-&lt;/span> &lt;span style="color:#75715e">vim_wordpress_esc
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">-&lt;/span> &lt;span style="color:#75715e">2021-08-04-23-17-08.png
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">--&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#f92672">vim_wordpress_esc&lt;/span>](&lt;span style="color:#a6e22e">my-hugo-blog/vim_wordpress_esc&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>![](my-hugo-blog/2021-08-04-23-17-08.png)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>对于上面的两个本地链接，hugo 构建后&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">a&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;myblog/vim_wordpress_esc&amp;#34;&lt;/span>&amp;gt;vim_wordpress_esc&amp;lt;/&lt;span style="color:#f92672">a&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&amp;lt;!-- 配置了 fancybox = true --&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">a&lt;/span> &lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;fancybox&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;http://localhost:1313/post/myblog/myblog/2021-08-04-23-17-08.png&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">data-fancybox&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;gallery&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">data-caption&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>&amp;gt;&amp;lt;&lt;span style="color:#f92672">img&lt;/span> &lt;span style="color:#a6e22e">src&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;my-hugo-blog/2021-08-04-23-17-08.png&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">alt&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>&amp;gt;&amp;lt;/&lt;span style="color:#f92672">a&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>很明显，blog.md被hugo后本地路径已经与&lt;code>myblog/&lt;/code>文件夹一级，而其中的相对路径链接还是没有变化，应该移除对应的filename前缀如：&lt;code>&amp;lt;a href=&amp;quot;vim_wordpress_esc&amp;quot;&amp;gt;vim_wordpress_esc&amp;lt;/a&amp;gt;&lt;/code>&lt;/p>
+&lt;h3 id="template-in-markdown">template in markdown
+&lt;/h3>&lt;p>有一种简单的方式可以实现，在markdown文件中嵌入hugo template，可以使重写对应的链接如：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">base&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;{{ .Site.BaseURL }}&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&amp;lt;!-- 访问：https://host.url/img/foo.jpg --&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>![&lt;span style="color:#f92672">Foo image&lt;/span>](&lt;span style="color:#a6e22e">img/foo.jpg&lt;/span>)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;em>&lt;strong>注意：上面的代码仅用于演示，实际中存在改写&lt;code>base url&lt;/code>后导致其它相对链接无法正常工作&lt;/strong>&lt;/em>&lt;/p>
+&lt;p>下面是简单的处理逻辑：对于&lt;code>myblog.md&lt;/code>，在当前页面下，如果存在以页面url.path的最后一层即filename开始的href，如：&lt;code>url=http://localhost:1313/post/myblog, url.path=/post/myblog, filename=myblog, href=myblog/vim_wordpress_esc&lt;/code>，则移除这一级的&lt;code>href=vim_wordpress_esc&lt;/code>&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/46180551/8566831"
+target="_blank"
+rel="noopener"
+>Cannot link to static files with Hugo&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="js">js
+&lt;/h3>&lt;p>开始的思路是使用js在页面加载时将对应href重写。但是看到&lt;code>&amp;lt;a class=&amp;quot;fancybox&amp;quot; href=&amp;quot;http://localhost:1313/post/myblog/myblog/2021-08-04-23-17-08.png&amp;quot;&lt;/code>就发现使用js无法保证所有对应的href被处理，可能由于加载顺序导致异常。如果link过多可能会影响性能&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#a6e22e">list&lt;/span> &lt;span style="color:#f92672">=&lt;/span> window.&lt;span style="color:#a6e22e">location&lt;/span>.&lt;span style="color:#a6e22e">pathname&lt;/span>.&lt;span style="color:#a6e22e">split&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;/&amp;#34;&lt;/span>).&lt;span style="color:#a6e22e">filter&lt;/span>(&lt;span style="color:#a6e22e">name&lt;/span> =&amp;gt; &lt;span style="color:#a6e22e">name&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">console&lt;/span>.&lt;span style="color:#a6e22e">info&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;got path list: &amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">list&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#a6e22e">list&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#a6e22e">last&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">list&lt;/span>[&lt;span style="color:#a6e22e">list&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">console&lt;/span>.&lt;span style="color:#a6e22e">log&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;check all ref tag&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> (&lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#a6e22e">item&lt;/span> &lt;span style="color:#66d9ef">of&lt;/span> document.&lt;span style="color:#a6e22e">getElementsByTagName&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;a&amp;#34;&lt;/span>)) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">item&lt;/span>.&lt;span style="color:#a6e22e">getAttribute&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;href&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">console&lt;/span>.&lt;span style="color:#a6e22e">log&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;href &amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">href&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#a6e22e">href&lt;/span>.&lt;span style="color:#a6e22e">startsWith&lt;/span>(window.&lt;span style="color:#a6e22e">location&lt;/span>.&lt;span style="color:#a6e22e">href&lt;/span>)) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// console.log(&amp;#34;href &amp;#34;, href);
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>.&lt;span style="color:#a6e22e">substring&lt;/span>(window.&lt;span style="color:#a6e22e">location&lt;/span>.&lt;span style="color:#a6e22e">href&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#a6e22e">href&lt;/span>.&lt;span style="color:#a6e22e">startsWith&lt;/span>(&lt;span style="color:#a6e22e">last&lt;/span>)) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#a6e22e">newRef&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>.&lt;span style="color:#a6e22e">substring&lt;/span>(&lt;span style="color:#a6e22e">last&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">item&lt;/span>.&lt;span style="color:#a6e22e">setAttribute&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;href&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">newRef&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">console&lt;/span>.&lt;span style="color:#a6e22e">info&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;replaced &amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">href&lt;/span>, &lt;span style="color:#e6db74">&amp;#34; with &amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">newRef&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="render-hooks">render hooks
+&lt;/h3>&lt;p>在markdown渲染时预处理链接最合适，如果不行，就只能回到hugo标准目录结构了。&lt;/p>
+&lt;p>Markdown Render Hooks配合hugo template可以在渲染html时处理链接。定义下面的文件可以处理对应的链接类型&lt;/p>
+&lt;pre tabindex="0">&lt;code>layouts
+└── _default
+└── _markup
+├── render-image.html
+├── render-image.rss.xml
+└── render-link.html
+&lt;/code>&lt;/pre>&lt;p>下面是&lt;code>render-link.html&lt;/code>代码&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">a&lt;/span> &lt;span style="color:#a6e22e">test&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">{{$&lt;/span>&lt;span style="color:#a6e22e">name&lt;/span> &lt;span style="color:#a6e22e">:&lt;/span>&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">path.Base&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">.&lt;/span>&lt;span style="color:#a6e22e">Page&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">.&lt;/span>&lt;span style="color:#a6e22e">Permalink&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">{{&lt;/span>&lt;span style="color:#a6e22e">if&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">(&lt;/span>&lt;span style="color:#a6e22e">hasPrefix&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">.&lt;/span>&lt;span style="color:#a6e22e">Destination&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>&lt;span style="color:#a6e22e">name&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">)&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">{{$&lt;/span>&lt;span style="color:#a6e22e">size&lt;/span> &lt;span style="color:#a6e22e">:&lt;/span>&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">len&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>&lt;span style="color:#a6e22e">name&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">{{$&lt;/span>&lt;span style="color:#a6e22e">size &lt;/span>&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">add&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>&lt;span style="color:#a6e22e">size&lt;/span> &lt;span style="color:#a6e22e">1&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">{{$&lt;/span>&lt;span style="color:#a6e22e">destUrl&lt;/span> &lt;span style="color:#a6e22e">:&lt;/span>&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">substr&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">.&lt;/span>&lt;span style="color:#a6e22e">Destination&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>&lt;span style="color:#a6e22e">size&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;{{substr .Destination $size}}&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">{{&lt;/span>&lt;span style="color:#a6e22e">else&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;{{.Destination | safeURL}}&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">{{&lt;/span>&lt;span style="color:#a6e22e">end&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">{{&lt;/span> &lt;span style="color:#a6e22e">with&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">.&lt;/span>&lt;span style="color:#a6e22e">Title&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">title&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;{{ . }}&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">{{&lt;/span> &lt;span style="color:#a6e22e">end&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>&amp;gt;{{ .Text | safeHTML }}&amp;lt;/&lt;span style="color:#f92672">a&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/getting-started/configuration-markup#markdown-render-hooks"
+target="_blank"
+rel="noopener"
+>Configure Markup: Markdown Render Hooks&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/markdown-pre-processing/27299"
+target="_blank"
+rel="noopener"
+>Markdown pre-processing?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/how-to-get-the-url-of-the-current-page-with-the-rel-or-relref-function/29113/4"
+target="_blank"
+rel="noopener"
+>How to get the URL of the current page with the rel or relref function?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/functions/"
+target="_blank"
+rel="noopener"
+>Functions Quick Reference&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="问题">问题
+&lt;/h2>&lt;p>在完成上面的工作后，未使用permalinks是正常可用的。一旦启用permalinks，所有在md文件同名文件夹下的都无法迁移到新的permalinks目录下&lt;/p>
+&lt;p>使用同名目录&lt;code>play-store-failed-to-download-in-clash-proxy.md, play-store-failed-to-download-in-clash-proxy/&lt;/code>部分构建结果:&lt;/p>
+&lt;pre tabindex="0">&lt;code>public/post
+├── 2021
+│   └── 08
+│   ├── 09
+│      ├── clash-transparent-proxy
+│      │   └── index.html
+│      └── play-store-failed-to-download-in-clash-proxy
+│      └── index.html
+├── index.html
+├── index.xml
+└── tools
+└── play-store-failed-to-download-in-clash-proxy
+├── 2021-08-09-17-57-48.png
+├── 2021-08-09-18-06-18.gif
+├── 2021-08-09-18-09-35.png
+├── 2021-08-09-18-14-35.png
+├── 2021-08-09-18-19-06.png
+├── 2021-08-09-18-34-55.png
+├── 2021-08-09-18-44-36.png
+├── 2021-08-09-19-13-51.png
+└── 2021-08-26-01-49-06.png
+&lt;/code>&lt;/pre>&lt;p>下面是使用标准目录&lt;code>play-store-failed-to-download-in-clash-proxy/index.md&lt;/code>部分构建结果:&lt;/p>
+&lt;pre tabindex="0">&lt;code>public/post
+├── 2021
+│   └── 08
+│   ├── 09
+│   │   ├── clash-transparent-proxy
+│   │   │   └── index.html
+│   │   └── play-store-failed-to-download-in-clash-proxy
+│   │   ├── 2021-08-09-17-57-48.png
+│   │   ├── 2021-08-09-18-06-18.gif
+│   │   ├── 2021-08-09-18-09-35.png
+│   │   ├── 2021-08-09-18-14-35.png
+│   │   ├── 2021-08-09-18-19-06.png
+│   │   ├── 2021-08-09-18-34-55.png
+│   │   ├── 2021-08-09-18-44-36.png
+│   │   ├── 2021-08-09-19-13-51.png
+│   │   ├── 2021-08-26-01-49-06.png
+│   │   └── index.html
+├── index.html
+├── index.xml
+└── tools
+└── play-store-failed-to-download-in-clash-proxy
+├── 2021-08-09-17-57-48.png
+├── 2021-08-09-18-06-18.gif
+├── 2021-08-09-18-09-35.png
+├── 2021-08-09-18-14-35.png
+├── 2021-08-09-18-19-06.png
+├── 2021-08-09-18-34-55.png
+├── 2021-08-09-18-44-36.png
+├── 2021-08-09-19-13-51.png
+└── 2021-08-26-01-49-06.png
+&lt;/code>&lt;/pre>&lt;p>暂时还不清楚要在标准目录中hugo如何移动对应的资源文件。但是非标准目录要这样的代价不如使用标准目录，避免一堆问题&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://ttys3.dev/post/got-my-hugo-permalink-config-adjusted/"
+target="_blank"
+rel="noopener"
+>调整了下 Hugo 永久链接生成配置&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/page-bundles/"
+target="_blank"
+rel="noopener"
+>CONTENT MANAGEMENT Page Bundles&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/templates/single-page-templates/"
+target="_blank"
+rel="noopener"
+>Single Page Templates&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>github actions in hugo</title><link>/posts/2021/08/github-actions-in-hugo/</link><pubDate>Fri, 06 Aug 2021 17:30:53 +0800</pubDate><guid>/posts/2021/08/github-actions-in-hugo/</guid><description>&lt;img src="/posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23.png" alt="Featured image of post github actions in hugo" />&lt;h2 id="问题">问题
+&lt;/h2>&lt;p>使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致&lt;code>git-submodule-in-hugo/你好%20a.png&lt;/code>和&lt;code>git-submodule-in-hugo/你好 a.png&lt;/code>在vscode不同的插件中&lt;code>kisstkondoros.vscode-gutter-preview&lt;/code>, &lt;code>shd101wyy.markdown-preview-enhanced&lt;/code>存在有不同的解析结果，所以不能在文件名中出现空格&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23.png"
+width="1553"
+height="553"
+srcset="/posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23_hu_5fe4de5d163f7f97.png 480w, /posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23_hu_c6ffd11b29303fef.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="280"
+data-flex-basis="673px"
+>&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>在hugo渲染html时，可能也会出现空格的问题，如当前自定义的&lt;code>layouts/_default/_markup/render-link.html&lt;/code>，如果没有使用测试转义，可能导致&lt;code>hasPrefix .Destination $name&lt;/code>不一样的情况。当然，应该不会出现这样的情况，毕竟&lt;code>$name&lt;/code>与&lt;code>.Destination&lt;/code>都是经过hugo转义后的。但是本地不一致的行为影响体验，总之，空格禁用&lt;/p>
+&lt;h2 id="github-action">github action
+&lt;/h2>&lt;p>在github仓库上在hugo build前使用actions检查是否含空格&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">jobs&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">check&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">runs-on&lt;/span>: &lt;span style="color:#ae81ff">ubuntu-20.04&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">steps&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#f92672">uses&lt;/span>: &lt;span style="color:#ae81ff">actions/checkout@master&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Check file names with spaces&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">run&lt;/span>: |&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> # search spaces in all subfolder names
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> if s=$(find content/post | grep &amp;#39; &amp;#39;); then
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> # output to stderr
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> &amp;gt;&amp;amp;2 echo &amp;#34;found spaces in $s&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> exit 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">deploy&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">runs-on&lt;/span>: &lt;span style="color:#ae81ff">ubuntu-20.04&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># dependence check&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">needs&lt;/span>: &lt;span style="color:#ae81ff">check&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.github.com/en/actions/quickstart"
+target="_blank"
+rel="noopener"
+>Quickstart for GitHub Actions&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#creating-dependent-jobs"
+target="_blank"
+rel="noopener"
+>Creating dependent jobs&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>my hugo blog</title><link>/posts/2021/08/my-hugo-blog/</link><pubDate>Fri, 06 Aug 2021 00:36:35 +0800</pubDate><guid>/posts/2021/08/my-hugo-blog/</guid><description>&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-03-17.png" alt="Featured image of post my hugo blog" />&lt;p>&lt;img src="https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg"
+loading="lazy"
+>&lt;/p>
+&lt;p>使用hugo在github搭建静态博客。&lt;/p>
+&lt;h2 id="选型">选型
+&lt;/h2>&lt;p>可选类型&lt;/p>
+&lt;h3 id="动态博客">动态博客
+&lt;/h3>&lt;p>比较知名的动态博客工具有下面几种：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://wordpress.com/"
+target="_blank"
+rel="noopener"
+>wordpress&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="http://typecho.org/"
+target="_blank"
+rel="noopener"
+>typecho&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;p>都是开源项目，wordpress(简称WP)是使用最广泛的，而typecho开发都不是告别活跃&lt;/p>
+&lt;p>对于博客项目，稳定是前提&lt;/p>
+&lt;p>开源项目参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/WordPress/WordPress"
+target="_blank"
+rel="noopener"
+>WordPress/WordPress&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/typecho/typecho"
+target="_blank"
+rel="noopener"
+>typecho/typecho&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="部署">部署
+&lt;/h4>&lt;p>在试用WP中，虽然现在可以使用docker方便的部署，我使用raspi4 2GB运行有点不够，运行WP与mysql后仅剩下200M左右，如果再vscode remote连接直接死机，需要开启swap才能正常。&lt;/p>
+&lt;h4 id="markdown">markdown
+&lt;/h4>&lt;p>由于之前都是使用markdown写作，存在100多篇md博文，不可能一一复制到WP中，所以想使用工具批量发布到WP中。在初步使用中没有发现在WP中有方法直接渲染markdown，基本都是md在线编辑器，不符合需求。&lt;/p>
+&lt;p>换个方式，使用已经渲染好的html文件发布到WP更好，避免了md的渲染不一致的问题，同时可以使用wp rest api批量更新。&lt;/p>
+&lt;p>尝试直接复制使用渲染markdown转换的html不可用，WP的html代码文本编辑器会转义部分代码&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>原始markdown内容&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span># vim配置
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&amp;lt;!-- 去除空格`&lt;/span>&lt;span style="color:#e6db74">` `&lt;/span>&lt;span style="color:#75715e"> --&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>`&lt;span style="color:#e6db74">` `&lt;/span>yaml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>vim: true
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>`&lt;span style="color:#e6db74">` `&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>参考：
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">*&lt;/span> [&lt;span style="color:#f92672">Vim 配置入门&lt;/span>](&lt;span style="color:#a6e22e">http://www.ruanyifeng.com/blog/2018/09/vimrc.html&lt;/span>)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>使用markdown-preview-enhanced导出cdn hosted文件
+&lt;a
+class="link"
+href=""
+>vim_markdown_preview_enhanced.html&lt;/a>
+，下面是部分代码：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&amp;lt;!DOCTYPE html&amp;gt;&lt;/span>&amp;lt;&lt;span style="color:#f92672">html&lt;/span>&amp;gt;&amp;lt;&lt;span style="color:#f92672">head&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">title&lt;/span>&amp;gt;vim&amp;amp;#x914D;&amp;amp;#x7F6E;&amp;lt;/&lt;span style="color:#f92672">title&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">meta&lt;/span> &lt;span style="color:#a6e22e">charset&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;utf-8&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">meta&lt;/span> &lt;span style="color:#a6e22e">name&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;viewport&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">content&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;width=device-width, initial-scale=1.0&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">link&lt;/span> &lt;span style="color:#a6e22e">rel&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;stylesheet&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/**
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* prism.js Github theme based on GitHub&amp;#39;s theme.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* @author Sam Clarke
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>*/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>code[class*=&amp;#34;language-&amp;#34;],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>pre[class*=&amp;#34;language-&amp;#34;] {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>color: #333;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>background: none;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>font-family: Consolas, &amp;#34;Liberation Mono&amp;#34;, Menlo, Courier, monospace;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>text-align: left;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>white-space: pre;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>word-spacing: normal;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>word-break: normal;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>word-wrap: normal;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>line-height: 1.4;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-moz-tab-size: 8;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-o-tab-size: 8;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>tab-size: 8;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-webkit-hyphens: none;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-moz-hyphens: none;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-ms-hyphens: none;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hyphens: none;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>经过WP转义后
+&lt;a
+class="link"
+href="/posts/2021/08/my-hugo-blog/vim_wordpress_esc"
+>vim_wordpress_esc&lt;/a>
+&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-04-23-17-08.png"
+width="1424"
+height="653"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-04-23-17-08_hu_f3f07070df9507a3.png 480w, /posts/2021/08/my-hugo-blog/2021-08-04-23-17-08_hu_a93e42fd1d8e16a4.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="218"
+data-flex-basis="523px"
+> 下面是部分代码：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;amp;nbsp;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;amp;nbsp;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/**&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* prism.js Github theme based on GitHub&amp;#39;s theme.&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* @author Sam Clarke&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>*/&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>code[class*=&amp;#34;language-&amp;#34;],&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>pre[class*=&amp;#34;language-&amp;#34;] {&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>color: #333;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>background: none;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>font-family: Consolas, &amp;#34;Liberation Mono&amp;#34;, Menlo, Courier, monospace;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>text-align: left;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>white-space: pre;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>word-spacing: normal;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>word-break: normal;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>word-wrap: normal;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>line-height: 1.4;&amp;lt;/&lt;span style="color:#f92672">p&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">p&lt;/span>&amp;gt;-moz-tab-size: 8;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-o-tab-size: 8;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>tab-size: 8;&amp;lt;/&lt;span style="color:#f92672">p&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">p&lt;/span>&amp;gt;-webkit-hyphens: none;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-moz-hyphens: none;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-ms-hyphens: none;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hyphens: none;&amp;lt;&lt;span style="color:#f92672">br&lt;/span> /&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}&amp;lt;/&lt;span style="color:#f92672">p&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>可以看到&lt;code>title, link&lt;/code>等tag被移除转义为&lt;code>&amp;amp;nbsp;&lt;/code>，其中&lt;code>&amp;lt;link rel=&amp;quot;stylesheet&amp;quot; href=&amp;quot;https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css&amp;quot;&amp;gt;&lt;/code>被移除导致无法正确显示代码高亮；&lt;code>\n&lt;/code>被转义为&lt;code>&amp;lt;br /&amp;gt;&lt;/code>。下面有可以解决这两个问题：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>minifiy html移除所有&lt;code>\n&lt;/code>避免转义：有各种插件可以生成一行的html文件&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>在WP中引用全局外部css。有两种方式&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>在额外css中插入&lt;code>@import url(&amp;quot;//cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css&amp;quot;);&lt;/code>
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-05-00-41-10.png"
+width="509"
+height="468"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-05-00-41-10_hu_d49435201c54e047.png 480w, /posts/2021/08/my-hugo-blog/2021-08-05-00-41-10_hu_77f08a9ef14c7161.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="108"
+data-flex-basis="261px"
+>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>在主题style.css中插入&lt;code>@import url(&amp;quot;//cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css&amp;quot;);&lt;/code>
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-05-00-43-59.png"
+width="881"
+height="357"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-05-00-43-59_hu_d71a9165e9ad331d.png 480w, /posts/2021/08/my-hugo-blog/2021-08-05-00-43-59_hu_804c122a34ac8b64.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="246"
+data-flex-basis="592px"
+>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ul>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://cloud.tencent.com/developer/article/1150073"
+target="_blank"
+rel="noopener"
+>在WordPress中使用Markdown进行写作的正确姿势&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.paincker.com/publish-markdown"
+target="_blank"
+rel="noopener"
+>WordPress+PublishMarkdown快速构建个人博客&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://zhuanlan.zhihu.com/p/65593971"
+target="_blank"
+rel="noopener"
+>命令行创建和发布 MarkDown 到 WordPress&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://developer.wordpress.org/rest-api/reference/"
+target="_blank"
+rel="noopener"
+>REST API Handbook&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://developer.wordpress.org/rest-api/reference/posts/"
+target="_blank"
+rel="noopener"
+>rest api: Posts&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/27045670/how-to-link-external-css-in-wordpress"
+target="_blank"
+rel="noopener"
+>How to link external css in wordpress? [closed]&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="问题">问题
+&lt;/h4>&lt;p>到此，markdown渲染的问题解决了，新的问题出现了，如何批量渲染md文件。vscode markdown-preview-enhanced插件只提供了手动的方式渲染出html，front-matter配置自动导出需要打开预览界面才行，不利于自动化&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">html&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">embed_local_images&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">embed_svg&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">offline&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">toc&lt;/span>: &lt;span style="color:#ae81ff">undefined&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">print_background&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外，对于不常用的图片，可以base64编码嵌入html文件中，缺点是文件过大，不利于缓存加载，链接形式的图片可以懒加载体验更好&lt;/p>
+&lt;p>于是转而寻找自动化工具，在
+&lt;a
+class="link"
+href="https://github.com/typora/typora-issues/issues/824#issuecomment-418176112"
+target="_blank"
+rel="noopener"
+>typora issues&lt;/a>
+中找到答案：Static Site Generator&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/"
+target="_blank"
+rel="noopener"
+>Markdown Preview Enhanced docs&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/typora/typora-issues/issues/824"
+target="_blank"
+rel="noopener"
+>Support export Multiple Documents #824&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/typora/typora-issues/issues/1999"
+target="_blank"
+rel="noopener"
+>[Summary] Advanced command line interface support #1999&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/typora/typora-issues"
+target="_blank"
+rel="noopener"
+>typora issues&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="静态博客">静态博客
+&lt;/h3>&lt;p>知名的静态博客工具有：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/hexojs/hexo"
+target="_blank"
+rel="noopener"
+>hexo&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo"
+target="_blank"
+rel="noopener"
+>hugo. A fast, simple &amp;amp; powerful blog framework, powered by Node.js.&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/jekyll/jekyll"
+target="_blank"
+rel="noopener"
+>jekyll. Jekyll is a blog-aware static site generator in Ruby&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="选型-1">选型
+&lt;/h4>&lt;p>hexo使用nodejs开发，hugo使用golang开发，相对更熟悉golang。速度在这里不是重点，nodejs已经足够&lt;/p>
+&lt;p>部署方面，由于不是nodejs开发者，需要配置复杂的开发环境，虽然可借助docker在本地使用，但是没有找到可用的docker镜像，能满足需求。hugo部署非常简单，只有一个bin文件，结合git管理与github pages非常方便&lt;/p>
+&lt;p>在资源方面，hexo更多，但本着可以折腾golang、轻量博客功能不作过多要求的精神，hugo是理想的选择&lt;/p>
+&lt;h2 id="hugo博客">hugo博客
+&lt;/h2>&lt;p>
+&lt;a
+class="link"
+href="/posts/2021/08/markdown-management-in-hugo/"
+>目录管理&lt;/a>
+&lt;/p>
+&lt;h3 id="github-pages部署">github pages部署
+&lt;/h3>&lt;p>在github上使用一个仓库&lt;code>&amp;lt;username&amp;gt;.github.io&lt;/code>保存hugo博文与gh-pages。基本配置在
+&lt;a
+class="link"
+href="https://gohugo.io/hosting-and-deployment/hosting-on-github/#readout"
+target="_blank"
+rel="noopener"
+>Host on GitHub&lt;/a>
+一致。&lt;/p>
+&lt;p>但是要注意
+&lt;a
+class="link"
+href="https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-first-deployment-with-github_token"
+target="_blank"
+rel="noopener"
+>First Deployment with GITHUB_TOKEN&lt;/a>
+，配置完github ations后需要主动创建&lt;code>gh-pages&lt;/code>&lt;em>空的分支&lt;/em>用于保存在hugo public/中的内容，并在repo settings中将其配置为GitHub Pages的source：&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-06-01-20-34.png"
+width="1127"
+height="744"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-06-01-20-34_hu_af146cd894575ebc.png 480w, /posts/2021/08/my-hugo-blog/2021-08-06-01-20-34_hu_394ee368572f2794.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="151"
+data-flex-basis="363px"
+>&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/marketplace/actions/github-pages-action"
+target="_blank"
+rel="noopener"
+>GitHub Pages action&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/hosting-and-deployment/hosting-on-github/#types-of-github-pages"
+target="_blank"
+rel="noopener"
+>hugo: Host on GitHub&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/marketplace/actions/hugo-setup"
+target="_blank"
+rel="noopener"
+>GitHub Action Hugo setup&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="定制域名">定制域名
+&lt;/h3>&lt;ol>
+&lt;li>在dns提供商添加cname解析到gh-pages的域名&lt;code>navyd.github.io&lt;/code>。如
+&lt;a
+class="link"
+href="https://dns.console.aliyun.com"
+target="_blank"
+rel="noopener"
+>阿里云DNS解析控制台&lt;/a>
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-06-23-27-37.png"
+width="710"
+height="587"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-06-23-27-37_hu_bd52d07dc6183454.png 480w, /posts/2021/08/my-hugo-blog/2021-08-06-23-27-37_hu_8885ca076e455353.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="120"
+data-flex-basis="290px"
+>&lt;/li>
+&lt;li>添加域名&lt;code>blog.navyd.xyz&lt;/code>内容到&lt;code>static/CNAME&lt;/code>文件&lt;/li>
+&lt;li>根据
+&lt;a
+class="link"
+href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-a-subdomain"
+target="_blank"
+rel="noopener"
+>Configuring a subdomain&lt;/a>
+指导，在github仓库中添加子域名&lt;code>blog.navyd.xyz&lt;/code>并启用https
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-06-23-19-29.png"
+width="1433"
+height="693"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-06-23-19-29_hu_9359bd7cc0769921.png 480w, /posts/2021/08/my-hugo-blog/2021-08-06-23-19-29_hu_1a692cd09e7e6f91.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="206"
+data-flex-basis="496px"
+>&lt;/li>
+&lt;/ol>
+&lt;p>注意：如果用浏览器打开新域名时提示不安全的证书，可能是缓存了以前使用过的域名证书，使用chrome无痕模式可以正常打开，等待chrome刷新缓存即可&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/hosting-and-deployment/hosting-on-github/#use-a-custom-domain"
+target="_blank"
+rel="noopener"
+>hugo Use a Custom Domain&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages"
+target="_blank"
+rel="noopener"
+>About custom domains and GitHub Pages&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/9123911/8566831"
+target="_blank"
+rel="noopener"
+>Q: Custom domain for GitHub project pages&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/16455966/8566831"
+target="_blank"
+rel="noopener"
+>Can github pages CNAME file contain more than one domain?&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="even主题">even主题
+&lt;/h3>&lt;h4 id="主题更改无效">主题更改无效
+&lt;/h4>&lt;p>在
+&lt;a
+class="link"
+href="https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md#theme-color"
+target="_blank"
+rel="noopener"
+>Theme Color&lt;/a>
+中提到可以在evne目录中&lt;code>/assets/sass/_variable.scss&lt;/code>文件修改主题&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-scss" data-lang="scss">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// ========== Theme Color ========== //
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// Config here to change theme color
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// Default | Mint Green | Cobalt Blue | Hot Pink | Dark Violet
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>$theme-color-config&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#39;Dark Violet&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果未生效可能是由于hugo不是extend版本，使用&lt;code>--tags extended&lt;/code>重新编译&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ hugo version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hugo v0.87.0 linux/amd64 BuildDate&lt;span style="color:#f92672">=&lt;/span>unknown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 在hugo源码内重编译&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ CGO_ENABLED&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> go install --tags extended
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ hugo version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hugo v0.87.0+extended linux/amd64 BuildDate&lt;span style="color:#f92672">=&lt;/span>unknown
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/olOwOlo/hugo-theme-even/issues/350#issuecomment-857537169"
+target="_blank"
+rel="noopener"
+>怎么更该了主题/assets/sass/_variable.scss 颜色值没发生改变是怎么回事&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo#build-and-install-the-binaries-from-source-advanced-install"
+target="_blank"
+rel="noopener"
+>Build and Install the Binaries from Source (Advanced Install)&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md#installation"
+target="_blank"
+rel="noopener"
+>even Installation&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="submodule无法修改">submodule无法修改
+&lt;/h4>&lt;p>由于使用了&lt;code>git submodle&lt;/code>将even作为项目的子模块，现在要修改&lt;code>/assets/sass/_variable.scss&lt;/code>文件，但是无法完成。如果之后无法找到解决方法，只有使用clone而不是作为submodule&lt;/p>
+&lt;!-- todo -->
+&lt;h4 id="启用点击统计">启用点击统计
+&lt;/h4>&lt;p>even支持不蒜子统计站点访问量&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">params&lt;/span>.&lt;span style="color:#a6e22e">busuanzi&lt;/span>] &lt;span style="color:#75715e"># count web traffic by busuanzi # 是否使用不蒜子统计站点访问量&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">enable&lt;/span> = &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">siteUV&lt;/span> = &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">sitePV&lt;/span> = &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">pagePV&lt;/span> = &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>主站统计&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-34-15.png"
+width="659"
+height="365"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-08-14-34-15_hu_b15354c07439b08.png 480w, /posts/2021/08/my-hugo-blog/2021-08-08-14-34-15_hu_8439ed1313a1a6bd.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="180"
+data-flex-basis="433px"
+>&lt;/p>
+&lt;p>文章访问统计&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-34-54.png"
+width="516"
+height="348"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-08-14-34-54_hu_73d6584a2eaf4e9.png 480w, /posts/2021/08/my-hugo-blog/2021-08-08-14-34-54_hu_b0bd69e0a43c7ee9.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="148"
+data-flex-basis="355px"
+>&lt;/p>
+&lt;h4 id="启用utterances评论">启用utterances评论
+&lt;/h4>&lt;p>utterances 是依托于 github repository 的 issues 建立的评论功能&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>点击
+&lt;a
+class="link"
+href="https://github.com/apps/utterances"
+target="_blank"
+rel="noopener"
+>GitHub App utterances&lt;/a>
+为github pages仓库&lt;code>navyd.github.io&lt;/code>安装
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-03-17.png"
+width="1332"
+height="469"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-08-14-03-17_hu_6c1bc2c71c663de0.png 480w, /posts/2021/08/my-hugo-blog/2021-08-08-14-03-17_hu_bb9673087a9db0c3.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="284"
+data-flex-basis="681px"
+>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>选择使用utterances评论的仓库
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-19-00.png"
+width="1359"
+height="914"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-08-14-19-00_hu_b9fc603d5e1455c.png 480w, /posts/2021/08/my-hugo-blog/2021-08-08-14-19-00_hu_c889974f2f5efcbb.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="148"
+data-flex-basis="356px"
+>
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-03-08.png"
+width="1030"
+height="801"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-08-14-03-08_hu_96c40b6ad55636af.png 480w, /posts/2021/08/my-hugo-blog/2021-08-08-14-03-08_hu_4f159008d57c6b31.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="128"
+data-flex-basis="308px"
+>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>在even配置中启用utterances&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">params&lt;/span>.&lt;span style="color:#a6e22e">utterances&lt;/span>] &lt;span style="color:#75715e"># https://utteranc.es/&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">owner&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;navyd&amp;#34;&lt;/span> &lt;span style="color:#75715e"># Your GitHub ID&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">repo&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;navyd.github.io&amp;#34;&lt;/span> &lt;span style="color:#75715e"># The repo to store comments&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>启动&lt;code>hugo server -D&lt;/code>本地查看效果
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-23-26.png"
+width="1338"
+height="1006"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-08-14-23-26_hu_33bfff6e8fcd06d8.png 480w, /posts/2021/08/my-hugo-blog/2021-08-08-14-23-26_hu_e1384209761c4506.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="319px"
+>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://blog.51cto.com/xdr630/2797532"
+target="_blank"
+rel="noopener"
+>hugo博客使用 utterances 作为评论系统&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://utteranc.es/"
+target="_blank"
+rel="noopener"
+>utterances&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://blog.dontjudge.cn/post/hugo-%E4%B8%BB%E9%A2%98-even-%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E9%85%8D%E7%BD%AE/"
+target="_blank"
+rel="noopener"
+>Hugo 主题 Even 的自定义配置&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="多层toc">多层toc
+&lt;/h4>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">markup&lt;/span>.&lt;span style="color:#a6e22e">tableOfContents&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">startLevel&lt;/span> = &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">endLevel&lt;/span> = &lt;span style="color:#ae81ff">6&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>配置前：&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-09-20-22-02.png"
+width="213"
+height="287"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-09-20-22-02_hu_8dc97d3382d0f4a2.png 480w, /posts/2021/08/my-hugo-blog/2021-08-09-20-22-02_hu_caffd4775be6d569.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="74"
+data-flex-basis="178px"
+>&lt;/p>
+&lt;p>配置后：&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-09-20-23-57.png"
+width="212"
+height="698"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-09-20-23-57_hu_ed763ed281286486.png 480w, /posts/2021/08/my-hugo-blog/2021-08-09-20-23-57_hu_99d1c36dc77dd3e8.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="30"
+data-flex-basis="72px"
+>&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://kuang.netlify.app/blog/hugo.html"
+target="_blank"
+rel="noopener"
+>Hugo 相关部署操作&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/toc/"
+target="_blank"
+rel="noopener"
+>CONTENT MANAGEMENT Table of Contents&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/getting-started/configuration-markup#config"
+target="_blank"
+rel="noopener"
+>Configure Markup&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="配置">配置
+&lt;/h3>&lt;h4 id="忽略渲染部分文件">忽略渲染部分文件
+&lt;/h4>&lt;p>在输出中发现非hugo配置的md文件被渲染，实际不需要渲染生成这些文件&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ hugo --debug
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start building sites …
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hugo v0.87.0 linux/amd64 BuildDate&lt;span style="color:#f92672">=&lt;/span>unknown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>INFO 2021/08/27 19:47:43 syncing static files to /home/navyd/Workspaces/projects/navyd.github.io/public/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DEBUG 2021/08/27 19:47:43 Render page Cargo Doc Open Does Not Work in Wsl to &lt;span style="color:#e6db74">&amp;#34;/post/rust/cargo-doc-open-does-not-work-in-wsl/index.html&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DEBUG 2021/08/27 19:47:43 found menu: &lt;span style="color:#e6db74">&amp;#34;main&amp;#34;&lt;/span>, in site config
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DEBUG 2021/08/27 19:47:43 found menu: &lt;span style="color:#e6db74">&amp;#34;main&amp;#34;&lt;/span>, in site config
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DEBUG 2021/08/27 19:47:43 found menu: &lt;span style="color:#e6db74">&amp;#34;main&amp;#34;&lt;/span>, in site config
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DEBUG 2021/08/27 19:47:43 found menu: &lt;span style="color:#e6db74">&amp;#34;main&amp;#34;&lt;/span>, in site config
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DEBUG 2021/08/27 19:47:43 Render page to &lt;span style="color:#e6db74">&amp;#34;/res/docker/docker更换国内镜像/index.html&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DEBUG 2021/08/27 19:47:43 Render page to &lt;span style="color:#e6db74">&amp;#34;/res/docker/docker构建容器/index.html&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> | ZH-CN
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-+--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Pages | &lt;span style="color:#ae81ff">155&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Paginator pages | &lt;span style="color:#ae81ff">3&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Non-page files | &lt;span style="color:#ae81ff">175&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Static files | &lt;span style="color:#ae81ff">39&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Processed images | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Aliases | &lt;span style="color:#ae81ff">17&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Sitemaps | &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Cleaned | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Total in &lt;span style="color:#ae81ff">391&lt;/span> ms
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># baseURL = &amp;#34;https://blog.navyd.xyz/&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># languageCode = &amp;#34;en&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">ignoreFiles&lt;/span> = [&lt;span style="color:#e6db74">&amp;#39;content/res/*&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># [permalinks]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/getting-started/configuration/#ignore-content-and-data-files-when-rendering"
+target="_blank"
+rel="noopener"
+>Ignore Content and Data Files when Rendering&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="修改首页博文list排序">修改首页博文list排序
+&lt;/h4>&lt;p>覆盖主题中提供的list模板如&lt;code>themes/&amp;lt;your-theme&amp;gt;/layouts/_default/list.html&lt;/code>，放到&lt;code>layouts/_default/list.html&lt;/code>中，修改其中的关键变量&lt;code>.Pages&lt;/code>，hugo在这
+&lt;a
+class="link"
+href="https://gohugo.io/templates/lists/#order-content"
+target="_blank"
+rel="noopener"
+>Lists of Content in Hugo#Order Content&lt;/a>
+提供了多种方式排序，默认为&lt;code>Weight &amp;gt; Date &amp;gt; LinkTitle &amp;gt; FilePath&lt;/code>&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/templates/lists/#order-content"
+target="_blank"
+rel="noopener"
+>Lists of Content in Hugo#Order Content&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/sorting-paginated-pages-by-date/14472"
+target="_blank"
+rel="noopener"
+>Sorting paginated pages by date&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/templates/pagination/#list-paginator-pages"
+target="_blank"
+rel="noopener"
+>TEMPLATES Pagination List Paginator Pages&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/variables/page/#pages"
+target="_blank"
+rel="noopener"
+>VARIABLES AND PARAMS Page Variables The .Pages Variable&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="content-summaries">Content Summaries
+&lt;/h4>&lt;p>使用&lt;code>&amp;lt;!--more--&amp;gt;&lt;/code>控制渲染md显示文章简介&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/summaries/#readout"
+target="_blank"
+rel="noopener"
+>CONTENT MANAGEMENT Content Summaries&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

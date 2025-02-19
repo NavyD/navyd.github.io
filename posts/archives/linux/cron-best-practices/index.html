@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content=" 本文由 简悦 SimpRead 转码， 原文地址 blog.sanctum.geek.nz The time-based job scheduler cron(8) has been around since Version 7 Unix, and its crontab(5) syntax &hellip;&hellip;\nThe time-based job scheduler cron(8) has been around since Version 7 Unix, and its crontab(5) syntax is familiar even for people who don’t do much Unix system administration. It’s standardised , reasonably flexible, simple to configure, and works reliably, and so it’s trusted by both system packages and users to manage many important tasks.\n">
+<title>Cron Best Practices</title>
+
+<link rel='canonical' href='/posts/archives/linux/cron-best-practices/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="Cron Best Practices">
+<meta property='og:description' content=" 本文由 简悦 SimpRead 转码， 原文地址 blog.sanctum.geek.nz The time-based job scheduler cron(8) has been around since Version 7 Unix, and its crontab(5) syntax &hellip;&hellip;\nThe time-based job scheduler cron(8) has been around since Version 7 Unix, and its crontab(5) syntax is familiar even for people who don’t do much Unix system administration. It’s standardised , reasonably flexible, simple to configure, and works reliably, and so it’s trusted by both system packages and users to manage many important tasks.\n">
+<meta property='og:url' content='/posts/archives/linux/cron-best-practices/'>
+<meta property='og:site_name' content=''>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='linux' /><meta property='article:tag' content='cron' /><meta property='article:published_time' content='2022-09-12T12:19:48&#43;08:00'/><meta property='article:modified_time' content='2025-01-28T18:26:14&#43;08:00'/>
+<meta name="twitter:title" content="Cron Best Practices">
+<meta name="twitter:description" content=" 本文由 简悦 SimpRead 转码， 原文地址 blog.sanctum.geek.nz The time-based job scheduler cron(8) has been around since Version 7 Unix, and its crontab(5) syntax &hellip;&hellip;\nThe time-based job scheduler cron(8) has been around since Version 7 Unix, and its crontab(5) syntax is familiar even for people who don’t do much Unix system administration. It’s standardised , reasonably flexible, simple to configure, and works reliably, and so it’s trusted by both system packages and users to manage many important tasks.\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    <img src="https://avatars.githubusercontent.com/u/22490764" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/"></a></h1>
+            <h2 class="site-description">Hello World!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/47808239'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/NavyD'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/NavyD_hello'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="/" selected>English</option>
+                                
+                                    <option value="/zh-cn/" >中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#apply-the-principle-of-least-privilege">Apply the principle of least privilege</a></li>
+    <li><a href="#test-the-tasks">Test the tasks</a></li>
+    <li><a href="#dont-throw-away-errors-or-useful-output">Don’t throw away errors or useful output</a></li>
+    <li><a href="#send-the-output-somewhere-useful">Send the output somewhere useful</a></li>
+    <li><a href="#put-the-tasks-in-their-own-shell-script-file">Put the tasks in their own shell script file</a></li>
+    <li><a href="#avoid-etccrontab">Avoid /etc/crontab</a></li>
+    <li><a href="#include-a-timeout">Include a timeout</a></li>
+    <li><a href="#include-file-locking-to-prevent-overruns">Include file locking to prevent overruns</a></li>
+    <li><a href="#do-something-useful-with-exit-statuses">Do something useful with exit statuses</a></li>
+    <li><a href="#consider-alternatives-to-cron8">Consider alternatives to <code>cron(8)</code></a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/posts/archives/linux/cron-best-practices/">Cron Best Practices</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2022-09-12T12:19:48&#43;08:00</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    6 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <blockquote>
+<p>本文由 
+
+<a  
+    class="link"
+ 
+    href="http://ksria.com/simpread/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>简悦 SimpRead</a>
+ 转码， 原文地址 
+
+<a  
+    class="link"
+ 
+    href="https://blog.sanctum.geek.nz/cron-best-practices/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>blog.sanctum.geek.nz</a>
+</p></blockquote>
+<blockquote>
+<p>The time-based job scheduler cron(8) has been around since Version 7 Unix, and its crontab(5) syntax &hellip;&hellip;</p></blockquote>
+<p>The time-based job scheduler 
+
+<a  
+    class="link"
+ 
+    href="http://linux.die.net/man/8/cron"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>cron(8)</code></a>
+ has been around since Version 7 Unix, and its 
+
+<a  
+    class="link"
+ 
+    href="http://linux.die.net/man/1/crontab"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>crontab(5)</code></a>
+ syntax is familiar even for people who don’t do much Unix system administration. It’s 
+
+<a  
+    class="link"
+ 
+    href="http://pubs.opengroup.org/onlinepubs/7908799/xcu/crontab.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>standardised</a>
+, reasonably flexible, simple to configure, and works reliably, and so it’s trusted by both system packages and users to manage many important tasks.</p>
+<p>However, like many older Unix tools, <code>cron(8)</code>‘s simplicity has a drawback: it relies upon the user to know some detail of how it works, and to correctly implement any other safety checking behaviour around it. Specifically, all it does is try and run the job at an appropriate time, and email the output. For simple and unimportant per-user jobs, that may be just fine, but for more crucial system tasks it’s worthwhile to wrap a little extra infrastructure around it and the tasks it calls.</p>
+<p>There are a few ways to make the way you use <code>cron(8)</code> more robust if you’re in a situation where keeping track of the running job is desirable.</p>
+<h2 id="apply-the-principle-of-least-privilege">Apply the principle of least privilege
+</h2><p>The sixth column of a system <code>crontab(5)</code> file is the username of the user as which the task should run:</p>
+<pre tabindex="0"><code>0 * * * *  root  cron-task
+</code></pre><p>To the extent that is practical, you should run the task as a user with only the privileges it needs to run, and nothing else. This can sometimes make it worthwhile to create a dedicated system user purely for running scheduled tasks relevant to your application.</p>
+<pre tabindex="0"><code>0 * * * *  myappcron  cron-task
+</code></pre><p>This is not just for security reasons, although those are good ones; it helps protect you against nasties like scripting errors attempting to 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/valvesoftware/steam-for-linux/issues/3671"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>remove entire system directories</a>
+.</p>
+<p>Similarly, for tasks with database systems such as MySQL, don’t use the administrative <code>root</code> user if you can avoid it; instead, use or even create a dedicated user with a unique random password stored in a locked-down <code>~/.my.cnf</code> file, with only the needed permissions. For a MySQL backup task, for example, only a few permissions should be required, including <code>SELECT</code>, <code>SHOW VIEW</code>, and <code>LOCK TABLES</code>.</p>
+<p>In some cases, of course, you really will need to be <code>root</code>. In particularly sensitive contexts you might even consider using <code>sudo(8)</code> with appropriate <code>NOPASSWD</code> options, to allow the dedicated user to run only the appropriate tasks as <code>root</code>, and nothing else.</p>
+<h2 id="test-the-tasks">Test the tasks
+</h2><p>Before placing a task in a <code>crontab(5)</code> file, you should test it on the command line, as the user configured to run the task and with the appropriate environment set. If you’re going to run the task as <code>root</code>, use something like <code>su</code> or <code>sudo -i</code> to get a root shell with the user’s expected environment first:</p>
+<pre tabindex="0"><code>$ sudo -i -u cronuser
+$ cron-task
+</code></pre><p>Once the task works on the command line, place it in the <code>crontab(5)</code> file with the timing settings modified to run the task a few minutes later, and then watch <code>/var/log/syslog</code> with <code>tail -f</code> to check that the task actually runs without errors, and that the task itself completes properly:</p>
+<pre tabindex="0"><code>May  7 13:30:01 yourhost CRON[20249]: (you) CMD (cron-task)
+</code></pre><p>This may seem pedantic at first, but it becomes routine very quickly, and it saves a lot of hassles down the line as it’s very easy to make an assumption about something in your environment that doesn’t actually hold in the one that <code>cron(8)</code> will use. It’s also a necessary acid test to make sure that your <code>crontab(5)</code> file is well-formed, as some implementations of <code>cron(8)</code> will refuse to load the entire file if one of the lines is malformed.</p>
+<p>If necessary, you can set arbitrary environment variables for the tasks at the top of the file:</p>
+<pre tabindex="0"><code>MYVAR=myvalue
+
+0 * * * *  you  cron-task
+</code></pre><h2 id="dont-throw-away-errors-or-useful-output">Don’t throw away errors or useful output
+</h2><p>You’ve probably seen tutorials on the web where in order to keep the <code>crontab(5)</code> job from sending standard output and/or standard error emails every five minutes, shell redirection operators are included at the end of the job specification to discard both the standard output and standard error. This kluge is particularly common for running web development tasks by automating a request to a URL with 
+
+<a  
+    class="link"
+ 
+    href="https://curl.haxx.se/docs/manpage.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>curl(1)</code></a>
+ or 
+
+<a  
+    class="link"
+ 
+    href="http://linux.die.net/man/1/wget"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>wget(1)</code></a>
+:</p>
+<pre tabindex="0"><code>*/5 * * *  root  curl https://example.com/cron.php &gt;/dev/null 2&gt;&amp;1
+</code></pre><p>Ignoring the output completely is generally not a good idea, because unless you have other tasks or monitoring ensuring the job does its work, you won’t notice problems (or know what they are), when the job emits output or errors that you actually care about.</p>
+<p>In the case of <code>curl(1)</code>, there are just way too many things that could go wrong, that you might notice far too late:</p>
+<ul>
+<li>The script could get broken and return 500 errors.</li>
+<li>The URL of the <code>cron.php</code> task could change, and someone could forget to add a HTTP 301 redirect.</li>
+<li>Even if a HTTP 301 redirect is added, if you don’t use <code>-L</code> or <code>--location</code> for <code>curl(1)</code>, it won’t follow it.</li>
+<li>The client could get blacklisted, firewalled, or otherwise impeded by automatic or manual processes that falsely flag the request as spam.</li>
+<li>If using HTTPS, connectivity could break due to cipher or protocol mismatch.</li>
+</ul>
+<p>The author has seen all of the above happen, in some cases very frequently.</p>
+<p>As a general policy, it’s worth taking the time to read the manual page of the task you’re calling, and to look for ways to correctly control its output so that it emits only the output you actually want. In the case of <code>curl(1)</code>, for example, I’ve found the following formula works well:</p>
+<pre tabindex="0"><code>curl -fLsS -o /dev/null http://example.com/
+</code></pre><ul>
+<li><code>-f</code>: If the HTTP response code is an error, emit an error message rather than the 404 page.</li>
+<li><code>-L</code>: If there’s an HTTP 301 redirect given, try to follow it.</li>
+<li><code>-sS</code>: Don’t show progress meter (<code>-S</code> stops <code>-s</code> from also blocking error messages).</li>
+<li><code>-o /dev/null</code>: Send the standard output (the actual page returned) to <code>/dev/null</code>.</li>
+</ul>
+<p>This way, the <code>curl(1)</code> request should stay silent if everything is well, per the old Unix philosophy 
+
+<a  
+    class="link"
+ 
+    href="http://www.linfo.org/rule_of_silence.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Rule of Silence</a>
+.</p>
+<p>You may not agree with some of the choices above; you might think it important to e.g. log the complete output of the returned page, or to fail rather than silently accept a 301 redirect, or you might prefer to use <code>wget(1)</code>. The point is that you take the time to understand in more depth what the called program will actually emit under what circumstances, and make it match your requirements as closely as possible, rather than blindly discarding all the output and (worse) the errors. Work with 
+
+<a  
+    class="link"
+ 
+    href="https://en.wikipedia.org/wiki/Murphy%27s_law"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Murphy’s law</a>
+; assume that anything that can go wrong eventually will.</p>
+<h2 id="send-the-output-somewhere-useful">Send the output somewhere useful
+</h2><p>Another common mistake is failing to set a useful <code>MAILTO</code> at the top of the <code>crontab(5)</code> file, as the specified destination for any output and errors from the tasks. <code>cron(8)</code> uses the system mail implementation to send its messages, and typically, default configurations for mail agents will simply send the message to an <code>mbox</code> file in <code>/var/mail/$USER</code>, that they may not ever read. This defeats much of the point of mailing output and errors.</p>
+<p>This is easily dealt with, though; ensure that you can send a message to an address you actually <em>do</em> check from the server, perhaps using <code>mail(1)</code>:</p>
+<pre tabindex="0"><code>$ printf &#39;%s\n&#39; &#39;Test message&#39; | mail -s &#39;Test subject&#39; you@example.com
+</code></pre><p>Once you’ve verified that your mail agent is correctly configured and that the mail arrives in your inbox, set the address in a <code>MAILTO</code> variable at the top of your file:</p>
+<pre tabindex="0"><code>MAILTO=you@example.com
+
+0 * * * *    you  cron-task-1
+*/5 * * * *  you  cron-task-2
+</code></pre><p>If you don’t want to use email for routine output, another method that works is sending the output to <code>syslog</code> with a tool like 
+
+<a  
+    class="link"
+ 
+    href="http://linux.die.net/man/1/logger"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>logger(1)</code></a>
+:</p>
+<pre tabindex="0"><code>0 * * * *   you  cron-task | logger -it cron-task
+</code></pre><p>Alternatively, you can configure aliases on your system to forward system mail destined for you on to an address you check. For Postfix, you’d use an 
+
+<a  
+    class="link"
+ 
+    href="http://www.postfix.org/aliases.5.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>aliases(5)</code></a>
+ file.</p>
+<p>I sometimes use this setup in cases where the task is expected to emit a few lines of output which might be useful for later review, but send <code>stderr</code> output via <code>MAILTO</code> as normal. If you’d rather not use <code>syslog</code>, perhaps because the output is high in volume and/or frequency, you can always set up a log file <code>/var/log/cron-task.log</code> … but don’t forget to add a 
+
+<a  
+    class="link"
+ 
+    href="http://linux.die.net/man/8/logrotate"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>logrotate(8)</code></a>
+ rule for it!</p>
+<h2 id="put-the-tasks-in-their-own-shell-script-file">Put the tasks in their own shell script file
+</h2><p>Ideally, the commands in your <code>crontab(5)</code> definitions should only be a few words, in one or two commands. If the command is running off the screen, it’s likely too long to be in the <code>crontab(5)</code> file, and you should instead put it into its own script. This is a particularly good idea if you want to reliably use features of <code>bash</code> or some other shell besides POSIX/Bourne <code>/bin/sh</code> for your commands, or even a scripting language like Awk or Perl; by default, <code>cron(8)</code> uses the system’s <code>/bin/sh</code> implementation for parsing the commands.</p>
+<p>Because <code>crontab(5)</code> files don’t allow multi-line commands, and have other gotchas like the need to escape percent signs <code>%</code> with backslashes, keeping as much configuration out of the actual <code>crontab(5)</code> file as you can is generally a good idea.</p>
+<p>If you’re running <code>cron(8)</code> tasks as a non-system user, and can’t add scripts into a system bindir like <code>/usr/local/bin</code>, a tidy method is to start your own, and include a reference to it as part of your <code>PATH</code>. I favour <code>~/.local/bin</code>, and have seen references to <code>~/bin</code> as well. Save the script in <code>~/.local/bin/cron-task</code>, make it executable with <code>chmod +x</code>, and include the directory in the <code>PATH</code> environment definition at the top of the file:</p>
+<pre tabindex="0"><code>PATH=/home/you/.local/bin:/usr/local/bin:/usr/bin:/bin
+MAILTO=you@example.com
+
+0 * * * *  you  cron-task
+</code></pre><p>Having your own directory with custom scripts for your own purposes has a host of other benefits, but that’s another article…</p>
+<h2 id="avoid-etccrontab">Avoid /etc/crontab
+</h2><p>If your implementation of <code>cron(8)</code> supports it, rather than having an <code>/etc/crontab</code> file a mile long, you can put tasks into separate files in <code>/etc/cron.d</code>:</p>
+<pre tabindex="0"><code>$ ls /etc/cron.d
+system-a
+system-b
+raid-maint
+</code></pre><p>This approach allows you to group the configuration files meaningfully, so that you and other administrators can find the appropriate tasks more easily; it also allows you to make some files editable by some users and not others, and reduces the chance of edit conflicts. Using <code>sudoedit(8)</code> helps here too. Another advantage is that it works better with version control; if I start collecting more than a few of these task files or to update them more often than every few months, I start a Git repository to track them:</p>
+<pre tabindex="0"><code>$ cd /etc/cron.d
+$ sudo git init
+$ sudo git add --all
+$ sudo git commit -m &#34;First commit&#34;
+</code></pre><p>If you’re editing a <code>crontab(5)</code> file for tasks related only to the individual user, use the <code>crontab(1)</code> tool; you can edit your own <code>crontab(5)</code> by typing <code>crontab -e</code>, which will open your <code>$EDITOR</code> to edit a temporary file that will be installed on exit. This will save the files into a dedicated directory, which on my system is <code>/var/spool/cron/crontabs</code>.</p>
+<p>On the systems maintained by the author, it’s quite normal for <code>/etc/crontab</code> never to change from its packaged template.</p>
+<h2 id="include-a-timeout">Include a timeout
+</h2><p><code>cron(8)</code> will normally allow a task to run indefinitely, so if this is not desirable, you should consider either using options of the program you’re calling to implement a timeout, or including one in the script. If there’s no option for the command itself, the 
+
+<a  
+    class="link"
+ 
+    href="http://linux.die.net/man/1/timeout"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>timeout(1)</code></a>
+ command wrapper in <code>coreutils</code> is one possible way of implementing this:</p>
+<pre tabindex="0"><code>0 * * * *  you  timeout 10s cron-task
+</code></pre><p>Greg’s wiki has some further suggestions on 
+
+<a  
+    class="link"
+ 
+    href="http://mywiki.wooledge.org/BashFAQ/068"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>ways to implement timeouts</a>
+.</p>
+<h2 id="include-file-locking-to-prevent-overruns">Include file locking to prevent overruns
+</h2><p><code>cron(8)</code> will start a new process regardless of whether its previous runs have completed, so if you wish to avoid locking for long-running task, on GNU/Linux you could use the 
+
+<a  
+    class="link"
+ 
+    href="http://linux.die.net/man/1/flock"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>flock(1)</code></a>
+ wrapper for the 
+
+<a  
+    class="link"
+ 
+    href="http://linux.die.net/man/2/flock"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>flock(2)</code></a>
+ system call to set an exclusive lockfile, in order to prevent the task from running more than one instance in parallel.</p>
+<pre tabindex="0"><code>0 * * * *  you  flock -nx /var/lock/cron-task cron-task
+</code></pre><p>Greg’s wiki has some more in-depth discussion of the 
+
+<a  
+    class="link"
+ 
+    href="http://mywiki.wooledge.org/BashFAQ/045"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>file locking</a>
+ problem for scripts in a general sense, including important information about the caveats of “rolling your own” when <code>flock(1)</code> is not available.</p>
+<p>If it’s important that your tasks run in a certain order, consider whether it’s necessary to have them in separate tasks at all; it may be easier to guarantee they’re run sequentially by collecting them in a single shell script.</p>
+<h2 id="do-something-useful-with-exit-statuses">Do something useful with exit statuses
+</h2><p>If your <code>cron(8)</code> task or commands within its script exit non-zero, it can be useful to run commands that handle the failure appropriately, including cleanup of appropriate resources, and sending information to monitoring tools about the current status of the job. If you’re using Nagios Core or one of its derivatives, you could consider using <code>send_nsca</code> to send passive checks reporting the status of jobs to your monitoring server. I’ve written 
+
+<a  
+    class="link"
+ 
+    href="https://sanctum.geek.nz/cgit/nscaw.git/about"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>a simple script called <code>nscaw</code></a>
+ to do this for me:</p>
+<pre tabindex="0"><code>0 * * * *  you  nscaw CRON_TASK -- cron-task
+</code></pre><h2 id="consider-alternatives-to-cron8">Consider alternatives to <code>cron(8)</code>
+</h2><p>If your machine isn’t always on and your task doesn’t need to run at a specific time, but rather needs to run once daily or weekly, you can install 
+
+<a  
+    class="link"
+ 
+    href="http://linux.die.net/man/8/anacron"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>anacron</code></a>
+ and drop scripts into the <code>cron.hourly</code>, <code>cron.daily</code>, <code>cron.monthly</code>, and <code>cron.weekly</code> directories in <code>/etc</code>, as appropriate. Note that on Debian and Ubuntu GNU/Linux systems, the default <code>/etc/crontab</code> contains hooks that run these, but they run only if 
+
+<a  
+    class="link"
+ 
+    href="http://linux.die.net/man/8/anacron"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>anacron(8)</code></a>
+ is not installed.</p>
+<p>If you’re using <code>cron(8)</code> to poll a directory for changes and run a script if there are such changes, on GNU/Linux you could consider using a daemon based on <code>inotifywait(1)</code> instead.</p>
+<p>Finally, if you require more advanced control over when and how your task runs than <code>cron(8)</code> can provide, you could perhaps consider writing a daemon to run on the server consistently and fork processes for its task. This would allow running a task more often than once a minute, as an example. Don’t get too bogged down into thinking that <code>cron(8)</code> is your only option for any kind of asynchronous task management!</p>
+<p>参考：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://blog.sanctum.geek.nz/cron-best-practices/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Cron best practices</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://serverfault.com/a/434902"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Better logging for cronjobs? Send cron output to syslog?</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://news.ycombinator.com/item?id=30636872"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>My best practice with cron is to not use cron if possible. Systemd has timers with practically the same functionality and you&rsquo;ll never worry about:</a>
+</li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/linux/">Linux</a>
+        
+            <a href="/tags/cron/">Cron</a>
+        
+    </section>
+
+
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on 2025-01-28T18:26:14&#43;08:00
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">Related content</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/posts/archives/python/deploying-python-applications/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Deploying Python Applications</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/linux/mounting-practice-on-linux/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Mounting Practice on Linux</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/2021/11/port-forwarding-in-wsl2/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Port Forwarding in Wsl2</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/linux/access-to-last-command-in-shell/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">在shell中访问上次运行的命令</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/cargo-test-with-root-privilege/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">使用root权限运行cargo test</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.2760efe2b07bc1f771820787a816b980000936e884b19441806bce1518d37d8c.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

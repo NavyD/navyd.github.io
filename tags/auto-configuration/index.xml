@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Auto Configuration on </title>
+        <link>/tags/auto-configuration/</link>
+        <description>Recent content in Auto Configuration on </description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en</language>
+        <lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/auto-configuration/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Auto Configuration in Springboot</title>
+        <link>/posts/archives/java/spring/auto-configuration-in-springboot/</link>
+        <pubDate>Fri, 18 Mar 2022 20:31:30 +0800</pubDate>
+        
+        <guid>/posts/archives/java/spring/auto-configuration-in-springboot/</guid>
+        <description>&lt;p&gt;每次问到 Spring Boot， 面试官非常喜欢问这个问题：“讲述一下 SpringBoot 自动装配原理？”。&lt;/p&gt;
+&lt;p&gt;我觉得我们可以从以下几个方面回答：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;什么是 SpringBoot 自动装配？&lt;/li&gt;
+&lt;li&gt;SpringBoot 是如何实现自动装配的？如何实现按需加载？&lt;/li&gt;
+&lt;li&gt;如何实现一个 Starter？&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;篇幅问题，这篇文章并没有深入，小伙伴们也可以直接使用 debug 的方式去看看 SpringBoot 自动装配部分的源代码。&lt;/p&gt;
+&lt;h2 id=&#34;前言&#34;&gt;前言
+&lt;/h2&gt;&lt;p&gt;在Spring Boot 项目，我们只需要添加相关依赖，无需配置，通过启动下面的 &lt;code&gt;main&lt;/code&gt; 方法即可。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@SpringBootApplication&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;DemoApplication&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;(String&lt;span style=&#34;color:#f92672&#34;&gt;[]&lt;/span&gt; args) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        SpringApplication.&lt;span style=&#34;color:#a6e22e&#34;&gt;run&lt;/span&gt;(DemoApplication.&lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;, args);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们通过 Spring Boot 的全局配置文件 &lt;code&gt;application.properties&lt;/code&gt;或&lt;code&gt;application.yml&lt;/code&gt;即可对项目进行设置比如更换端口号，配置 JPA 属性等等。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;为什么 Spring Boot 使用起来这么酸爽呢？&lt;/strong&gt; 这得益于其自动装配。&lt;strong&gt;自动装配可以说是 Spring Boot 的核心，那究竟什么是自动装配呢？&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;什么是-springboot-自动装配&#34;&gt;什么是 SpringBoot 自动装配？
+&lt;/h2&gt;&lt;p&gt;我们现在提到自动装配的时候，一般会和 Spring Boot 联系在一起。但是，实际上 Spring Framework 早就实现了这个功能。Spring Boot 只是在其基础上，通过 SPI 的方式，做了进一步优化。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;SpringBoot 定义了一套接口规范，这套规范规定：SpringBoot 在启动时会扫描外部引用 jar 包中的&lt;code&gt;META-INF/spring.factories&lt;/code&gt;文件，将文件中配置的类型信息加载到 Spring 容器（此处涉及到 JVM 类加载机制与 Spring 的容器知识），并执行类中定义的各种操作。对于外部 jar 来说，只需要按照 SpringBoot 定义的标准，就能将自己的功能装置进 SpringBoot。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;没有 Spring Boot 的情况下，如果我们需要引入第三方依赖，需要手动配置，非常麻烦。但是，Spring Boot 中，我们直接引入一个 starter 即可。比如你想要在项目中使用 redis 的话，直接在项目中引入对应的 starter 即可。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-starter-data-redis&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;引入 starter 之后，我们通过少量注解和一些简单的配置就能使用第三方组件提供的功能了。&lt;/p&gt;
+&lt;p&gt;在我看来，自动装配可以简单理解为：&lt;strong&gt;通过注解或者一些简单的配置就能在 Spring Boot 的帮助下实现某块功能。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;springboot-是如何实现自动装配的&#34;&gt;SpringBoot 是如何实现自动装配的？
+&lt;/h2&gt;&lt;p&gt;我们先看一下 SpringBoot 的核心注解 &lt;code&gt;SpringBootApplication&lt;/code&gt; 。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Target&lt;/span&gt;({ElementType.&lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE&lt;/span&gt;})
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Retention&lt;/span&gt;(RetentionPolicy.&lt;span style=&#34;color:#a6e22e&#34;&gt;RUNTIME&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Documented&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Inherited&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@SpringBootConfiguration&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;// &amp;lt;1.&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@ComponentScan&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;// &amp;lt;2.&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@EnableAutoConfiguration&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;// &amp;lt;3.&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;@interface&lt;/span&gt; SpringBootApplication {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// ...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Target&lt;/span&gt;({ElementType.&lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE&lt;/span&gt;})
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Retention&lt;/span&gt;(RetentionPolicy.&lt;span style=&#34;color:#a6e22e&#34;&gt;RUNTIME&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Documented&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Configuration&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;//实际上它也是一个配置类&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;@interface&lt;/span&gt; SpringBootConfiguration {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;大概可以把 &lt;code&gt;@SpringBootApplication&lt;/code&gt;看作是 &lt;code&gt;@Configuration&lt;/code&gt;、&lt;code&gt;@EnableAutoConfiguration&lt;/code&gt;、&lt;code&gt;@ComponentScan&lt;/code&gt; 注解的集合。根据 SpringBoot 官网，这三个注解的作用分别是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;@EnableAutoConfiguration&lt;/code&gt;：启用 SpringBoot 的自动配置机制&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;@Configuration&lt;/code&gt;：允许在上下文中注册额外的 bean 或导入其他配置类&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;@ComponentScan&lt;/code&gt;： 扫描被&lt;code&gt;@Component&lt;/code&gt; (&lt;code&gt;@Service&lt;/code&gt;,&lt;code&gt;@Controller&lt;/code&gt;)注解的 bean，注解默认会扫描启动类所在的包下所有的类 ，可以自定义不扫描某些 bean。如下图所示，容器中将排除&lt;code&gt;TypeExcludeFilter&lt;/code&gt;和&lt;code&gt;AutoConfigurationExcludeFilter&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bcc73490afbe4c6ba62acde6a94ffdfd~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;@EnableAutoConfiguration&lt;/code&gt; 是实现自动装配的重要注解，我们以这个注解入手。&lt;/p&gt;
+&lt;h3 id=&#34;enableautoconfiguration实现自动装配的核心注解&#34;&gt;&lt;code&gt;@EnableAutoConfiguration&lt;/code&gt;:实现自动装配的核心注解
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;EnableAutoConfiguration&lt;/code&gt; 只是一个简单地注解，自动装配核心功能的实现实际是通过 &lt;code&gt;AutoConfigurationImportSelector&lt;/code&gt;类。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Target&lt;/span&gt;({ElementType.&lt;span style=&#34;color:#a6e22e&#34;&gt;TYPE&lt;/span&gt;})
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Retention&lt;/span&gt;(RetentionPolicy.&lt;span style=&#34;color:#a6e22e&#34;&gt;RUNTIME&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Documented&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Inherited&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@AutoConfigurationPackage&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;//作用：将main包下的所欲组件注册到容器中&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Import&lt;/span&gt;({AutoConfigurationImportSelector.&lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;}) &lt;span style=&#34;color:#75715e&#34;&gt;//加载自动装配类 xxxAutoconfiguration&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;@interface&lt;/span&gt; EnableAutoConfiguration {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    String ENABLED_OVERRIDE_PROPERTY &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;spring.boot.enableautoconfiguration&amp;#34;&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Class&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;?&amp;gt;[]&lt;/span&gt; exclude() &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; {};
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    String&lt;span style=&#34;color:#f92672&#34;&gt;[]&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;excludeName&lt;/span&gt;() &lt;span style=&#34;color:#66d9ef&#34;&gt;default&lt;/span&gt; {};
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们现在重点分析下&lt;code&gt;AutoConfigurationImportSelector&lt;/code&gt; 类到底做了什么？&lt;/p&gt;
+&lt;h3 id=&#34;autoconfigurationimportselector加载自动装配类&#34;&gt;AutoConfigurationImportSelector:加载自动装配类
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;AutoConfigurationImportSelector&lt;/code&gt;类的继承体系如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;AutoConfigurationImportSelector&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;implements&lt;/span&gt; DeferredImportSelector, BeanClassLoaderAware, ResourceLoaderAware, BeanFactoryAware, EnvironmentAware, Ordered {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;interface&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;DeferredImportSelector&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;extends&lt;/span&gt; ImportSelector {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;interface&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ImportSelector&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    String&lt;span style=&#34;color:#f92672&#34;&gt;[]&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;selectImports&lt;/span&gt;(AnnotationMetadata var1);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;可以看出，&lt;code&gt;AutoConfigurationImportSelector&lt;/code&gt; 类实现了 &lt;code&gt;ImportSelector&lt;/code&gt;接口，也就实现了这个接口中的 &lt;code&gt;selectImports&lt;/code&gt;方法，该方法主要用于&lt;strong&gt;获取所有符合条件的类的全限定类名，这些类需要被加载到 IoC 容器中&lt;/strong&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;final&lt;/span&gt; String&lt;span style=&#34;color:#f92672&#34;&gt;[]&lt;/span&gt; NO_IMPORTS &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; String&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;0&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; String&lt;span style=&#34;color:#f92672&#34;&gt;[]&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;selectImports&lt;/span&gt;(AnnotationMetadata annotationMetadata) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// &amp;lt;1&amp;gt;.判断自动装配开关是否打开&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;isEnabled&lt;/span&gt;(annotationMetadata)) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; NO_IMPORTS;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          &lt;span style=&#34;color:#75715e&#34;&gt;//&amp;lt;2&amp;gt;.获取所有需要装配的bean&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            AutoConfigurationMetadata autoConfigurationMetadata &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; AutoConfigurationMetadataLoader.&lt;span style=&#34;color:#a6e22e&#34;&gt;loadMetadata&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;beanClassLoader&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            AutoConfigurationImportSelector.&lt;span style=&#34;color:#a6e22e&#34;&gt;AutoConfigurationEntry&lt;/span&gt; autoConfigurationEntry &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;getAutoConfigurationEntry&lt;/span&gt;(autoConfigurationMetadata, annotationMetadata);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; StringUtils.&lt;span style=&#34;color:#a6e22e&#34;&gt;toStringArray&lt;/span&gt;(autoConfigurationEntry.&lt;span style=&#34;color:#a6e22e&#34;&gt;getConfigurations&lt;/span&gt;());
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这里我们需要重点关注一下&lt;code&gt;getAutoConfigurationEntry()&lt;/code&gt;方法，这个方法主要负责加载自动配置类的。&lt;/p&gt;
+&lt;p&gt;该方法调用链如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3c1200712655443ca4b38500d615bb70~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;现在我们结合&lt;code&gt;getAutoConfigurationEntry()&lt;/code&gt;的源码来详细分析一下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;final&lt;/span&gt; AutoConfigurationEntry EMPTY_ENTRY &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; AutoConfigurationEntry();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;AutoConfigurationEntry &lt;span style=&#34;color:#a6e22e&#34;&gt;getAutoConfigurationEntry&lt;/span&gt;(AutoConfigurationMetadata autoConfigurationMetadata, AnnotationMetadata annotationMetadata) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;//&amp;lt;1&amp;gt;.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;isEnabled&lt;/span&gt;(annotationMetadata)) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; EMPTY_ENTRY;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#75715e&#34;&gt;//&amp;lt;2&amp;gt;.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            AnnotationAttributes attributes &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;getAttributes&lt;/span&gt;(annotationMetadata);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#75715e&#34;&gt;//&amp;lt;3&amp;gt;.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            List&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;String&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; configurations &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;getCandidateConfigurations&lt;/span&gt;(annotationMetadata, attributes);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#75715e&#34;&gt;//&amp;lt;4&amp;gt;.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            configurations &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;removeDuplicates&lt;/span&gt;(configurations);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            Set&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;String&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; exclusions &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;getExclusions&lt;/span&gt;(annotationMetadata, attributes);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;checkExcludedClasses&lt;/span&gt;(configurations, exclusions);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            configurations.&lt;span style=&#34;color:#a6e22e&#34;&gt;removeAll&lt;/span&gt;(exclusions);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            configurations &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;filter&lt;/span&gt;(configurations, autoConfigurationMetadata);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;fireAutoConfigurationImportEvents&lt;/span&gt;(configurations, exclusions);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; AutoConfigurationImportSelector.&lt;span style=&#34;color:#a6e22e&#34;&gt;AutoConfigurationEntry&lt;/span&gt;(configurations, exclusions);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;第 1 步:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;判断自动装配开关是否打开。默认&lt;code&gt;spring.boot.enableautoconfiguration=true&lt;/code&gt;，可在 &lt;code&gt;application.properties&lt;/code&gt; 或 &lt;code&gt;application.yml&lt;/code&gt; 中设置&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/77aa6a3727ea4392870f5cccd09844ab~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第 2 步 ：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;用于获取&lt;code&gt;EnableAutoConfiguration&lt;/code&gt;注解中的 &lt;code&gt;exclude&lt;/code&gt; 和 &lt;code&gt;excludeName&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3d6ec93bbda1453aa08c52b49516c05a~tplv-k3u1fbpfcp-zoom-1.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第 3 步&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;获取需要自动装配的所有配置类，读取&lt;code&gt;META-INF/spring.factories&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;spring-boot/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring.factories
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img src=&#34;https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/58c51920efea4757aa1ec29c6d5f9e36~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;从下图可以看到这个文件的配置内容都被我们读取到了。&lt;code&gt;XXXAutoConfiguration&lt;/code&gt;的作用就是按需加载组件。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/94d6e1a060ac41db97043e1758789026~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;不光是这个依赖下的&lt;code&gt;META-INF/spring.factories&lt;/code&gt;被读取到，所有 Spring Boot Starter 下的&lt;code&gt;META-INF/spring.factories&lt;/code&gt;都会被读取到。&lt;/p&gt;
+&lt;p&gt;所以，你可以清楚滴看到， druid 数据库连接池的 Spring Boot Starter 就创建了&lt;code&gt;META-INF/spring.factories&lt;/code&gt;文件。&lt;/p&gt;
+&lt;p&gt;如果，我们自己要创建一个 Spring Boot Starter，这一步是必不可少的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/68fa66aeee474b0385f94d23bcfe1745~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第 4 步&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;到这里可能面试官会问你:“&lt;code&gt;spring.factories&lt;/code&gt;中这么多配置，每次启动都要全部加载么？”。&lt;/p&gt;
+&lt;p&gt;很明显，这是不现实的。我们 debug 到后面你会发现，&lt;code&gt;configurations&lt;/code&gt; 的值变小了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/267f8231ae2e48d982154140af6437b0~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;因为，这一步有经历了一遍筛选，&lt;code&gt;@ConditionalOnXXX&lt;/code&gt; 中的所有条件都满足，该类才会生效。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Configuration&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 检查相关的类：RabbitTemplate 和 Channel是否存在&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// 存在才会加载&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@ConditionalOnClass&lt;/span&gt;({ RabbitTemplate.&lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;, Channel.&lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt; })
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@EnableConfigurationProperties&lt;/span&gt;(RabbitProperties.&lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@Import&lt;/span&gt;(RabbitAnnotationDrivenConfiguration.&lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;RabbitAutoConfiguration&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;有兴趣的童鞋可以详细了解下 Spring Boot 提供的条件注解&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;@ConditionalOnBean&lt;/code&gt;：当容器里有指定 Bean 的条件下&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@ConditionalOnMissingBean&lt;/code&gt;：当容器里没有指定 Bean 的情况下&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@ConditionalOnSingleCandidate&lt;/code&gt;：当指定 Bean 在容器中只有一个，或者虽然有多个但是指定首选 Bean&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@ConditionalOnClass&lt;/code&gt;：当类路径下有指定类的条件下&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@ConditionalOnMissingClass&lt;/code&gt;：当类路径下没有指定类的条件下&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@ConditionalOnProperty&lt;/code&gt;：指定的属性是否有指定的值&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@ConditionalOnResource&lt;/code&gt;：类路径是否有指定的值&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@ConditionalOnExpression&lt;/code&gt;：基于 SpEL 表达式作为判断条件&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@ConditionalOnJava&lt;/code&gt;：基于 Java 版本作为判断条件&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@ConditionalOnJndi&lt;/code&gt;：在 JNDI 存在的条件下差在指定的位置&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@ConditionalOnNotWebApplication&lt;/code&gt;：当前项目不是 Web 项目的条件下&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@ConditionalOnWebApplication&lt;/code&gt;：当前项目是 Web 项 目的条件下&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;如何实现一个-starter&#34;&gt;如何实现一个 Starter
+&lt;/h2&gt;&lt;p&gt;光说不练假把式，现在就来撸一个 starter，实现自定义线程池&lt;/p&gt;
+&lt;p&gt;第一步，创建&lt;code&gt;threadpool-spring-boot-starter&lt;/code&gt;工程&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1ff0ebe7844f40289eb60213af72c5a6~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;第二步，引入 Spring Boot 相关依赖&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5e14254276604f87b261e5a80a354cc0~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;第三步，创建&lt;code&gt;ThreadPoolAutoConfiguration&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1843f1d12c5649fba85fd7b4e4a59e39~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;第四步，在&lt;code&gt;threadpool-spring-boot-starter&lt;/code&gt;工程的 resources 包下创建&lt;code&gt;META-INF/spring.factories&lt;/code&gt;文件&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/97b738321f1542ea8140484d6aaf0728~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;最后新建工程引入&lt;code&gt;threadpool-spring-boot-starter&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/edcdd8595a024aba85b6bb20d0e3fed4~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;测试通过！！！&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9a265eea4de742a6bbdbbaa75f437307~tplv-k3u1fbpfcp-watermark.image&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结
+&lt;/h2&gt;&lt;p&gt;Spring Boot 通过&lt;code&gt;@EnableAutoConfiguration&lt;/code&gt;开启自动装配，通过 SpringFactoriesLoader 最终加载&lt;code&gt;META-INF/spring.factories&lt;/code&gt;中的自动配置类实现自动装配，自动配置类其实就是通过&lt;code&gt;@Conditional&lt;/code&gt;按需加载的配置类，想要其生效必须引入&lt;code&gt;spring-boot-starter-xxx&lt;/code&gt;包实现起步依赖&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/Snailclimb/JavaGuide/blob/ff9efdd3d048e0380ce823edd00adceecc5743e3/docs/system-design/framework/spring/spring-boot-auto-assembly-principles.md&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Spring Boot 自动装配原理&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ssl on NavyD的个人博客</title><link>/tags/ssl/</link><description>Recent content in Ssl on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/ssl/index.xml" rel="self" type="application/rss+xml"/><item><title>Failed to Run Custom Build Command for openssl-sys</title><link>/posts/archives/rust/failed-to-run-custom-build-command-for-openssl-sys/</link><pubDate>Sun, 17 Oct 2021 16:19:48 +0800</pubDate><guid>/posts/archives/rust/failed-to-run-custom-build-command-for-openssl-sys/</guid><description>&lt;p>在编译reqwest一段简单的代码时出现&lt;code>error: failed to run custom build command for openssl-sys v0.9.58&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ cargo check
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Compiling libc v0.2.77
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Checking url v2.1.1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>error: failed to run custom build command &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>openssl-sys v0.9.58&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Caused by:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> process didn&lt;span style="color:#e6db74">&amp;#39;t exit successfully: `/home/navyd/Workspaces/projects/youdao-dict-export/target/debug/build/openssl-sys-bc6e4f996293b8bd/build-script-main` (exit code: 101)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> stdout
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rustc-cfg=const_fn
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=X86_64_UNKNOWN_LINUX_GNU_OPENSSL_LIB_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> X86_64_UNKNOWN_LINUX_GNU_OPENSSL_LIB_DIR unset
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=OPENSSL_LIB_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> OPENSSL_LIB_DIR unset
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=X86_64_UNKNOWN_LINUX_GNU_OPENSSL_INCLUDE_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> X86_64_UNKNOWN_LINUX_GNU_OPENSSL_INCLUDE_DIR unset
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=OPENSSL_INCLUDE_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> OPENSSL_INCLUDE_DIR unset
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=X86_64_UNKNOWN_LINUX_GNU_OPENSSL_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> X86_64_UNKNOWN_LINUX_GNU_OPENSSL_DIR unset
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=OPENSSL_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> OPENSSL_DIR unset
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=OPENSSL_NO_PKG_CONFIG
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=OPENSSL_STATIC
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=OPENSSL_DYNAMIC
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> run pkg_config fail: &amp;#34;Failed to run `\&amp;#34;pkg-config\&amp;#34; \&amp;#34;--libs\&amp;#34; \&amp;#34;--cflags\&amp;#34; \&amp;#34;openssl\&amp;#34;`: No such file or directory (os error 2)&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> stderr
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> thread &amp;#39;&lt;/span>main&lt;span style="color:#e6db74">&amp;#39; panicked at &amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Could not find directory of OpenSSL installation, and this &lt;span style="color:#e6db74">`&lt;/span>-sys&lt;span style="color:#e6db74">`&lt;/span> crate cannot
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> proceed without this knowledge. If OpenSSL is installed and this crate had
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> trouble finding it, you can set the &lt;span style="color:#e6db74">`&lt;/span>OPENSSL_DIR&lt;span style="color:#e6db74">`&lt;/span> environment variable &lt;span style="color:#66d9ef">for&lt;/span> the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> compilation process.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Make sure you also have the development packages of openssl installed.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> For example, &lt;span style="color:#e6db74">`&lt;/span>libssl-dev&lt;span style="color:#e6db74">`&lt;/span> on Ubuntu or &lt;span style="color:#e6db74">`&lt;/span>openssl-devel&lt;span style="color:#e6db74">`&lt;/span> on Fedora.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> If you&lt;span style="color:#e6db74">&amp;#39;re in a situation where you think the directory *should* be found
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> automatically, please open a bug at https://github.com/sfackler/rust-openssl
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> and include information about your system as well as this message.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> $HOST = x86_64-unknown-linux-gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> $TARGET = x86_64-unknown-linux-gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> openssl-sys = 0.9.58
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> It looks like you&amp;#39;&lt;/span>re compiling on Linux and also targeting Linux. Currently this
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> requires the &lt;span style="color:#e6db74">`&lt;/span>pkg-config&lt;span style="color:#e6db74">`&lt;/span> utility to find OpenSSL but unfortunately &lt;span style="color:#e6db74">`&lt;/span>pkg-config&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> could not be found. If you have OpenSSL installed you can likely fix this by
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> installing &lt;span style="color:#e6db74">`&lt;/span>pkg-config&lt;span style="color:#e6db74">`&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span>, /home/navyd/.cargo/registry/src/mirrors.sjtug.sjtu.edu.cn-7a04d2510079875b/openssl-sys-0.9.58/build/find_normal.rs:157:5
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> note: run with &lt;span style="color:#e6db74">`&lt;/span>RUST_BACKTRACE&lt;span style="color:#f92672">=&lt;/span>1&lt;span style="color:#e6db74">`&lt;/span> environment variable to display a backtrace
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>warning: build failed, waiting &lt;span style="color:#66d9ef">for&lt;/span> other jobs to finish...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>error: build failed
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>代码&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">use&lt;/span> std::collections::HashMap;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[tokio::main]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">async&lt;/span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() -&amp;gt; Result&lt;span style="color:#f92672">&amp;lt;&lt;/span>(), Box&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">dyn&lt;/span> std::error::Error&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> resp &lt;span style="color:#f92672">=&lt;/span> reqwest::get(&lt;span style="color:#e6db74">&amp;#34;https://httpbin.org/ip&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#66d9ef">await&lt;/span>&lt;span style="color:#f92672">?&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .json::&lt;span style="color:#f92672">&amp;lt;&lt;/span>HashMap&lt;span style="color:#f92672">&amp;lt;&lt;/span>String, String&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#66d9ef">await&lt;/span>&lt;span style="color:#f92672">?&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> println!(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">{:#?}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>, resp);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Ok(())
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>cargo.toml依赖&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">dependencies&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">reqwest&lt;/span> = { &lt;span style="color:#a6e22e">version&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.10&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">features&lt;/span> = [&lt;span style="color:#e6db74">&amp;#34;json&amp;#34;&lt;/span>] }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">tokio&lt;/span> = { &lt;span style="color:#a6e22e">version&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.2&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">features&lt;/span> = [&lt;span style="color:#e6db74">&amp;#34;full&amp;#34;&lt;/span>] }
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决方案">解决方案
+&lt;/h2>&lt;p>在
+&lt;a
+class="link"
+href="https://docs.rs/openssl/0.10.36/openssl/#automatic"
+target="_blank"
+rel="noopener"
+>Crate openssl automatic&lt;/a>
+中提到，在ubuntu中可以&lt;code>sudo apt-get install pkg-config libssl-dev&lt;/code>安装依赖&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/sfackler/rust-openssl/issues/1021#issuecomment-441387063"
+target="_blank"
+rel="noopener"
+>Ubuntu 18: failed to run custom build command for &lt;code>openssl-sys v0.9.39&lt;/code>&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

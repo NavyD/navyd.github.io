@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content=" 原文地址 gankra.github.io I think about unsafe pointers in Rust a lot.\nI literally wrote the book on unsafe Rust. And the book on pointers in Rust. And redesigned the Rust’s pointer APIs. And designed the standard library’s abstraction for unsafe heap-allocated buffers. And maintain the alternative Vec layout.\nI think about unsafe pointers in Rust a lot, and I absolutely hate them.\n">
+<title>Rust Unsafe Pointer Types Need an Overhaul</title>
+
+<link rel='canonical' href='/posts/archives/rust/rust-unsafe-pointer-types-need-an-overhaul/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="Rust Unsafe Pointer Types Need an Overhaul">
+<meta property='og:description' content=" 原文地址 gankra.github.io I think about unsafe pointers in Rust a lot.\nI literally wrote the book on unsafe Rust. And the book on pointers in Rust. And redesigned the Rust’s pointer APIs. And designed the standard library’s abstraction for unsafe heap-allocated buffers. And maintain the alternative Vec layout.\nI think about unsafe pointers in Rust a lot, and I absolutely hate them.\n">
+<meta property='og:url' content='/posts/archives/rust/rust-unsafe-pointer-types-need-an-overhaul/'>
+<meta property='og:site_name' content=''>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='rust' /><meta property='article:tag' content='unsafe' /><meta property='article:published_time' content='2022-03-28T20:56:16&#43;08:00'/><meta property='article:modified_time' content='2025-01-28T18:26:14&#43;08:00'/>
+<meta name="twitter:title" content="Rust Unsafe Pointer Types Need an Overhaul">
+<meta name="twitter:description" content=" 原文地址 gankra.github.io I think about unsafe pointers in Rust a lot.\nI literally wrote the book on unsafe Rust. And the book on pointers in Rust. And redesigned the Rust’s pointer APIs. And designed the standard library’s abstraction for unsafe heap-allocated buffers. And maintain the alternative Vec layout.\nI think about unsafe pointers in Rust a lot, and I absolutely hate them.\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    <img src="https://avatars.githubusercontent.com/u/22490764" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/"></a></h1>
+            <h2 class="site-description">Hello World!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/47808239'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/NavyD'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/NavyD_hello'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="/" selected>English</option>
+                                
+                                    <option value="/zh-cn/" >中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#12-alias-analysis-and-pointer-provenancealias-analysis-and-pointer-provenance"><a href="#alias-analysis-and-pointer-provenance">1.2 Alias Analysis and Pointer Provenance</a></a></li>
+    <li><a href="#23-offsets-and-places-are-a-messoffsets-and-places-are-a-mess"><a href="#offsets-and-places-are-a-mess">2.3 Offsets And Places Are A Mess</a></a></li>
+    <li><a href="#31-distinguish-pointers-and-addressesdistinguish-pointers-and-addresses"><a href="#distinguish-pointers-and-addresses">3.1 Distinguish Pointers And Addresses</a></a></li>
+    <li><a href="#32-fixing-places-and-offsetsfixing-places-and-offsets"><a href="#fixing-places-and-offsets">3.2 Fixing Places and Offsets</a></a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/posts/archives/rust/rust-unsafe-pointer-types-need-an-overhaul/">Rust Unsafe Pointer Types Need an Overhaul</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2022-03-28T20:56:16&#43;08:00</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    15 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <blockquote>
+<p>原文地址 
+
+<a  
+    class="link"
+ 
+    href="https://gankra.github.io/blah/fix-rust-pointers/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>gankra.github.io</a>
+</p></blockquote>
+<p>I think about unsafe pointers in Rust a lot.</p>
+<p>I literally wrote the book on unsafe Rust. And the book on pointers in Rust. And redesigned the Rust’s pointer APIs. And designed the standard library’s abstraction for unsafe heap-allocated buffers. And maintain the alternative Vec layout.</p>
+<p>I think about unsafe pointers in Rust a lot, and I absolutely hate them.</p>
+<p>Don’t get me wrong, I think all of the above work has made them better but they are still deeply flawed. Actually they’ve gotten a lot worse. Not because the APIs have changed, but because when I was working on this stuff we had too naive of an understanding of how pointers should work. Others have done a lot of great work to expand this understanding, and now the flaws are all the more glaring.</p>
+<p>This article is broken up into 3 parts: conceptual background, problems with the current design, and proposed solutions.</p>
+<p>1 Background
+This section can be skipped entirely if you know everything about computers.</p>
+<p>1.1 Aliasing
+Aliasing is a very important concept in compilers and language semantics. At a high-level, it’s the study of the observability of modifications to memory. We call it aliasing because the problem is very easy until you can refer to a piece of memory in more than one way. Pointers are just nicknames for memory.</p>
+<p>The primary function of aliasing is as a model for when the compiler can semantically cache memory accesses. This can either mean assuming a value in memory hasn’t been modified or assuming a write to memory isn’t necessary. This is exceptionally important because essentially all program state is semantically in memory. It’s impossible for a general purpose programming language that does anything on the behalf of the programmer to allow arbitrary reads and writes to memory.</p>
+<p>As a hopefully extremely obvious example that we can all agree on, a compiler should be able to assume that the following program will pass 1 to <code>println!</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> x <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> y <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">// Wouldn&#39;t it be fucked up if this could modify y?
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>x <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>println!(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, y);
+</span></span></code></pre></div><p>When we talk about aliasing we usually jump immediately to pointers because that’s the hard part but like, the fact that this has deterministic behaviour is part of your aliasing model! Variables are semantically unaliased until you actually take a reference to them!</p>
+<p>This is actually a foundational assumption for putting things in registers, because putting something in a register is caching it. If a compiler can’t decide it’s ok to put values in general purpose registers or spill them to the stack, it’s an assembler <em>at best</em>. We would like to build languages that are higher-level than an assembler!</p>
+<p>With the “no really you need this no matter what” part out of the way, let’s talk about how pointers make this hard. In the following function, can we assume that <code>input</code> and <code>output</code> refer to different regions of memory?</p>
+<pre tabindex="0"><code>fn compute(input: &amp;u32, output: &amp;mut u32) {
+    if *input &gt; 10 {
+        *output = 1;
+    }
+    if *input &gt; 5 {
+        *output *= 2;
+    }
+}
+</code></pre><p>If we can, then the compiler is free to rewrite it as follows:</p>
+<pre tabindex="0"><code>fn compute(input: &amp;u32, output: &amp;mut u32) {
+    // keep `*input` in a register
+    let cached_input = *input; 
+    if cached_input &gt; 10 {
+        // If the original, &gt; 10 would imply:
+        //
+        // *output = 1
+        // *output *= 2
+        //
+        // which we can just simplify into:
+        *output = 2;
+    } else if cached_input &gt; 5 {
+        *output *= 2;
+    }
+}
+</code></pre><p>If they <em>do</em> point to overlapping memory, then the write <code>*output = 1</code> would affect the result of the read <code>*input &gt; 5</code>, and we say those accesses <em>alias</em>. When we perform (potentially) aliasing accesses, the compiler has to conservatively load and store from memory as much as the source code implies.</p>
+<p>Now it’s often clumsy to talk about <em>accesses</em> aliasing, so we usually talk about <em>pointers</em> aliasing as a shorthand. So one would reasonably say that <code>input</code> and <code>output</code> alias each other. The reason that the <em>actual</em> model is in terms of <em>accesses</em> and not <em>pointers</em> is because that’s the thing that we care about.</p>
+<p>We don’t <em>actually</em> care if you pass in two pointers that “alias” but:</p>
+<ul>
+<li>Only one of them is ever used (no second observer)</li>
+<li>Both only read (a read can’t observably affect another read) (this assumption is why memory mapped hardware has to use <code>volatile</code>)</li>
+</ul>
+<p>This is also why Rust has such a distinct schism between “unique mutable” references (<code>&amp;mut</code>) and “shared immutable” references (<code>&amp;</code>). It’s fine to make as many copies as you want of readonly pointers, but if you want to actually write to memory it’s really important to know how it’s aliased!</p>
+<p>(You may notice that this is a simplified model full of lies, if you would like less lies, read my extremely detailed 
+
+<a  
+    class="link"
+ 
+    href="https://rust-unofficial.github.io/too-many-lists/fifth-stacked-borrows.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>discussion of Stacked Borrows</a>
+.)</p>
+<p>Here are some other useful shorthands:</p>
+<ul>
+<li>memory is <strong>anonymous</strong> if the programmer cannot refer to it by name or pointer.</li>
+<li>memory is <strong>unaliased</strong> if there is currently only one way to refer to it.</li>
+</ul>
+<p>Anonymous memory is in some sense “completely under the control of the compiler” and can therefore be freely assumed to be unaliased and trusted/modified by the compiler. Unaliased memory cannot be “randomly” modified by something seemingly “unrelated” (we’ll get to what that means in the next section).</p>
+<p>Languages can have <em>stricter</em> or <em>weaker</em> aliasing models. A stricter model allows the compiler to do more optimizations but puts heavier restrictions on what the programmer is allowed to do within the confines of the language. Here are some common rules, in vaguely increasing strictness:</p>
+<ul>
+<li>Callee-saved values pushed to the stack are anonymous (return pointer, frame pointer).</li>
+<li>“Scratch” values the compiler spills to the stack are anonymous.</li>
+<li>A newly declared variable is unaliased until a reference is taken to it.</li>
+<li>The memory returned by <code>malloc</code> is unaliased.</li>
+<li>Fields of a struct do not alias eachother (bitfields are made of sadness).</li>
+<li>Padding bytes are vaguely anonymous (messy because of memcpy/memset/unions/punning).</li>
+<li>Immutable variables are functionally unaliased in that they can never change values.</li>
+<li>In Rust, <code>&amp;mut</code> is unaliased (
+
+<a  
+    class="link"
+ 
+    href="https://plv.mpi-sws.org/rustbelt/stacked-borrows/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Stacked Borrows</a>
+).</li>
+<li>In C(++), <code>T*</code> and <code>U*</code> cannot alias if <code>T!=U</code> and neither is <code>char</code> (
+
+<a  
+    class="link"
+ 
+    href="https://blog.regehr.org/archives/1307"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Strict Aliasing</a>
+).</li>
+</ul>
+<p>(I cannot emphasize enough how shorthanded all of this is, the devil is extremely in the details and formally specifying these things is this subject of untold numbers of PhD theses. I am not trying to write a PhD thesis right now. Unless you literally work on a C/C++ Standard Committee or are named Ralf Jung I will not be accepting your Umm Actually’s on these definitions and terms.)</p>
+<h2 id="12-alias-analysis-and-pointer-provenancealias-analysis-and-pointer-provenance">
+
+<a  
+    class="link"
+
+    
+    href="#alias-analysis-and-pointer-provenance"
+
+
+>1.2 Alias Analysis and Pointer Provenance</a>
+
+</h2><p>Ok so you have some definitions for how memory can be considered “unaliased”, but as soon as you take a pointer to something, or copy a pointer, or offset a pointer… that all goes out the window, right? Like you have to assume anything can be aliased by anything else?</p>
+<p>No! Aliasing rules are some of the most foundational parts of a language’s semantics and optimizations. If you run afoul of the language’s aliasing rules you have Undefined Behaviour and the miscompilations can be extremely brutal!</p>
+<p>But yes, once you start faffing around with pointers things get <em>a lot harder</em> for the compiler, memory model, and programmer. To make aliasing a useful notion once pointers start getting thrown around, memory models very quickly find the need to define two concepts:</p>
+<ul>
+<li>Allocations</li>
+<li>Pointer Provenance</li>
+</ul>
+<p><em>Allocations</em> abstractly describe things like individual variables and heap allocations. A freshly created allocation (variable decl, malloc) is always brought into the world unaliased and therefore acts like a <em>sandbox</em> with One True Name – there is no way to access the memory in the sandbox <em>except</em> through the One True Name (that isn’t Undefined Behaviour).</p>
+<p>Permission to access the allocation’s sandbox can be <em>delegated</em> from the One True Name by deriving a new pointer from it (or anything recursively derived from it). The process of tracking this “chain of custody” from the One True Name to all of its derived pointers is <em>Pointer Provenance</em>.</p>
+<p>From a formal memory model perspective, all accesses to an allocation must have <em>provenance</em> tracking back to that allocation. If pointer provenance isn’t satisfied, then that means the programmer broke out of the sandbox or pulled a pointer from the aether that happened to point into some random sandbox. Either way, everything is chaos and nothing makes sense anymore if that’s allowed.</p>
+<p>From a compiler optimization perspective, tracking provenance allows the compiler to prove that two accesses don’t alias. If two pointers are known to have different provenance, then they cannot possibly alias and you can get Good Codegen. If it ever loses track of a pointer to some memory (i.e. if pointers are passed to an opaque function) then it has put that memory/pointer in a “may be aliased” bucket. Accesses through two may-be-aliased sources have to conservatively be assumed to alias and can get Bad Codegen.</p>
+<p>This is the fundamental trick compilers apply to all impossible problems: have a simple analysis that can answer your query with “YES”, “NO”, or “MAYBE” and then convert “MAYBE” to “YES” or “NO” based on whichever one is safer. Do these two accesses MAYBE alias? Then YES they alias. Problem Solved.</p>
+<p>In a memory-safe language, this is all “just” an optimization scheme because the programmer can’t “break” the compiler’s analysis. But once you’re doing unsafe things (like with C or Unsafe Rust), the compiler needs you to help it out and actually follow some dang rules. Specifically, everyone agrees you <em>really</em> shouldn’t be allowed to break out of allocation sandboxes.</p>
+<p>This is why llvm’s 
+
+<a  
+    class="link"
+ 
+    href="https://llvm.org/docs/GetElementPtr.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>GetElementPointer (GEP)</a>
+ instruction, which computes a pointer offset, is almost always emitted by compilers with the <code>inbounds</code> keyword. The <code>inbounds</code> keyword is basically “I promise this offset won’t break the pointer out of its allocation sandbox and completely trash aliasing and provenance”. Which like, yeah all of your pointer offsets should follow that rule!</p>
+<p>Let’s go up a level and look at rustc: any time you do <code>(*ptr).my_field</code> the compiler will emit <code>GEP inbounds</code>. Have you ever wondered why the documentation for 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/std/primitive.pointer.html#method.offset"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>ptr::offset</a>
+ and friends is so weird and complicated? Because they lower to <code>GEP inbounds</code> and need to follow its rules! 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/std/primitive.pointer.html#method.wrapping_offset"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>ptr::wrapping_offset</a>
+ is just <code>GEP</code> without the <code>inbounds</code>. And even <code>wrapping_offset</code> isn’t <em>actually</em> allowed to break provenance:</p>
+<blockquote>
+<p>Compared to <code>offset</code>, this method basically delays the requirement of staying within the same allocated object: <code>offset</code> is immediate Undefined Behavior when crossing object boundaries; <code>wrapping_offset</code> produces a pointer but still leads to Undefined Behavior if a pointer is dereferenced when it is out-of-bounds of the object it is attached to.</p></blockquote>
+<p>Mea culpa, I spent years calling 
+
+<a  
+    class="link"
+ 
+    href="https://www.cl.cam.ac.uk/research/security/ctsrd/cheri/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>CHERI</a>
+ completely unshippable vaporware! I was pretty confident, but I’ll eat my hat because 
+
+<a  
+    class="link"
+ 
+    href="https://www.arm.com/architecture/cpu/morello"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>ARM Morello actually built and shipped a full CHERI-based CPU</a>
+. Congratulations to everyone who worked on it!</p>
+<p>So what is CHERI? I’m not going to get into the nitty-gritty details but roughly speaking it’s a 128-bit architecture. Well actually it’s 129-bit. Well actually it’s 64-bit. <em>Sorry what?</em></p>
+<p>Ok so the whole Idea with CHERI is that it actually reifies and implements the “sandboxing” model from the previous section. Every pointer is tagged with extra metadata that the hardware maintains and validates. If you ever break out of your sandbox the hardware will catch it and the OS will presumably kill your process.</p>
+<p>I don’t know the full details of the encoding or metadata, but the part we care about is that each pointer contains a compressed <em>slice</em> (range of memory) that it is allowed to point into as well as the <em>actual</em> address that it points to. The slice is that pointer’s sandbox, and all pointers derived from it inherit that sandbox (or less). Whenever you access some memory, the hardware just checks that the pointer is still inside its sandbox.</p>
+<p>This metadata isn’t cheap: pointers in CHERI are 128-bits wide, but the effective address space is still at most 64-bit (I don’t know the exact upper bound, all that matters is that addresses <em>fit</em> in 64-bit). Now 128-bit is <em>really</em> bloated, so in C(++) CHERI actually gets help from our old nemesis 
+
+<a  
+    class="link"
+ 
+    href="https://gankra.github.io/blah/rust-layouts-and-abis/#the-c-integer-hierarchy"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>The Wobbly C Interger Hierarchy</a>
+.</p>
+<p>C makes a distinction between <code>intptr_t</code> (“a pointer-sized integer”) and <code>ptrdiff_t</code>/<code>size_t</code> (“offset-sized integers”). Under CHERI, <code>intptr_t</code> is 128-bit and <code>ptrdiff_t</code>/<code>size_t</code> are 64-bit. It can do this because the address space is still only 64-bit, so anything that refers to offsets or sizes can still be 64-bit.</p>
+<p>Ok so you might have two burning questions at this point: how on earth can this possible work if I can just scribble over a pointer and corrupt its metadata, and why did you say it’s actually 129-bit. As it turns out, those are the same question!</p>
+<p>I find the best way to conceptualize this is to think of it like 
+
+<a  
+    class="link"
+ 
+    href="https://en.wikipedia.org/wiki/ECC_memory"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>ECC (Error Correction Code) RAM</a>
+. In ECC RAM, each RAM stick actually has more physically memory than it claims, because it’s transparently using that extra memory to correct or detect random bitflips. So there’s all this extra memory <em>somewhere</em> but as far as a compiler or programmer are concerned, the memory looks perfectly normal and doesn’t have any weird extra bits.</p>
+<p>CHERI does the same thing, but the extra 129th bit the hardware is hiding from you is a “metadata is valid” bit. You see, to properly manipulate pointers in CHERI you need to access the memory/registers containing a pointer with specific instructions for that task. If you try to manipulate them some other way (say by memcpying random bytes over it), the hardware will disable the “metadata is valid” bit. Then if you try to use it <em>as</em> a pointer, the hardware will see your metadata can’t be trusted and fault/kill your process.</p>
+<p>It’s friggin’ neato!</p>
+<p>(A lot of the issues we’ll see with integrating Rust with CHERI will actually look a lot like issues with <em>segmented architectures</em>, but I have never used those so I will just be vaguely gesturing at them and handwaving. Just keep in mind that whenever I refer to CHERI, a similar argument <em>also</em> probably applies to segmenting. So if you care about segmented architectures, you might care about CHERI too!)</p>
+<p>Now let’s see how Rust’s current unsafe pointer APIs cause problems for all the background we’ve seen above.</p>
+<p>Rust currently says this code is totally cool and fine:</p>
+<pre tabindex="0"><code>// Masking off a tag someone packed into a pointer:
+let mut addr = my_ptr as usize;
+addr = addr &amp; !0x1; 
+let new_ptr = addr as *mut T;
+*new_ptr += 10;
+</code></pre><p>This is some pretty bog-standard code for messing with tagged pointers, what’s wrong with that?</p>
+<p>Think about the background we just discussed. Think about Pointer Provenance. Think about CHERI.</p>
+<p>🙀 aAAaAAaaaAAaAAAAAA 🙀</p>
+<p>For this to <em>possibly</em> work with Pointer Provenance and Alias Analysis, that stuff must pervasively infect all integers on the assumption that they <em>might</em> be pointers. This is a huge pain in the neck for people who are trying to actually 
+
+<a  
+    class="link"
+ 
+    href="https://plv.mpi-sws.org/rustbelt/stacked-borrows/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>formally define Rust’s memory model</a>
+, and for people who are 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/rust-lang/miri"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>trying to build sanitizers for Rust that catch UB</a>
+. And I assure you it’s 
+
+<a  
+    class="link"
+ 
+    href="http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2676.pdf"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>just as much a headache for all the LLVM and C(++) people too</a>
+.</p>
+<p>For this to <em>possibly</em> work with CHERI we need to make usize 128-bit (even though the address space is 64-bit) and always manipulate it with “pointer instructions” on the assumption that it <em>might</em> be a pointer in the vein of intptr_t. Yes folks have tried running Rust under CHERI and 
+
+<a  
+    class="link"
+ 
+    href="https://nw0.github.io/cheri-rust.pdf"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>that’s exactly what they had to do</a>
+. It was, Not Good.</p>
+<p>Unfortunately for CHERI, Rust actually <em>defines</em> <code>usize</code> to be the same size as a pointer, even though its primary role is to be an offset/size. This is a <em>very</em> reasonable assumption for mainstream platforms, but it runs afoul of CHERI (and segmented architectures)!</p>
+<p>If you <em>don’t</em> make usize 128-bit and just try to make it the 64-bit “address” portion, then <code>usize as *mut T</code> is a completely incoherent operation. Promoting an integer to a pointer (or what CHERI calls <em>a capability</em>) requires adding metadata to it. What metadata? What range is this random address possibly valid for? There is literally no way to answer that question!</p>
+<p>Now you might be thinking “ok but pointer tagging is a super fundamental thing, are you saying we can’t do that anymore?”. Nope! You can totally still do tagging tricks, but you need to be a bit more careful about it. This is why CHERI actually 
+
+<a  
+    class="link"
+ 
+    href="https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-947.pdf#page=28"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>introduces a special operation</a>
+:</p>
+<pre tabindex="0"><code>void* cheri_address_set(void* capability, vaddr_t address)
+</code></pre><p>This takes a valid pointer (capability) and an address, and creates a new pointer with the same metadata but the new address. <code>vaddr_t</code> is a new integer type that CHERI introduced which is morally equivalent to other “address-space-sized” pointers like <code>size_t</code>, <code>ptrdiff_t</code>, etc.</p>
+<p>Hey! That operation <em>also</em> looks really useful for provenance, doesn’t it? By associating our int-to-ptr operation with an existing pointer we are <em>reestablishing</em> the provenance chain of custody: the new pointer is derived from the old one, and compilers and memory-models can be happy! HMMMM…</p>
+<p>In the grand old days of Rust 1.0, we were pretty optimistic about how fast-and-loose we could be with raw pointers. Well, ok we were actually pretty rigorous about pointers by most people’s standards. We largely enforced GEP inbounds semantics, required alignment everywhere, 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/nightly/nomicon/vec/vec-zsts.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>carved out how to work with ZSTs</a>
+, 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/nightly/nomicon/vec/vec-alloc.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>ensured that allocations can’t be larger than isize::MAX</a>
+, etc.</p>
+<p>But what we played really fast and loose on was <em>aliasing</em> and <em>validity</em>. In Ye Olde conception of Rust, references were kinda just <em>conveniences</em>. Like yes they asserted many things, but not in a <em>compiler optimization</em> kinda way. Just in a “this API guarantees this” kinda way. We all vaguely knew we <em>wanted</em> the optimization-y stuff but no one had spent the energy to work that out.</p>
+<p>These days, between 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/rust-lang/unsafe-code-guidelines"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>unsafe-code-guidelines</a>
+, 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/rust-lang/miri"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>miri</a>
+ and 
+
+<a  
+    class="link"
+ 
+    href="https://plv.mpi-sws.org/rustbelt/stacked-borrows/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>stacked borrows</a>
+, a lot of us have now put a lot of thought into this. Miri is especially useful because it lets us “kick the tires” on actual code and check if the semantics we’re interested in are actually obeyed by real unsafe Rust code.</p>
+<p>They Weren’t! This is why 
+
+<a  
+    class="link"
+ 
+    href="https://rust-unofficial.github.io/too-many-lists/fifth.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>the unsafe queue</a>
+ in Learn Rust With Entirely Too Many Linked Lists abruptly comes to a halt for a 4000 word delve into miri and stacked borrows! Even something as boring as a linked queue in Ye Olde Rust had confusing and busted semantics.</p>
+<p>(For real read that chapter if you want to understand stacked borrows, I’m not rehashing it here.)</p>
+<p>The fundamental issue is that under our modern understanding of Rust, even <em>creating</em> a reference is making an extremely strong validity assertion and has side-effects on the “borrow stack” which in turn changes which references are considered to invalidate or not. For a reference to <code>T</code> this potentially includes:</p>
+<ul>
+<li>The reference is aligned</li>
+<li>The reference is non-null</li>
+<li>The pointed-to-memory is allocated and has at least <code>size_of::&lt;T&gt;()</code> bytes.</li>
+<li>If T has 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/nomicon/what-unsafe-does.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>invalid values</a>
+, the pointed-to-memory does not contain one.</li>
+</ul>
+<p>The upshot of all of this is that <em>generally</em> you should avoid mixing references and unsafe pointers. Unsafe code should <em>generally</em> provide a safe-referency-interface at its API boundary, and then internally drop the references and try to stay in unsafe pointer land. This way you minimize the strong assertions you make about your sketchy low-level data structures’ memory.</p>
+<p>Ok, simple enough, right?</p>
+<h2 id="23-offsets-and-places-are-a-messoffsets-and-places-are-a-mess">
+
+<a  
+    class="link"
+
+    
+    href="#offsets-and-places-are-a-mess"
+
+
+>2.3 Offsets And Places Are A Mess</a>
+
+</h2><p>So you’re trying to be responsible and stay in unsafe pointer land and it’s time to offset a pointer. That’s easy, we have ptr::offset/add/sub for that! Let’s just offset to this struct’s field… uh… wait what’s that field’s offset?</p>
+<p>Oh Rust just, doesn’t tell me that huh? Well maybe you can do something like:</p>
+<p>Oh no wait that made a reference. Yes even if you immediately cast it to a raw pointer. How the heck do you take an address without creating a reference? Also is it actually fine for me to use a reference to initialize uninit memory? Sort of, sometimes.</p>
+<p>This is a big confusing mess. For a long time we tried to have some kind of “5-second rule” thing where if you converted the reference to a raw pointer “fast enough” then it’s OK but that was pretty clearly untenable for a formal model (I advocated for it, it would have been nice!). So folks came up with 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/rust-lang/rfcs/blob/master/text/2582-raw-reference-mir-operator.md"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>a proper RFC for raw addresses</a>
+ and for a long time we’ve had a hacky 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/stable/std/ptr/macro.addr_of.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>addr_of macro</a>
+ that lets you do this:</p>
+<p>…yeah I hate it too.</p>
+<p>And even that didn’t put the nail in the coffin. There was recently 
+
+<a  
+    class="link"
+ 
+    href="https://lucumr.pocoo.org/2022/1/30/unsafe-rust/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>a post by a very experienced rust developer</a>
+ that basically amounted to confused frustration at the current state of affairs with doing this stuff with 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/nomicon/unchecked-uninit.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>uninitialized memory</a>
+. Meanwhile the <em>actual</em> thing proposed in the RFC 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/rust-lang/rust/issues/64490"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>has seemingly been stalled out for years</a>
+ because the Experts on this stuff are themselves 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/rust-lang/unsafe-code-guidelines/issues/319"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>confused by the corner-cases of addr_of</a>
+.</p>
+<p>And to make it even worse, addr_of also makes it really hard to do a thing people <em>still</em> want which is static 
+
+<a  
+    class="link"
+ 
+    href="https://en.cppreference.com/w/cpp/types/offsetof"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>offsetof</a>
+.</p>
+<p>It is my assertion that a lot of this boils down to two facts:</p>
+<ul>
+<li>Dereferencing Pointers Is Fake Nonsense</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Places</a>
+ Are Extremely Confusing Magic (Rust’s term for lvalues)</li>
+</ul>
+<p>Like if we think about what “dereferencing” a pointer is… it’s actually nothing? Like dereferencing a pointer doesn’t actually <em>do</em> a thing. It puts you in “place expression” mode and lets you specify an offset to subfields/indices of the pointee, and then what <em>actually</em> happens is only specified at the end. e.g.</p>
+<pre tabindex="0"><code>&amp;mut (*ptr).field
+</code></pre><p>This is certainly <em>familiar</em> syntax but it’s genuinely also kind of magical in the exact same way autoderef is in Rust. That is to say, it makes a kind of sense and honestly you just don’t need to think about the fact that it’s happening <em>in safe Rust code</em> because you know the compiler has your back and will help out if anything goes wrong. But in unsafe Rust code? This stuff is way too fuzzy. I literally can’t tell if the indexing is into a slice or an inline array, or if any of those <code>.</code>s is dereferencing stuff implicitly.</p>
+<p>(Also as far as memory-model goes, there’s actually some disagreement on whether dereferencing in-and-of-itself <em>actually</em> has no intrinsic meaning or if it does some validity assertions!)</p>
+<p>As I said before, when you’re doing unsafe pointer stuff you want to <em>stay</em> in that mode. That is currently <em>impossible</em> with this place-expression design, because as soon as you deref you’re kinda in a weird twilight between safe and unsafe!</p>
+<p>Alright and now here is where I start going off the rails and proposing wild overhauls to Rust with almost no regard for “parsing”.</p>
+<h2 id="31-distinguish-pointers-and-addressesdistinguish-pointers-and-addresses">
+
+<a  
+    class="link"
+
+    
+    href="#distinguish-pointers-and-addresses"
+
+
+>3.1 Distinguish Pointers And Addresses</a>
+
+</h2><p>The connection between <code>usize</code> and pointers needs to be completely overhauled, and I would take a chainsaw to it (using proper 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/edition-guide/editions/index.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>editions and deprecation periods</a>
+).</p>
+<p>Here’s the high level look at our tasteful chainsawing:</p>
+<ul>
+<li>Define a distinction between a <em>pointer</em> and an <em>address</em></li>
+<li>Redefine usizes as address-sized, which is &lt;= pointer-sized (and usually ==)</li>
+<li>Define <code>ptr.addr() -&gt; usize</code> and <code>ptr.with_addr(usize) -&gt; ptr</code> methods</li>
+<li>Deprecate <code>usize as ptr</code> and <code>ptr as usize</code></li>
+</ul>
+<p>First off, those definitions. A pointer is still a pointer as we know it, but we now acknowledge that it points into a specific <em>address space</em>. A pointer also contains an <em>address</em> which is conceptually an offset into this address space.</p>
+<p>(For all major architectures <em>and</em> CHERI there is only one address space as far as I’m concerned, but it’s potentially worth opening the door for properly talking about pointers in segmented architectures here. Although regarding x64’s TLS (Thread Local Storage) implementation as a separate address space from the perspective of a thread is probably more honest.)</p>
+<p>A usize is large enough to contain all addresses for all address spaces on that platform. For major architectures, that means a <code>usize</code> is still pointer-sized. For CHERI, that means <code>usize</code> can (and should) be a <code>u64</code> and is equivalent to CHERI’s <code>vaddr_t</code>. To keep things tolerable I think it would be reasonable to still require that <code>usize</code>/<code>isize</code> is the same as <code>size_t</code> and <code>ptrdiff_t</code> in the target’s ABI.</p>
+<p>(Again hopefully this generic definition is useful for segmenting, although I’ve heard nasty rumors of segmented platforms that actually decouple <code>size_t</code> and <code>ptrdiff_t</code> which is horrible and maybe still something we don’t want to support.)</p>
+<p>As a result, someone writing <em>maximally portable</em> Rust must now replace their assumptions:</p>
+<p><code>size_of::&lt;usize&gt;() == size_of::&lt;*mut u8&gt;()</code></p>
+<p>is now:</p>
+<p><code>size_of::&lt;usize&gt;() &lt;= size_of::&lt;*mut u8&gt;()</code></p>
+<p>There should probably be a <code>cfg(target_address_size_is_pointer_size)</code> or something to allow people to specify software is incompatible with <em>weird</em> platforms where the strict equality doesn’t hold.</p>
+<p>I don’t think Rust needs to define a moral equivalent to <code>intptr_t</code>, if the new casting APIs work out as well as I hope – <code>*mut ()</code> is already <code>intptr_t</code> for most valid purposes. As far as I’m aware the <code>intptr_t</code> shenanigans that CHERI does are less “definitely good and desirable” and more “awful hacks to get old code working”. That said, people keep vaguely mentioning memory-mapped hardware as a place where this might be important, but that is outside my domain of expertise (and clearly needs special segment/provenance/capability handling <em>anyway</em>).</p>
+<p>Next off, replacing casts with methods. All casts from raw pointers to/from integers are to be deprecated. This <em>primarily</em> means for isize/usize but for whatever reason rust lets you do <code>ptr as u8</code> too and that is even <em>more</em> gibberish.</p>
+<p>The following new methods would be added:</p>
+<pre tabindex="0"><code>addr_of!((*ptr).field)
+</code></pre><p>Deprecating the casts may seem extreme, but as far as I’m concerned this is the exact same situation as 
+
+<a  
+    class="link"
+ 
+    href="https://gankra.github.io/blah/initialize-me-maybe/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>when we deprecated mem::uninitialized</a>
+. The design of these casts is fundamentally broken under both Pointer Provenance and CHERI. Everyone needs to use a better design that actually has a coherent meaning.</p>
+<p>Now <em>technically</em> you could keep <code>ptr as usize</code> but I think it’s better to replace both for several reasons:</p>
+<ul>
+<li>Getting a deprecation warning for both sides of the cast raises a big red flag to <em>everyone</em> doing anything even vaguely dubious with a usize that they have some thinking to do.</li>
+<li>You can’t hang documentation off of casts. As I hope this post demonstrates, int-ptr stuff is extremely subtle and hairy, and deserves a lot of detailed documentation!</li>
+<li><code>ptr as usize</code> is horribly clunky in practice so destroying it is honestly a mercy.</li>
+<li>Straight-up symmetry/aesthetics. It’s weird to only have one!</li>
+</ul>
+<p>As the documentation notes, the new with_addr method allows us to reconstitute many things:</p>
+<ul>
+<li>What segment the address goes to (hopefully)</li>
+<li><em>Provenance</em> for the purposes of memory models / alias analysis</li>
+<li><em>Metadata</em> for the purposes of CHERI (but this is just a reification of provenance)</li>
+</ul>
+<p>…that it! It just fixes the issue. That’s all you need to fix provenance and CHERI! (And maybe also support segmenting.)</p>
+<p>(In reality there might need to be some more special APIs added to satisfy the existing Jank uses of ptr-int conversions, but that really needs to be shaken out on crates.io and with the community.)</p>
+<blockquote>
+<p>Unclear detail: is get_addr/with_addr also necessary/useful for 
+
+<a  
+    class="link"
+ 
+    href="https://www.qualcomm.com/media/documents/files/whitepaper-pointer-authentication-on-armv8-3.pdf"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>ARMv8.3 Pointer Authentication</a>
+? This is a technology that 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/apple/llvm-project/blob/next/clang/docs/PointerAuthentication.rst"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Apple ships</a>
+ and involves some pointers getting signed/obfuscated to make it a bit harder to do memory-safety exploits. I haven’t looked into it enough to know what level of abstraction this “leaks” into. I just know about it because it shows up in minidumps and we have to 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/rust-minidump/rust-minidump/blob/7eed71e4075e0a81696ccc307d6ac68920de5db5/minidump-processor/src/stackwalker/arm64.rs#L252"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>hackily try to strip it out</a>
+.</p></blockquote>
+<h2 id="32-fixing-places-and-offsetsfixing-places-and-offsets">
+
+<a  
+    class="link"
+
+    
+    href="#fixing-places-and-offsets"
+
+
+>3.2 Fixing Places and Offsets</a>
+
+</h2><p>Ok here’s a two-part combo of syntactic niceties to make it a lot easier to work with unsafe pointers. I am almost <em>certain</em> that I’m going to run afoul of parser ambiguities somewhere here but hey this isn’t a real RFC and I get to make the rules. Maybe it works fine. Maybe it can be fixed in an edition. Let’s find out!</p>
+<p>Hey Did You Know Rust 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/rust-lang/reference/pull/1149"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Never Actually</a>
+ Removed Tilde (<code>~</code>) From 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/nightly/reference/tokens.html#punctuation"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>The Syntax</a>
+?</p>
+<p>Did you also know that <code>~</code> was one of the things that originally drew me to messing around with Rust back in like 2014, and that I was very sad to learn that it was already being removed?</p>
+<p>Well today I get my justice. Today I return <code>~</code> to its position of glory that is <em>deserved</em>.</p>
+<p>Here is my grand vision that will solve all of Rust’s woes around “staying in unsafe pointer mode” and just generally dealing with offsets: If you write <code>my_ptr~field</code> (in analogy to <code>my_struct.field</code>) it always does a raw pointer offset and doesn’t change the level of indirection (but does change the pointee’s type).</p>
+<p>Note that this is <em>different</em> from C’s <code>-&gt;</code> in that <code>ptr-&gt;field</code> is <code>(*ptr).field</code> and therefore puts in you “place expression” mode. Nested <code>-&gt;</code>’s are actual <em>loads</em> from memory (because you need to get the address to start the next level of offsets from). <code>~</code> will never cause an implicit load/store because it doesn’t change levels of indirection or enter “place expression” mode. It is <em>purely</em> sugar for:</p>
+<pre tabindex="0"><code>(*ptr).field1.field2[i].field4;     // load
+(*ptr).field1.field2[i].field4 = 5; // store
+&amp;(*ptr).field1.field2[i].field4     // offset (*maybe*)
+</code></pre><p><code>ptr~field~subfield</code> does not need to appeal to “place expressions” and can always be done (and parsed/implemented) as piecewise application of the binary <code>~</code> operator:</p>
+<pre tabindex="0"><code>// Ditto for `*const T`
+
+impl&lt;T: ?Sized&gt; *mut T {
+    /// Gets the &#34;address&#34; portion of the pointer.
+    ///
+    /// On most platforms this is a no-op, as the pointer is just an address,
+    /// and is equivalent to the deprecated `ptr as usize` cast.
+    ///
+    /// On more complicated platforms like CHERI and segmented architectures,
+    /// this may remove some important metadata. See [`with_addr`][] for
+    /// details on this distinction and why it&#39;s important.
+    fn addr(self) -&gt; usize;
+
+    /// Creates a new pointer with the given address.
+    ///
+    /// This replaces the deprecated `usize as ptr` cast, which had
+    /// fundamentally broken semantics because it couldn&#39;t restore 
+    /// *segment* and *provenance*.
+    ///
+    /// A pointer semantically has 3 pieces of information associated with it:
+    ///
+    /// * Segment: The address-space it is part of.
+    /// * Provenance: An allocation (slice) that it is allowed to access.
+    /// * Address: The actual address it points at.
+    ///
+    /// The compiler and hardware need to properly understand all 3 of these
+    /// values at all times to properly execute your code.
+    ///
+    /// Segment and Provenance are implicitly defined by *how* a pointer is
+    /// constructed and generally propagates verbatim to all derived pointers.
+    /// It is therefore *impossible* to convert an address into a pointer
+    /// on its own, because there is no way to know what its segment and
+    /// provenance should be.
+    ///
+    /// By introducing a &#34;representative&#34; pointer into the process we can
+    /// properly construct a new pointer with *its* segment and provenance,
+    /// just as any other derived pointer would. This *should* be equivalent
+    /// to `wrapping_offset`ting the given pointer to the new address. See the
+    /// docs for `wrapping_offset` for the restrictions this applies.
+    ///
+    /// # Example
+    ///
+    /// Here is an example of how to properly use this API to mess around
+    /// with tagged pointers. Here we have a tag in the lowest bit:
+    ///
+    /// ```rust,ignore
+    /// let my_tagged_ptr: *mut T = ...;
+    ///
+    /// // Get the address and do whatever bit tricks we like
+    /// let addr = my_tagged_ptr.addr();
+    /// let has_tag = (addr &amp; 0x1) != 0;
+    /// let real_addr = addr &amp; !0x1;
+    ///
+    /// // Reconstitute a pointer with the new address and use it
+    /// let my_untagged_ptr = my_tagged_ptr.with_addr(real_addr);
+    /// *my_untagged_ptr = ...;
+    /// ```
+    fn with_addr(self, addr: usize) -&gt; Self;
+}
+</code></pre><p>Let’s look at some examples:</p>
+<pre tabindex="0"><code>ptr.cast::&lt;u8&gt;().offset(field_offset).cast::&lt;FieldTy&gt;()
+</code></pre><p>Yes <code>~[idx]</code> is a bit wonky but it’s <em>clear</em> and <em>concise</em> and that’s the most important thing. Note that this is what you would have to do in today’s Rust:</p>
+<pre tabindex="0"><code>let ptr_field = ptr~field;
+let ptr_subfield = ptr_field~subfield;
+</code></pre><p>Or if you’re being clever and trying to leverage the fact that POD types can be initialized without <code>write</code> if your place-expression is derived from a raw pointer dereference:</p>
+<pre tabindex="0"><code>// Some non-POD type with some fields
+struct MyType {
+    field1: bool,
+    field2: Vec, // non-POD!!!
+    field3: [u32; 4],
+}
+
+// Using ~ syntax on a raw pointer to cleanly initialize MaybeUninit
+let init = unsafe {
+    let mut uninit = MaybeUninit::&lt;MyType&gt;::uninit();
+    let ptr = uninit.as_mut_ptr();
+
+    ptr~field1.write(true);
+    ptr~field2.write(vec![]);
+    ptr~field3~[0].write(7);
+    ptr~field3~[1].write(2);
+    ptr~field3~[2].write(12);
+    ptr~field3~[3].write(88);
+
+    uninit.assume_init();
+};
+</code></pre><p>What I <em>really</em> like about the ~ version is that:</p>
+<ul>
+<li>
+<p>It’s all postfix just like we learned is Very Good And Nice with <code>.await</code>! Just look at how nasty <code>addr_of!((*ptr).field2).write(vec![])</code> is!</p>
+</li>
+<li>
+<p>Each <code>~</code> can be evaluated individually – there’s no need for the language to enter a “mode” where it’s evaluating a “place” as far as the programmer is concerned. (The compiler is free to do it that way behind the scenes, you just don’t need to know about it.)</p>
+</li>
+<li>
+<p>Because you <em>stay</em> in raw-pointer mode, it’s much less painful to reach for things like the <code>read</code> and <code>write</code> methods. This makes it just as easy to do more complicated things like <code>read_volatile</code> and doesn’t encourage you to be “clever” and lean on the fact that things happen to be POD. All <code>write</code>s is a very nice kind of <em>mindlessly right</em>.</p>
+</li>
+<li>
+<p>You never have to worry about accidentally tripping over autoderef or any other thing that is nice for safe code but a huge hazard for unsafe code.</p>
+</li>
+<li>
+<p>By getting rid of the <code>(*ptr).</code> “syntactic salt”, programmers are motivated to move to the nicer and more robust new syntax. Yes I <em>really</em> think this syntax is nice! It’s certainly better than <code>-&gt;</code> in C!</p>
+</li>
+</ul>
+<p>We can also conceptually extend this syntax so it’s allowed on types and computes a const offsetof in usize bytes. Note that unlike <code>~</code> on values, this syntax can’t operate “one step at a time” and needs to be evaluated more like “path expressions”. Magic is less concerning in this context because any mistake is a compiler error. Here’s how you might use it to do more “sketchy” offsets:</p>
+<pre tabindex="0"><code>let init = unsafe {
+    let mut uninit = MaybeUninit::&lt;MyType&gt;::uninit();
+    let ptr = uninit.as_mut_ptr();
+
+    addr_of!((*ptr).field1).write(true);
+    addr_of!((*ptr).field2).write(vec![]);
+    addr_of!((*ptr).field3[0]).write(7);
+    addr_of!((*ptr).field3[1]).write(2);
+    addr_of!((*ptr).field3[2]).write(12);
+    addr_of!((*ptr).field3[3]).write(88);
+
+    uninit.assume_init();
+};
+</code></pre><p>I am less passionate about the const offsetof stuff but it <em>seems</em> like it could be made to work and I know people really want that stuff.</p>
+<p>Additional notes:</p>
+<ul>
+<li>It should propagate <code>*const</code> vs <code>*mut</code></li>
+<li>I don’t know if it makes sense or is a good idea but maybe you could use <code>~</code> on actual references and non-references (int, struct, array, tuple…) and not just raw pointers?
+<ul>
+<li>If so, it may be desirable to support <code>val~self</code> as a nicer postfix way to write <code>&amp;mut val as *mut _</code> but this is messy if you support both references and non-references since that would be potentially ambiguous as to whether you want a raw-pointer-to-ref or just raw-pointer.</li>
+</ul>
+</li>
+</ul>
+<p>This is the least well-formed idea in here, but as long as we’re cleaning up raw pointers with nice and clean postfix syntax it would be <em>really</em> nice if we also had postfix deref. Note that because of the whole “creating a reference does magic assertions” thing you <em>can’t</em> provide something like a <code>deref(self) -&gt; &amp;T</code> method that actually has the same semantics as <code>*ptr</code>! Dereferencing raw pointers <em>must</em> have first-class syntax.</p>
+<p>Consider for instance trying to access some multiply-indirected value.</p>
+<p>Today:</p>
+<pre tabindex="0"><code>let init = unsafe {
+    let mut uninit = MaybeUninit::&lt;MyType&gt;::uninit();
+    let ptr = uninit.as_mut_ptr();
+
+    (*ptr).field1 = true;
+    addr_of!((*ptr).field2).write(vec![]);
+    (*ptr).field3[0] = 7;
+    (*ptr).field3[1] = 2;
+    (*ptr).field3[2] = 12;
+    (*ptr).field3[3] = 88;
+
+    uninit.assume_init();
+};
+</code></pre><p>With offset syntax:</p>
+<pre tabindex="0"><code>// Using ~ on a type for const offsetof (usize byte offset)
+const MY_FIELD_OFFSET: usize = MyType~field1~[2];
+
+// If you want this to be syntactically distinct,
+// then we can require some amount of `::`
+//
+// Option A: MyType::~field~[2];
+// Option B: MyType::~field::~[2];
+
+// A pointer to some sketchy memory
+// !!IMPORTANT THAT THIS IS IN BYTES!!
+let ptr: *mut u8 = ...;
+
+// We&#39;re doing evil things, so wrapping_add
+let field_ptr = ptr.wrapping_add(MY_FIELD_OFFSET) as *mut FieldType;
+// use field_ptr somehow...
+</code></pre><p>With offset syntax and reads (remember, we’re staying in pointer mode, so <code>ptr2.read()</code> is loading <code>ptr2</code> from memory, so we can actually keep just using <code>~</code> syntax):</p>
+<pre tabindex="0"><code>addr_of!((*(*(*ptr1).field1.ptr2).ptr3).field4).read()
+</code></pre><p>With postfix deref:</p>
+<pre tabindex="0"><code>(*(*ptr1~field1~ptr2)~ptr3)~field4.read()
+</code></pre><p>(I think I independently came up with this <code>.*</code> syntax but I was very happy to learn that Zig 
+
+<a  
+    class="link"
+ 
+    href="https://ziglang.org/documentation/master/#Pointers"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>actually has it</a>
+, and <code>ptr.* += 1</code> is valid Zig syntax!)</p>
+<p>The ambiguity issue with <code>.*</code> in Rust is that <code>1.</code> is a valid float literal, so stuff like <code>1. * 1.</code> is valid syntax and dangerously close to <code>1.*.1</code>. I certainly can imagine nasty ambiguities!</p>
+<p>One nice thing about the <code>~</code> syntax is that because unary <code>*</code> already binds pretty weakly (which is why we need to do <code>(*ptr).field</code>), if you only need to do one deref, it’s as clean as using normal references:</p>
+<p>So actually the more I write this section the less I’m feeling the <em>need</em> for postfix deref, but in my heart-of-hearts I still want it.</p>
+<p>Oh also you could imagine wanting <code>.&amp;</code> and <code>.&amp;mut</code> but similar syntax messes probably apply.</p>
+<p>Jesus that was a lot.</p>
+<p>I think about unsafe pointers in Rust a lot.</p>
+<p>I wrote this all in one sitting and I really need dinner.</p>
+<p>Head empty only pointers.</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/rust/">Rust</a>
+        
+            <a href="/tags/unsafe/">Unsafe</a>
+        
+    </section>
+
+
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on 2025-01-28T18:26:14&#43;08:00
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">Related content</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/implementing-a-size-bounded-lru-cache-with-expiring-entries-for-my-dns-server-in-rust/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Implementing a Size Bounded Lru Cache With Expiring Entries for My Dns Server in Rust</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/request-coalescing-in-async-rust/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Request coalescing in async Rust</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/how-to-embed-a-static-variable-into-documentation/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">How to Embed a Static Variable Into Documentation</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/failed-to-run-custom-build-command-for-openssl-sys/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Failed to Run Custom Build Command for openssl-sys</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/install-rust-binary-by-cargo/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">使用cargo安装rust二进制文件</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.2760efe2b07bc1f771820787a816b980000936e884b19441806bce1518d37d8c.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

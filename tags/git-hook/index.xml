@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Git Hook on NavyD的个人博客</title><link>/tags/git-hook/</link><description>Recent content in Git Hook on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 19 Feb 2025 23:55:08 +0800</lastBuildDate><atom:link href="/tags/git-hook/index.xml" rel="self" type="application/rss+xml"/><item><title>CI Practice</title><link>/posts/2025/02/ci-practice/</link><pubDate>Tue, 18 Feb 2025 14:04:55 +0800</pubDate><guid>/posts/2025/02/ci-practice/</guid><description>&lt;h2 id="git-hook-manager">git hook manager
+&lt;/h2>&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook"
+target="_blank"
+rel="noopener"
+>evilmartians/lefthook: Fast and powerful Git hooks manager for any type of projects&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/pre-commit/pre-commit"
+target="_blank"
+rel="noopener"
+>pre-commit/pre-commit: A framework for managing and maintaining multi-language pre-commit hooks&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://xfyuan.github.io/2024/06/five-cool-and-surprising-ways-to-configure-lefthook-for-automation-joy/"
+target="_blank"
+rel="noopener"
+>Lefthook 的五种武器&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://evilmartians.com/chronicles/5-cool-and-surprising-ways-to-configure-lefthook-for-automation-joy"
+target="_blank"
+rel="noopener"
+>5 cool (and surprising) ways to configure Lefthook for automation joy&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="lefthook">lefthook
+&lt;/h3>&lt;h4 id="并行">并行
+&lt;/h4>&lt;p>在 pre-commit 时通常会存在检查与修复操作，一个问题，并行处理同一个文件且都尝试更新时，如何处理竞争条件。&lt;/p>
+&lt;p>配置
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/parallel.html#parallel"
+target="_blank"
+rel="noopener"
+>parallel&lt;/a>
+可以让
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/Commands.html#commands"
+target="_blank"
+rel="noopener"
+>&lt;code>commands&lt;/code>&lt;/a>
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/Scripts.html#scripts"
+target="_blank"
+rel="noopener"
+>Scripts&lt;/a>
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/jobs.html#jobs"
+target="_blank"
+rel="noopener"
+>&lt;code>jobs&lt;/code>&lt;/a>
+类型的任务并行，但有时对其中某些特定的任务是需要先后顺序的，如所有的 lint 可以并行，但 fixed 通常需要在 lint 后执行避免竞争&lt;/p>
+&lt;h5 id="jobs">jobs
+&lt;/h5>&lt;p>参考
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/jobs.html#differences-from-commands-and-scripts"
+target="_blank"
+rel="noopener"
+>Differences from Commands and Scripts&lt;/a>
+提供了 job 组的概念，分组后 jobs 并行串行可组合方便&lt;/p>
+&lt;h4 id="run-with-shell">run with shell
+&lt;/h4>&lt;p>在运行命令
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/run.html"
+target="_blank"
+rel="noopener"
+>&lt;code>run: command list&lt;/code>&lt;/a>
+时无法指定 shell，&lt;code>*nix&lt;/code>, &lt;code>windows&lt;/code> 不兼容语法，只能使用
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/Scripts.html"
+target="_blank"
+rel="noopener"
+>scripts&lt;/a>
+文件执行，对于某些简单的命令非常不方便。&lt;/p>
+&lt;p>如检查文件名在 windows 上是否合法参考
+&lt;a
+class="link"
+href="https://github.com/pre-commit/pre-commit-hooks/issues/589"
+target="_blank"
+rel="noopener"
+># Add check for illegal Windows filenames&lt;/a>
+使用 &lt;code>(?i)((^|/)(CON|PRN|AUX|NUL|COM[\d¹²³]|LPT[\d¹²³])(\.|/|$)|[&amp;lt;&amp;gt;:\&amp;quot;\\|?*\x00-\x1F]|/[^/]*[\.\s]/|[^/]*[\.\s]$)&lt;/code> 正则检查时需要创建文件而不能在 yaml 文件中写简单 python 的代码。&lt;/p>
+&lt;p>另外，在 &lt;code>run: command to {staged_files}&lt;/code> 看起来也非常不稳定，使用
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/run.html#quotes"
+target="_blank"
+rel="noopener"
+>quotes&lt;/a>
+处理模板，可能存在转义的问题&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook/issues/953"
+target="_blank"
+rel="noopener"
+># Wrap commands in Git bash on Windows&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook/issues/786"
+target="_blank"
+rel="noopener"
+># Invalid escaping of {staged_files}&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="lint">lint
+&lt;/h2>&lt;h3 id="yaml">yaml
+&lt;/h3>&lt;h4 id="schema">schema
+&lt;/h4>&lt;p>在
+&lt;a
+class="link"
+href="https://www.schemastore.org/json/"
+target="_blank"
+rel="noopener"
+>JSON Schema Store&lt;/a>
+中提供了 schema 结构以方便检查&lt;/p>
+&lt;p>yamllint 不支持验证
+&lt;a
+class="link"
+href="https://github.com/adrienverge/yamllint/issues/37"
+target="_blank"
+rel="noopener"
+>Support to validate against a schema&lt;/a>
+&lt;/p>
+&lt;p>
+&lt;a
+class="link"
+href="https://github.com/redhat-developer/yaml-language-server"
+target="_blank"
+rel="noopener"
+>redhat-developer/yaml-language-server&lt;/a>
+虽然支持验证
+&lt;a
+class="link"
+href="https://github.com/redhat-developer/yaml-language-server#using-inlined-schema"
+target="_blank"
+rel="noopener"
+>Using inlined schema&lt;/a>
+如 &lt;code># yaml-language-server: $schema=&amp;lt;urlToTheSchema&amp;gt;&lt;/code> ，但未提供 cli 接口运行
+&lt;a
+class="link"
+href="https://github.com/redhat-developer/yaml-language-server/issues/535"
+target="_blank"
+rel="noopener"
+>Command Line API/Option&lt;/a>
+&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/3971822/how-do-i-validate-my-yaml-file-from-command-line"
+target="_blank"
+rel="noopener"
+>How do I validate my YAML file from command line?&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="git-commit-message">git commit message
+&lt;/h3>&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/conventional-changelog/commitlint"
+target="_blank"
+rel="noopener"
+>conventional-changelog/commitlint: Lint commit messages&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/commitizen-tools/commitizen"
+target="_blank"
+rel="noopener"
+>commitizen-tools/commitizen: Create committing rules for projects 🚀 auto bump versions ⬆️ and auto changelog generation&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;p>注意：对于非 js 项目 &lt;code>npm install --save-dev @commitlint/config-conventional @commitlint/cli&lt;/code> 是无法使用的&lt;/p></description></item></channel></rss>

@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Git on NavyD的个人博客</title><link>/tags/git/</link><description>Recent content in Git on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 19 Feb 2025 23:55:08 +0800</lastBuildDate><atom:link href="/tags/git/index.xml" rel="self" type="application/rss+xml"/><item><title>CI Practice</title><link>/posts/2025/02/ci-practice/</link><pubDate>Tue, 18 Feb 2025 14:04:55 +0800</pubDate><guid>/posts/2025/02/ci-practice/</guid><description>&lt;h2 id="git-hook-manager">git hook manager
+&lt;/h2>&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook"
+target="_blank"
+rel="noopener"
+>evilmartians/lefthook: Fast and powerful Git hooks manager for any type of projects&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/pre-commit/pre-commit"
+target="_blank"
+rel="noopener"
+>pre-commit/pre-commit: A framework for managing and maintaining multi-language pre-commit hooks&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://xfyuan.github.io/2024/06/five-cool-and-surprising-ways-to-configure-lefthook-for-automation-joy/"
+target="_blank"
+rel="noopener"
+>Lefthook 的五种武器&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://evilmartians.com/chronicles/5-cool-and-surprising-ways-to-configure-lefthook-for-automation-joy"
+target="_blank"
+rel="noopener"
+>5 cool (and surprising) ways to configure Lefthook for automation joy&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="lefthook">lefthook
+&lt;/h3>&lt;h4 id="并行">并行
+&lt;/h4>&lt;p>在 pre-commit 时通常会存在检查与修复操作，一个问题，并行处理同一个文件且都尝试更新时，如何处理竞争条件。&lt;/p>
+&lt;p>配置
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/parallel.html#parallel"
+target="_blank"
+rel="noopener"
+>parallel&lt;/a>
+可以让
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/Commands.html#commands"
+target="_blank"
+rel="noopener"
+>&lt;code>commands&lt;/code>&lt;/a>
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/Scripts.html#scripts"
+target="_blank"
+rel="noopener"
+>Scripts&lt;/a>
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/jobs.html#jobs"
+target="_blank"
+rel="noopener"
+>&lt;code>jobs&lt;/code>&lt;/a>
+类型的任务并行，但有时对其中某些特定的任务是需要先后顺序的，如所有的 lint 可以并行，但 fixed 通常需要在 lint 后执行避免竞争&lt;/p>
+&lt;h5 id="jobs">jobs
+&lt;/h5>&lt;p>参考
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/jobs.html#differences-from-commands-and-scripts"
+target="_blank"
+rel="noopener"
+>Differences from Commands and Scripts&lt;/a>
+提供了 job 组的概念，分组后 jobs 并行串行可组合方便&lt;/p>
+&lt;h4 id="run-with-shell">run with shell
+&lt;/h4>&lt;p>在运行命令
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/run.html"
+target="_blank"
+rel="noopener"
+>&lt;code>run: command list&lt;/code>&lt;/a>
+时无法指定 shell，&lt;code>*nix&lt;/code>, &lt;code>windows&lt;/code> 不兼容语法，只能使用
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/Scripts.html"
+target="_blank"
+rel="noopener"
+>scripts&lt;/a>
+文件执行，对于某些简单的命令非常不方便。&lt;/p>
+&lt;p>如检查文件名在 windows 上是否合法参考
+&lt;a
+class="link"
+href="https://github.com/pre-commit/pre-commit-hooks/issues/589"
+target="_blank"
+rel="noopener"
+># Add check for illegal Windows filenames&lt;/a>
+使用 &lt;code>(?i)((^|/)(CON|PRN|AUX|NUL|COM[\d¹²³]|LPT[\d¹²³])(\.|/|$)|[&amp;lt;&amp;gt;:\&amp;quot;\\|?*\x00-\x1F]|/[^/]*[\.\s]/|[^/]*[\.\s]$)&lt;/code> 正则检查时需要创建文件而不能在 yaml 文件中写简单 python 的代码。&lt;/p>
+&lt;p>另外，在 &lt;code>run: command to {staged_files}&lt;/code> 看起来也非常不稳定，使用
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/run.html#quotes"
+target="_blank"
+rel="noopener"
+>quotes&lt;/a>
+处理模板，可能存在转义的问题&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook/issues/953"
+target="_blank"
+rel="noopener"
+># Wrap commands in Git bash on Windows&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook/issues/786"
+target="_blank"
+rel="noopener"
+># Invalid escaping of {staged_files}&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="lint">lint
+&lt;/h2>&lt;h3 id="yaml">yaml
+&lt;/h3>&lt;h4 id="schema">schema
+&lt;/h4>&lt;p>在
+&lt;a
+class="link"
+href="https://www.schemastore.org/json/"
+target="_blank"
+rel="noopener"
+>JSON Schema Store&lt;/a>
+中提供了 schema 结构以方便检查&lt;/p>
+&lt;p>yamllint 不支持验证
+&lt;a
+class="link"
+href="https://github.com/adrienverge/yamllint/issues/37"
+target="_blank"
+rel="noopener"
+>Support to validate against a schema&lt;/a>
+&lt;/p>
+&lt;p>
+&lt;a
+class="link"
+href="https://github.com/redhat-developer/yaml-language-server"
+target="_blank"
+rel="noopener"
+>redhat-developer/yaml-language-server&lt;/a>
+虽然支持验证
+&lt;a
+class="link"
+href="https://github.com/redhat-developer/yaml-language-server#using-inlined-schema"
+target="_blank"
+rel="noopener"
+>Using inlined schema&lt;/a>
+如 &lt;code># yaml-language-server: $schema=&amp;lt;urlToTheSchema&amp;gt;&lt;/code> ，但未提供 cli 接口运行
+&lt;a
+class="link"
+href="https://github.com/redhat-developer/yaml-language-server/issues/535"
+target="_blank"
+rel="noopener"
+>Command Line API/Option&lt;/a>
+&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/3971822/how-do-i-validate-my-yaml-file-from-command-line"
+target="_blank"
+rel="noopener"
+>How do I validate my YAML file from command line?&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="git-commit-message">git commit message
+&lt;/h3>&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/conventional-changelog/commitlint"
+target="_blank"
+rel="noopener"
+>conventional-changelog/commitlint: Lint commit messages&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/commitizen-tools/commitizen"
+target="_blank"
+rel="noopener"
+>commitizen-tools/commitizen: Create committing rules for projects 🚀 auto bump versions ⬆️ and auto changelog generation&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;p>注意：对于非 js 项目 &lt;code>npm install --save-dev @commitlint/config-conventional @commitlint/cli&lt;/code> 是无法使用的&lt;/p></description></item><item><title>Merge Two Git Repos</title><link>/posts/2021/08/merge-two-git-repos/</link><pubDate>Sun, 08 Aug 2021 01:49:33 +0800</pubDate><guid>/posts/2021/08/merge-two-git-repos/</guid><description>&lt;img src="/posts/2021/08/merge-two-git-repos/2021-08-08-01-49-49.png" alt="Featured image of post Merge Two Git Repos" />&lt;h2 id="问题">问题
+&lt;/h2>&lt;p>从原始博客仓库&lt;code>blog-resources&lt;/code>中迁移所有记录到新的hugo博客仓库&lt;code>navyd.github.io&lt;/code>新文件夹下&lt;code>content/res&lt;/code>中，以后慢慢修改为hugo博客形式。下面是两个仓库的目录结构&lt;/p>
+&lt;pre tabindex="0">&lt;code>../
+- blog-resources/
+- .git/
+- blog.md
+- ...
+- navyd.github.io/
+- .git/
+- content/
+- post/
+- ...
+&lt;/code>&lt;/pre>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/10548919/8566831"
+target="_blank"
+rel="noopener"
+>git merge&lt;/a>
+&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>cd navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git checkout -b blog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git remote add blog-res ../blog-resources
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git fetch blog-res --tags
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git merge --allow-unrelated-histories blog-res/master &lt;span style="color:#75715e"># or whichever branch you want to merge&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git remote remove blog-res
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mv test.md content/res &lt;span style="color:#75715e"># 移动之前仓库的文件到res中&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git commit -m &lt;span style="color:#e6db74">&amp;#39;mv to res folder&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这个方法有个很大的缺点，在merge时会合并到根目录，可能出现冲突，无法自定义合并到子文件夹中，虽然可以提前使用
+&lt;a
+class="link"
+href="https://github.com/newren/git-filter-repo"
+target="_blank"
+rel="noopener"
+>git-filter-repo&lt;/a>
+命令：&lt;code>git filter-repo --to-subdirectory-filter blog-res&lt;/code>，但是&lt;code>ubuntu 20.04&lt;/code>无法安装，放弃使用merge的方法&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/merge-two-git-repos/2021-08-08-01-49-49.png"
+width="1151"
+height="976"
+srcset="/posts/2021/08/merge-two-git-repos/2021-08-08-01-49-49_hu_78c16fe54202030a.png 480w, /posts/2021/08/merge-two-git-repos/2021-08-08-01-49-49_hu_e84ae8aea62cdedc.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="117"
+data-flex-basis="283px"
+>&lt;/p>
+&lt;h3 id="注意">注意
+&lt;/h3>&lt;p>如果仓库中存在未被git管理的文件，一定要备份好，&lt;code>git reset --hard&lt;/code>将会完全覆盖这样的文件，无法找回&lt;/p>
+&lt;p>使用&lt;code>git reset --hard &amp;lt;commit_id&amp;gt;&lt;/code>回到合并前的状态。如果操作失误出现大量的&lt;code>untracked files&lt;/code>，可以使用&lt;code>git clean&lt;/code>删除&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 查看可被清除的文件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git clean -n
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 删除文件目录&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git clean -f -d
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果在merge后想要撤消，但是使用&lt;code>git log&lt;/code>找不能合并的记录日志对应的commit id，可以使用&lt;code>git reflog&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ git log
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>commit 0504c8037617b01b6c90183a7b8fcdaf71216411 &lt;span style="color:#f92672">(&lt;/span>HEAD -&amp;gt; main, blog&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Merge: a30ea67 34cef1f
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Author: navyd &amp;lt;dhjnavyd@gmail.com&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Date: Sun Aug &lt;span style="color:#ae81ff">8&lt;/span> 01:39:45 &lt;span style="color:#ae81ff">2021&lt;/span> +0800
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Add &lt;span style="color:#e6db74">&amp;#39;content/res/&amp;#39;&lt;/span> from commit &lt;span style="color:#e6db74">&amp;#39;34cef1f6fe6477181818e55ff468e9a62c7fccbf&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git-subtree-dir: content/res
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git-subtree-mainline: a30ea67efb72183d0d696dc74d9677a98b784035
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git-subtree-split: 34cef1f6fe6477181818e55ff468e9a62c7fccbf
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>commit a30ea67efb72183d0d696dc74d9677a98b784035 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Author: navyd &amp;lt;dhjnavyd@gmail.com&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Date: Sat Aug &lt;span style="color:#ae81ff">7&lt;/span> 00:26:58 &lt;span style="color:#ae81ff">2021&lt;/span> +0800
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> even主题问题
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ git reflog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>0504c80 &lt;span style="color:#f92672">(&lt;/span>HEAD -&amp;gt; main, blog&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>0&lt;span style="color:#f92672">}&lt;/span>: merge blog: Fast-forward
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>1&lt;span style="color:#f92672">}&lt;/span>: reset: moving to a30ea67
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>c9dc62b HEAD@&lt;span style="color:#f92672">{&lt;/span>2&lt;span style="color:#f92672">}&lt;/span>: reset: moving to HEAD~1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>e341955 HEAD@&lt;span style="color:#f92672">{&lt;/span>3&lt;span style="color:#f92672">}&lt;/span>: checkout: moving from blog to main
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>0504c80 &lt;span style="color:#f92672">(&lt;/span>HEAD -&amp;gt; main, blog&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>4&lt;span style="color:#f92672">}&lt;/span>: reset: moving to 0504c80
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>94302ef HEAD@&lt;span style="color:#f92672">{&lt;/span>5&lt;span style="color:#f92672">}&lt;/span>: commit: test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>0504c80 &lt;span style="color:#f92672">(&lt;/span>HEAD -&amp;gt; main, blog&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>6&lt;span style="color:#f92672">}&lt;/span>: reset: moving to 0504c8037617b01b6c90183a7b8fcdaf71216411
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>7&lt;span style="color:#f92672">}&lt;/span>: reset: moving to a30ea67
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>00dc6b8 HEAD@&lt;span style="color:#f92672">{&lt;/span>8&lt;span style="color:#f92672">}&lt;/span>: commit: mv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>1f736a4 HEAD@&lt;span style="color:#f92672">{&lt;/span>9&lt;span style="color:#f92672">}&lt;/span>: reset: moving to 1f736a4272dbd8306d8451bcb9fe5d35ce81878e
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>10&lt;span style="color:#f92672">}&lt;/span>: checkout: moving from main to blog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>e341955 HEAD@&lt;span style="color:#f92672">{&lt;/span>11&lt;span style="color:#f92672">}&lt;/span>: merge blog: Fast-forward
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>12&lt;span style="color:#f92672">}&lt;/span>: checkout: moving from blog to main
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>e341955 HEAD@&lt;span style="color:#f92672">{&lt;/span>13&lt;span style="color:#f92672">}&lt;/span>: commit: remove index.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>c9dc62b HEAD@&lt;span style="color:#f92672">{&lt;/span>14&lt;span style="color:#f92672">}&lt;/span>: commit: mv to old folder
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>e965a30 HEAD@&lt;span style="color:#f92672">{&lt;/span>15&lt;span style="color:#f92672">}&lt;/span>: merge blog-res/master: Merge made by the &lt;span style="color:#e6db74">&amp;#39;recursive&amp;#39;&lt;/span> strategy.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>16&lt;span style="color:#f92672">}&lt;/span>: reset: moving to a30ea67
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>17&lt;span style="color:#f92672">}&lt;/span>: reset: moving to HEAD~
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>e440e06 HEAD@&lt;span style="color:#f92672">{&lt;/span>18&lt;span style="color:#f92672">}&lt;/span>: merge blog-res/master: Merge made by the &lt;span style="color:#e6db74">&amp;#39;recursive&amp;#39;&lt;/span> strategy.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>19&lt;span style="color:#f92672">}&lt;/span>: checkout: moving from main to blog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ git reset --hard id
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>在这里提到
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/14992078/8566831"
+target="_blank"
+rel="noopener"
+>使用git subtree&lt;/a>
+&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>cd navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git checkout -b blog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 添加blog-resources@master&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git subtree add --prefix&lt;span style="color:#f92672">=&lt;/span>content/res ../blog-resources master
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 合并blog到main分支&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git checkout main
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git merge blog
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>完成合并log&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ git log
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>commit 0504c8037617b01b6c90183a7b8fcdaf71216411 &lt;span style="color:#f92672">(&lt;/span>HEAD -&amp;gt; main, blog&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Merge: a30ea67 34cef1f
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Author: navyd &amp;lt;dhjnavyd@gmail.com&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Date: Sun Aug &lt;span style="color:#ae81ff">8&lt;/span> 01:39:45 &lt;span style="color:#ae81ff">2021&lt;/span> +0800
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Add &lt;span style="color:#e6db74">&amp;#39;content/res/&amp;#39;&lt;/span> from commit &lt;span style="color:#e6db74">&amp;#39;34cef1f6fe6477181818e55ff468e9a62c7fccbf&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git-subtree-dir: content/res
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git-subtree-mainline: a30ea67efb72183d0d696dc74d9677a98b784035
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git-subtree-split: 34cef1f6fe6477181818e55ff468e9a62c7fccbf
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/1425892/how-do-you-merge-two-git-repositories"
+target="_blank"
+rel="noopener"
+>How do you merge two Git repositories?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/64966/8566831"
+target="_blank"
+rel="noopener"
+>How to remove local (untracked) files from the current Git working tree&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/2389423/8566831"
+target="_blank"
+rel="noopener"
+>Undo a Git merge that hasn&amp;rsquo;t been pushed yet&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/newren/git-filter-repo"
+target="_blank"
+rel="noopener"
+>newren/git-filter-repo&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://segmentfault.com/a/1190000012002151"
+target="_blank"
+rel="noopener"
+>git subtree教程&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>github actions in hugo</title><link>/posts/2021/08/github-actions-in-hugo/</link><pubDate>Fri, 06 Aug 2021 17:30:53 +0800</pubDate><guid>/posts/2021/08/github-actions-in-hugo/</guid><description>&lt;img src="/posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23.png" alt="Featured image of post github actions in hugo" />&lt;h2 id="问题">问题
+&lt;/h2>&lt;p>使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致&lt;code>git-submodule-in-hugo/你好%20a.png&lt;/code>和&lt;code>git-submodule-in-hugo/你好 a.png&lt;/code>在vscode不同的插件中&lt;code>kisstkondoros.vscode-gutter-preview&lt;/code>, &lt;code>shd101wyy.markdown-preview-enhanced&lt;/code>存在有不同的解析结果，所以不能在文件名中出现空格&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23.png"
+width="1553"
+height="553"
+srcset="/posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23_hu_5fe4de5d163f7f97.png 480w, /posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23_hu_c6ffd11b29303fef.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="280"
+data-flex-basis="673px"
+>&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>在hugo渲染html时，可能也会出现空格的问题，如当前自定义的&lt;code>layouts/_default/_markup/render-link.html&lt;/code>，如果没有使用测试转义，可能导致&lt;code>hasPrefix .Destination $name&lt;/code>不一样的情况。当然，应该不会出现这样的情况，毕竟&lt;code>$name&lt;/code>与&lt;code>.Destination&lt;/code>都是经过hugo转义后的。但是本地不一致的行为影响体验，总之，空格禁用&lt;/p>
+&lt;h2 id="github-action">github action
+&lt;/h2>&lt;p>在github仓库上在hugo build前使用actions检查是否含空格&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">jobs&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">check&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">runs-on&lt;/span>: &lt;span style="color:#ae81ff">ubuntu-20.04&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">steps&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#f92672">uses&lt;/span>: &lt;span style="color:#ae81ff">actions/checkout@master&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Check file names with spaces&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">run&lt;/span>: |&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> # search spaces in all subfolder names
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> if s=$(find content/post | grep &amp;#39; &amp;#39;); then
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> # output to stderr
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> &amp;gt;&amp;amp;2 echo &amp;#34;found spaces in $s&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> exit 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">deploy&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">runs-on&lt;/span>: &lt;span style="color:#ae81ff">ubuntu-20.04&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># dependence check&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">needs&lt;/span>: &lt;span style="color:#ae81ff">check&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.github.com/en/actions/quickstart"
+target="_blank"
+rel="noopener"
+>Quickstart for GitHub Actions&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#creating-dependent-jobs"
+target="_blank"
+rel="noopener"
+>Creating dependent jobs&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>git submodule in hugo</title><link>/posts/2021/08/git-submodule-in-hugo/</link><pubDate>Fri, 06 Aug 2021 16:39:24 +0800</pubDate><guid>/posts/2021/08/git-submodule-in-hugo/</guid><description>&lt;img src="/posts/2021/08/git-submodule-in-hugo/2021-08-06-16-01-30.png" alt="Featured image of post git submodule in hugo" />&lt;h2 id="问题">问题
+&lt;/h2>&lt;p>在使用hugo添加主题时&lt;code>git submodule add https://github.com/olOwOlo/hugo-theme-even themes/even&lt;/code>。在push到github后，过了一晚，不知道为啥启动hugo时出现错误：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>❯ hugo server -D
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start building sites …
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hugo v0.87.0 linux/amd64 BuildDate&lt;span style="color:#f92672">=&lt;/span>unknown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARN 2021/08/06 15:21:17 found no layout file &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">&amp;#34;HTML&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> kind &lt;span style="color:#e6db74">&amp;#34;page&amp;#34;&lt;/span>: You should create a template file which matches Hugo Layouts Lookup Rules &lt;span style="color:#66d9ef">for&lt;/span> this combination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARN 2021/08/06 15:21:17 found no layout file &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">&amp;#34;HTML&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> kind &lt;span style="color:#e6db74">&amp;#34;home&amp;#34;&lt;/span>: You should create a template file which matches Hugo Layouts Lookup Rules &lt;span style="color:#66d9ef">for&lt;/span> this combination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARN 2021/08/06 15:21:17 found no layout file &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">&amp;#34;HTML&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> kind &lt;span style="color:#e6db74">&amp;#34;taxonomy&amp;#34;&lt;/span>: You should create a template file which matches Hugo Layouts Lookup Rules &lt;span style="color:#66d9ef">for&lt;/span> this combination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARN 2021/08/06 15:21:17 found no layout file &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">&amp;#34;HTML&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> kind &lt;span style="color:#e6db74">&amp;#34;section&amp;#34;&lt;/span>: You should create a template file which matches Hugo Layouts Lookup Rules &lt;span style="color:#66d9ef">for&lt;/span> this combination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARN 2021/08/06 15:21:17 found no layout file &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">&amp;#34;HTML&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> kind &lt;span style="color:#e6db74">&amp;#34;taxonomy&amp;#34;&lt;/span>: You should create a template file which matches Hugo Layouts Lookup Rules &lt;span style="color:#66d9ef">for&lt;/span> this combination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> | ZH-CN
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-+--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Pages | &lt;span style="color:#ae81ff">5&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Paginator pages | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Non-page files | &lt;span style="color:#ae81ff">6&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Static files | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Processed images | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Aliases | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Sitemaps | &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Cleaned | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Built in &lt;span style="color:#ae81ff">79&lt;/span> ms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Watching &lt;span style="color:#66d9ef">for&lt;/span> changes in /home/navyd/Workspaces/projects/navyd.github.io/&lt;span style="color:#f92672">{&lt;/span>archetypes,content,layouts&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Watching &lt;span style="color:#66d9ef">for&lt;/span> config changes in /home/navyd/Workspaces/projects/navyd.github.io/config.toml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Environment: &lt;span style="color:#e6db74">&amp;#34;development&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Serving pages from memory
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Running in Fast Render Mode. For full rebuilds on change: hugo server --disableFastRender
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Web Server is available at http://localhost:1313/ &lt;span style="color:#f92672">(&lt;/span>bind address 127.0.0.1&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Press Ctrl+C to stop
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARN 2021/08/06 15:22:00 found no layout file &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">&amp;#34;HTML&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> kind &lt;span style="color:#e6db74">&amp;#34;home&amp;#34;&lt;/span>: You should create a template file which matches Hugo Layouts Lookup Rules &lt;span style="color:#66d9ef">for&lt;/span> this combination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>^C%
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>搜索后发现&lt;code>themes/even&lt;/code>下没有任何文件，使用&lt;code>trash-restore&lt;/code>一看，不会是我什么时候删除了？尝试重新添加失败&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ l themes/even
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total 8.0K
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x &lt;span style="color:#ae81ff">2&lt;/span> navyd navyd 4.0K Aug &lt;span style="color:#ae81ff">6&lt;/span> 01:11 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x &lt;span style="color:#ae81ff">3&lt;/span> navyd navyd 4.0K Aug &lt;span style="color:#ae81ff">6&lt;/span> 15:31 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ trash-restore
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">0&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/data
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/themes
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">2&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/themes/even
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">3&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/index.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">4&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">5&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/ .github
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">6&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/archetypes
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">7&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/config.toml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">8&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/README.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">9&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/static
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">10&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/resources
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>What file to restore &lt;span style="color:#f92672">[&lt;/span>0..10&lt;span style="color:#f92672">]&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ git submodule add https://github.com/olOwOlo/hugo-theme-even themes/even
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&amp;#39;themes/even&amp;#39;&lt;/span> already exists in the index
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>尝试移除submodule时&lt;code>git rm -f themes/even&lt;/code>出错：&lt;code>fatal: pathspec 'themes/even' did not match any files&lt;/code>，幸好github上存在完整的仓库，看下&lt;code>themes/even&lt;/code>是否存在&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/git-submodule-in-hugo/2021-08-06-16-01-30.png"
+width="1551"
+height="523"
+srcset="/posts/2021/08/git-submodule-in-hugo/2021-08-06-16-01-30_hu_32405cf7889843cd.png 480w, /posts/2021/08/git-submodule-in-hugo/2021-08-06-16-01-30_hu_7b903c6ec2e4eb10.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="296"
+data-flex-basis="711px"
+>
+&lt;img src="/posts/2021/08/git-submodule-in-hugo/2021-08-06-16-02-08.png"
+width="1458"
+height="566"
+srcset="/posts/2021/08/git-submodule-in-hugo/2021-08-06-16-02-08_hu_b67b2534a596956c.png 480w, /posts/2021/08/git-submodule-in-hugo/2021-08-06-16-02-08_hu_bd6e53d8f79fcf87.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="257"
+data-flex-basis="618px"
+>&lt;/p>
+&lt;p>github上的&lt;code>themes/even&lt;/code>链接到了原来的even仓库，并不是被删除了。&lt;/p>
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>如果直接&lt;code>git clone &amp;lt;repo&amp;gt;&lt;/code>是不包括submodule的，有两种方式：&lt;/p>
+&lt;ul>
+&lt;li>clone时指定：&lt;code>git clone --recurse-submodules -j8 git://github.com/foo/bar.git&lt;/code>&lt;/li>
+&lt;li>clone后更新：&lt;code>git submodule update --init --recursive&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>由于之前因为even操作rm过git本地仓库，为了避免git出现问题，直接从github clone完整的仓库，有一份完整的备份是多么重要！！仓库中只有main分支是原始的hugo文档，另一个gh-pages分支不需要clone。&lt;/p>
+&lt;p>一行命令：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ git clone -b main --recurse-submodules -j8 git@github.com:NavyD/navyd.github.io.git testgit
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Cloning into &lt;span style="color:#e6db74">&amp;#39;testgit&amp;#39;&lt;/span>...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Enumerating objects: 174, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Counting objects: 100% &lt;span style="color:#f92672">(&lt;/span>174/174&lt;span style="color:#f92672">)&lt;/span>, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Compressing objects: 100% &lt;span style="color:#f92672">(&lt;/span>114/114&lt;span style="color:#f92672">)&lt;/span>, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Total &lt;span style="color:#ae81ff">174&lt;/span> &lt;span style="color:#f92672">(&lt;/span>delta 34&lt;span style="color:#f92672">)&lt;/span>, reused &lt;span style="color:#ae81ff">157&lt;/span> &lt;span style="color:#f92672">(&lt;/span>delta 27&lt;span style="color:#f92672">)&lt;/span>, pack-reused &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Receiving objects: 100% &lt;span style="color:#f92672">(&lt;/span>174/174&lt;span style="color:#f92672">)&lt;/span>, 803.38 KiB | 863.00 KiB/s, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Resolving deltas: 100% &lt;span style="color:#f92672">(&lt;/span>34/34&lt;span style="color:#f92672">)&lt;/span>, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Submodule &lt;span style="color:#e6db74">&amp;#39;themes/even&amp;#39;&lt;/span> &lt;span style="color:#f92672">(&lt;/span>https://github.com/olOwOlo/hugo-theme-even&lt;span style="color:#f92672">)&lt;/span> registered &lt;span style="color:#66d9ef">for&lt;/span> path &lt;span style="color:#e6db74">&amp;#39;themes/even&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Cloning into &lt;span style="color:#e6db74">&amp;#39;/home/navyd/Workspaces/projects/testgit/themes/even&amp;#39;&lt;/span>...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Enumerating objects: 1689, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Total &lt;span style="color:#ae81ff">1689&lt;/span> &lt;span style="color:#f92672">(&lt;/span>delta 0&lt;span style="color:#f92672">)&lt;/span>, reused &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#f92672">(&lt;/span>delta 0&lt;span style="color:#f92672">)&lt;/span>, pack-reused &lt;span style="color:#ae81ff">1689&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Receiving objects: 100% &lt;span style="color:#f92672">(&lt;/span>1689/1689&lt;span style="color:#f92672">)&lt;/span>, 1.74 MiB | 278.00 KiB/s, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Resolving deltas: 100% &lt;span style="color:#f92672">(&lt;/span>984/984&lt;span style="color:#f92672">)&lt;/span>, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Submodule path &lt;span style="color:#e6db74">&amp;#39;themes/even&amp;#39;&lt;/span>: checked out &lt;span style="color:#e6db74">&amp;#39;564697987de962672112b910422682eb6f9c26ba&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/65745209/8566831"
+target="_blank"
+rel="noopener"
+>How to fix the error &lt;code>found no layout file for “HTML” for “page”&lt;/code> in Hugo CMS?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/1260982/8566831"
+target="_blank"
+rel="noopener"
+>How do I remove a submodule?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/16773779/8566831"
+target="_blank"
+rel="noopener"
+>Pull git submodules after cloning project from GitHub&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/4438292/8566831"
+target="_blank"
+rel="noopener"
+>How to “git clone” including submodules?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/4568323/8566831"
+target="_blank"
+rel="noopener"
+>How do I clone a specific Git branch? [duplicate]&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

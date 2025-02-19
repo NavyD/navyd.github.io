@@ -1,0 +1,925 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Rust on NavyD的个人博客</title><link>/tags/rust/</link><description>Recent content in Rust on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 15 Feb 2025 19:22:19 +0800</lastBuildDate><atom:link href="/tags/rust/index.xml" rel="self" type="application/rss+xml"/><item><title>Failed to Run Mise Watch Command on Windows</title><link>/posts/2025/02/failed-to-run-mise-watch-command-on-windows/</link><pubDate>Sat, 15 Feb 2025 16:11:25 +0800</pubDate><guid>/posts/2025/02/failed-to-run-mise-watch-command-on-windows/</guid><description>&lt;p>在使用
+&lt;a
+class="link"
+href="https://github.com/jdx/mise"
+target="_blank"
+rel="noopener"
+>mise&lt;/a>
+运行监控任务&lt;code>mise watch build&lt;/code>时出错：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ mise watch build
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Running: mise run build]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The application panicked (crashed).
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Message: called `Option::unwrap()` on a `None` value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Location: C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\xx-2.0.4\src\file.rs:222
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>Backtrace omitted. Run with RUST_BACKTRACE=1 environment variable to display it.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Run with RUST_BACKTRACE=full to include source snippets.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The application panicked (crashed).
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Message: called `Option::unwrap()` on a `None` value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Location: C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\xx-2.0.4\src\file.rs:222
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>Backtrace omitted. Run with RUST_BACKTRACE=1 environment variable to display it.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Run with RUST_BACKTRACE=full to include source snippets.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The application panicked (crashed).
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Message: called `Option::unwrap()` on a `None` value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Location: C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\xx-2.0.4\src\file.rs:222
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>Backtrace omitted. Run with RUST_BACKTRACE=1 environment variable to display it.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Run with RUST_BACKTRACE=full to include source snippets.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Waiting 10s for processes to exit before stopping...]
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>下面是一些简单的配置信息&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">env&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">_&lt;/span>.&lt;span style="color:#a6e22e">python&lt;/span>.&lt;span style="color:#a6e22e">venv&lt;/span> = { &lt;span style="color:#a6e22e">path&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;.venv&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">create&lt;/span> = &lt;span style="color:#66d9ef">true&lt;/span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">_&lt;/span>.&lt;span style="color:#a6e22e">file&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;.env&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">settings&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">windows_default_inline_shell_args&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;powershell -NoProfile -NonInteractive -Command&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">tasks&lt;/span>.&lt;span style="color:#a6e22e">build&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">run_windows&lt;/span> = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&amp;amp;{ echo first; echo second; }
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">sources&lt;/span> = [&lt;span style="color:#e6db74">&amp;#34;content/posts/**/*.md&amp;#34;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">outputs&lt;/span> = [&lt;span style="color:#e6db74">&amp;#34;data/posts/posts.json&amp;#34;&lt;/span>]
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ mise -V
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>2025.2.3 windows-x64 (2025-02-09)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ watchexec -V
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>watchexec 2.1.2
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>我在
+&lt;a
+class="link"
+href="https://github.com/jdx/xx/blob/5a43124c6f39246ada155d6b46edd3aec787ddcf/src/file.rs#L221"
+target="_blank"
+rel="noopener"
+>xx::file::glob&lt;/a>
+中找到&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> root &lt;span style="color:#f92672">=&lt;/span> input
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .ancestors()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .skip(&lt;span style="color:#ae81ff">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .find(&lt;span style="color:#f92672">|&lt;/span>a&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#f92672">!&lt;/span>&lt;span style="color:#e6db74">&amp;#34;*[{?&amp;#34;&lt;/span>.chars().any(&lt;span style="color:#f92672">|&lt;/span>c&lt;span style="color:#f92672">|&lt;/span> a.to_str().unwrap().contains(c)))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .unwrap()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .to_path_buf();
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>发现是由于&lt;code>input&lt;/code>路径中的最顶级路径中存在任意的&lt;code>*[{?&lt;/code>字符导致的 unwrap 异常，如 &lt;code>\\\\?\\C:\\Users\\xxxx&lt;/code> 。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>assert_eq!(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> std::path::Path::new(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\\\\&lt;/span>&lt;span style="color:#e6db74">?&lt;/span>&lt;span style="color:#ae81ff">\\&lt;/span>&lt;span style="color:#e6db74">C:&lt;/span>&lt;span style="color:#ae81ff">\\&lt;/span>&lt;span style="color:#e6db74">Users&lt;/span>&lt;span style="color:#ae81ff">\\&lt;/span>&lt;span style="color:#e6db74">xxxx&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .ancestors()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .skip(&lt;span style="color:#ae81ff">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .find(&lt;span style="color:#f92672">|&lt;/span>a&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#f92672">!&lt;/span>&lt;span style="color:#e6db74">&amp;#34;*[{?&amp;#34;&lt;/span>.chars().any(&lt;span style="color:#f92672">|&lt;/span>c&lt;span style="color:#f92672">|&lt;/span> a.to_str().unwrap().contains(c))),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> None
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这里吐槽一句，但凡将&lt;code>Option::ok()&lt;/code>转为 &lt;code>Result::Err&lt;/code> 返回错误或使用 &lt;code>Option::unwrap_or_else&lt;/code> 处理错误信息，也不至于浪费许多时间检查问题所在！害得我在源码中打 debug 日志查看是什么 &lt;code>input&lt;/code> 导致的问题。&lt;/p>
+&lt;p>在 mise 源码中只能使用 debug 日志输出大法，没法用 debug 调试，首先当前的 rust debug 体验极差，只有少数基础类型有能被可视化，一个变量稍微包装一下如 &lt;code>AsRef&amp;lt;Path&amp;gt;&lt;/code> 这种类型都无法直观查看值，只有指针地址&amp;hellip;，更别说使用对静态语言在 watch 调用类型函数这种是不可能的（静态分发编译完成后不必要的函数不会被编译，且还有 inline 这种存在），还是 python 好！另外，对于 &lt;code>mise watch build&lt;/code> 这种 mise 调用 &lt;code>watchexec -- mise run build&lt;/code> 再被 watchexec 调用 &lt;code>mise run build&lt;/code> 调用链比较复杂，debug 体验可能不会好，但应该能正常使用，应该，没试过。。。&lt;/p>
+&lt;p>通过日志输出
+&lt;a
+class="link"
+href="/posts/2025/02/failed-to-run-mise-watch-command-on-windows/mise%20watch%20build%20--log-level%20trace%20--%20--log-level%20trace.log"
+>mise log&lt;/a>
+中有&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-log" data-lang="log">DEBUG 1 [src\config\mod.rs:106] Loaded config paths [&amp;#34;\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\mise.toml&amp;#34;, &amp;#34;\\\\?\\C:\\Users\\navyd\\.config\\mise\\config.toml&amp;#34;] from config filenames: [&amp;#34;.bun-version&amp;#34;, &amp;#34;.deno-version&amp;#34;, &amp;#34;.go-version&amp;#34;, &amp;#34;.java-version&amp;#34;, &amp;#34;.node-version&amp;#34;, &amp;#34;.nvmrc&amp;#34;, &amp;#34;.python-version&amp;#34;, &amp;#34;.python-versions&amp;#34;, &amp;#34;.ruby-version&amp;#34;, &amp;#34;.sdkmanrc&amp;#34;, &amp;#34;.swift-version&amp;#34;, &amp;#34;.terraform-version&amp;#34;, &amp;#34;.zig-version&amp;#34;, &amp;#34;Gemfile&amp;#34;, &amp;#34;rust-toolchain.toml&amp;#34;, &amp;#34;.tool-versions&amp;#34;, &amp;#34;.config/mise/conf.d/*.toml&amp;#34;, &amp;#34;.config/mise/config.toml&amp;#34;, &amp;#34;.config/mise.toml&amp;#34;, &amp;#34;.mise/config.toml&amp;#34;, &amp;#34;mise/config.toml&amp;#34;, &amp;#34;.rtx.toml&amp;#34;, &amp;#34;mise.toml&amp;#34;, &amp;#34;.mise.toml&amp;#34;, &amp;#34;.config/mise/config.local.toml&amp;#34;, &amp;#34;.config/mise.local.toml&amp;#34;, &amp;#34;.mise/config.local.toml&amp;#34;, &amp;#34;.rtx.local.toml&amp;#34;, &amp;#34;mise.local.toml&amp;#34;, &amp;#34;.mise.local.toml&amp;#34;]
+&lt;/code>&lt;/pre>&lt;p>发现是
+&lt;a
+class="link"
+href="https://github.com/jdx/mise/blob/0a1b4f58e3a975be40f9bc37299b517972830ae3/src/dirs.rs#L8"
+target="_blank"
+rel="noopener"
+>mise::dir::CWD&lt;/a>
+使用
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/std/env/fn.current_dir.html"
+target="_blank"
+rel="noopener"
+>std::env::current_dir&lt;/a>
+返回了 &lt;code>\\\\?\\C:\\Users\\xxxx&lt;/code> 导致后续的异常，根据文档指出在 windows 上使用
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getcurrentdirectory"
+target="_blank"
+rel="noopener"
+>GetCurrentDirectory function (winbase.h)&lt;/a>
+，虽然其中有提到 &lt;code>\\servername\sharename&lt;/code> 存在这样的形式目录，但我从未见过，且与 &lt;code>\\\\?\\C:\\Users\\xxxx&lt;/code> 不怎么像就未在意，错失先机！&lt;/p>
+&lt;p>我怀疑可能是 mise 的问题，尝试在 mise 源码目录中参考
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/cargo/guide/project-layout.html"
+target="_blank"
+rel="noopener"
+>cargo Package Layout&lt;/a>
+添加一个 bin 可执行命令 &lt;code>src\bin\printenv.rs&lt;/code>，用于打印 cwd 和环境变量&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> println!(&lt;span style="color:#e6db74">&amp;#34;current env dir: &lt;/span>&lt;span style="color:#e6db74">{:?}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>, std::env::current_dir());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> envs &lt;span style="color:#f92672">=&lt;/span> std::env::vars()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .map(&lt;span style="color:#f92672">|&lt;/span>(k, v)&lt;span style="color:#f92672">|&lt;/span> format!(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">{k}&lt;/span>&lt;span style="color:#e6db74">=&lt;/span>&lt;span style="color:#e6db74">{v}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .collect::&lt;span style="color:#f92672">&amp;lt;&lt;/span>Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>_&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .join(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> println!(&lt;span style="color:#e6db74">&amp;#34;all env: &lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">{envs}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后修改部分代码让 &lt;code>mise watch build&lt;/code> 实际改为 &lt;code>watchexec -- target/debug/printenv.exe&lt;/code> 运行，查看
+&lt;a
+class="link"
+href="/posts/2025/02/failed-to-run-mise-watch-command-on-windows/mise%20watch%20build%20printenv.log"
+>printenv.log&lt;/a>
+结果发现 &lt;code>current_dir()&lt;/code> 依然是 &lt;code>\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\mise&lt;/code>。&lt;/p>
+&lt;p>尝试改为运行 python 中的 &lt;code>os.getcwd()&lt;/code> 试试&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> args &lt;span style="color:#f92672">=&lt;/span> vec![&lt;span style="color:#e6db74">&amp;#34;python&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;-c&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">r&lt;/span>&lt;span style="color:#e6db74">#&amp;#34;&amp;#39;import os; print(os.getcwd()); import subprocess; subprocess.check_call([&amp;#34;&amp;#34;&amp;#34;C:/Users/navyd/workspaces/projects/mise/target/debug/printenv.exe&amp;#34;&amp;#34;&amp;#34;], env={})&amp;#39;&amp;#34;#&lt;/span>];
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ .&lt;span style="color:#ae81ff">\t&lt;/span>arget&lt;span style="color:#ae81ff">\d&lt;/span>ebug&lt;span style="color:#ae81ff">\m&lt;/span>ise.exe watch build
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Running: python -c &amp;#39;import os; print(os.getcwd()); import subprocess; subprocess.check_call([&amp;#34;&amp;#34;&amp;#34;C:/Users/navyd/workspaces/projects/mise/target/debug/printenv.exe&amp;#34;&amp;#34;&amp;#34;], env={})&amp;#39;]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mise WARN missing: bun@1.2.2 cargo:cargo-edit@0.13.1 cargo:cargo-insta@1.42.1 cargo:git-cliff@2.8.0 npm:markdownlint-cli@0.44.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>\\?\C:\Users\navyd\workspaces\projects\mise
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>current env dir: Ok(&amp;#34;\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\mise&amp;#34;)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>all env:
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>结果依然是 &lt;code>\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\mise&lt;/code> ，即使我尝试清空所有环境变量运行 printenv 也没用！&lt;/p>
+&lt;h3 id="deepseek">deepseek
+&lt;/h3>&lt;p>我尝试询问 deepseek 有什么建议：&lt;/p>
+&lt;h4 id="human">Human
+&lt;/h4>&lt;p>在 windows 上使用 powershell 运行下面的 python 命令 &lt;code>python -c 'import os; print(os.getcwd())'&lt;/code> ，其输出为 &lt;code>\\?\C:\Users\usernamexxx\workspaces&lt;/code>，为什么会出现 &lt;code>\\?\&lt;/code> 前缀字符，而不是 &lt;code>C:\Users\usernamexxx\workspaces&lt;/code> 呢？&lt;/p>
+&lt;h4 id="assistant">Assistant
+&lt;/h4>&lt;details>
+&lt;summary>Thinking Process (35s):&lt;/summary>
+嗯，用户问在 Windows 的 PowerShell 里运行那个 Python 命令，结果输出有\\?\前缀，而不是直接显示路径。这个问题我需要仔细想想。首先，得回忆一下 Windows 的路径处理机制。
+&lt;p>我记得在 Windows 中，普通的路径长度是有限制的，通常是 260 个字符左右。而如果路径前面加上\?\的话，应该是启用了扩展长度路径，可以支持更长的路径。这种情况下，Python 可能返回的是这种扩展格式的路径，所以才会出现那个前缀。&lt;/p>
+&lt;p>那用户的情况里，为什么会触发这个呢？可能用户当前的工作目录路径本身比较长，或者 Python 在某些情况下自动使用扩展路径。例如，当 Python 检测到路径可能超过限制时，或者当在 PowerShell 中某些配置导致工作目录以扩展形式返回。&lt;/p>
+&lt;p>接下来，我需要确认一下 os.getcwd() 在 Windows 下的行为。查阅 Python 文档的话，可能会发现当路径超过 260 字符时，或者使用某些 API 获取路径时，可能会返回带有\?\的 UNC 路径形式。这可能是因为 Python 内部使用了 GetFinalPathNameByHandle 或类似的函数，返回了这种格式的路径。&lt;/p>
+&lt;p>另外，PowerShell 的环境可能和普通的 cmd 不同。比如，PowerShell 可能默认启用了某些长路径支持，或者执行策略导致 Python 以不同的方式处理路径。也有可能用户的工作目录本身是通过某种方式创建的，比如符号链接或 Junction 点，导致路径被解析为扩展形式。&lt;/p>
+&lt;p>或者，用户可能在使用 Python 时以某种方式激活了长路径支持，比如在注册表中启用了长路径，或者 Python 脚本本身调用了 API 来允许长路径，导致返回的路径带有这个前缀。&lt;/p>
+&lt;p>那解决方案的话，可能需要告诉用户如何避免这种情况。例如，使用 os.path.abspath(&amp;rsquo;.&amp;rsquo;) 代替 os.getcwd()，因为前者可能不会返回扩展路径。或者，检查 Python 的版本，某些版本的 Python 可能在处理路径时有不同的行为。另外，用户如果想去除这个前缀，可以在获取路径后进行处理，替换掉\?\部分。&lt;/p>
+&lt;p>不过，我需要验证这些猜测。比如，在 Python 中，当调用 os.getcwd() 时，是否在某些情况下返回扩展路径。比如，如果当前目录是使用扩展路径打开的，那么返回的路径就会带有这个前缀。或者，如果 PowerShell 启动时的工作目录本身已经是扩展路径，那么 Python 继承了这个路径，导致输出带有前缀。&lt;/p>
+&lt;p>另一个可能性是，PowerShell 本身在某个配置下改变了当前目录的表示方式。比如，当使用 cd 命令进入一个路径时，如果路径很长，PowerShell 可能会自动使用扩展路径。这时候 Python 在获取当前目录时会得到这个格式。&lt;/p>
+&lt;p>为了验证，用户可以在 PowerShell 中运行其他命令，比如 pwd，看看显示的路径是否也有这个前缀。如果 PowerShell 本身的输出没有，那可能是 Python 的问题；如果 PowerShell 也显示同样的前缀，那就是系统环境的问题。&lt;/p>
+&lt;p>此外，检查 Python 的版本也很重要。较新的 Python 版本可能在处理 Windows 路径时更倾向于使用扩展路径，特别是如果系统启用了长路径支持的话。Windows 10 之后版本可以通过组策略启用长路径支持，这可能影响应用程序的行为。&lt;/p>
+&lt;p>总结一下，可能的原因是 Python 在获取当前工作目录时使用了扩展长度的路径格式，导致输出带有\?\前缀。用户可以通过字符串处理去掉这个前缀，或者检查系统设置和 Python 版本，确认是否启用了长路径支持。另外，使用不同的方法获取路径，比如 os.path.abspath(&amp;rsquo;.&amp;rsquo;)，可能得到不同的结果。&lt;/p>
+&lt;/details>
+&lt;p>在 Windows 系统中，当路径长度超过传统限制（260 字符）或某些特定条件触发时，Python 可能返回带有 &lt;code>\\?\&lt;/code> 前缀的&lt;strong>扩展长度路径&lt;/strong>（Extended-Length Path）。以下是详细解释及解决方法：&lt;/p>
+&lt;h4 id="原因分析">&lt;strong>原因分析&lt;/strong>
+&lt;/h4>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>扩展路径前缀 &lt;code>\\?\&lt;/code> 的作用&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>Windows 默认路径长度限制为 &lt;code>MAX_PATH&lt;/code>（约 260 字符）。添加 &lt;code>\\?\&lt;/code> 前缀后，系统允许路径长度扩展至约 &lt;strong>32767 字符&lt;/strong>。&lt;/li>
+&lt;li>该前缀直接告知系统禁用路径规范化（如自动解析符号链接），并绕过长度检查。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Python 的路径获取机制&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>当通过 &lt;code>os.getcwd()&lt;/code> 获取当前目录时，若目录本身是通过扩展路径打开的，或系统/环境启用了长路径支持，Python 可能返回带有 &lt;code>\\?\&lt;/code> 的格式。&lt;/li>
+&lt;li>某些 Python 版本（如 3.6+）在支持长路径的 Windows 系统（如 Win10 1607+）中可能自动使用此格式。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>PowerShell 环境的影响&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>若在 PowerShell 中通过特殊方式（如 &lt;code>cd&lt;/code> 到超长路径或符号链接），可能导致工作目录以扩展路径形式传递到子进程（如 Python）。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h4 id="解决方案">&lt;strong>解决方案&lt;/strong>
+&lt;/h4>&lt;h5 id="1-直接去除前缀适用于路径未超长">1. 直接去除前缀（适用于路径未超长）
+&lt;/h5>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cwd &lt;span style="color:#f92672">=&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>getcwd()&lt;span style="color:#f92672">.&lt;/span>replace(&lt;span style="color:#e6db74">r&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#ae81ff">\\&lt;/span>&lt;span style="color:#e6db74">?&lt;/span>&lt;span style="color:#ae81ff">\\&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>) &lt;span style="color:#75715e"># 移除前缀&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>print(cwd)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h5 id="2-使用-ospathabspath-替代">2. 使用 &lt;code>os.path.abspath('.')&lt;/code> 替代
+&lt;/h5>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>print(os&lt;span style="color:#f92672">.&lt;/span>path&lt;span style="color:#f92672">.&lt;/span>abspath(&lt;span style="color:#e6db74">&amp;#39;.&amp;#39;&lt;/span>)) &lt;span style="color:#75715e"># 通常返回不带前缀的标准路径&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h5 id="3-检查系统长路径支持设置">3. 检查系统长路径支持设置
+&lt;/h5>&lt;ul>
+&lt;li>&lt;strong>启用/禁用长路径支持&lt;/strong>：
+&lt;ol>
+&lt;li>按 &lt;code>Win+R&lt;/code> 输入 &lt;code>gpedit.msc&lt;/code>。&lt;/li>
+&lt;li>导航至：&lt;code>计算机配置 → 管理模板 → 系统 → 文件系统&lt;/code>。&lt;/li>
+&lt;li>检查 &lt;strong>“启用 Win32 长路径”&lt;/strong> 是否启用。若启用，Python 可能更频繁返回扩展路径。&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ul>
+&lt;h5 id="4-在代码中主动规范化路径">4. 在代码中主动规范化路径
+&lt;/h5>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> pathlib &lt;span style="color:#f92672">import&lt;/span> Path
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cwd &lt;span style="color:#f92672">=&lt;/span> Path(os&lt;span style="color:#f92672">.&lt;/span>getcwd())&lt;span style="color:#f92672">.&lt;/span>resolve() &lt;span style="color:#75715e"># 解析符号链接并规范化路径&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>print(cwd)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="验证与调试">&lt;strong>验证与调试&lt;/strong>
+&lt;/h4>&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>在 PowerShell 中检查原始路径&lt;/strong>：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 直接打印当前目录（PowerShell 原生命令）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>pwd
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>若此处也显示 &lt;code>\\?\&lt;/code> 前缀，说明问题源于 PowerShell 环境或系统设置。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>检查 Python 版本和系统更新&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>更新到最新 Python 版本（某些旧版本存在路径处理差异）。&lt;/li>
+&lt;li>确保 Windows 已安装最新更新（长路径支持可能依赖系统版本）。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="总结">&lt;strong>总结&lt;/strong>
+&lt;/h4>&lt;p>&lt;code>\\?\&lt;/code> 前缀是 Windows 对超长路径的兼容性设计。虽然不影响路径有效性，但若需标准格式，可通过代码去除或调整系统设置。建议优先使用 &lt;code>os.path.abspath('.')&lt;/code> 或 &lt;code>pathlib&lt;/code> 库处理路径，以规避此类问题。&lt;/p>
+&lt;h3 id="求证-deepseek">求证 deepseek
+&lt;/h3>&lt;p>显然，这没有什么用，找了 2 个小时还没进展，很烦。&lt;/p>
+&lt;p>但我发现都是使用 watchexec 运行下出现的问题，尝试单独运行：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ watchexec -n python -c &lt;span style="color:#e6db74">&amp;#39;import os; print(os.getcwd()); import subprocess; subprocess.check_call([&amp;#34;&amp;#34;&amp;#34;C:/Users/navyd/workspaces/projects/mise/target/debug/printenv.exe&amp;#34;&amp;#34;&amp;#34;], env={})&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Running: python -c import os; print(os.getcwd()); import subprocess; subprocess.check_call([&amp;#34;&amp;#34;&amp;#34;C:/Users/navyd/workspaces/projects/mise/target/debug/printenv.exe&amp;#34;&amp;#34;&amp;#34;], env={})]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>\\?\C:\Users\navyd\workspaces\projects\navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>current env dir: Ok(&amp;#34;\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io&amp;#34;)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>all env:
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>没想到是 watchexec 出现的问题，参考
+&lt;a
+class="link"
+href="https://github.com/watchexec/watchexec/issues/830"
+target="_blank"
+rel="noopener"
+>UNC paths break CMD commands #830&lt;/a>
+在
+&lt;a
+class="link"
+href="https://github.com/watchexec/watchexec/releases/tag/v2.2.0"
+target="_blank"
+rel="noopener"
+>watchexec CLI v2.2.0&lt;/a>
+被修复。&lt;/p>
+&lt;p>而我目前所用 watchexec 的版本是 &lt;code>2.1.2&lt;/code>，相差仅 1 个版本浪费了我多少精力！！！&lt;/p>
+&lt;h3 id="原因">原因
+&lt;/h3>&lt;p>为何 watchexec 存在
+&lt;a
+class="link"
+href="https://learn.microsoft.com/zh-cn/dotnet/standard/io/file-path-formats#unc-paths"
+target="_blank"
+rel="noopener"
+>UNC 路径&lt;/a>
+这样的问题呢？&lt;/p>
+&lt;p>在
+&lt;a
+class="link"
+href="https://github.com/watchexec/watchexec/pull/858"
+target="_blank"
+rel="noopener"
+>Replace std::fs::canonicalize with dunce::canonicalize #858&lt;/a>
+中使用
+&lt;a
+class="link"
+href="https://crates.io/crates/dunce"
+target="_blank"
+rel="noopener"
+>dunce&lt;/a>
+库中的
+&lt;a
+class="link"
+href="https://docs.rs/dunce/1.0.5/dunce/fn.canonicalize.html"
+target="_blank"
+rel="noopener"
+>dunce::canonicalize&lt;/a>
+代替了
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/std/fs/fn.canonicalize.html"
+target="_blank"
+rel="noopener"
+>std::fs::canonicalize&lt;/a>
+。&lt;/p>
+&lt;p>这是由于 dunce 会尽可能将 Windows UNC 路径转换为 MS-DOS 兼容格式，而 rust 中的 &lt;code>std::fs::canonicalize&lt;/code> 返回的
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file"
+target="_blank"
+rel="noopener"
+>extended length path&lt;/a>
+是 UNC 路径，而非常规 MS-DOS 兼容格式的路径，这才导致在 watchexec 下运行的程序也使用了 UNC 路径，而 mise 中的 &lt;code>xx::file::glob&lt;/code> 显然是不支持 UNC 路径的，所以最后导致 &lt;code>mise watch build&lt;/code> 运行失败。&lt;/p>
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>简单升级一下 watchexec 版本即可正常工作！&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ watchexec -V
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>watchexec 2.3.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ watchexec -n python -c &lt;span style="color:#e6db74">&amp;#39;import os; print(os.getcwd()); import subprocess; subprocess.check_call([&amp;#34;&amp;#34;&amp;#34;C:/Users/navyd/workspaces/projects/mise/target/debug/printenv.exe&amp;#34;&amp;#34;&amp;#34;], env={})&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Running: python -c import os; print(os.getcwd()); import subprocess; subprocess.check_call([&amp;#34;&amp;#34;&amp;#34;C:/Users/navyd/workspaces/projects/mise/target/debug/printenv.exe&amp;#34;&amp;#34;&amp;#34;], env={})]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>C:\Users\navyd\Downloads\watchexec-2.3.0-x86_64-pc-windows-msvc
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>current env dir: Ok(&amp;#34;C:\\Users\\navyd\\Downloads\\watchexec-2.3.0-x86_64-pc-windows-msvc&amp;#34;)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>all env:
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Certificate Verify Failed in Docker</title><link>/posts/archives/rust/certificate-verify-failed-in-docker/</link><pubDate>Sun, 01 May 2022 12:26:57 +0800</pubDate><guid>/posts/archives/rust/certificate-verify-failed-in-docker/</guid><description>&lt;p>在docker中运行编译好的bin时出现ssl certificate verify failed问题：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ binaries
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>2022-05-01T04:25:01Z ERROR binaries&lt;span style="color:#f92672">]&lt;/span> failed to install: error sending request &lt;span style="color:#66d9ef">for&lt;/span> url &lt;span style="color:#f92672">(&lt;/span>https://api.github.com/repos/ClementTsang/bottom/releases/latest&lt;span style="color:#f92672">)&lt;/span>: error trying to connect: error:1416F086:SSL routines:tls_process_server_certificate:certificate verify failed:../ssl/statem/statem_clnt.c:1913: &lt;span style="color:#f92672">(&lt;/span>unable to get local issuer certificate&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>failed to run: install has &lt;span style="color:#ae81ff">1&lt;/span> failed tasks
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>下面是源码&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[tokio::main]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">async&lt;/span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> body &lt;span style="color:#f92672">=&lt;/span> reqwest::ClientBuilder::new()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .build()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .unwrap()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// .get(&amp;#34;https://api.github.com/repos/Dreamacro/clash/releases/latest&amp;#34;)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> .get(&lt;span style="color:#e6db74">&amp;#34;https://www.baidu.com&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .send()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#66d9ef">await&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .unwrap()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .text()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#66d9ef">await&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .unwrap();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> println!(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">{}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>, body);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Cargo.toml配置&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">package&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">name&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;atest&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">version&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.1.0&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">edition&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;2021&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">dependencies&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">reqwest&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.11.10&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">tokio&lt;/span> = { &lt;span style="color:#a6e22e">version&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;1.18.1&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">features&lt;/span> = [&lt;span style="color:#e6db74">&amp;#34;macros&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;rt-multi-thread&amp;#34;&lt;/span>] }
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>调试时返回的Err：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>thread &lt;span style="color:#e6db74">&amp;#39;main&amp;#39;&lt;/span> panicked at &lt;span style="color:#e6db74">&amp;#39;called `Result::unwrap()` on an `Err` value: reqwest::Error { kind: Request, url: Url { scheme: &amp;#34;https&amp;#34;, cannot_be_a_base: false, username: &amp;#34;&amp;#34;, password: None, host: Some(Domain(&amp;#34;www.baidu.com&amp;#34;)), port: None, path: &amp;#34;/&amp;#34;, query: None, fragment: None }, source: hyper::Error(Connect, Ssl(Error { code: ErrorCode(1), cause: Some(Ssl(ErrorStack([Error { code: 337047686, library: &amp;#34;SSL routines&amp;#34;, function: &amp;#34;tls_process_server_certificate&amp;#34;, reason: &amp;#34;certificate verify failed&amp;#34;, file: &amp;#34;../ssl/statem/statem_clnt.c&amp;#34;, line: 1913 }]))) }, X509VerifyResult { code: 20, error: &amp;#34;unable to get local issuer certificate&amp;#34; })) }&amp;#39;&lt;/span>, src/main.rs:55:6
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>开始google时以为是docker内部时区的问题，尝试设置docker容器时区。获取当前时区&lt;code>cat /etc/timezone&lt;/code>，但仍然没有任何作用。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">version&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;3&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">services&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">serviceA&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># environment:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># TZ: &amp;#34;Asia/Shanghai&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">volumes&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#e6db74">&amp;#34;/etc/localtime:/etc/localtime:ro&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>未配置时区尝试直接在rust docker镜像
+&lt;a
+class="link"
+href="https://hub.docker.com/_/rust/"
+target="_blank"
+rel="noopener"
+>rust:1.60&lt;/a>
+中运行是正常的&lt;/p>
+&lt;h3 id="openssl">openssl
+&lt;/h3>&lt;p>想到reqwest依赖openssl，可能是在docker容器中未安装openssl报错：&lt;code>atest: error while loading shared libraries: libssl.so.1.1: cannot open shared object file: No such file or directory&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> rust:1.60 as builder&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> /usr/src/atest&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> . .&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> cargo install --path .&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> ubuntu:20.04&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y openssl &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf /var/lib/apt/lists/*&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>builder /usr/local/cargo/bin/atest /usr/local/bin/atest&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENTRYPOINT&lt;/span> [ &lt;span style="color:#e6db74">&amp;#34;atest&amp;#34;&lt;/span> ]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>尝试运行后出现问题X509VerifyResult。另外在
+&lt;a
+class="link"
+href="https://docs.rs/openssl/0.10.40/openssl/index.html#automatic"
+target="_blank"
+rel="noopener"
+>openssl Automatic&lt;/a>
+中安装&lt;code>pkg-config libssl-dev&lt;/code>也出现一样的问题：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ docker run --rm navyd/atest
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>thread &lt;span style="color:#e6db74">&amp;#39;main&amp;#39;&lt;/span> panicked at &lt;span style="color:#e6db74">&amp;#39;called `Result::unwrap()` on an `Err` value: reqwest::Error { kind: Request, url: Url { scheme: &amp;#34;https&amp;#34;, cannot_be_a_base: false, username: &amp;#34;&amp;#34;, password: None, host: Some(Domain(&amp;#34;www.baidu.com&amp;#34;)), port: None, path: &amp;#34;/&amp;#34;, query: None, fragment: None }, source: hyper::Error(Connect, Ssl(Error { code: ErrorCode(1), cause: Some(Ssl(ErrorStack([Error { code: 337047686, library: &amp;#34;SSL routines&amp;#34;, function: &amp;#34;tls_process_server_certificate&amp;#34;, reason: &amp;#34;certificate verify failed&amp;#34;, file: &amp;#34;../ssl/statem/statem_clnt.c&amp;#34;, line: 1913 }]))) }, X509VerifyResult { code: 20, error: &amp;#34;unable to get local issuer certificate&amp;#34; })) }&amp;#39;&lt;/span>, src/main.rs:10:10
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>note: run with &lt;span style="color:#e6db74">`&lt;/span>RUST_BACKTRACE&lt;span style="color:#f92672">=&lt;/span>1&lt;span style="color:#e6db74">`&lt;/span> environment variable to display a backtrace
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在这里
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/48946036/docker-container-always-shows-ssl-connection-error"
+target="_blank"
+rel="noopener"
+>Docker container always shows ssl connection error&lt;/a>
+发现可能是ssl ca证书的问题，尝试安装&lt;code>ca-certificates&lt;/code>后正常运行了&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> ubuntu:20.04&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>noninteractive apt-get install -y openssl ca-certificates &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf /var/lib/apt/lists/*&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>builder /usr/local/cargo/bin/atest /usr/local/bin/atest&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENTRYPOINT&lt;/span> [ &lt;span style="color:#e6db74">&amp;#34;atest&amp;#34;&lt;/span> ]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外，使用docker-compose时有一个坑点，docker build的镜像构建后不会被docker-compose使用，而是使用之前的缓存，如果&lt;code>docker-compose run atest&lt;/code>未运行build，可能不会更新新的镜像&lt;/p>
+&lt;h3 id="rustls">rustls
+&lt;/h3>&lt;p>在reqwest中提供了features可以不使用openssl，默认的feature为&lt;code>default-tls=[&amp;quot;hyper-tls&amp;quot;, &amp;quot;native-tls-crate&amp;quot;, &amp;quot;__tls&amp;quot;, &amp;quot;tokio-native-tls&amp;quot;]&lt;/code>。如果要使用rustls，需要禁用默认feature，否则将会导致在依赖中还存在openssl依赖：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ cargo tree
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>├── reqwest v0.11.10
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│ ├── hyper v0.14.18
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│ ├── hyper-rustls v0.23.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│ ├── hyper-tls v0.5.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│ │ ├── hyper v0.14.18 &lt;span style="color:#f92672">(&lt;/span>*&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│ │ ├── native-tls v0.2.10
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│ │ │ ├── log v0.4.17 &lt;span style="color:#f92672">(&lt;/span>*&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│ │ │ ├── openssl v0.10.40
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│ │ │ │ ├── openssl-macros v0.1.0 &lt;span style="color:#f92672">(&lt;/span>proc-macro&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│ │ │ │ └── openssl-sys v0.9.73
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│ │ │ │ └── libc v0.2.125
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│ │ │ ├── openssl-probe v0.1.5
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│ │ │ └── openssl-sys v0.9.73 &lt;span style="color:#f92672">(&lt;/span>*&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>禁用默认feature，此时才没有了openssl依赖，
+&lt;a
+class="link"
+href="https://github.com/seanmonstar/reqwest/issues/1099#issuecomment-739417517"
+target="_blank"
+rel="noopener"
+>When rustls-tls feature is enabled, native-tls dependencies are still built.&lt;/a>
+&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">reqwest&lt;/span> = { &lt;span style="color:#a6e22e">version&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.11.10&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">features&lt;/span> = [&lt;span style="color:#e6db74">&amp;#34;rustls-tls&amp;#34;&lt;/span>], &lt;span style="color:#a6e22e">default-features&lt;/span> = &lt;span style="color:#66d9ef">false&lt;/span> }
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>How to Embed a Static Variable Into Documentation</title><link>/posts/archives/rust/how-to-embed-a-static-variable-into-documentation/</link><pubDate>Sat, 13 Nov 2021 00:54:17 +0800</pubDate><guid>/posts/archives/rust/how-to-embed-a-static-variable-into-documentation/</guid><description>&lt;p>在编写rust文档时可能需要用到编译时静态变量的值，如环境变量&lt;code>env!(&amp;quot;CARGO_PKG_NAME&amp;quot;)&lt;/code>等&lt;/p>
+&lt;h2 id="declarative-macros">Declarative Macros
+&lt;/h2>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>macro_rules&lt;span style="color:#f92672">!&lt;/span> impl_foo {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#75715e">$name&lt;/span>:&lt;span style="color:#a6e22e">ident&lt;/span>, &lt;span style="color:#75715e">$sname&lt;/span>:&lt;span style="color:#a6e22e">expr&lt;/span>) &lt;span style="color:#f92672">=&amp;gt;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#[doc = &lt;/span>&lt;span style="color:#e6db74">&amp;#34;Returns a new `&amp;#34;&lt;/span>&lt;span style="color:#75715e">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#[doc = $sname]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#[doc = &lt;/span>&lt;span style="color:#e6db74">&amp;#34;`.&amp;#34;&lt;/span>&lt;span style="color:#75715e">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">myfoo&lt;/span>() -&amp;gt; &lt;span style="color:#75715e">$name&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">42&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> };
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#75715e">$name&lt;/span>:&lt;span style="color:#a6e22e">tt&lt;/span>) &lt;span style="color:#f92672">=&amp;gt;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> impl_foo!(&lt;span style="color:#75715e">$name&lt;/span>, stringify!(&lt;span style="color:#75715e">$name&lt;/span>));
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> };
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>impl_foo!(&lt;span style="color:#66d9ef">u32&lt;/span>);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/43353854/8566831"
+target="_blank"
+rel="noopener"
+>How to embed a Rust macro variable into documentation?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/32956193/8566831"
+target="_blank"
+rel="noopener"
+>How to create a static string at compile time&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/rustdoc/the-doc-attribute.html"
+target="_blank"
+rel="noopener"
+>The rustdoc book: The #[doc] attribute&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.rs/embed-doc-image/0.1.4/src/embed_doc_image/lib.rs.html#297-340"
+target="_blank"
+rel="noopener"
+>impl: Attribute Macro embed_doc_image::embed_doc_image&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Failed to Run Custom Build Command for openssl-sys</title><link>/posts/archives/rust/failed-to-run-custom-build-command-for-openssl-sys/</link><pubDate>Sun, 17 Oct 2021 16:19:48 +0800</pubDate><guid>/posts/archives/rust/failed-to-run-custom-build-command-for-openssl-sys/</guid><description>&lt;p>在编译reqwest一段简单的代码时出现&lt;code>error: failed to run custom build command for openssl-sys v0.9.58&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ cargo check
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Compiling libc v0.2.77
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Checking url v2.1.1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>error: failed to run custom build command &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>openssl-sys v0.9.58&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Caused by:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> process didn&lt;span style="color:#e6db74">&amp;#39;t exit successfully: `/home/navyd/Workspaces/projects/youdao-dict-export/target/debug/build/openssl-sys-bc6e4f996293b8bd/build-script-main` (exit code: 101)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> stdout
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rustc-cfg=const_fn
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=X86_64_UNKNOWN_LINUX_GNU_OPENSSL_LIB_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> X86_64_UNKNOWN_LINUX_GNU_OPENSSL_LIB_DIR unset
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=OPENSSL_LIB_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> OPENSSL_LIB_DIR unset
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=X86_64_UNKNOWN_LINUX_GNU_OPENSSL_INCLUDE_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> X86_64_UNKNOWN_LINUX_GNU_OPENSSL_INCLUDE_DIR unset
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=OPENSSL_INCLUDE_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> OPENSSL_INCLUDE_DIR unset
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=X86_64_UNKNOWN_LINUX_GNU_OPENSSL_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> X86_64_UNKNOWN_LINUX_GNU_OPENSSL_DIR unset
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=OPENSSL_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> OPENSSL_DIR unset
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=OPENSSL_NO_PKG_CONFIG
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=OPENSSL_STATIC
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=OPENSSL_DYNAMIC
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_PATH
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> run pkg_config fail: &amp;#34;Failed to run `\&amp;#34;pkg-config\&amp;#34; \&amp;#34;--libs\&amp;#34; \&amp;#34;--cflags\&amp;#34; \&amp;#34;openssl\&amp;#34;`: No such file or directory (os error 2)&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> stderr
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> thread &amp;#39;&lt;/span>main&lt;span style="color:#e6db74">&amp;#39; panicked at &amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Could not find directory of OpenSSL installation, and this &lt;span style="color:#e6db74">`&lt;/span>-sys&lt;span style="color:#e6db74">`&lt;/span> crate cannot
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> proceed without this knowledge. If OpenSSL is installed and this crate had
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> trouble finding it, you can set the &lt;span style="color:#e6db74">`&lt;/span>OPENSSL_DIR&lt;span style="color:#e6db74">`&lt;/span> environment variable &lt;span style="color:#66d9ef">for&lt;/span> the
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> compilation process.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Make sure you also have the development packages of openssl installed.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> For example, &lt;span style="color:#e6db74">`&lt;/span>libssl-dev&lt;span style="color:#e6db74">`&lt;/span> on Ubuntu or &lt;span style="color:#e6db74">`&lt;/span>openssl-devel&lt;span style="color:#e6db74">`&lt;/span> on Fedora.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> If you&lt;span style="color:#e6db74">&amp;#39;re in a situation where you think the directory *should* be found
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> automatically, please open a bug at https://github.com/sfackler/rust-openssl
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> and include information about your system as well as this message.
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> $HOST = x86_64-unknown-linux-gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> $TARGET = x86_64-unknown-linux-gnu
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> openssl-sys = 0.9.58
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> It looks like you&amp;#39;&lt;/span>re compiling on Linux and also targeting Linux. Currently this
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> requires the &lt;span style="color:#e6db74">`&lt;/span>pkg-config&lt;span style="color:#e6db74">`&lt;/span> utility to find OpenSSL but unfortunately &lt;span style="color:#e6db74">`&lt;/span>pkg-config&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> could not be found. If you have OpenSSL installed you can likely fix this by
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> installing &lt;span style="color:#e6db74">`&lt;/span>pkg-config&lt;span style="color:#e6db74">`&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span>, /home/navyd/.cargo/registry/src/mirrors.sjtug.sjtu.edu.cn-7a04d2510079875b/openssl-sys-0.9.58/build/find_normal.rs:157:5
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> note: run with &lt;span style="color:#e6db74">`&lt;/span>RUST_BACKTRACE&lt;span style="color:#f92672">=&lt;/span>1&lt;span style="color:#e6db74">`&lt;/span> environment variable to display a backtrace
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>warning: build failed, waiting &lt;span style="color:#66d9ef">for&lt;/span> other jobs to finish...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>error: build failed
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>代码&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">use&lt;/span> std::collections::HashMap;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[tokio::main]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">async&lt;/span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() -&amp;gt; Result&lt;span style="color:#f92672">&amp;lt;&lt;/span>(), Box&lt;span style="color:#f92672">&amp;lt;&lt;/span>&lt;span style="color:#66d9ef">dyn&lt;/span> std::error::Error&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> resp &lt;span style="color:#f92672">=&lt;/span> reqwest::get(&lt;span style="color:#e6db74">&amp;#34;https://httpbin.org/ip&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#66d9ef">await&lt;/span>&lt;span style="color:#f92672">?&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .json::&lt;span style="color:#f92672">&amp;lt;&lt;/span>HashMap&lt;span style="color:#f92672">&amp;lt;&lt;/span>String, String&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .&lt;span style="color:#66d9ef">await&lt;/span>&lt;span style="color:#f92672">?&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> println!(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">{:#?}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>, resp);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Ok(())
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>cargo.toml依赖&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">dependencies&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">reqwest&lt;/span> = { &lt;span style="color:#a6e22e">version&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.10&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">features&lt;/span> = [&lt;span style="color:#e6db74">&amp;#34;json&amp;#34;&lt;/span>] }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">tokio&lt;/span> = { &lt;span style="color:#a6e22e">version&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;0.2&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">features&lt;/span> = [&lt;span style="color:#e6db74">&amp;#34;full&amp;#34;&lt;/span>] }
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决方案">解决方案
+&lt;/h2>&lt;p>在
+&lt;a
+class="link"
+href="https://docs.rs/openssl/0.10.36/openssl/#automatic"
+target="_blank"
+rel="noopener"
+>Crate openssl automatic&lt;/a>
+中提到，在ubuntu中可以&lt;code>sudo apt-get install pkg-config libssl-dev&lt;/code>安装依赖&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/sfackler/rust-openssl/issues/1021#issuecomment-441387063"
+target="_blank"
+rel="noopener"
+>Ubuntu 18: failed to run custom build command for &lt;code>openssl-sys v0.9.39&lt;/code>&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>使用cargo安装rust二进制文件</title><link>/posts/archives/rust/install-rust-binary-by-cargo/</link><pubDate>Fri, 01 Oct 2021 01:21:51 +0800</pubDate><guid>/posts/archives/rust/install-rust-binary-by-cargo/</guid><description>&lt;p>&lt;code>cargo install&lt;/code>管理cargo本地的binary类型文件：bin, example targets&lt;/p>
+&lt;h2 id="方法">方法
+&lt;/h2>&lt;h3 id="install">install
+&lt;/h3>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>cargo install evcxr
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="检查更新">检查更新
+&lt;/h3>&lt;p>cargo当前未提供直接的命令对已安装的bin检查版本更新，但是提供了一个&lt;code>cargo search&lt;/code>命令，可以列出bin的最新版本，与install命令组合可以查看是否可以更新了&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ cargo search --limit &lt;span style="color:#ae81ff">1&lt;/span> evcxr
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>evcxr &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;0.11.0&amp;#34;&lt;/span> &lt;span style="color:#75715e"># An Evaluation Context for Rust&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>... and &lt;span style="color:#ae81ff">11&lt;/span> crates more &lt;span style="color:#f92672">(&lt;/span>use --limit N to see more&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ cargo install --list | grep evcxr
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>evcxr v0.10.0:
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外，cargo可以通过安装扩展命令
+&lt;a
+class="link"
+href="https://github.com/nabijaczleweli/cargo-update"
+target="_blank"
+rel="noopener"
+>cargo-update&lt;/a>
+更新&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ cargo install cargo-update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ cargo install-update -l evcxr
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Updating registry &lt;span style="color:#e6db74">&amp;#39;https://rsproxy.cn/crates.io-index&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Package Installed Latest Needs update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>evcxr v0.10.0 v0.11.0 Yes
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/34484361/does-cargo-install-have-an-equivalent-update-command"
+target="_blank"
+rel="noopener"
+>Does cargo install have an equivalent update command?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/cargo/commands/cargo-install.html"
+target="_blank"
+rel="noopener"
+>cargo-install&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/cargo/commands/cargo-search.html"
+target="_blank"
+rel="noopener"
+>cargo-search&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>使用root权限运行cargo test</title><link>/posts/archives/rust/cargo-test-with-root-privilege/</link><pubDate>Wed, 15 Sep 2021 13:34:37 +0800</pubDate><guid>/posts/archives/rust/cargo-test-with-root-privilege/</guid><description>&lt;img src="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-24-35.png" alt="Featured image of post 使用root权限运行cargo test" />&lt;p>在一些系统应用中需要访问root权限的资源，直接运行可能出现权限错误：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ cargo test --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>2021-09-15T05:39:57Z INFO cmd_lib::child&lt;span style="color:#f92672">]&lt;/span> Fatal: can&lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span>t open lock file /run/xtables.lock: Permission denied
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>rust源码使用
+&lt;a
+class="link"
+href="https://crates.io/crates/cmd_lib"
+target="_blank"
+rel="noopener"
+>cmd_lib&lt;/a>
+，编译成&lt;code>std::process&lt;/code>api：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">run&lt;/span>(table: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">str&lt;/span>, chain: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">str&lt;/span>) -&amp;gt; Result&lt;span style="color:#f92672">&amp;lt;&lt;/span>()&lt;span style="color:#f92672">&amp;gt;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> run_cmd! (iptables &lt;span style="color:#f92672">-&lt;/span>t &lt;span style="color:#e6db74">&amp;#34;$table&amp;#34;&lt;/span> &lt;span style="color:#f92672">-&lt;/span>D &lt;span style="color:#66d9ef">OUTPUT&lt;/span> &lt;span style="color:#f92672">-&lt;/span>j &lt;span style="color:#e6db74">&amp;#34;$chain&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>直接上sudo提权出现命令无法找到的问题&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo cargo test --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo: cargo: command not found
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>要解决可以看我之前的文章：
+&lt;a
+class="link"
+href="/posts/archives/linux/how-to-keep-environment-variables-when-using-sudo/"
+>在sudo时如何保持当前环境变量&lt;/a>
+解决了环境权限问题，正常使用iptables，下面的错误并不是iptables权限的问题 忽略&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo -E PATH&lt;span style="color:#f92672">=&lt;/span>$PATH env cargo test --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>2021-09-15T05:45:16Z INFO cmd_lib::child&lt;span style="color:#f92672">]&lt;/span> iptables v1.8.4 &lt;span style="color:#f92672">(&lt;/span>legacy&lt;span style="color:#f92672">)&lt;/span>: Couldn&lt;span style="color:#e6db74">&amp;#39;t load target `CLASH&amp;#39;&lt;/span>:No such file or directory
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外，cargo会不会有解决方法呢？&lt;/p>
+&lt;p>cargo提供了一个配置参数&lt;code>target.&amp;lt;triple&amp;gt;.runner&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>If a runner is provided, executables for the target &amp;lt;triple&amp;gt; will be executed by invoking the specified runner with the actual executable passed as an argument. This applies to cargo run, cargo test and cargo bench commands. By default, compiled executables are executed directly.&lt;/p>&lt;/blockquote>
+&lt;p>可以在cargo的配置文件中添加sudo命令去运行cargo test，cargo的可配置的文件在这：
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/cargo/reference/config.html#hierarchical-structure"
+target="_blank"
+rel="noopener"
+>Hierarchical structure&lt;/a>
+，这里使用&lt;code>your_project/.cargo/config.toml&lt;/code>添加配置：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">target&lt;/span>.&lt;span style="color:#a6e22e">x86_64-unknown-linux-gnu&lt;/span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">runner&lt;/span> = &lt;span style="color:#e6db74">&amp;#39;sudo -E&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意一下，使用sudo要求在ide命令行输入密码，在clion rust运行时将一直被阻塞&lt;code>instantiating tests&lt;/code>，也没有提示输入，可能不支持这种方式。而vscode rust-analyzer是可以正常使用提示输入的&lt;/p>
+&lt;p>&lt;img src="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-24-35.png"
+width="769"
+height="327"
+srcset="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-24-35_hu_8d512fc4c749555b.png 480w, /posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-24-35_hu_8c8465992e10178d.png 1024w"
+loading="lazy"
+alt="clion rust"
+class="gallery-image"
+data-flex-grow="235"
+data-flex-basis="564px"
+>
+&lt;img src="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-28-49.png"
+width="625"
+height="230"
+srcset="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-28-49_hu_9ac0fc033d094202.png 480w, /posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-28-49_hu_541b79ad3906048f.png 1024w"
+loading="lazy"
+alt="vscode rust-analyzer"
+class="gallery-image"
+data-flex-grow="271"
+data-flex-basis="652px"
+>&lt;/p>
+&lt;p>如果是shell还可以使用&lt;code>-S&lt;/code>选项从stdin中密码&lt;code>sudo -S &amp;lt;&amp;lt;&amp;lt; $YOUR_PASS&lt;/code>，使用了环境变量避免了明文密码，但cargo runner无法解析sh语法运行&lt;code>echo PASS | sudo -E&lt;/code>。&lt;/p>
+&lt;p>退一步，如果要是sudo需要输入密码时直接失败不阻塞&lt;code>-n&lt;/code>选项，但配置了&lt;code>sudo -nE&lt;/code>了实际在clion rust是一直失败的，可能是在wsl中使用ssh，sudo的认证是关联了session的，无法在clion remote ssh中执行&lt;code>sudo -v&lt;/code>刷新认证，在clion自带的终端执行也没用，但这个思路应该是没错的。等待后续方案 &lt;!-- TODO -->&lt;/p>
+&lt;p>这里提一下rust所有内置支持target：
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/nightly/rustc/platform-support.html"
+target="_blank"
+rel="noopener"
+>Platform Support&lt;/a>
+，可以使用&lt;code>rustc --print target-list&lt;/code>查看， &lt;code>rustup target list --installed&lt;/code>查看当前安装的target&lt;/p>
+&lt;h2 id="解决方案">解决方案
+&lt;/h2>&lt;p>这两种方法都是可行的，由于需求的不同选择，如在ide中运行test选择cargo配置较好，不用手动输入命令，但是不是所有test都要root权限的，而且有时会存在sudo环境问题，使用root用户运行可能出错。&lt;/p>
+&lt;p>根据最小特权原则，使用sudo单独运行个别测试用例更好&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># alias sudoe=&amp;#39;sudo -E PATH=$PATH env&amp;#39;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudoe cargo test --package $crate --lib -- $module_path --exact --nocapture
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/nix-rust/nix/issues/963"
+target="_blank"
+rel="noopener"
+>cargo test with root privilege #963&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/rust-lang/cargo/issues/5999#issuecomment-419972497"
+target="_blank"
+rel="noopener"
+>Running tests with elevated privileges #5999&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/cargo/reference/config.html?highlight=runner#targettriplerunner"
+target="_blank"
+rel="noopener"
+>The Cargo Book Configuration target.&amp;lt;triple&amp;gt;.runner&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/nightly/rustc/targets/built-in.html"
+target="_blank"
+rel="noopener"
+>rust Built-in Targets&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://superuser.com/questions/67765/sudo-with-password-in-one-command-line"
+target="_blank"
+rel="noopener"
+>sudo with password in one command line?&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Cargo Doc Open Does Not Work in Wsl</title><link>/posts/archives/rust/cargo-doc-open-does-not-work-in-wsl/</link><pubDate>Thu, 26 Aug 2021 16:26:40 +0800</pubDate><guid>/posts/archives/rust/cargo-doc-open-does-not-work-in-wsl/</guid><description>&lt;p>在wsl命令行中使用&lt;code>cargo doc --open&lt;/code>无法在windows端打开&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>在wsl命令行中是可以直接执行windows exe文件的，ubuntu中预置了
+&lt;a
+class="link"
+href="https://github.com/wslutilities/wslu"
+target="_blank"
+rel="noopener"
+>wslu&lt;/a>
+工具，其中的&lt;code>wslview&lt;/code>可以满足要求&lt;/p>
+&lt;blockquote>
+&lt;p>A fake WSL browser that can help you open link in default Windows browser or open files on Windows.&lt;/p>&lt;/blockquote>
+&lt;p>在wsl命令行中使用wslview可以用windows的默认程序打开文件&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 使用默认文本处理程序打开&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wslview test.txt
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>尝试更新wslview为默认浏览器&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ wslview --help
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wslview - Part of wslu, a collection of utilities &lt;span style="color:#66d9ef">for&lt;/span> Windows &lt;span style="color:#ae81ff">10&lt;/span> Windows Subsystem &lt;span style="color:#66d9ef">for&lt;/span> Linux
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Usage: wslview &lt;span style="color:#f92672">(&lt;/span>--register|--unregister|--help|--version&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">[&lt;/span>LINK&lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>For more help &lt;span style="color:#66d9ef">for&lt;/span> wslview, visit the following site: https://github.com/wslutilities/wslu/wiki/wslview
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wslview --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wslu v2.3.6; wslview v06
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wslview --register
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>sudo&lt;span style="color:#f92672">]&lt;/span> password &lt;span style="color:#66d9ef">for&lt;/span> navyd:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ update-alternatives --list x-www-browser
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/usr/bin/wslview
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># empty&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ echo $BROWSER
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ file &lt;span style="color:#66d9ef">$(&lt;/span>which x-www-browser&lt;span style="color:#66d9ef">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/usr/bin/x-www-browser: symbolic link to /etc/alternatives/x-www-browser
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ file /etc/alternatives/x-www-browser
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/etc/alternatives/x-www-browser: symbolic link to /usr/bin/wslview
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ file /usr/bin/wslview
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/usr/bin/wslview: Bourne-Again shell script, ASCII text executable
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ head -n &lt;span style="color:#ae81ff">2&lt;/span> /usr/bin/wslview
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/bin/bash&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># wslu - Windows 10 linux Subsystem Utility&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>可以看到wslview脚本确实成为了wsl中的浏览器，但是cargo依然无法打开，应该是cargo依赖的是环境变量而不是xserver环境。&lt;/p>
+&lt;p>&lt;strong>注意：当前版本&lt;code>wslu v2.3.6; wslview v06&lt;/code>存在无法打开绝对路径bug：
+&lt;a
+class="link"
+href="https://github.com/wslutilities/wslu/issues/118"
+target="_blank"
+rel="noopener"
+>wslview open file by absolute path failed #118&lt;/a>
+&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ wslview /home/panjie/temp/aaa.docx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start : 由于出现以下错误，无法运行此命令: 系统找不到指定的文件。。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>所在位置 行:1 字符: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>+ Start &lt;span style="color:#e6db74">&amp;#34;/home/panjie/temp/aaa.docx&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> + CategoryInfo : InvalidOperation: &lt;span style="color:#f92672">(&lt;/span>:&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">[&lt;/span>Start-Process&lt;span style="color:#f92672">]&lt;/span>，InvalidOperationException
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> + FullyQualifiedErrorId : InvalidOperationException,Microsoft.PowerShell.Commands.StartProcessCommand
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决方案">解决方案
+&lt;/h2>&lt;h3 id="file-protocol">file protocol
+&lt;/h3>&lt;p>以ubuntu为例，创建文件&lt;code>~/open_browser.sh&lt;/code>并添加执行权限，在&lt;code>.bashrc&lt;/code>或&lt;code>.zshrc&lt;/code>中添加下面代码，注意&lt;code>file://///wsl$&lt;/code>不能改为&lt;code>file:///wsl$&lt;/code>。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ~/open_browser.sh&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># chrome&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>browser&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;/mnt/c/Program Files/Google/Chrome/Application/chrome.exe&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 如果不是ubuntu则需要修改对应目录 如果输入$1为相对路径则转为绝对路径&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>file_path&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;file://///wsl&lt;/span>$&lt;span style="color:#e6db74">//Ubuntu&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>&lt;span style="color:#f92672">[[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$1&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">=&lt;/span> /* &lt;span style="color:#f92672">]]&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$1&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">||&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>pwd&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>$1&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$browser &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$file_path&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 执行权限&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>chmod +x ~/open_browser.sh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># .zshrc&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export BROWSER&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$HOME&lt;span style="color:#e6db74">/open_browser.sh&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>cargo还允许配置
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/stable/cargo/reference/config.html#docbrowser"
+target="_blank"
+rel="noopener"
+>&lt;code>doc.browser&lt;/code>&lt;/a>
+覆盖环境变量BROWSER，如在&lt;code>/.cargo/config.toml&lt;/code>或当前项目的config.toml中指定&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">doc&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">browser&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;$HOME/open_browser.sh&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="wslu-wslview">wslu-wslview
+&lt;/h3>&lt;p>从
+&lt;a
+class="link"
+href="https://github.com/wslutilities/wslu/blob/master/src/wslview.sh"
+target="_blank"
+rel="noopener"
+>wslview sh源码&lt;/a>
+上看还是使用了&lt;code>file&lt;/code>协议，功能更强大，但是需要更新默认版本&lt;code>wslu v2.3.6&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>wslview --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># wslu v2.3.6; wslview v06&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 更新wslu&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo add-apt-repository ppa:wslutilities/wslu
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get update &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> sudo apt-get upgrade
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wslview --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># wslu v3.2.2-1; wslview v10&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 在`~/.zshrc`中添加&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export BROWSER&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;wslview&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="http-server">http server
+&lt;/h3>&lt;p>python3自带一个http server，在workspace中运行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># --directory DIRECTORY port&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>python3 -m http.server --directory target/doc/$crate_name &lt;span style="color:#ae81ff">8000&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>--directory&lt;/code>在python3.7可用&lt;/li>
+&lt;li>&lt;code>$crate_name&lt;/code>通常是当前目录名 &lt;code>-&lt;/code> to &lt;code>_&lt;/code>如：a-b -&amp;gt; &lt;code>target/doc/a_b&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/rust-lang/cargo/issues/7557#issuecomment-791320960"
+target="_blank"
+rel="noopener"
+>cargo doc &amp;ndash;open doesn&amp;rsquo;t work in WSL #7557&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/rust-lang/cargo/issues/4966#issuecomment-406584885"
+target="_blank"
+rel="noopener"
+>cargo doc &amp;ndash;open should start a web server to enable keyboard accessibility #4966&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/stable/cargo/commands/cargo-doc.html#documentation-options"
+target="_blank"
+rel="noopener"
+>The Cargo Book cargo-doc(1)&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.python.org/3/library/http.server.html"
+target="_blank"
+rel="noopener"
+>http.server — HTTP servers&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/20204890/8566831"
+target="_blank"
+rel="noopener"
+>Check If Shell Script $1 Is Absolute Or Relative Path [duplicate]&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://en.wikipedia.org/wiki/File_URI_scheme#How_many_slashes?"
+target="_blank"
+rel="noopener"
+>file URI scheme How many slashes?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://superuser.com/a/1600972"
+target="_blank"
+rel="noopener"
+>How can I “open” a file from WSL with the default application?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://askubuntu.com/a/232430"
+target="_blank"
+rel="noopener"
+>What&amp;rsquo;s the difference between x-www-browser and gnome-www-browser?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/wslutilities/wslu"
+target="_blank"
+rel="noopener"
+>wslu&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Pip on </title>
+        <link>/tags/pip/</link>
+        <description>Recent content in Pip on </description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en</language>
+        <lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/pip/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Deploying Python Applications</title>
+        <link>/posts/archives/python/deploying-python-applications/</link>
+        <pubDate>Tue, 17 May 2022 21:19:32 +0800</pubDate>
+        
+        <guid>/posts/archives/python/deploying-python-applications/</guid>
+        <description>&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://cedaei.com/posts/python-poetry-pipx/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Improving Python Dependency Management With pipx and Poetry&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://python-poetry.org/docs/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;poetry&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://pypa.github.io/pipx/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;pipx&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+        </item>
+        <item>
+        <title>Python3 M Pip Install vs Pip3 Install</title>
+        <link>/posts/archives/python/python3-m-pip-install-vs-pip3-install/</link>
+        <pubDate>Mon, 16 May 2022 20:21:10 +0800</pubDate>
+        
+        <guid>/posts/archives/python/python3-m-pip-install-vs-pip3-install/</guid>
+        <description>&lt;p&gt;在安装pipx时的命令为&lt;code&gt;python3 -m pip install --user pipx&lt;/code&gt;，而部分安装时直接使用pip安装&lt;code&gt;pip install ...&lt;/code&gt;。那么这两种方式有什么区别呢？&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://snarky.ca/why-you-should-use-python-m-pip/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Why you should use &lt;code&gt;python -m pip&lt;/code&gt;&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://stackoverflow.com/a/69735896/8566831&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Difference between &amp;lsquo;python -m pip install &lt;package-name&gt;&amp;rsquo; and &amp;lsquo;pip install &lt;package-name&gt;&amp;rsquo;&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://stackoverflow.com/a/60786507/8566831&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;python3 -m pip install VS pip3 install&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+        </item>
+        
+    </channel>
+</rss>

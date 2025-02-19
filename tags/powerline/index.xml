@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Powerline on NavyD的个人博客</title><link>/tags/powerline/</link><description>Recent content in Powerline on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 30 Mar 2023 19:02:41 +0800</lastBuildDate><atom:link href="/tags/powerline/index.xml" rel="self" type="application/rss+xml"/><item><title>Powerline in WSL2</title><link>/posts/2021/10/powerline-in-wsl2/</link><pubDate>Sun, 17 Oct 2021 16:19:48 +0800</pubDate><guid>/posts/2021/10/powerline-in-wsl2/</guid><description>&lt;img src="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02.png" alt="Featured image of post Powerline in WSL2" />&lt;p>在wsl2中使用zsh主题出现乱码时需要安装powerline字体才能显示，windows terminal使用的Cascadia Code字体也支持powerline版本
+&lt;a
+class="link"
+href="https://github.com/microsoft/cascadia-code#installation"
+target="_blank"
+rel="noopener"
+>Cascadia Code&lt;/a>
+，常用的还有
+&lt;a
+class="link"
+href="https://github.com/powerline/fonts"
+target="_blank"
+rel="noopener"
+>powerline/fonts&lt;/a>
+&lt;/p>
+&lt;p>对于Cascadia Code字体下载
+&lt;a
+class="link"
+href="https://github.com/microsoft/cascadia-code/releases"
+target="_blank"
+rel="noopener"
+>microsoft/cascadia-code/releases&lt;/a>
+解压安装即可：&lt;/p>
+&lt;p>&lt;img src="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02.png"
+width="836"
+height="385"
+srcset="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02_hu_4005b900ffdf5d0b.png 480w, /posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02_hu_c0c55995f2f387dc.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="217"
+data-flex-basis="521px"
+>&lt;/p>
+&lt;p>对于powerline字体文件可以使用&lt;code>git clone https://github.com/powerline/fonts.git --depth=1&lt;/code>下载后在管理员权限下执行安装
+&lt;a
+class="link"
+href="https://github.com/powerline/fonts/blob/master/install.ps1"
+target="_blank"
+rel="noopener"
+>install.ps1&lt;/a>
+&lt;/p>
+&lt;h2 id="配置使用">配置使用
+&lt;/h2>&lt;ul>
+&lt;li>
+&lt;p>vscode：在settings.json中添加&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;terminal.integrated.fontFamily&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Cascadia Mono PL&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>windows terminal：在settings.json中添加&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;profiles&amp;#34;&lt;/span>: {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;defaults&amp;#34;&lt;/span>: {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;fontFace&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Cascadia Code PL&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> },
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>
+&lt;a
+class="link"
+href="https://docs.microsoft.com/en-us/windows/terminal/tutorials/powerline-setup"
+target="_blank"
+rel="noopener"
+>Tutorial: Set up Powerline in Windows Terminal&lt;/a>
+&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>
+&lt;a
+class="link"
+href="https://code.visualstudio.com/docs/editor/integrated-terminal#_can-i-use-powerline-fonts-in-the-integrated-terminal"
+target="_blank"
+rel="noopener"
+>Can I use Powerline fonts in the integrated terminal?&lt;/a>
+&lt;/p>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Statistics on NavyD的个人博客</title><link>/tags/statistics/</link><description>Recent content in Statistics on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 30 Mar 2023 19:02:41 +0800</lastBuildDate><atom:link href="/tags/statistics/index.xml" rel="self" type="application/rss+xml"/><item><title>源码分析：代码计数工具及其效率与准确度</title><link>/posts/2021/10/count-lines-of-code/</link><pubDate>Tue, 12 Oct 2021 23:36:56 +0800</pubDate><guid>/posts/2021/10/count-lines-of-code/</guid><description>&lt;img src="https://tokei.rs/b1/github/tinyclub/linux-0.11-lab" alt="Featured image of post 源码分析：代码计数工具及其效率与准确度" />&lt;p>原文地址
+&lt;a
+class="link"
+href="http://tinylab.org/source-code-analysis-the-best-code-counting-tool/"
+target="_blank"
+rel="noopener"
+>tinylab.org&lt;/a>
+&lt;/p>
+&lt;p>本文详细介绍了关于源码统计的 7 大工具，8 类数据，准确度相当，效率相差甚远，rust 和 go 语言展现巨大优势。&lt;/p>
+&lt;h2 id="1-背景">1 背景
+&lt;/h2>&lt;p>源码分析是程序员离不开的话题。无论是研究开源项目，还是平时做各类移植、开发，都避免不了对源码的深入解读。&lt;/p>
+&lt;p>一次偶然的著作权申请需要获取项目代码行数以及代码用到的编程语言，于是有了这一篇。这篇文章主要介绍如何统计项目代码，能用的工具以及它们的优劣。&lt;/p>
+&lt;h2 id="2-wc">2 wc
+&lt;/h2>&lt;p>统计代码行数最直观的想法是用 &lt;code>wc&lt;/code> 统计代码文件的行数。&lt;/p>
+&lt;p>首先得用 &lt;code>find&lt;/code> 工具找出所有源代码，然后再用 &lt;code>wc&lt;/code> 统计，然后删掉空行和评论，以
+&lt;a
+class="link"
+href="https://github.com/tinyclub/linux-0.11-lab"
+target="_blank"
+rel="noopener"
+>Linux 0.11&lt;/a>
+为例，粗略统计如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ git clone https://github.com/tinyclub/linux-0.11-lab.git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ cd linux-0.11-lab/0.11
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ find . -name &lt;span style="color:#e6db74">&amp;#34;*.[hcs]&amp;#34;&lt;/span> | xargs -i cat &lt;span style="color:#f92672">{}&lt;/span> | grep -v &lt;span style="color:#e6db74">&amp;#34;^ *&lt;/span>$&lt;span style="color:#e6db74">&amp;#34;&lt;/span> | grep -v &lt;span style="color:#e6db74">&amp;#34; */\*.*\*/&amp;#34;&lt;/span> | wc -l
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">10816&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>可是我们对于评论的处理过于粗糙，而且漏掉了 Shell 和 Makefile 代码，加上这两个语言：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ find . -name &lt;span style="color:#e6db74">&amp;#34;*.[hcs]&amp;#34;&lt;/span> -or -name *.sh -or -name Makefile | xargs -i cat &lt;span style="color:#f92672">{}&lt;/span> | grep -v &lt;span style="color:#e6db74">&amp;#34;^ *&lt;/span>$&lt;span style="color:#e6db74">&amp;#34;&lt;/span> | grep -v &lt;span style="color:#e6db74">&amp;#34; */\*.*\*/&amp;#34;&lt;/span> | wc -l
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">11356&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>但是，这种临时拼凑的脚本的工作效率和准确度都大打折扣，所以应该有更好的办法？&lt;/p>
+&lt;p>3 cloc &amp;amp; sloccount&lt;/p>
+&lt;p>简单的检索过后发现了 &lt;code>cloc&lt;/code> 和 &lt;code>sloccount&lt;/code>，两款都是用 &lt;code>perl&lt;/code> 编写的，直观的印象是两者首次运行时间都很长。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo apt-get install cloc sloccount
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ cloc .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">106&lt;/span> text files.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">106&lt;/span> unique files.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">4&lt;/span> files ignored.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>http://cloc.sourceforge.net v 1.60 T&lt;span style="color:#f92672">=&lt;/span>0.56 s &lt;span style="color:#f92672">(&lt;/span>181.8 files/s, 24607.5 lines/s&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Language files blank comment code
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>C &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">770&lt;/span> &lt;span style="color:#ae81ff">1034&lt;/span> &lt;span style="color:#ae81ff">6640&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>C/C++ Header &lt;span style="color:#ae81ff">33&lt;/span> &lt;span style="color:#ae81ff">329&lt;/span> &lt;span style="color:#ae81ff">283&lt;/span> &lt;span style="color:#ae81ff">2154&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Assembly &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">164&lt;/span> &lt;span style="color:#ae81ff">209&lt;/span> &lt;span style="color:#ae81ff">1579&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>make &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">97&lt;/span> &lt;span style="color:#ae81ff">59&lt;/span> &lt;span style="color:#ae81ff">449&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Bourne Shell &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">9&lt;/span> &lt;span style="color:#ae81ff">23&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>SUM: &lt;span style="color:#ae81ff">102&lt;/span> &lt;span style="color:#ae81ff">1368&lt;/span> &lt;span style="color:#ae81ff">1594&lt;/span> &lt;span style="color:#ae81ff">10845&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>cloc&lt;/code> 统计出来的纯代码行数为 10845 行，比自己用脚本计算的少一些，可能原因就是部分注释我们未能彻底过滤掉。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sloccount .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Have a non-directory at the top, so creating directory top_dir
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Adding /media/falcon/develop/cloud-lab/labs/linux-0.11-lab/0.11/./Makefile to top_dir
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Adding /media/falcon/develop/cloud-lab/labs/linux-0.11-lab/0.11/./Makefile.head to top_dir
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> boot
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> fs
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> include
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> init
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> kernel
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> lib
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> mm
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> tools
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Categorizing files.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Finding a working MD5 command....
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Found a working MD5 command.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Computing results.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>SLOC Directory SLOC-by-Language &lt;span style="color:#f92672">(&lt;/span>Sorted&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">4355&lt;/span> kernel ansic&lt;span style="color:#f92672">=&lt;/span>3391,asm&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">964&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">2677&lt;/span> fs ansic&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">2677&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">2062&lt;/span> include ansic&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">2062&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">474&lt;/span> boot asm&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">474&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">332&lt;/span> mm ansic&lt;span style="color:#f92672">=&lt;/span>304,asm&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">28&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">208&lt;/span> lib ansic&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">208&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">152&lt;/span> init ansic&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">152&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">22&lt;/span> tools sh&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">22&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">0&lt;/span> top_dir &lt;span style="color:#f92672">(&lt;/span>none&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Totals grouped by language &lt;span style="color:#f92672">(&lt;/span>dominant language first&lt;span style="color:#f92672">)&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ansic: &lt;span style="color:#ae81ff">8794&lt;/span> &lt;span style="color:#f92672">(&lt;/span>85.53%&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asm: &lt;span style="color:#ae81ff">1466&lt;/span> &lt;span style="color:#f92672">(&lt;/span>14.26%&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sh: &lt;span style="color:#ae81ff">22&lt;/span> &lt;span style="color:#f92672">(&lt;/span>0.21%&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Total Physical Source Lines of Code &lt;span style="color:#f92672">(&lt;/span>SLOC&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> 10,282
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Development Effort Estimate, Person-Years &lt;span style="color:#f92672">(&lt;/span>Person-Months&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> 2.31 &lt;span style="color:#f92672">(&lt;/span>27.73&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">(&lt;/span>Basic COCOMO model, Person-Months &lt;span style="color:#f92672">=&lt;/span> 2.4 * &lt;span style="color:#f92672">(&lt;/span>KSLOC**1.05&lt;span style="color:#f92672">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Schedule Estimate, Years &lt;span style="color:#f92672">(&lt;/span>Months&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> 0.74 &lt;span style="color:#f92672">(&lt;/span>8.84&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">(&lt;/span>Basic COCOMO model, Months &lt;span style="color:#f92672">=&lt;/span> 2.5 * &lt;span style="color:#f92672">(&lt;/span>person-months**0.38&lt;span style="color:#f92672">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Estimated Average Number of Developers &lt;span style="color:#f92672">(&lt;/span>Effort/Schedule&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> 3.14
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Total Estimated Cost to Develop &lt;span style="color:#f92672">=&lt;/span> $ 312,121
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">(&lt;/span>average salary &lt;span style="color:#f92672">=&lt;/span> $56,286/year, overhead &lt;span style="color:#f92672">=&lt;/span> 2.40&lt;span style="color:#f92672">)&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>SLOCCount, Copyright &lt;span style="color:#f92672">(&lt;/span>C&lt;span style="color:#f92672">)&lt;/span> 2001-2004 David A. Wheeler
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>SLOCCount is Open Source Software/Free Software, licensed under the GNU GPL.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>SLOCCount comes with ABSOLUTELY NO WARRANTY, and you are welcome to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>redistribute it under certain conditions as specified by the GNU GPL license;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>see the documentation &lt;span style="color:#66d9ef">for&lt;/span> details.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Please credit this data as &lt;span style="color:#e6db74">&amp;#34;generated using David A. Wheeler&amp;#39;s &amp;#39;SLOCCount&amp;#39;.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>sloccount&lt;/code> 按目录统计了不同语言的占比以及整个项目的各语言代码行数，在这个项目上统计出来的 C 语言代码行数跟 &lt;code>cloc&lt;/code> 高度一致，都是 8794 行，但是在统计 Assembly 的时候出现了偏差。&lt;/p>
+&lt;p>很有意思的是， &lt;code>sloccount&lt;/code> 还基于 Basic COCOMO 模型，给出了项目开发所需的人月数估算以及人力投入成本预估。
+&lt;a
+class="link"
+href="https://en.wikipedia.org/wiki/COCOMO"
+target="_blank"
+rel="noopener"
+>COCOMO 模型&lt;/a>
+由 TRW 公司开发，Boehm 提出的结构化成本估算模型。它是一种精确的、易于使用的成本估算方法，例如 Basic COCOMO 模型是用一个以已估算出来的源代码行数 （LOC） 为自变量的函数来计算软件开发工作量。&lt;/p>
+&lt;h2 id="4-loc--tokei">4 loc &amp;amp; tokei
+&lt;/h2>&lt;p>&lt;code>cloc&lt;/code> 与 &lt;code>sloccount&lt;/code> 的慢对于大型项目确实是难以忍受的，所以进一步的检索发现还有 &lt;code>loc&lt;/code> 和 &lt;code>tokei&lt;/code>，两个都用 &lt;code>rust&lt;/code> 语言编写，效率有数十倍到 100 倍左右的提升。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo apt-get install cargo
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ cargo install loc tokei
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ echo &lt;span style="color:#e6db74">&amp;#34;export PATH=\$PATH:~/.cargo/bin&amp;#34;&lt;/span> &amp;gt;&amp;gt; ~/.bashrc
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ . ~/.bashrc
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ loc .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Language Files Lines Blank Comment Code
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">8444&lt;/span> &lt;span style="color:#ae81ff">770&lt;/span> &lt;span style="color:#ae81ff">1035&lt;/span> &lt;span style="color:#ae81ff">6639&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C/C++ Header &lt;span style="color:#ae81ff">33&lt;/span> &lt;span style="color:#ae81ff">2766&lt;/span> &lt;span style="color:#ae81ff">329&lt;/span> &lt;span style="color:#ae81ff">283&lt;/span> &lt;span style="color:#ae81ff">2154&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Assembly &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">1952&lt;/span> &lt;span style="color:#ae81ff">164&lt;/span> &lt;span style="color:#ae81ff">333&lt;/span> &lt;span style="color:#ae81ff">1455&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Makefile &lt;span style="color:#ae81ff">11&lt;/span> &lt;span style="color:#ae81ff">656&lt;/span> &lt;span style="color:#ae81ff">107&lt;/span> &lt;span style="color:#ae81ff">64&lt;/span> &lt;span style="color:#ae81ff">485&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Bourne Shell &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">40&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">22&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Total &lt;span style="color:#ae81ff">103&lt;/span> &lt;span style="color:#ae81ff">13858&lt;/span> &lt;span style="color:#ae81ff">1378&lt;/span> &lt;span style="color:#ae81ff">1725&lt;/span> &lt;span style="color:#ae81ff">10755&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ tokei .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Language Files Lines Code Comments Blanks
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Assembly &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">1952&lt;/span> &lt;span style="color:#ae81ff">1788&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">164&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">8444&lt;/span> &lt;span style="color:#ae81ff">6637&lt;/span> &lt;span style="color:#ae81ff">1037&lt;/span> &lt;span style="color:#ae81ff">770&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C Header &lt;span style="color:#ae81ff">33&lt;/span> &lt;span style="color:#ae81ff">2766&lt;/span> &lt;span style="color:#ae81ff">2143&lt;/span> &lt;span style="color:#ae81ff">294&lt;/span> &lt;span style="color:#ae81ff">329&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Makefile &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">605&lt;/span> &lt;span style="color:#ae81ff">449&lt;/span> &lt;span style="color:#ae81ff">59&lt;/span> &lt;span style="color:#ae81ff">97&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Shell &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">40&lt;/span> &lt;span style="color:#ae81ff">22&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Total &lt;span style="color:#ae81ff">102&lt;/span> &lt;span style="color:#ae81ff">13807&lt;/span> &lt;span style="color:#ae81ff">11039&lt;/span> &lt;span style="color:#ae81ff">1400&lt;/span> &lt;span style="color:#ae81ff">1368&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ tokei --sort Code .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Language Files Lines Code Comments Blanks
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">8444&lt;/span> &lt;span style="color:#ae81ff">6637&lt;/span> &lt;span style="color:#ae81ff">1037&lt;/span> &lt;span style="color:#ae81ff">770&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C Header &lt;span style="color:#ae81ff">33&lt;/span> &lt;span style="color:#ae81ff">2766&lt;/span> &lt;span style="color:#ae81ff">2143&lt;/span> &lt;span style="color:#ae81ff">294&lt;/span> &lt;span style="color:#ae81ff">329&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Assembly &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">1952&lt;/span> &lt;span style="color:#ae81ff">1788&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">164&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Makefile &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">605&lt;/span> &lt;span style="color:#ae81ff">449&lt;/span> &lt;span style="color:#ae81ff">59&lt;/span> &lt;span style="color:#ae81ff">97&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Shell &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">40&lt;/span> &lt;span style="color:#ae81ff">22&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Total &lt;span style="color:#ae81ff">102&lt;/span> &lt;span style="color:#ae81ff">13807&lt;/span> &lt;span style="color:#ae81ff">11039&lt;/span> &lt;span style="color:#ae81ff">1400&lt;/span> &lt;span style="color:#ae81ff">1368&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ tokei -e tools
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Language Files Lines Code Comments Blanks
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Assembly &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">1952&lt;/span> &lt;span style="color:#ae81ff">1788&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">164&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">8444&lt;/span> &lt;span style="color:#ae81ff">6637&lt;/span> &lt;span style="color:#ae81ff">1037&lt;/span> &lt;span style="color:#ae81ff">770&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C Header &lt;span style="color:#ae81ff">33&lt;/span> &lt;span style="color:#ae81ff">2766&lt;/span> &lt;span style="color:#ae81ff">2143&lt;/span> &lt;span style="color:#ae81ff">294&lt;/span> &lt;span style="color:#ae81ff">329&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Makefile &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">605&lt;/span> &lt;span style="color:#ae81ff">449&lt;/span> &lt;span style="color:#ae81ff">59&lt;/span> &lt;span style="color:#ae81ff">97&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Total &lt;span style="color:#ae81ff">101&lt;/span> &lt;span style="color:#ae81ff">13767&lt;/span> &lt;span style="color:#ae81ff">11017&lt;/span> &lt;span style="color:#ae81ff">1390&lt;/span> &lt;span style="color:#ae81ff">1360&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>两者在速度上的提升相当明显，几乎都是秒出结果。不过两者的统计数据也有差异，在主体语言 C 上的统计都还算精准。&lt;/p>
+&lt;p>&lt;code>tokei&lt;/code> 官网宣称其准确度比 &lt;code>loc&lt;/code> 要高，感兴趣的可以看看这里的
+&lt;a
+class="link"
+href="https://github.com/XAMPPRocky/tokei/blob/master/COMPARISON.md"
+target="_blank"
+rel="noopener"
+>对比测试结果&lt;/a>
+。&lt;/p>
+&lt;p>他们都提供了排序（sort）和排除（exclude）功能，exclude 功能可用于排除第三方 SDK 等非本项目原生的代码，这个对于重度使用了第三方库的项目来说非常重要，它能够更真实地呈现项目的本来面貌，也有助于更准确的计算一些启发式的数据，比如后面将要介绍到的 Complexity（软件复杂度）和前面介绍到的 COCOMO（项目成本）。&lt;/p>
+&lt;p>另外，有趣的是 &lt;code>tokei&lt;/code> 还提供了 &lt;code>Badge&lt;/code> 服务，可以类似这样在 &lt;code>Markdown&lt;/code> 中引用：&lt;code>[![](https://tokei.rs/b1/github/tinyclub/linux-0.11-lab)](https://github.com/tinyclub/linux-0.11-lab).&lt;/code>&lt;/p>
+&lt;p>效果为：
+&lt;a
+class="link"
+href="https://github.com/tinyclub/linux-0.11-lab"
+target="_blank"
+rel="noopener"
+>&lt;img src="https://tokei.rs/b1/github/tinyclub/linux-0.11-lab"
+loading="lazy"
+>&lt;/a>
+.&lt;/p>
+&lt;h2 id="5-scc">5 scc
+&lt;/h2>&lt;p>
+&lt;a
+class="link"
+href="https://github.com/boyter/scc"
+target="_blank"
+rel="noopener"
+>scc&lt;/a>
+用 &lt;code>go&lt;/code> 语言撰写，在效率上与 &lt;code>loc&lt;/code> 和 &lt;code>tokei&lt;/code> 相当，但是引入了一个很有意义的 &lt;code>Complexity&lt;/code> 数据，即
+&lt;a
+class="link"
+href="https://en.wikipedia.org/wiki/Cyclomatic_complexity"
+target="_blank"
+rel="noopener"
+>Cyclomatic Complexity&lt;/a>
+，中文翻译为圈复杂度或者环路复杂度，它反应了程序分支数或者环路个数，用于评估
+&lt;a
+class="link"
+href="https://blog.csdn.net/t_1007/article/details/53034408"
+target="_blank"
+rel="noopener"
+>软件复杂度&lt;/a>
+。&lt;/p>
+&lt;p>在
+&lt;a
+class="link"
+href="https://github.com/boyter/scc/releases"
+target="_blank"
+rel="noopener"
+>scc Releases&lt;/a>
+下载一个编译好的版本，试运行如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ scc .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>───────────────────────────────────────────────────────────────────────────────
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Language Files Lines Code Comments Blanks Complexity
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>───────────────────────────────────────────────────────────────────────────────
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>C &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">8444&lt;/span> &lt;span style="color:#ae81ff">6640&lt;/span> &lt;span style="color:#ae81ff">1039&lt;/span> &lt;span style="color:#ae81ff">765&lt;/span> &lt;span style="color:#ae81ff">1452&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>C Header &lt;span style="color:#ae81ff">33&lt;/span> &lt;span style="color:#ae81ff">2766&lt;/span> &lt;span style="color:#ae81ff">2154&lt;/span> &lt;span style="color:#ae81ff">288&lt;/span> &lt;span style="color:#ae81ff">324&lt;/span> &lt;span style="color:#ae81ff">44&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Makefile &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">605&lt;/span> &lt;span style="color:#ae81ff">449&lt;/span> &lt;span style="color:#ae81ff">59&lt;/span> &lt;span style="color:#ae81ff">97&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Assembly &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">1952&lt;/span> &lt;span style="color:#ae81ff">1851&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">101&lt;/span> &lt;span style="color:#ae81ff">26&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>gitignore &lt;span style="color:#ae81ff">3&lt;/span> &lt;span style="color:#ae81ff">11&lt;/span> &lt;span style="color:#ae81ff">11&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Shell &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">40&lt;/span> &lt;span style="color:#ae81ff">22&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">7&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>───────────────────────────────────────────────────────────────────────────────
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Total &lt;span style="color:#ae81ff">105&lt;/span> &lt;span style="color:#ae81ff">13818&lt;/span> &lt;span style="color:#ae81ff">11127&lt;/span> &lt;span style="color:#ae81ff">1396&lt;/span> &lt;span style="color:#ae81ff">1295&lt;/span> &lt;span style="color:#ae81ff">1529&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>───────────────────────────────────────────────────────────────────────────────
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Estimated Cost to Develop $339,072
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Estimated Schedule Effort 10.171895 months
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Estimated People Required 3.948618
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>───────────────────────────────────────────────────────────────────────────────
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>scc&lt;/code> 对 COCOMO 的评估结果跟 &lt;code>sloccount&lt;/code> 接近，同样地，它也有类似排序（&lt;code>--sort&lt;/code>）和排除目录（&lt;code>--exclude-dir&lt;/code>）的功能。&lt;/p>
+&lt;h2 id="6-gocloc">6 gocloc
+&lt;/h2>&lt;p>
+&lt;a
+class="link"
+href="https://github.com/hhatto/gocloc"
+target="_blank"
+rel="noopener"
+>gocloc&lt;/a>
+是用 &lt;code>go&lt;/code> 写的另外一个类 &lt;code>cloc&lt;/code> 工具，速度与 &lt;code>loc&lt;/code> 和 &lt;code>tokei&lt;/code> 相当，这里不做介绍。&lt;/p>
+&lt;h2 id="7-小结">7 小结
+&lt;/h2>&lt;p>综上，以上工具都提供了几个基础数据：&lt;/p>
+&lt;ul>
+&lt;li>Files&lt;/li>
+&lt;li>Lines = Code + Comments + Blanks&lt;/li>
+&lt;li>Code&lt;/li>
+&lt;li>Comments&lt;/li>
+&lt;li>Blanks&lt;/li>
+&lt;/ul>
+&lt;p>但是它们各有各的优势：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>cloc&lt;/code> 和 &lt;code>sloccount&lt;/code> 由系统软件仓库默认集成，可轻松安装，但是效率不行，不适合大型项目。&lt;/li>
+&lt;li>而综合速度和准确度来看，&lt;code>tokei&lt;/code> 优势明显，&lt;code>scc&lt;/code> 和 &lt;code>loc&lt;/code> 其次。&lt;/li>
+&lt;li>就附加功能而言，scc 提供了 Complexity （软件复杂度）这样的特殊功能，而 &lt;code>sloccount&lt;/code> 同 &lt;code>scc&lt;/code> 一样提供了 COCOMO （项目成本）评估。&lt;/li>
+&lt;/ul>
+&lt;p>请大家根据需要进行选择。更多代码计数器的功效请参考其他用户的经验：
+&lt;a
+class="link"
+href="https://boyter.org/posts/why-count-lines-of-code/"
+target="_blank"
+rel="noopener"
+>Why count lines of code?&lt;/a>
+。&lt;/p>
+&lt;p>在 Complexity 和 COCOMO 之外，上述基础数据其实还可以进一步挖掘，比如：&lt;/p>
+&lt;ul>
+&lt;li>Comments of Codes 可以反应代码的注释程度&lt;/li>
+&lt;li>Blanks of Codes 可以反应代码的可阅读性&lt;/li>
+&lt;li>Codes of Files 可以反应代码文件大小的适中程度&lt;/li>
+&lt;/ul>
+&lt;p>做相关研究的同学可以考虑进一步挖掘这块的数据，甚至在现有开源工具的基础上做进一步的改造。&lt;/p>
+&lt;p>其实，除了用法比较，这篇文章抛出了一个非常有趣的问题，那就是为什么用 Rust 和 Go 写出来的 &lt;code>loc&lt;/code>, &lt;code>tokei&lt;/code>, &lt;code>scc&lt;/code> 和 &lt;code>gocloc&lt;/code> 的速度提升这么明显？非常值得进一步探索，可参考
+&lt;a
+class="link"
+href="https://boyter.org/posts/sloc-cloc-code/"
+target="_blank"
+rel="noopener"
+>Sloc Cloc and Code - What happened on the way to faster Cloc&lt;/a>
+&lt;/p></description></item></channel></rss>

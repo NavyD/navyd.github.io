@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Shell on NavyD的个人博客</title><link>/tags/shell/</link><description>Recent content in Shell on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/shell/index.xml" rel="self" type="application/rss+xml"/><item><title>How to Extract a Single File From Tar to a Different Directory</title><link>/posts/2022/11/how-to-extract-a-single-file-from-tar-to-a-different-directory/</link><pubDate>Mon, 21 Nov 2022 17:57:04 +0800</pubDate><guid>/posts/2022/11/how-to-extract-a-single-file-from-tar-to-a-different-directory/</guid><description>&lt;p>在使用tar时如何解压其中某个文件到指定的目录&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>通常使用&lt;code>-C&lt;/code>选项放在后面&lt;code>-f&lt;/code>也没问题，但是当结合指定的解压文件时&lt;code>-C&lt;/code>将失效并解压到当前目录，并不会出现提示&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>curl -L &lt;span style="color:#e6db74">&amp;#34;https://github.com/xxx.tar.gz&amp;#34;&lt;/span> | tar -xzf - --strip-components &lt;span style="color:#ae81ff">1&lt;/span> --wildcards &lt;span style="color:#e6db74">&amp;#39;*/rest-server&amp;#39;&lt;/span> -C ./testdir
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 解压到当前目录&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>正确的方式应该将&lt;code>-C&lt;/code>放在&lt;code>-f&lt;/code>之前&lt;/p>
+&lt;h2 id="方案">方案
+&lt;/h2>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>tar --strip-components &lt;span style="color:#ae81ff">1&lt;/span> --wildcards -C ./testdir -xzf - &lt;span style="color:#e6db74">&amp;#39;*/rest-server&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/9249779/8566831"
+target="_blank"
+rel="noopener"
+>How to extract a single file from tar to a different directory? [closed]&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Powerline in WSL2</title><link>/posts/2021/10/powerline-in-wsl2/</link><pubDate>Sun, 17 Oct 2021 16:19:48 +0800</pubDate><guid>/posts/2021/10/powerline-in-wsl2/</guid><description>&lt;img src="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02.png" alt="Featured image of post Powerline in WSL2" />&lt;p>在wsl2中使用zsh主题出现乱码时需要安装powerline字体才能显示，windows terminal使用的Cascadia Code字体也支持powerline版本
+&lt;a
+class="link"
+href="https://github.com/microsoft/cascadia-code#installation"
+target="_blank"
+rel="noopener"
+>Cascadia Code&lt;/a>
+，常用的还有
+&lt;a
+class="link"
+href="https://github.com/powerline/fonts"
+target="_blank"
+rel="noopener"
+>powerline/fonts&lt;/a>
+&lt;/p>
+&lt;p>对于Cascadia Code字体下载
+&lt;a
+class="link"
+href="https://github.com/microsoft/cascadia-code/releases"
+target="_blank"
+rel="noopener"
+>microsoft/cascadia-code/releases&lt;/a>
+解压安装即可：&lt;/p>
+&lt;p>&lt;img src="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02.png"
+width="836"
+height="385"
+srcset="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02_hu_4005b900ffdf5d0b.png 480w, /posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02_hu_c0c55995f2f387dc.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="217"
+data-flex-basis="521px"
+>&lt;/p>
+&lt;p>对于powerline字体文件可以使用&lt;code>git clone https://github.com/powerline/fonts.git --depth=1&lt;/code>下载后在管理员权限下执行安装
+&lt;a
+class="link"
+href="https://github.com/powerline/fonts/blob/master/install.ps1"
+target="_blank"
+rel="noopener"
+>install.ps1&lt;/a>
+&lt;/p>
+&lt;h2 id="配置使用">配置使用
+&lt;/h2>&lt;ul>
+&lt;li>
+&lt;p>vscode：在settings.json中添加&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;terminal.integrated.fontFamily&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Cascadia Mono PL&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>windows terminal：在settings.json中添加&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;profiles&amp;#34;&lt;/span>: {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;defaults&amp;#34;&lt;/span>: {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;fontFace&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Cascadia Code PL&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> },
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>
+&lt;a
+class="link"
+href="https://docs.microsoft.com/en-us/windows/terminal/tutorials/powerline-setup"
+target="_blank"
+rel="noopener"
+>Tutorial: Set up Powerline in Windows Terminal&lt;/a>
+&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>
+&lt;a
+class="link"
+href="https://code.visualstudio.com/docs/editor/integrated-terminal#_can-i-use-powerline-fonts-in-the-integrated-terminal"
+target="_blank"
+rel="noopener"
+>Can I use Powerline fonts in the integrated terminal?&lt;/a>
+&lt;/p>
+&lt;/li>
+&lt;/ul></description></item><item><title>在shell中访问上次运行的命令</title><link>/posts/archives/linux/access-to-last-command-in-shell/</link><pubDate>Wed, 15 Sep 2021 21:40:47 +0800</pubDate><guid>/posts/archives/linux/access-to-last-command-in-shell/</guid><description>&lt;p>如何在shell中使用快捷键运行上次命令&lt;/p>
+&lt;h2 id="快捷键运行sh脚本命令">快捷键运行sh脚本命令
+&lt;/h2>&lt;p>在绑定key的时候需要找到对应键位的ascii码，对于特殊的键位可能很难找到，linux中提供了&lt;code>showkey -a&lt;/code>可以查询ascii码。下面是键入&lt;code>F10, ctrl+d&lt;/code>两个快捷键的输出：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ showkey -a
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Press any keys - Ctrl-D will terminate this program
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>^&lt;span style="color:#f92672">[[&lt;/span>21~ &lt;span style="color:#ae81ff">27&lt;/span> &lt;span style="color:#ae81ff">0033&lt;/span> 0x1b
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">91&lt;/span> &lt;span style="color:#ae81ff">0133&lt;/span> 0x5b
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">0062&lt;/span> 0x32
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">49&lt;/span> &lt;span style="color:#ae81ff">0061&lt;/span> 0x31
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">126&lt;/span> &lt;span style="color:#ae81ff">0176&lt;/span> 0x7e
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>^D &lt;span style="color:#ae81ff">4&lt;/span> &lt;span style="color:#ae81ff">0004&lt;/span> 0x04
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>zsh中内置了bindkey使用快捷键，在&lt;code>man zshzle&lt;/code>中可以找到。&lt;/p>
+&lt;blockquote>
+&lt;p>bindkey [ options ] -s in-string out-string
+Bind each in-string to each out-string. When in-string is typed, out-string will be pushed back
+and treated as input to the line editor. When -R is also used, interpret the in-strings as ranges.&lt;/p>
+&lt;p>Note that both in-string and out-string are subject to the same form of interpretation, as de‐
+scribed below.&lt;/p>&lt;/blockquote>
+&lt;p>下面是演示绑定命令与脚本文件：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 绑定F10&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bindkey -s &lt;span style="color:#e6db74">&amp;#39;^[[21~&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;echo test\n&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 键入F10 自动输入&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ echo test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># test.sh: echo test&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bindkey -s &lt;span style="color:#e6db74">&amp;#39;^[[21~&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>pwd&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">/test.sh\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ /home/navyd/Workspaces/projects/navyd.github.io/test.sh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>test
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://superuser.com/a/248568"
+target="_blank"
+rel="noopener"
+>Show keys pressed in Linux [closed]&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://jdhao.github.io/2019/06/13/zsh_bind_keys/"
+target="_blank"
+rel="noopener"
+>Binding Keys in Zsh&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/226062"
+target="_blank"
+rel="noopener"
+>How can I use bindkey to run a script?&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="获取上次命令的参数">获取上次命令的参数
+&lt;/h2>&lt;p>在shell使用时可能需要上次命令中的某些参数，避免重复输入如：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ ls -al ~/.local
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 想要的效果：du -sh ~/.local&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ du -sh !$
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 输入!$后回车不会执行而是替换成&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ du -sh ~/.local
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在shell中&lt;code>!&lt;/code>用法可以直接在&lt;code>man bash&lt;/code>中搜索&lt;code>\!!&lt;/code>如下：&lt;/p>
+&lt;blockquote>
+&lt;p>Word Designators
+Word designators are used to select desired words from the event. A : separates the event specification from the
+word designator. It may be omitted if the word designator begins with a ^, $, *, -, or %. Words are numbered
+from the beginning of the line, with the first word being denoted by 0 (zero). Words are inserted into the cur‐
+rent line separated by single spaces.&lt;/p>
+&lt;pre>&lt;code> 0 (zero)
+The zeroth word. For the shell, this is the command word.
+n The nth word.
+^ The first argument. That is, word 1.
+$ The last word. This is usually the last argument, but will expand to the zeroth word if there is only one
+word in the line.
+% The word matched by the most recent `?string?' search.
+x-y A range of words; `-y' abbreviates `0-y'.
+* All of the words but the zeroth. This is a synonym for `1-$'. It is not an error to use * if there is
+just one word in the event; the empty string is returned in that case.
+x* Abbreviates x-$.
+x- Abbreviates x-$ like x*, but omits the last word
+&lt;/code>&lt;/pre>&lt;/blockquote>
+&lt;p>具体的用法后面慢慢探索&lt;/p>
+&lt;!-- TODO -->
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/25305091/8566831"
+target="_blank"
+rel="noopener"
+>Access to last command in Zsh (not previous command line)&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.gnu.org/software/bash/manual/html_node/Word-Designators.html#Word-Designators"
+target="_blank"
+rel="noopener"
+>bash Word Designators&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/151110"
+target="_blank"
+rel="noopener"
+>Is there a shortcut for repeat the second proximate command in bash?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/38176552/8566831"
+target="_blank"
+rel="noopener"
+>Re run previous command with different arguments&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="快捷键运行上次执行的命令">快捷键运行上次执行的命令
+&lt;/h2>&lt;p>读取上次命令可以使用zsh内置&lt;code>fc -ln -1&lt;/code>，结合上面的&lt;code>bindkey -s&lt;/code>使用，发现无法工作&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>bindkey -s &lt;span style="color:#e6db74">&amp;#39;^[[21~&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;fc -ln -1\n\n&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ echo test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 键入F10&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ fc -ln -1 &lt;span style="color:#75715e">#\n&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>echo test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#75715e">#\n&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在网上找到答案，可以参考
+&lt;a
+class="link"
+href="https://zsh.sourceforge.io/Guide/zshguide04.html"
+target="_blank"
+rel="noopener"
+>zsh zle Chapter 4: The Z-Shell Line Editor&lt;/a>
+&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># define function that retrieves and runs last command&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">function&lt;/span> run-again &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># get previous history item&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> zle up-history
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># confirm command&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> zle accept-line
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># define run-again widget from function of the same name&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>zle -N run-again
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># bind widget to Ctrl+X in viins mode&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># bindkey -M viins &amp;#39;^E&amp;#39; run-again&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># bind widget to Ctrl+X in vicmd mode&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>bindkey &lt;span style="color:#e6db74">&amp;#39;^[[21~&amp;#39;&lt;/span> run-again
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/28938270/8566831"
+target="_blank"
+rel="noopener"
+>In zsh how do I bind a keyboard shortcut to run the last command?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://askubuntu.com/a/530687"
+target="_blank"
+rel="noopener"
+>Rerun previous command under sudo&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>重定向已启动程序的输出</title><link>/posts/2021/09/redirect-output-of-running-process/</link><pubDate>Mon, 06 Sep 2021 12:22:01 +0800</pubDate><guid>/posts/2021/09/redirect-output-of-running-process/</guid><description>&lt;p>在使用
+&lt;a
+class="link"
+href="https://github.com/Dreamacro/clash"
+target="_blank"
+rel="noopener"
+>clash&lt;/a>
+时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。&lt;/p>
+&lt;p>如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>下面是典型的clash的启动输出：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ clash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider HK&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider IEPL&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider SGP&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider US&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider NeteaseMusic&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider TW&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider GoogleCN&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Proxy&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Epic&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Apple&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider SSH22&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Icloud&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Final-Match&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Telegram&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider direct&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider telegramcidr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider reject&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider gfw&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider tld-not-cn&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider cncidr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider proxy&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider lancidr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider icloud&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider netease-music&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider greatfire&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider apple&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider private&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider google&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;RESTful API listening at: 0.0.0.0:9090&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;DNS server listening at: 0.0.0.0:5353&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>通常可以在启动程序时重定向如&lt;code>clash &amp;amp;&amp;gt; temp.log&lt;/code>，有没有一种可能，复制或重定向已启动程序的输出，这样可以不用局限于启动clash，只要clash进程存在就行&lt;/p>
+&lt;p>&lt;em>&lt;strong>更新：如果要检查clash是否成功启动，可以简单的判断clash的端口是否被使用&lt;/strong>&lt;/em>&lt;/p>
+&lt;h3 id="strace">strace
+&lt;/h3>&lt;p>过滤strace的输出&lt;/p>
+&lt;ul>
+&lt;li>过滤write指定的文件描述符fd&lt;/li>
+&lt;/ul>
+&lt;p>使用&lt;code>-e write=1,2&lt;/code>表示仅列出fd 1与2即stdout,stderr。但是在docker的进程中与宿主机存在区别，无法生效。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ strace -p &lt;span style="color:#66d9ef">$(&lt;/span>pgrep clash&lt;span style="color:#66d9ef">)&lt;/span> -e write&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> -e signal&lt;span style="color:#f92672">=&lt;/span>none -e trace&lt;span style="color:#f92672">=&lt;/span>write
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>strace: Process &lt;span style="color:#ae81ff">220553&lt;/span> attached
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>14, &lt;span style="color:#e6db74">&amp;#34;E\0\0\220\304\206@\0?\21\352\250\306\22\0\10\306\22\0\1&amp;#39;\34\36a\0|\204\334\0\1\0`&amp;#34;&lt;/span>..., 144&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">144&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>14, &lt;span style="color:#e6db74">&amp;#34;E\0\4\351\17\36@\0@\21&amp;amp;\\\337J\2\335\300\250]\272\\@\312J\4\325\302m\27\376\375\0&amp;#34;&lt;/span>..., 1257&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1257&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>strace使用&lt;code>-y&lt;/code>显示对应的fd&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo strace -p &lt;span style="color:#66d9ef">$(&lt;/span>pgrep clash&lt;span style="color:#66d9ef">)&lt;/span> -e trace&lt;span style="color:#f92672">=&lt;/span>write -y
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>strace: Process &lt;span style="color:#ae81ff">220553&lt;/span> attached
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>14&amp;lt;/dev/net/tun&amp;gt;, &lt;span style="color:#e6db74">&amp;#34;E\0\0004\237D@\0?\6\20S\306\22\0\7\306\22\0\1\221 \36a&amp;gt;[\376\316\234k\271\274&amp;#34;&lt;/span>..., 52&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">52&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>35&amp;lt;socket:&lt;span style="color:#f92672">[&lt;/span>1897396&lt;span style="color:#f92672">]&lt;/span>&amp;gt;, &lt;span style="color:#e6db74">&amp;#34;\202\301!\16F\234\256\3733\270\307H\203\265!\223H\344_#\337)d\223\310~]%m\362\250\202&amp;#34;&lt;/span>..., 71&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">71&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>1&amp;lt;pipe:&lt;span style="color:#f92672">[&lt;/span>1652130&lt;span style="color:#f92672">]&lt;/span>&amp;gt;, &lt;span style="color:#e6db74">&amp;#34;...&amp;#34;&lt;/span>, 40&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">40&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>查看对应进程的fd&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>在docker中&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ docker exec -it clash bash -c &lt;span style="color:#e6db74">&amp;#39;ls -al /proc/$(pgrep clash)/fd&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> root root &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> nobody nobody &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l-wx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; pipe:&lt;span style="color:#f92672">[&lt;/span>1652130&lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 &lt;span style="color:#ae81ff">10&lt;/span> -&amp;gt; socket:&lt;span style="color:#f92672">[&lt;/span>1645489&lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># docker clash进程在主机上的fd&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo ls -al /proc/&lt;span style="color:#66d9ef">$(&lt;/span>pgrep clash&lt;span style="color:#66d9ef">)&lt;/span>/fd
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> root root &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:24 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> nobody nogroup &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:09 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:29 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l-wx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:29 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; &lt;span style="color:#e6db74">&amp;#39;pipe:[1652130]&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:29 &lt;span style="color:#ae81ff">10&lt;/span> -&amp;gt; &lt;span style="color:#e6db74">&amp;#39;socket:[1645489]&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>在host中&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># no redirection&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bash -c &lt;span style="color:#e6db74">&amp;#39;while true; do echo &amp;#39;&lt;/span>1&lt;span style="color:#e6db74">&amp;#39;; sleep 1; done &amp;amp; ls -al /proc/$!/fd &amp;amp;&amp;amp; kill -9 $!&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lr-x &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 &lt;span style="color:#ae81ff">2&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># redirect to /dev/null&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#66d9ef">while&lt;/span> true; &lt;span style="color:#66d9ef">do&lt;/span> echo &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>; sleep 1; &lt;span style="color:#66d9ef">done&lt;/span> &amp;gt;/dev/null &amp;amp; ls -al /proc/$!/fd &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> kill -9 $!
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l-wx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">10&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lr-x &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">11&lt;/span> -&amp;gt; /home/navy
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;p>可以明显的看到docker中的stdout被链接到了&lt;code>pipe:[1652130]&lt;/code>，而host中是一个本地路径链接，strace可能无法正确访问docker的stdout，可以使用readlink读取链接给strace过滤：&lt;code>-P &amp;quot;$(readlink /proc/&amp;quot;$CLASH_PID&amp;quot;/fd/1)&amp;quot;&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>start_clash&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sudo -u &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$RUN_USER&lt;span style="color:#e6db74">&amp;#34;&lt;/span> clash -d &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_DIR&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strace -P &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>readlink /proc/&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_PID&lt;span style="color:#e6db74">&amp;#34;&lt;/span>/fd/1&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> -e trace&lt;span style="color:#f92672">=&lt;/span>write -e signal&lt;span style="color:#f92672">=&lt;/span>none -s &lt;span style="color:#ae81ff">1000&lt;/span> -X raw -p &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_PID&lt;span style="color:#e6db74">&amp;#34;&lt;/span> 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> | &lt;span style="color:#66d9ef">while&lt;/span> read -r line; &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># 修改&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> line&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>sed -n -r &lt;span style="color:#e6db74">&amp;#39;s/^write\([0-9]+,\s*&amp;#34;(.+)&amp;#34;,\s*[0-9]+\)\s*=\s*[[:digit:]]+$/\1/p&amp;#39;&lt;/span> &lt;span style="color:#f92672">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># echo &amp;#34;dumping line: $line&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> $line &lt;span style="color:#f92672">==&lt;/span> *&lt;span style="color:#e6db74">&amp;#34;listening at&amp;#34;&lt;/span>* &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;clash has started at line: &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> break
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意：&lt;/p>
+&lt;ul>
+&lt;li>strace默认输出到stderr重定向到标准输出&lt;code>2&amp;gt;&amp;amp;1&lt;/code>&lt;/li>
+&lt;li>&lt;code>-X raw&lt;/code>使用原始的输出防止乱码&lt;/li>
+&lt;li>&lt;code>-s 1000&lt;/code>指定最大的打印字符串避免默认32过小截断输出&lt;/li>
+&lt;li>&lt;code>-e trace=write -e signal=none&lt;/code>过滤非write输出&lt;/li>
+&lt;/ul>
+&lt;p>&lt;em>&lt;strong>但是上面存在一个问题，strace是对sys call作用，clash输出log时没有&lt;code>Start initial rule provider&lt;/code>与后面的&lt;code>listening at&lt;/code>，同时使用sync命令没用，可能是缓存没有刷新。这里不清楚 TODO&lt;/strong>&lt;/em>&lt;/p>
+&lt;!-- TODO -->
+&lt;p>另外还有gdb,screen两种方式可以重定向，但是无法简单编程使用&lt;/p>
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;h3 id="重定向">重定向
+&lt;/h3>&lt;p>最简单的方法就是在后台重定向clash的输出到文件，再读取文件确认启动&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># start clash and confirm and return pid&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>start_clash&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sudo -u &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$RUN_USER&lt;span style="color:#e6db74">&amp;#34;&lt;/span> clash -d &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_DIR&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &amp;amp;&amp;gt; temp.log
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> local pid&lt;span style="color:#f92672">=&lt;/span>$!
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> tail -f temp.log | &lt;span style="color:#66d9ef">while&lt;/span> read -r line
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> $line &lt;span style="color:#f92672">==&lt;/span> *&lt;span style="color:#e6db74">&amp;#34;listening at&amp;#34;&lt;/span>* &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;clash has started at line: &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> pid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意不能使用&lt;code>sudo -u &amp;quot;$RUN_USER&amp;quot; clash -d &amp;quot;$CLASH_DIR&amp;quot; | while read -r line; do ... done&lt;/code>，在while退出break后将会使clash直接退出。下面使用bash一行命令测试：无限循环while退出后整个管道命令终止&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>local count&lt;span style="color:#f92672">=&lt;/span>0; &lt;span style="color:#66d9ef">while&lt;/span> true; &lt;span style="color:#66d9ef">do&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;sleeping &lt;/span>&lt;span style="color:#66d9ef">$((&lt;/span>count&lt;span style="color:#f92672">+=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#66d9ef">))&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>; sleep 1; &lt;span style="color:#66d9ef">done&lt;/span> | &lt;span style="color:#66d9ef">while&lt;/span> read line; &lt;span style="color:#66d9ef">do&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;read &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>; &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> $line &lt;span style="color:#f92672">==&lt;/span> *&lt;span style="color:#e6db74">&amp;#34;9&amp;#34;&lt;/span>* &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;end &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>; break; &lt;span style="color:#66d9ef">fi&lt;/span>; &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外，可以使用python等方式完全重写更好维护，算上iptables相关的配置都200多行了&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/593724/redirect-stderr-stdout-of-a-process-after-its-been-started-using-command-lin"
+target="_blank"
+rel="noopener"
+>Redirect STDERR / STDOUT of a process AFTER it&amp;rsquo;s been started, using command line?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.baeldung.com/linux/redirect-output-of-running-process"
+target="_blank"
+rel="noopener"
+>Redirecting the Output of an Already Running Process&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://askubuntu.com/a/731237"
+target="_blank"
+rel="noopener"
+>How do I save terminal output to a file?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://jvns.ca/blog/2020/04/29/why-strace-doesnt-work-in-docker/"
+target="_blank"
+rel="noopener"
+>Why strace doesn&amp;rsquo;t work in Docker&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/229606/8566831"
+target="_blank"
+rel="noopener"
+>How to check if a string contains a substring in Bash&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/questions/30370/how-to-get-the-pid-of-the-last-executed-command-in-shell-script"
+target="_blank"
+rel="noopener"
+>How to get the pid of the last executed command in shell script?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/163814"
+target="_blank"
+rel="noopener"
+>grep on a variable&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

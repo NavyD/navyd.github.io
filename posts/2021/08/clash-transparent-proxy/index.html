@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="\nClash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。\n">
+<title>Clash透明代理</title>
+
+<link rel='canonical' href='/posts/2021/08/clash-transparent-proxy/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="Clash透明代理">
+<meta property='og:description' content="\nClash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。\n">
+<meta property='og:url' content='/posts/2021/08/clash-transparent-proxy/'>
+<meta property='og:site_name' content=''>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='clash' /><meta property='article:tag' content='proxy' /><meta property='article:tag' content='linux' /><meta property='article:tag' content='docker' /><meta property='article:tag' content='iptables' /><meta property='article:tag' content='cli' /><meta property='article:published_time' content='2021-08-09T19:31:12&#43;08:00'/><meta property='article:modified_time' content='2023-03-30T19:02:41&#43;08:00'/>
+<meta name="twitter:title" content="Clash透明代理">
+<meta name="twitter:description" content="\nClash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    <img src="https://avatars.githubusercontent.com/u/22490764" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/"></a></h1>
+            <h2 class="site-description">Hello World!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/47808239'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/NavyD'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/NavyD_hello'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="/" selected>English</option>
+                                
+                                    <option value="/zh-cn/" >中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#docker部署">docker部署</a></li>
+    <li><a href="#代理方式">代理方式</a>
+      <ul>
+        <li><a href="#tcp-redir--udp-tproxy">TCP redir + UDP TPROXY</a></li>
+        <li><a href="#tcpudp-tproxy">TCP&amp;UDP TPROXY</a></li>
+        <li><a href="#tun">TUN</a></li>
+        <li><a href="#已知问题">已知问题</a></li>
+      </ul>
+    </li>
+    <li><a href="#linux透明代理原理">Linux透明代理原理</a></li>
+    <li><a href="#相关工具">相关工具</a>
+      <ul>
+        <li><a href="#配置文件">配置文件</a></li>
+        <li><a href="#订阅转换subconverter">订阅转换subconverter</a>
+          <ul>
+            <li><a href="#docker部署-1">docker部署</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/posts/2021/08/clash-transparent-proxy/">Clash透明代理</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2021-08-09T19:31:12&#43;08:00</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    6 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p><img src="https://github.com/Dreamacro/clash/raw/master/docs/logo.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>Clash 是一个使用 Go 语言编写，基于规则的跨平台代理软件核心程序。</p>
+<h2 id="docker部署">docker部署
+</h2><p>在docker内启动时使用iptables操作，stop时清理iptables。</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://hub.docker.com/r/navyd/clash"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>自用docker镜像</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/NavyD/docker-clash"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>NavyD/docker-clash</a>
+</li>
+</ul>
+<h2 id="代理方式">代理方式
+</h2><h3 id="tcp-redir--udp-tproxy">TCP redir + UDP TPROXY
+</h3><p>redir模式。对转发流量使用tcp redir, udp tproxy方式代理。本机仅代理tcp，支持docker内部代理。支持fakeip但存在icmp无法回应的问题（tcp udp没有问题），tun-fakeip可以提供更好的服务。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># local </span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 接管clash宿主机内部流量</span>
+</span></span><span style="display:flex;"><span>iptables -t nat -N CLASH
+</span></span><span style="display:flex;"><span>iptables -t nat -F CLASH
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># private</span>
+</span></span><span style="display:flex;"><span>setup_private nat CLASH
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 过滤本机clash流量 避免循环 user无法使用代理</span>
+</span></span><span style="display:flex;"><span>iptables -t nat -A CLASH -m owner --uid-owner <span style="color:#e6db74">&#34;</span>$RUNNING_UID<span style="color:#e6db74">&#34;</span> -j RETURN
+</span></span><span style="display:flex;"><span>iptables -t nat -A CLASH -p tcp -j REDIRECT --to-port <span style="color:#e6db74">&#34;</span>$REDIR_PORT<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>iptables -t nat -A OUTPUT -j CLASH
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 转发流量 tcp redir</span>
+</span></span><span style="display:flex;"><span>iptables -t nat -N CLASH_EXTERNAL
+</span></span><span style="display:flex;"><span>iptables -t nat -F CLASH_EXTERNAL
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># google dns first</span>
+</span></span><span style="display:flex;"><span>iptables -t nat -A CLASH_EXTERNAL -p tcp -d 8.8.8.8 -j REDIRECT --to-port <span style="color:#e6db74">&#34;</span>$REDIR_PORT<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>iptables -t nat -A CLASH_EXTERNAL -p tcp -d 8.8.4.4 -j REDIRECT --to-port <span style="color:#e6db74">&#34;</span>$REDIR_PORT<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># private</span>
+</span></span><span style="display:flex;"><span>setup_private nat CLASH_EXTERNAL
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># tcp redir</span>
+</span></span><span style="display:flex;"><span>iptables -t nat -A CLASH_EXTERNAL -p tcp -j REDIRECT --to-port <span style="color:#e6db74">&#34;</span>$REDIR_PORT<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>iptables -t nat -A PREROUTING -j CLASH_EXTERNAL
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 转发流量 udp tproxy</span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -N CLASH_EXTERNAL
+</span></span><span style="display:flex;"><span>iptables -t mangle -F CLASH_EXTERNAL
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># private</span>
+</span></span><span style="display:flex;"><span>setup_private mangle CLASH_EXTERNAL
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># udp tproxy redir</span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -A CLASH_EXTERNAL -p udp -j TPROXY --on-port <span style="color:#e6db74">&#34;</span>$REDIR_PORT<span style="color:#e6db74">&#34;</span> --tproxy-mark $MARK_ID
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -A PREROUTING -j CLASH_EXTERNAL
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># route udp</span>
+</span></span><span style="display:flex;"><span>ip rule add fwmark $MARK_ID table $TABLE_ID
+</span></span><span style="display:flex;"><span>ip route add local default dev lo table $TABLE_ID
+</span></span></code></pre></div><p>参考：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://lancellc.gitbook.io/clash/start-clash/clash-udp-tproxy-support"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Clash TProxy Mode</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/Dreamacro/clash/issues/555#issuecomment-595064646"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>clash本机做透明代理iptables规则请教</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/Dreamacro/clash/issues/1047"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Fake IP 模式如何直接转发icmp包（无法Ping任何网站）</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://lev.shield.asia/index.php/Ops/31.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>iptables处理icmp转发</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://blog.lilydjwg.me/2018/7/16/transparent-proxy-for-tcp-and-udp-with-iptables.213139.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>使用 iptables 透明代理 TCP 与 UDP</a>
+</li>
+</ul>
+<p>注意：</p>
+<p>TPROXY 是一个 Linux 内核模块，在 Linux 2.6.28 后进入官方内核。一般正常的发行版都没有裁剪 TPROXY 模块，TPROXY 模块缺失问题主要出现在无线路由固件上（某些精简型发行版也会去掉 TPROXY 模块，比如 Alpine）。使用以下方法可以检测当前内核是否包含 TPROXY 模块。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 查找 TPROXY 模块</span>
+</span></span><span style="display:flex;"><span>$ find /lib/modules/<span style="color:#66d9ef">$(</span>uname -r<span style="color:#66d9ef">)</span> -type f -name <span style="color:#e6db74">&#39;xt_TPROXY.ko*&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 正常情况下的输出</span>
+</span></span><span style="display:flex;"><span>/lib/modules/4.16.8-1-ARCH/kernel/net/netfilter/xt_TPROXY.ko.xz
+</span></span></code></pre></div><p>在WSL2 Ubuntu上没有TPROXY模块：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ find /lib/modules/<span style="color:#66d9ef">$(</span>uname -r<span style="color:#66d9ef">)</span> -type f -name <span style="color:#e6db74">&#39;xt_TPROXY.ko*&#39;</span>
+</span></span><span style="display:flex;"><span>find: ‘/lib/modules/5.10.16.3-microsoft-standard-WSL2’: No such file or directory
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ zgrep TPROXY /proc/config.gz
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># CONFIG_NFT_TPROXY is not set</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># CONFIG_NETFILTER_XT_TARGET_TPROXY is not set</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># CONFIG_NF_TPROXY_IPV4 is not set</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># CONFIG_NF_TPROXY_IPV6 is not set</span>
+</span></span><span style="display:flex;"><span>$ sudo lsmod
+</span></span><span style="display:flex;"><span>Module                  Size  Used by
+</span></span></code></pre></div><p>参考：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://stackoverflow.com/a/14382864/8566831"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>View Linux Kernel Config Options [closed]</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://www.jianshu.com/p/9a1909bcc54f"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>记一次在suse上遇到的TPROXY的坑。</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://www.cnblogs.com/linengier/p/9956517.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>linux系统管理（1）之 内核编译选项查看</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://unix.stackexchange.com/a/83327"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Where are the current kernel build options stored?</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/zfl9/ss-tproxy/wiki/Linux-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86#tproxy"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Linux 透明代理 tproxy</a>
+</li>
+</ul>
+<h3 id="tcpudp-tproxy">TCP&amp;UDP TPROXY
+</h3><p>clash支持tcp tproxy，可以使用tcp tproxy避免在nat中重定向定义多个chain</p>
+<p>在配置文件config.yaml中增加：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e"># Transparent proxy server port for Linux (TProxy TCP and TProxy UDP)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">tproxy-port</span>: <span style="color:#ae81ff">7893</span>
+</span></span></code></pre></div><p>本机代理与TCP redir相似，下面是透明代理</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># ROUTE RULES</span>
+</span></span><span style="display:flex;"><span>ip rule add fwmark $MARK_ID table $TABLE_ID
+</span></span><span style="display:flex;"><span>ip route add local default dev lo table $TABLE_ID
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># CREATE TABLE</span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -N clash
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># RETURN LOCAL AND LANS</span>
+</span></span><span style="display:flex;"><span>setup_private mangle clash
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># FORWARD ALL</span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -A clash -p udp -j TPROXY --on-port $REDIR_PORT --tproxy-mark $MARK_ID
+</span></span><span style="display:flex;"><span>iptables -t mangle -A clash -p tcp -j TPROXY --on-port $REDIR_PORT --tproxy-mark $MARK_ID
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># REDIRECT</span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -A PREROUTING -j clash
+</span></span></code></pre></div><p>参考：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/Dreamacro/clash/pull/1049"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Add TCP TPROXY support</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://www.wogong.net/blog/2020/11/clash-transparent-proxy"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Clash 作为网关的透明代理</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://guide.v2fly.org/app/tproxy.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>v2ray 透明代理(TPROXY)</a>
+</li>
+</ul>
+<h3 id="tun">TUN
+</h3><p>适用于tun-redir,tun-fakeip，代理本机与外部流量。在iptables mangle中设置mark并过滤内部私有地址、过滤指定运行clash uid的流量防止循环。</p>
+<p><del>本机docker内部网络无法直接被代理，如果不<code>-s 172.16.0.0/12 -j RETURN</code>则docker内部无法ping到外部网络，可能是在mangle表后路由到tun设备后无法被iptables nat中的DOCKER链处理。</del></p>
+<p>使用<code>-i &quot;$TUN_NAME&quot; -j RETURN</code>防止docker内部流量被mark循环到tun接口。具体可行原因未知<code>todo</code> <!-- todo --></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 代理本机与外部流量。在iptables mangle中设置mark并过滤内部私有地址、</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 过滤指定运行clash uid的流量防止循环。允许本机与docker通过代理</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## 接管clash宿主机内部流量</span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -N CLASH
+</span></span><span style="display:flex;"><span>iptables -t mangle -F CLASH
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># filter clash traffic running under uid 注意顺序 owner过滤 要在 set mark之前</span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -A CLASH -m owner --uid-owner <span style="color:#e6db74">&#34;</span>$RUNNING_UID<span style="color:#e6db74">&#34;</span> -j RETURN
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># private</span>
+</span></span><span style="display:flex;"><span>local_iptables mangle CLASH
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># mark</span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -A CLASH -j MARK --set-xmark $MARK_ID
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -A OUTPUT -j CLASH
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">## 接管转发流量</span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -N CLASH_EXTERNAL
+</span></span><span style="display:flex;"><span>iptables -t mangle -F CLASH_EXTERNAL
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># private</span>
+</span></span><span style="display:flex;"><span>local_iptables mangle CLASH_EXTERNAL
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># avoid rerouting for local docker</span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -A CLASH_EXTERNAL -i <span style="color:#e6db74">&#34;</span>$TUN_NAME<span style="color:#e6db74">&#34;</span> -j RETURN
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># mark</span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -A CLASH_EXTERNAL -j MARK --set-xmark $MARK_ID
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>iptables -t mangle -A PREROUTING -j CLASH_EXTERNAL
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># utun route table</span>
+</span></span><span style="display:flex;"><span>ip route replace default dev <span style="color:#e6db74">&#34;</span>$TUN_NAME<span style="color:#e6db74">&#34;</span> table <span style="color:#e6db74">&#34;</span>$TABLE_ID<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>ip rule add fwmark <span style="color:#e6db74">&#34;</span>$MARK_ID<span style="color:#e6db74">&#34;</span> lookup <span style="color:#e6db74">&#34;</span>$TABLE_ID<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 排除 rp_filter 的故障 反向路由</span>
+</span></span><span style="display:flex;"><span>sysctl -w net.ipv4.conf.<span style="color:#e6db74">&#34;</span>$TUN_NAME<span style="color:#e6db74">&#34;</span>.rp_filter<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> 2&gt; /dev/null
+</span></span><span style="display:flex;"><span>sysctl -w net.ipv4.conf.all.rp_filter<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> 2&gt; /dev/null
+</span></span></code></pre></div><p>参考：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://comzyh.gitbook.io/clash/real-ip-tun-example"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Real-IP Tun Example</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://lancellc.gitbook.io/clash/start-clash/clash-tun-mode"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Clash TUN mode</a>
+</li>
+</ul>
+<h3 id="已知问题">已知问题
+</h3><ol>
+<li>TPROXY 不能用于 OUTPUT 链，无法用于本机代理。在
+
+<a  
+    class="link"
+ 
+    href="https://guide.v2fly.org/app/tproxy.html#%E9%85%8D%E7%BD%AE%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86%E8%A7%84%E5%88%99"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>v2ray 配置透明代理规则</a>
+中可以通过标记重路由的方式代理本机，但是在clash要对clash源码在socket上标记<code>SO_MARK</code>。查看了openclash源码也没有对<code>UDP TPROXY</code>的解决方法，在使用TPROXY时只能代理本机tcp流量。尝试使用<code>--owner-uid</code>的方式过滤clash发出的流量，但是没有用，可能是与OUTPUT重路由到PREROUTING链不同，原理不清</li>
+<li><del>TUN方式在docker使用时bridge网络无法解析dns到外部网络，
+
+<a  
+    class="link"
+ 
+    href="https://github.com/springzfx/cgproxy/issues/10"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>容器(docker)桥接(bridge)模式时的代理问题</a>
+有相关讨论。fakeip直接启动时不设置只是作为dns网关使用时，docker bridge网络可以正常使用。<code>TCP TPROXY</code>的方式可以bridge网络可正常使用</del></li>
+</ol>
+<p>shell实现参考：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/juewuy/ShellClash/blob/master/scripts/start.sh"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>shellclash start.sh</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/vernesong/OpenClash/blob/master/luci-app-openclash/root/etc/init.d/openclash"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>OpenClash openclash</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/Kr328/clash-premium-installer/blob/master/scripts/setup-tun.sh"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>clash-premium-installer setup-tun.sh</a>
+</li>
+</ul>
+<p>参考：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://stackoverflow.com/a/17538964"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>How to check if a variable is set in Bash?</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/Kr328/clash-premium-installer"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Clash Premiun Installer</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://segmentfault.com/a/1190000022971054"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>你的 docker stop，它优雅吗？</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://stackoverflow.com/a/60699262"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Unable to trap signals in docker entrypoint script</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://www.cnblogs.com/bakari/p/10449664.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Linux 网络工具详解之 ip tuntap 和 tunctl 创建 tap/tun 设备</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/juewuy/ShellClash"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>ShellClash</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://blog.skk.moe/post/what-happend-to-dns-in-proxy/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>浅谈在代理环境中的 DNS 解析行为</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/springzfx/cgproxy/issues/10"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>容器(docker)桥接(bridge)模式时的代理问题</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/springzfx/cgproxy/blob/aaa628a76b2911018fc93b2e3276c177e85e0861/readme.md#known-issues"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Transparent Proxy powered by cgroup v2</a>
+</li>
+</ul>
+<p>相关项目：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/Dreamacro/clash"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>go Dreamacro/clash</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/comzyh/clash"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>go tun comzyh/clash</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/lazytiger/trojan-rs"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>rust Trojan-rs</a>
+</li>
+</ul>
+<h2 id="linux透明代理原理">Linux透明代理原理
+</h2><p>参考：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://powerdns.org/tproxydoc/tproxy.md.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Linux transparent proxy support</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/ahupowerdns/tproxydoc/blob/master/tproxy.md"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Linux transparent proxy support github</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://www.codenong.com/js5393fb5e2c87/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>透明代理 UDP 为什么要用 TProxy？</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/lazytiger/trojan-rs/blob/master/PRINCIPLE.md"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>透明代理的基本原理</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://vvl.me/2018/06/from-ss-redir-to-linux-nat/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>从 ss-redir 的实现到 Linux NAT</a>
+</li>
+</ul>
+<h2 id="相关工具">相关工具
+</h2><h3 id="配置文件">配置文件
+</h3><ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://cdn.jsdelivr.net/gh/Hackl0us/SS-Rule-Snippet@master/LAZY_RULES/clash.yaml"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>fake-ip-filter规则</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/ACL4SSR/ACL4SSR/tree/master/Clash"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>ACL4SSR 分流规则</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/Loyalsoldier/clash-rules"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>clash-rules Clash Premium Provider可直接使用</a>
+</li>
+</ul>
+<p>相关项目参考：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/Hackl0us/SS-Rule-Snippet"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>SS-Rule-Snippet</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/ACL4SSR/ACL4SSR/tree/master"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>SSR去广告规则/GFWList规则/Clash规则碎片</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/Loyalsoldier/clash-rules"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>clash-rules</a>
+</li>
+</ul>
+<p>注意：
+
+<a  
+    class="link"
+ 
+    href="https://github.com/Loyalsoldier/clash-rules"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>clash-rules</a>
+可能存在google play无法下载的问题，解决方法：
+
+<a  
+    class="link"
+ 
+    
+    
+    
+        
+        href="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/"
+    
+
+
+>Google Play Store Failed to Download in Clash Proxy</a>
+</p>
+<h3 id="订阅转换subconverter">订阅转换subconverter
+</h3><p>clash提供
+
+<a  
+    class="link"
+ 
+    href="https://lancellc.gitbook.io/clash/clash-config-file/proxy-provider"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Proxy Provider</a>
+功能，可以方便的分离代理节点为单个url资源，自动更新订阅节点等如：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#75715e">#port: 8888</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#socks-port: 8889</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ...</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># proxy provider start here</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">proxy-providers</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hk</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">http</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">./hk.yaml</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">url</span>: <span style="color:#ae81ff">http://remote.lancelinked.icu/files/hk.yaml</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">interval</span>: <span style="color:#ae81ff">3600</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">health-check</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">enable</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">url</span>: <span style="color:#ae81ff">http://www.gstatic.com/generate_204</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">interval</span>: <span style="color:#ae81ff">300</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">us</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">file</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/home/lance/.clash/provider/us.yaml</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">health-check</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">enable</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">url</span>: <span style="color:#ae81ff">http://www.gstatic.com/generate_204</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">interval</span>: <span style="color:#ae81ff">300</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># proxy provider end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#Proxy:</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#  - type: socks5</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#    name: spck</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#    port: 34335</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#    server: 127.0.0.1</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#    udp: true</span>
+</span></span></code></pre></div><p>在使用机场提供的clash文件时通常只会使用到其中的proxies，还有过滤节点等需求，clash不支持过滤节点。而
+
+<a  
+    class="link"
+ 
+    href="https://github.com/tindy2013/subconverter/blob/master/README-cn.md#%E8%AF%B4%E6%98%8E%E7%9B%AE%E5%BD%95"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>subconverter</a>
+提供了订阅转换与过滤等必要的功能</p>
+<h4 id="docker部署-1">docker部署
+</h4><p>使用docker安装</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>docker run -d --restart<span style="color:#f92672">=</span>always -p 25500:25500 tindy2013/subconverter:latest
+</span></span></code></pre></div><p>subconverter参数：</p>
+<pre tabindex="0"><code>target=clash	# 转换结果为 clash 配置
+url=xxx	# 机场订阅链接
+include=(TW|台湾|台灣)	# 只匹配台湾节点
+list=true	# 生成 provider 链接
+
+# 将urlencoded 参数拼接起来得到新的订阅链接——只包含台湾节点的 provider 链接
+https://localhost:25500/sub?target=clash&amp;url=https%3a%2f%2fnfnf.xyz%2flink%2fabcdefg%3fmu%3d4&amp;include=(TW%7c%e5%8f%b0%e6%b9%be%7c%e5%8f%b0%e7%81%a3)&amp;list=true
+</code></pre><p>参考：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://10101.io/2020/02/12/use-clash-proxy-provider-with-subconverter"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Clash proxy-provider 搭配 subconverter 使用小记</a>
+</li>
+</ul>
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/clash/">Clash</a>
+        
+            <a href="/tags/proxy/">Proxy</a>
+        
+            <a href="/tags/linux/">Linux</a>
+        
+            <a href="/tags/docker/">Docker</a>
+        
+            <a href="/tags/iptables/">Iptables</a>
+        
+            <a href="/tags/cli/">Cli</a>
+        
+    </section>
+
+
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on 2023-03-30T19:02:41&#43;08:00
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">Related content</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">clash代理在Google Play Store下载时失败</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/2021/08/docker-multi-platform-build/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Docker Multi Platform Build</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/2021/08/merge-two-git-repos/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Merge Two Git Repos</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/docker/docker-installation/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">docker installation</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.2760efe2b07bc1f771820787a816b980000936e884b19441806bce1518d37d8c.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

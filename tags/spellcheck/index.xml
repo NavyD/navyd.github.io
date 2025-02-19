@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Spellcheck on NavyD的个人博客</title><link>/tags/spellcheck/</link><description>Recent content in Spellcheck on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 12 Feb 2025 01:28:54 +0800</lastBuildDate><atom:link href="/tags/spellcheck/index.xml" rel="self" type="application/rss+xml"/><item><title>中文输入实践</title><link>/posts/2025/02/chinese-input-practice/</link><pubDate>Sun, 09 Feb 2025 12:31:52 +0800</pubDate><guid>/posts/2025/02/chinese-input-practice/</guid><description>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/neo451/nvim-zh"
+target="_blank"
+rel="noopener"
+>neo451/nvim-zh: neovim 中文输入改进计划&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://sspai.com/post/69628"
+target="_blank"
+rel="noopener"
+>常用 Obsidian 处理中文长文？试试这些大幅提升体验的插件和代码片段&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="输入法">输入法
+&lt;/h2>&lt;h3 id="vim-自动切换中英模式">vim 自动切换中英模式
+&lt;/h3>&lt;p>Vim/Neovim 下输入中文最大的痛，就是在 Normal 模式下，需要频繁从中文模式切换到英文模式，来输入 Vim 的各种命令。&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://jdhao.github.io/2021/02/25/nvim_ime_mode_auto_switch/"
+target="_blank"
+rel="noopener"
+>如何让 Neovim 中文输入时自动切换输入法&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.cnblogs.com/tuilk/p/16421831.html"
+target="_blank"
+rel="noopener"
+>解决 Windows 下 (Neo)Vim 中文输入法的切换问题&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="rime-输入法">Rime 输入法
+&lt;/h4>&lt;p>使用 Rime 输入法提供 vim_mode 配置在 vim insert 模式使用&lt;code>Esc&lt;/code>,&lt;code>&amp;lt;C-[&amp;gt;&lt;/code>切换到 Normal 模式时变为 ascii 输入，参考
+&lt;a
+class="link"
+href="https://github.com/rime/weasel/wiki/Weasel-%E5%AE%9A%E5%88%B6%E5%8C%96#%E5%BA%94%E7%94%A8%E8%AE%BE%E7%BD%AE"
+target="_blank"
+rel="noopener"
+>Weasel-定制化 应用设置&lt;/a>
+和
+&lt;a
+class="link"
+href="https://github.com/rime/weasel/pull/1047"
+target="_blank"
+rel="noopener"
+>feat: vim_mode in app_options #1047&lt;/a>
+自动切换。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># weasel.yaml&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">app_options&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">cmd.exe&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">ascii_mode&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">conhost.exe&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">ascii_mode&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">firefox.exe&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">inline_preedit&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">gvim.exe&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">ascii_mode&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">vim_mode&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意：在 vim 模式中如果在候选面板中键入&lt;code>&amp;lt;C-[&amp;gt;&lt;/code>会导致清屏且切换为英文输入法，可能会造成麻烦，参考
+&lt;a
+class="link"
+href="https://github.com/rime/weasel/issues/1450"
+target="_blank"
+rel="noopener"
+>gvim 进入退出插入模式时，无法禁用小狼毫自动切换 ascii_mode #1450&lt;/a>
+&lt;/p>
+&lt;h2 id="中文分词">中文分词
+&lt;/h2>&lt;p>在 nvim 中使用 w/b 等移动光标时对于中文来说，无法像英文一样以单词为单位移动，而是所有连续的中文为一个单位，移动非常不方便&lt;/p>
+&lt;p>
+&lt;a
+class="link"
+href="https://github.com/kkew3/jieba.vim"
+target="_blank"
+rel="noopener"
+>kkew3/jieba.vim&lt;/a>
+相比于
+&lt;a
+class="link"
+href="https://github.com/neo451/jieba.nvim"
+target="_blank"
+rel="noopener"
+>neo451/jieba.nvim&lt;/a>
+更快且更稳定，但目前对于 nvim 的支持不够，需要通过
+&lt;a
+class="link"
+href="https://github.com/neovim/pynvim"
+target="_blank"
+rel="noopener"
+>neovim/pynvim&lt;/a>
+才能工作&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/provider.html#provider-python"
+target="_blank"
+rel="noopener"
+>neovim provider-python&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/deoplete-plugins/deoplete-jedi/wiki/Setting-up-Python-for-Neovim"
+target="_blank"
+rel="noopener"
+>Setting up Python for Neovim&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://kevinmorio.com/posts/2023/10/29/automating-pynvim-installation-in-neovim.html"
+target="_blank"
+rel="noopener"
+>Automating pynvim Installation in Neovim&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://kkew3.github.io/2024/11/10/jieba-vim.html"
+target="_blank"
+rel="noopener"
+>vim/nvim 中文分词插件 jieba.vim&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://mambusskruj.github.io/posts/pub-neovim-for-markdown/"
+target="_blank"
+rel="noopener"
+># Neovim as a markdown editor&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="中英文排版">中英文排版
+&lt;/h2>&lt;p>安装
+&lt;a
+class="link"
+href="https://github.com/hotoo/pangu.vim"
+target="_blank"
+rel="noopener"
+>hotoo/pangu.vim&lt;/a>
+&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/sparanoid/chinese-copywriting-guidelines"
+target="_blank"
+rel="noopener"
+>中文文案排版指北&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://aisensiy.me/auto-update-content-in-markdown/"
+target="_blank"
+rel="noopener"
+>vim 里自动更新 markdown 格式&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="autocorrect">autocorrect
+&lt;/h3>&lt;p>最近发现
+&lt;a
+class="link"
+href="https://github.com/huacnlee/autocorrect"
+target="_blank"
+rel="noopener"
+>huacnlee/autocorrect&lt;/a>
+更好用，同时提供 LSP 功能，但未提供 nvim 插件&lt;/p>
+&lt;h4 id="不支持-markdown-链接语法">不支持 markdown 链接语法
+&lt;/h4>&lt;p>对于 md 链接为中文时不会添加空格导致观感不佳，参考
+&lt;a
+class="link"
+href="https://github.com/huacnlee/autocorrect/issues/178"
+target="_blank"
+rel="noopener"
+>[Feature Request] 链接语法 config/flag #178&lt;/a>
+目前不支持对这种情况添加配置，需要主动添加空格。&lt;/p>
+&lt;h3 id="zhlint">zhlint
+&lt;/h3>&lt;p>
+&lt;a
+class="link"
+href="https://github.com/zhlint-project/zhlint"
+target="_blank"
+rel="noopener"
+>zhlint-project/zhlint: A linting tool for Chinese language&lt;/a>
+也支持检查修复中文排版，但初步体验下来没发现比 autocorrect 更好，链接语法也不能添加空格&lt;/p>
+&lt;h2 id="拼写检查">拼写检查
+&lt;/h2>&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/crate-ci/typos"
+target="_blank"
+rel="noopener"
+>crate-ci/typos: Source code spell checker&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/codespell-project/codespell"
+target="_blank"
+rel="noopener"
+>codespell-project/codespell: check code for common misspellings&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

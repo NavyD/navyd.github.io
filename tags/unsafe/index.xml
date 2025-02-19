@@ -1,0 +1,905 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Unsafe on </title>
+        <link>/tags/unsafe/</link>
+        <description>Recent content in Unsafe on </description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en</language>
+        <lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/unsafe/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Rust Unsafe Pointer Types Need an Overhaul</title>
+        <link>/posts/archives/rust/rust-unsafe-pointer-types-need-an-overhaul/</link>
+        <pubDate>Mon, 28 Mar 2022 20:56:16 +0800</pubDate>
+        
+        <guid>/posts/archives/rust/rust-unsafe-pointer-types-need-an-overhaul/</guid>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;原文地址 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://gankra.github.io/blah/fix-rust-pointers/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;gankra.github.io&lt;/a&gt;
+&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;I think about unsafe pointers in Rust a lot.&lt;/p&gt;
+&lt;p&gt;I literally wrote the book on unsafe Rust. And the book on pointers in Rust. And redesigned the Rust’s pointer APIs. And designed the standard library’s abstraction for unsafe heap-allocated buffers. And maintain the alternative Vec layout.&lt;/p&gt;
+&lt;p&gt;I think about unsafe pointers in Rust a lot, and I absolutely hate them.&lt;/p&gt;
+&lt;p&gt;Don’t get me wrong, I think all of the above work has made them better but they are still deeply flawed. Actually they’ve gotten a lot worse. Not because the APIs have changed, but because when I was working on this stuff we had too naive of an understanding of how pointers should work. Others have done a lot of great work to expand this understanding, and now the flaws are all the more glaring.&lt;/p&gt;
+&lt;p&gt;This article is broken up into 3 parts: conceptual background, problems with the current design, and proposed solutions.&lt;/p&gt;
+&lt;p&gt;1 Background
+This section can be skipped entirely if you know everything about computers.&lt;/p&gt;
+&lt;p&gt;1.1 Aliasing
+Aliasing is a very important concept in compilers and language semantics. At a high-level, it’s the study of the observability of modifications to memory. We call it aliasing because the problem is very easy until you can refer to a piece of memory in more than one way. Pointers are just nicknames for memory.&lt;/p&gt;
+&lt;p&gt;The primary function of aliasing is as a model for when the compiler can semantically cache memory accesses. This can either mean assuming a value in memory hasn’t been modified or assuming a write to memory isn’t necessary. This is exceptionally important because essentially all program state is semantically in memory. It’s impossible for a general purpose programming language that does anything on the behalf of the programmer to allow arbitrary reads and writes to memory.&lt;/p&gt;
+&lt;p&gt;As a hopefully extremely obvious example that we can all agree on, a compiler should be able to assume that the following program will pass 1 to &lt;code&gt;println!&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;mut&lt;/span&gt; x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;let&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;mut&lt;/span&gt; y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;; &lt;span style=&#34;color:#75715e&#34;&gt;// Wouldn&amp;#39;t it be fucked up if this could modify y?
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;x &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;println!(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;{}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, y);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When we talk about aliasing we usually jump immediately to pointers because that’s the hard part but like, the fact that this has deterministic behaviour is part of your aliasing model! Variables are semantically unaliased until you actually take a reference to them!&lt;/p&gt;
+&lt;p&gt;This is actually a foundational assumption for putting things in registers, because putting something in a register is caching it. If a compiler can’t decide it’s ok to put values in general purpose registers or spill them to the stack, it’s an assembler &lt;em&gt;at best&lt;/em&gt;. We would like to build languages that are higher-level than an assembler!&lt;/p&gt;
+&lt;p&gt;With the “no really you need this no matter what” part out of the way, let’s talk about how pointers make this hard. In the following function, can we assume that &lt;code&gt;input&lt;/code&gt; and &lt;code&gt;output&lt;/code&gt; refer to different regions of memory?&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;fn compute(input: &amp;amp;u32, output: &amp;amp;mut u32) {
+    if *input &amp;gt; 10 {
+        *output = 1;
+    }
+    if *input &amp;gt; 5 {
+        *output *= 2;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If we can, then the compiler is free to rewrite it as follows:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;fn compute(input: &amp;amp;u32, output: &amp;amp;mut u32) {
+    // keep `*input` in a register
+    let cached_input = *input; 
+    if cached_input &amp;gt; 10 {
+        // If the original, &amp;gt; 10 would imply:
+        //
+        // *output = 1
+        // *output *= 2
+        //
+        // which we can just simplify into:
+        *output = 2;
+    } else if cached_input &amp;gt; 5 {
+        *output *= 2;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If they &lt;em&gt;do&lt;/em&gt; point to overlapping memory, then the write &lt;code&gt;*output = 1&lt;/code&gt; would affect the result of the read &lt;code&gt;*input &amp;gt; 5&lt;/code&gt;, and we say those accesses &lt;em&gt;alias&lt;/em&gt;. When we perform (potentially) aliasing accesses, the compiler has to conservatively load and store from memory as much as the source code implies.&lt;/p&gt;
+&lt;p&gt;Now it’s often clumsy to talk about &lt;em&gt;accesses&lt;/em&gt; aliasing, so we usually talk about &lt;em&gt;pointers&lt;/em&gt; aliasing as a shorthand. So one would reasonably say that &lt;code&gt;input&lt;/code&gt; and &lt;code&gt;output&lt;/code&gt; alias each other. The reason that the &lt;em&gt;actual&lt;/em&gt; model is in terms of &lt;em&gt;accesses&lt;/em&gt; and not &lt;em&gt;pointers&lt;/em&gt; is because that’s the thing that we care about.&lt;/p&gt;
+&lt;p&gt;We don’t &lt;em&gt;actually&lt;/em&gt; care if you pass in two pointers that “alias” but:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Only one of them is ever used (no second observer)&lt;/li&gt;
+&lt;li&gt;Both only read (a read can’t observably affect another read) (this assumption is why memory mapped hardware has to use &lt;code&gt;volatile&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is also why Rust has such a distinct schism between “unique mutable” references (&lt;code&gt;&amp;amp;mut&lt;/code&gt;) and “shared immutable” references (&lt;code&gt;&amp;amp;&lt;/code&gt;). It’s fine to make as many copies as you want of readonly pointers, but if you want to actually write to memory it’s really important to know how it’s aliased!&lt;/p&gt;
+&lt;p&gt;(You may notice that this is a simplified model full of lies, if you would like less lies, read my extremely detailed 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://rust-unofficial.github.io/too-many-lists/fifth-stacked-borrows.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;discussion of Stacked Borrows&lt;/a&gt;
+.)&lt;/p&gt;
+&lt;p&gt;Here are some other useful shorthands:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;memory is &lt;strong&gt;anonymous&lt;/strong&gt; if the programmer cannot refer to it by name or pointer.&lt;/li&gt;
+&lt;li&gt;memory is &lt;strong&gt;unaliased&lt;/strong&gt; if there is currently only one way to refer to it.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Anonymous memory is in some sense “completely under the control of the compiler” and can therefore be freely assumed to be unaliased and trusted/modified by the compiler. Unaliased memory cannot be “randomly” modified by something seemingly “unrelated” (we’ll get to what that means in the next section).&lt;/p&gt;
+&lt;p&gt;Languages can have &lt;em&gt;stricter&lt;/em&gt; or &lt;em&gt;weaker&lt;/em&gt; aliasing models. A stricter model allows the compiler to do more optimizations but puts heavier restrictions on what the programmer is allowed to do within the confines of the language. Here are some common rules, in vaguely increasing strictness:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Callee-saved values pushed to the stack are anonymous (return pointer, frame pointer).&lt;/li&gt;
+&lt;li&gt;“Scratch” values the compiler spills to the stack are anonymous.&lt;/li&gt;
+&lt;li&gt;A newly declared variable is unaliased until a reference is taken to it.&lt;/li&gt;
+&lt;li&gt;The memory returned by &lt;code&gt;malloc&lt;/code&gt; is unaliased.&lt;/li&gt;
+&lt;li&gt;Fields of a struct do not alias eachother (bitfields are made of sadness).&lt;/li&gt;
+&lt;li&gt;Padding bytes are vaguely anonymous (messy because of memcpy/memset/unions/punning).&lt;/li&gt;
+&lt;li&gt;Immutable variables are functionally unaliased in that they can never change values.&lt;/li&gt;
+&lt;li&gt;In Rust, &lt;code&gt;&amp;amp;mut&lt;/code&gt; is unaliased (
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://plv.mpi-sws.org/rustbelt/stacked-borrows/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Stacked Borrows&lt;/a&gt;
+).&lt;/li&gt;
+&lt;li&gt;In C(++), &lt;code&gt;T*&lt;/code&gt; and &lt;code&gt;U*&lt;/code&gt; cannot alias if &lt;code&gt;T!=U&lt;/code&gt; and neither is &lt;code&gt;char&lt;/code&gt; (
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://blog.regehr.org/archives/1307&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Strict Aliasing&lt;/a&gt;
+).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;(I cannot emphasize enough how shorthanded all of this is, the devil is extremely in the details and formally specifying these things is this subject of untold numbers of PhD theses. I am not trying to write a PhD thesis right now. Unless you literally work on a C/C++ Standard Committee or are named Ralf Jung I will not be accepting your Umm Actually’s on these definitions and terms.)&lt;/p&gt;
+&lt;h2 id=&#34;12-alias-analysis-and-pointer-provenancealias-analysis-and-pointer-provenance&#34;&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+
+    
+    href=&#34;#alias-analysis-and-pointer-provenance&#34;
+
+
+&gt;1.2 Alias Analysis and Pointer Provenance&lt;/a&gt;
+
+&lt;/h2&gt;&lt;p&gt;Ok so you have some definitions for how memory can be considered “unaliased”, but as soon as you take a pointer to something, or copy a pointer, or offset a pointer… that all goes out the window, right? Like you have to assume anything can be aliased by anything else?&lt;/p&gt;
+&lt;p&gt;No! Aliasing rules are some of the most foundational parts of a language’s semantics and optimizations. If you run afoul of the language’s aliasing rules you have Undefined Behaviour and the miscompilations can be extremely brutal!&lt;/p&gt;
+&lt;p&gt;But yes, once you start faffing around with pointers things get &lt;em&gt;a lot harder&lt;/em&gt; for the compiler, memory model, and programmer. To make aliasing a useful notion once pointers start getting thrown around, memory models very quickly find the need to define two concepts:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Allocations&lt;/li&gt;
+&lt;li&gt;Pointer Provenance&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;Allocations&lt;/em&gt; abstractly describe things like individual variables and heap allocations. A freshly created allocation (variable decl, malloc) is always brought into the world unaliased and therefore acts like a &lt;em&gt;sandbox&lt;/em&gt; with One True Name – there is no way to access the memory in the sandbox &lt;em&gt;except&lt;/em&gt; through the One True Name (that isn’t Undefined Behaviour).&lt;/p&gt;
+&lt;p&gt;Permission to access the allocation’s sandbox can be &lt;em&gt;delegated&lt;/em&gt; from the One True Name by deriving a new pointer from it (or anything recursively derived from it). The process of tracking this “chain of custody” from the One True Name to all of its derived pointers is &lt;em&gt;Pointer Provenance&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;From a formal memory model perspective, all accesses to an allocation must have &lt;em&gt;provenance&lt;/em&gt; tracking back to that allocation. If pointer provenance isn’t satisfied, then that means the programmer broke out of the sandbox or pulled a pointer from the aether that happened to point into some random sandbox. Either way, everything is chaos and nothing makes sense anymore if that’s allowed.&lt;/p&gt;
+&lt;p&gt;From a compiler optimization perspective, tracking provenance allows the compiler to prove that two accesses don’t alias. If two pointers are known to have different provenance, then they cannot possibly alias and you can get Good Codegen. If it ever loses track of a pointer to some memory (i.e. if pointers are passed to an opaque function) then it has put that memory/pointer in a “may be aliased” bucket. Accesses through two may-be-aliased sources have to conservatively be assumed to alias and can get Bad Codegen.&lt;/p&gt;
+&lt;p&gt;This is the fundamental trick compilers apply to all impossible problems: have a simple analysis that can answer your query with “YES”, “NO”, or “MAYBE” and then convert “MAYBE” to “YES” or “NO” based on whichever one is safer. Do these two accesses MAYBE alias? Then YES they alias. Problem Solved.&lt;/p&gt;
+&lt;p&gt;In a memory-safe language, this is all “just” an optimization scheme because the programmer can’t “break” the compiler’s analysis. But once you’re doing unsafe things (like with C or Unsafe Rust), the compiler needs you to help it out and actually follow some dang rules. Specifically, everyone agrees you &lt;em&gt;really&lt;/em&gt; shouldn’t be allowed to break out of allocation sandboxes.&lt;/p&gt;
+&lt;p&gt;This is why llvm’s 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://llvm.org/docs/GetElementPtr.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;GetElementPointer (GEP)&lt;/a&gt;
+ instruction, which computes a pointer offset, is almost always emitted by compilers with the &lt;code&gt;inbounds&lt;/code&gt; keyword. The &lt;code&gt;inbounds&lt;/code&gt; keyword is basically “I promise this offset won’t break the pointer out of its allocation sandbox and completely trash aliasing and provenance”. Which like, yeah all of your pointer offsets should follow that rule!&lt;/p&gt;
+&lt;p&gt;Let’s go up a level and look at rustc: any time you do &lt;code&gt;(*ptr).my_field&lt;/code&gt; the compiler will emit &lt;code&gt;GEP inbounds&lt;/code&gt;. Have you ever wondered why the documentation for 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://doc.rust-lang.org/std/primitive.pointer.html#method.offset&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;ptr::offset&lt;/a&gt;
+ and friends is so weird and complicated? Because they lower to &lt;code&gt;GEP inbounds&lt;/code&gt; and need to follow its rules! 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://doc.rust-lang.org/std/primitive.pointer.html#method.wrapping_offset&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;ptr::wrapping_offset&lt;/a&gt;
+ is just &lt;code&gt;GEP&lt;/code&gt; without the &lt;code&gt;inbounds&lt;/code&gt;. And even &lt;code&gt;wrapping_offset&lt;/code&gt; isn’t &lt;em&gt;actually&lt;/em&gt; allowed to break provenance:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Compared to &lt;code&gt;offset&lt;/code&gt;, this method basically delays the requirement of staying within the same allocated object: &lt;code&gt;offset&lt;/code&gt; is immediate Undefined Behavior when crossing object boundaries; &lt;code&gt;wrapping_offset&lt;/code&gt; produces a pointer but still leads to Undefined Behavior if a pointer is dereferenced when it is out-of-bounds of the object it is attached to.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Mea culpa, I spent years calling 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://www.cl.cam.ac.uk/research/security/ctsrd/cheri/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;CHERI&lt;/a&gt;
+ completely unshippable vaporware! I was pretty confident, but I’ll eat my hat because 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://www.arm.com/architecture/cpu/morello&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;ARM Morello actually built and shipped a full CHERI-based CPU&lt;/a&gt;
+. Congratulations to everyone who worked on it!&lt;/p&gt;
+&lt;p&gt;So what is CHERI? I’m not going to get into the nitty-gritty details but roughly speaking it’s a 128-bit architecture. Well actually it’s 129-bit. Well actually it’s 64-bit. &lt;em&gt;Sorry what?&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Ok so the whole Idea with CHERI is that it actually reifies and implements the “sandboxing” model from the previous section. Every pointer is tagged with extra metadata that the hardware maintains and validates. If you ever break out of your sandbox the hardware will catch it and the OS will presumably kill your process.&lt;/p&gt;
+&lt;p&gt;I don’t know the full details of the encoding or metadata, but the part we care about is that each pointer contains a compressed &lt;em&gt;slice&lt;/em&gt; (range of memory) that it is allowed to point into as well as the &lt;em&gt;actual&lt;/em&gt; address that it points to. The slice is that pointer’s sandbox, and all pointers derived from it inherit that sandbox (or less). Whenever you access some memory, the hardware just checks that the pointer is still inside its sandbox.&lt;/p&gt;
+&lt;p&gt;This metadata isn’t cheap: pointers in CHERI are 128-bits wide, but the effective address space is still at most 64-bit (I don’t know the exact upper bound, all that matters is that addresses &lt;em&gt;fit&lt;/em&gt; in 64-bit). Now 128-bit is &lt;em&gt;really&lt;/em&gt; bloated, so in C(++) CHERI actually gets help from our old nemesis 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://gankra.github.io/blah/rust-layouts-and-abis/#the-c-integer-hierarchy&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;The Wobbly C Interger Hierarchy&lt;/a&gt;
+.&lt;/p&gt;
+&lt;p&gt;C makes a distinction between &lt;code&gt;intptr_t&lt;/code&gt; (“a pointer-sized integer”) and &lt;code&gt;ptrdiff_t&lt;/code&gt;/&lt;code&gt;size_t&lt;/code&gt; (“offset-sized integers”). Under CHERI, &lt;code&gt;intptr_t&lt;/code&gt; is 128-bit and &lt;code&gt;ptrdiff_t&lt;/code&gt;/&lt;code&gt;size_t&lt;/code&gt; are 64-bit. It can do this because the address space is still only 64-bit, so anything that refers to offsets or sizes can still be 64-bit.&lt;/p&gt;
+&lt;p&gt;Ok so you might have two burning questions at this point: how on earth can this possible work if I can just scribble over a pointer and corrupt its metadata, and why did you say it’s actually 129-bit. As it turns out, those are the same question!&lt;/p&gt;
+&lt;p&gt;I find the best way to conceptualize this is to think of it like 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://en.wikipedia.org/wiki/ECC_memory&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;ECC (Error Correction Code) RAM&lt;/a&gt;
+. In ECC RAM, each RAM stick actually has more physically memory than it claims, because it’s transparently using that extra memory to correct or detect random bitflips. So there’s all this extra memory &lt;em&gt;somewhere&lt;/em&gt; but as far as a compiler or programmer are concerned, the memory looks perfectly normal and doesn’t have any weird extra bits.&lt;/p&gt;
+&lt;p&gt;CHERI does the same thing, but the extra 129th bit the hardware is hiding from you is a “metadata is valid” bit. You see, to properly manipulate pointers in CHERI you need to access the memory/registers containing a pointer with specific instructions for that task. If you try to manipulate them some other way (say by memcpying random bytes over it), the hardware will disable the “metadata is valid” bit. Then if you try to use it &lt;em&gt;as&lt;/em&gt; a pointer, the hardware will see your metadata can’t be trusted and fault/kill your process.&lt;/p&gt;
+&lt;p&gt;It’s friggin’ neato!&lt;/p&gt;
+&lt;p&gt;(A lot of the issues we’ll see with integrating Rust with CHERI will actually look a lot like issues with &lt;em&gt;segmented architectures&lt;/em&gt;, but I have never used those so I will just be vaguely gesturing at them and handwaving. Just keep in mind that whenever I refer to CHERI, a similar argument &lt;em&gt;also&lt;/em&gt; probably applies to segmenting. So if you care about segmented architectures, you might care about CHERI too!)&lt;/p&gt;
+&lt;p&gt;Now let’s see how Rust’s current unsafe pointer APIs cause problems for all the background we’ve seen above.&lt;/p&gt;
+&lt;p&gt;Rust currently says this code is totally cool and fine:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;// Masking off a tag someone packed into a pointer:
+let mut addr = my_ptr as usize;
+addr = addr &amp;amp; !0x1; 
+let new_ptr = addr as *mut T;
+*new_ptr += 10;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This is some pretty bog-standard code for messing with tagged pointers, what’s wrong with that?&lt;/p&gt;
+&lt;p&gt;Think about the background we just discussed. Think about Pointer Provenance. Think about CHERI.&lt;/p&gt;
+&lt;p&gt;🙀 aAAaAAaaaAAaAAAAAA 🙀&lt;/p&gt;
+&lt;p&gt;For this to &lt;em&gt;possibly&lt;/em&gt; work with Pointer Provenance and Alias Analysis, that stuff must pervasively infect all integers on the assumption that they &lt;em&gt;might&lt;/em&gt; be pointers. This is a huge pain in the neck for people who are trying to actually 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://plv.mpi-sws.org/rustbelt/stacked-borrows/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;formally define Rust’s memory model&lt;/a&gt;
+, and for people who are 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/rust-lang/miri&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;trying to build sanitizers for Rust that catch UB&lt;/a&gt;
+. And I assure you it’s 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://www.open-std.org/jtc1/sc22/wg14/www/docs/n2676.pdf&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;just as much a headache for all the LLVM and C(++) people too&lt;/a&gt;
+.&lt;/p&gt;
+&lt;p&gt;For this to &lt;em&gt;possibly&lt;/em&gt; work with CHERI we need to make usize 128-bit (even though the address space is 64-bit) and always manipulate it with “pointer instructions” on the assumption that it &lt;em&gt;might&lt;/em&gt; be a pointer in the vein of intptr_t. Yes folks have tried running Rust under CHERI and 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://nw0.github.io/cheri-rust.pdf&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;that’s exactly what they had to do&lt;/a&gt;
+. It was, Not Good.&lt;/p&gt;
+&lt;p&gt;Unfortunately for CHERI, Rust actually &lt;em&gt;defines&lt;/em&gt; &lt;code&gt;usize&lt;/code&gt; to be the same size as a pointer, even though its primary role is to be an offset/size. This is a &lt;em&gt;very&lt;/em&gt; reasonable assumption for mainstream platforms, but it runs afoul of CHERI (and segmented architectures)!&lt;/p&gt;
+&lt;p&gt;If you &lt;em&gt;don’t&lt;/em&gt; make usize 128-bit and just try to make it the 64-bit “address” portion, then &lt;code&gt;usize as *mut T&lt;/code&gt; is a completely incoherent operation. Promoting an integer to a pointer (or what CHERI calls &lt;em&gt;a capability&lt;/em&gt;) requires adding metadata to it. What metadata? What range is this random address possibly valid for? There is literally no way to answer that question!&lt;/p&gt;
+&lt;p&gt;Now you might be thinking “ok but pointer tagging is a super fundamental thing, are you saying we can’t do that anymore?”. Nope! You can totally still do tagging tricks, but you need to be a bit more careful about it. This is why CHERI actually 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-947.pdf#page=28&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;introduces a special operation&lt;/a&gt;
+:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;void* cheri_address_set(void* capability, vaddr_t address)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This takes a valid pointer (capability) and an address, and creates a new pointer with the same metadata but the new address. &lt;code&gt;vaddr_t&lt;/code&gt; is a new integer type that CHERI introduced which is morally equivalent to other “address-space-sized” pointers like &lt;code&gt;size_t&lt;/code&gt;, &lt;code&gt;ptrdiff_t&lt;/code&gt;, etc.&lt;/p&gt;
+&lt;p&gt;Hey! That operation &lt;em&gt;also&lt;/em&gt; looks really useful for provenance, doesn’t it? By associating our int-to-ptr operation with an existing pointer we are &lt;em&gt;reestablishing&lt;/em&gt; the provenance chain of custody: the new pointer is derived from the old one, and compilers and memory-models can be happy! HMMMM…&lt;/p&gt;
+&lt;p&gt;In the grand old days of Rust 1.0, we were pretty optimistic about how fast-and-loose we could be with raw pointers. Well, ok we were actually pretty rigorous about pointers by most people’s standards. We largely enforced GEP inbounds semantics, required alignment everywhere, 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://doc.rust-lang.org/nightly/nomicon/vec/vec-zsts.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;carved out how to work with ZSTs&lt;/a&gt;
+, 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://doc.rust-lang.org/nightly/nomicon/vec/vec-alloc.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;ensured that allocations can’t be larger than isize::MAX&lt;/a&gt;
+, etc.&lt;/p&gt;
+&lt;p&gt;But what we played really fast and loose on was &lt;em&gt;aliasing&lt;/em&gt; and &lt;em&gt;validity&lt;/em&gt;. In Ye Olde conception of Rust, references were kinda just &lt;em&gt;conveniences&lt;/em&gt;. Like yes they asserted many things, but not in a &lt;em&gt;compiler optimization&lt;/em&gt; kinda way. Just in a “this API guarantees this” kinda way. We all vaguely knew we &lt;em&gt;wanted&lt;/em&gt; the optimization-y stuff but no one had spent the energy to work that out.&lt;/p&gt;
+&lt;p&gt;These days, between 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/rust-lang/unsafe-code-guidelines&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;unsafe-code-guidelines&lt;/a&gt;
+, 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/rust-lang/miri&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;miri&lt;/a&gt;
+ and 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://plv.mpi-sws.org/rustbelt/stacked-borrows/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;stacked borrows&lt;/a&gt;
+, a lot of us have now put a lot of thought into this. Miri is especially useful because it lets us “kick the tires” on actual code and check if the semantics we’re interested in are actually obeyed by real unsafe Rust code.&lt;/p&gt;
+&lt;p&gt;They Weren’t! This is why 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://rust-unofficial.github.io/too-many-lists/fifth.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;the unsafe queue&lt;/a&gt;
+ in Learn Rust With Entirely Too Many Linked Lists abruptly comes to a halt for a 4000 word delve into miri and stacked borrows! Even something as boring as a linked queue in Ye Olde Rust had confusing and busted semantics.&lt;/p&gt;
+&lt;p&gt;(For real read that chapter if you want to understand stacked borrows, I’m not rehashing it here.)&lt;/p&gt;
+&lt;p&gt;The fundamental issue is that under our modern understanding of Rust, even &lt;em&gt;creating&lt;/em&gt; a reference is making an extremely strong validity assertion and has side-effects on the “borrow stack” which in turn changes which references are considered to invalidate or not. For a reference to &lt;code&gt;T&lt;/code&gt; this potentially includes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The reference is aligned&lt;/li&gt;
+&lt;li&gt;The reference is non-null&lt;/li&gt;
+&lt;li&gt;The pointed-to-memory is allocated and has at least &lt;code&gt;size_of::&amp;lt;T&amp;gt;()&lt;/code&gt; bytes.&lt;/li&gt;
+&lt;li&gt;If T has 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://doc.rust-lang.org/nomicon/what-unsafe-does.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;invalid values&lt;/a&gt;
+, the pointed-to-memory does not contain one.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The upshot of all of this is that &lt;em&gt;generally&lt;/em&gt; you should avoid mixing references and unsafe pointers. Unsafe code should &lt;em&gt;generally&lt;/em&gt; provide a safe-referency-interface at its API boundary, and then internally drop the references and try to stay in unsafe pointer land. This way you minimize the strong assertions you make about your sketchy low-level data structures’ memory.&lt;/p&gt;
+&lt;p&gt;Ok, simple enough, right?&lt;/p&gt;
+&lt;h2 id=&#34;23-offsets-and-places-are-a-messoffsets-and-places-are-a-mess&#34;&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+
+    
+    href=&#34;#offsets-and-places-are-a-mess&#34;
+
+
+&gt;2.3 Offsets And Places Are A Mess&lt;/a&gt;
+
+&lt;/h2&gt;&lt;p&gt;So you’re trying to be responsible and stay in unsafe pointer land and it’s time to offset a pointer. That’s easy, we have ptr::offset/add/sub for that! Let’s just offset to this struct’s field… uh… wait what’s that field’s offset?&lt;/p&gt;
+&lt;p&gt;Oh Rust just, doesn’t tell me that huh? Well maybe you can do something like:&lt;/p&gt;
+&lt;p&gt;Oh no wait that made a reference. Yes even if you immediately cast it to a raw pointer. How the heck do you take an address without creating a reference? Also is it actually fine for me to use a reference to initialize uninit memory? Sort of, sometimes.&lt;/p&gt;
+&lt;p&gt;This is a big confusing mess. For a long time we tried to have some kind of “5-second rule” thing where if you converted the reference to a raw pointer “fast enough” then it’s OK but that was pretty clearly untenable for a formal model (I advocated for it, it would have been nice!). So folks came up with 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/rust-lang/rfcs/blob/master/text/2582-raw-reference-mir-operator.md&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;a proper RFC for raw addresses&lt;/a&gt;
+ and for a long time we’ve had a hacky 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://doc.rust-lang.org/stable/std/ptr/macro.addr_of.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;addr_of macro&lt;/a&gt;
+ that lets you do this:&lt;/p&gt;
+&lt;p&gt;…yeah I hate it too.&lt;/p&gt;
+&lt;p&gt;And even that didn’t put the nail in the coffin. There was recently 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://lucumr.pocoo.org/2022/1/30/unsafe-rust/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;a post by a very experienced rust developer&lt;/a&gt;
+ that basically amounted to confused frustration at the current state of affairs with doing this stuff with 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://doc.rust-lang.org/nomicon/unchecked-uninit.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;uninitialized memory&lt;/a&gt;
+. Meanwhile the &lt;em&gt;actual&lt;/em&gt; thing proposed in the RFC 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/rust-lang/rust/issues/64490&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;has seemingly been stalled out for years&lt;/a&gt;
+ because the Experts on this stuff are themselves 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/rust-lang/unsafe-code-guidelines/issues/319&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;confused by the corner-cases of addr_of&lt;/a&gt;
+.&lt;/p&gt;
+&lt;p&gt;And to make it even worse, addr_of also makes it really hard to do a thing people &lt;em&gt;still&lt;/em&gt; want which is static 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://en.cppreference.com/w/cpp/types/offsetof&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;offsetof&lt;/a&gt;
+.&lt;/p&gt;
+&lt;p&gt;It is my assertion that a lot of this boils down to two facts:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Dereferencing Pointers Is Fake Nonsense&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Places&lt;/a&gt;
+ Are Extremely Confusing Magic (Rust’s term for lvalues)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Like if we think about what “dereferencing” a pointer is… it’s actually nothing? Like dereferencing a pointer doesn’t actually &lt;em&gt;do&lt;/em&gt; a thing. It puts you in “place expression” mode and lets you specify an offset to subfields/indices of the pointee, and then what &lt;em&gt;actually&lt;/em&gt; happens is only specified at the end. e.g.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;&amp;amp;mut (*ptr).field
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This is certainly &lt;em&gt;familiar&lt;/em&gt; syntax but it’s genuinely also kind of magical in the exact same way autoderef is in Rust. That is to say, it makes a kind of sense and honestly you just don’t need to think about the fact that it’s happening &lt;em&gt;in safe Rust code&lt;/em&gt; because you know the compiler has your back and will help out if anything goes wrong. But in unsafe Rust code? This stuff is way too fuzzy. I literally can’t tell if the indexing is into a slice or an inline array, or if any of those &lt;code&gt;.&lt;/code&gt;s is dereferencing stuff implicitly.&lt;/p&gt;
+&lt;p&gt;(Also as far as memory-model goes, there’s actually some disagreement on whether dereferencing in-and-of-itself &lt;em&gt;actually&lt;/em&gt; has no intrinsic meaning or if it does some validity assertions!)&lt;/p&gt;
+&lt;p&gt;As I said before, when you’re doing unsafe pointer stuff you want to &lt;em&gt;stay&lt;/em&gt; in that mode. That is currently &lt;em&gt;impossible&lt;/em&gt; with this place-expression design, because as soon as you deref you’re kinda in a weird twilight between safe and unsafe!&lt;/p&gt;
+&lt;p&gt;Alright and now here is where I start going off the rails and proposing wild overhauls to Rust with almost no regard for “parsing”.&lt;/p&gt;
+&lt;h2 id=&#34;31-distinguish-pointers-and-addressesdistinguish-pointers-and-addresses&#34;&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+
+    
+    href=&#34;#distinguish-pointers-and-addresses&#34;
+
+
+&gt;3.1 Distinguish Pointers And Addresses&lt;/a&gt;
+
+&lt;/h2&gt;&lt;p&gt;The connection between &lt;code&gt;usize&lt;/code&gt; and pointers needs to be completely overhauled, and I would take a chainsaw to it (using proper 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://doc.rust-lang.org/edition-guide/editions/index.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;editions and deprecation periods&lt;/a&gt;
+).&lt;/p&gt;
+&lt;p&gt;Here’s the high level look at our tasteful chainsawing:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Define a distinction between a &lt;em&gt;pointer&lt;/em&gt; and an &lt;em&gt;address&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;Redefine usizes as address-sized, which is &amp;lt;= pointer-sized (and usually ==)&lt;/li&gt;
+&lt;li&gt;Define &lt;code&gt;ptr.addr() -&amp;gt; usize&lt;/code&gt; and &lt;code&gt;ptr.with_addr(usize) -&amp;gt; ptr&lt;/code&gt; methods&lt;/li&gt;
+&lt;li&gt;Deprecate &lt;code&gt;usize as ptr&lt;/code&gt; and &lt;code&gt;ptr as usize&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;First off, those definitions. A pointer is still a pointer as we know it, but we now acknowledge that it points into a specific &lt;em&gt;address space&lt;/em&gt;. A pointer also contains an &lt;em&gt;address&lt;/em&gt; which is conceptually an offset into this address space.&lt;/p&gt;
+&lt;p&gt;(For all major architectures &lt;em&gt;and&lt;/em&gt; CHERI there is only one address space as far as I’m concerned, but it’s potentially worth opening the door for properly talking about pointers in segmented architectures here. Although regarding x64’s TLS (Thread Local Storage) implementation as a separate address space from the perspective of a thread is probably more honest.)&lt;/p&gt;
+&lt;p&gt;A usize is large enough to contain all addresses for all address spaces on that platform. For major architectures, that means a &lt;code&gt;usize&lt;/code&gt; is still pointer-sized. For CHERI, that means &lt;code&gt;usize&lt;/code&gt; can (and should) be a &lt;code&gt;u64&lt;/code&gt; and is equivalent to CHERI’s &lt;code&gt;vaddr_t&lt;/code&gt;. To keep things tolerable I think it would be reasonable to still require that &lt;code&gt;usize&lt;/code&gt;/&lt;code&gt;isize&lt;/code&gt; is the same as &lt;code&gt;size_t&lt;/code&gt; and &lt;code&gt;ptrdiff_t&lt;/code&gt; in the target’s ABI.&lt;/p&gt;
+&lt;p&gt;(Again hopefully this generic definition is useful for segmenting, although I’ve heard nasty rumors of segmented platforms that actually decouple &lt;code&gt;size_t&lt;/code&gt; and &lt;code&gt;ptrdiff_t&lt;/code&gt; which is horrible and maybe still something we don’t want to support.)&lt;/p&gt;
+&lt;p&gt;As a result, someone writing &lt;em&gt;maximally portable&lt;/em&gt; Rust must now replace their assumptions:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;size_of::&amp;lt;usize&amp;gt;() == size_of::&amp;lt;*mut u8&amp;gt;()&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;is now:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;size_of::&amp;lt;usize&amp;gt;() &amp;lt;= size_of::&amp;lt;*mut u8&amp;gt;()&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;There should probably be a &lt;code&gt;cfg(target_address_size_is_pointer_size)&lt;/code&gt; or something to allow people to specify software is incompatible with &lt;em&gt;weird&lt;/em&gt; platforms where the strict equality doesn’t hold.&lt;/p&gt;
+&lt;p&gt;I don’t think Rust needs to define a moral equivalent to &lt;code&gt;intptr_t&lt;/code&gt;, if the new casting APIs work out as well as I hope – &lt;code&gt;*mut ()&lt;/code&gt; is already &lt;code&gt;intptr_t&lt;/code&gt; for most valid purposes. As far as I’m aware the &lt;code&gt;intptr_t&lt;/code&gt; shenanigans that CHERI does are less “definitely good and desirable” and more “awful hacks to get old code working”. That said, people keep vaguely mentioning memory-mapped hardware as a place where this might be important, but that is outside my domain of expertise (and clearly needs special segment/provenance/capability handling &lt;em&gt;anyway&lt;/em&gt;).&lt;/p&gt;
+&lt;p&gt;Next off, replacing casts with methods. All casts from raw pointers to/from integers are to be deprecated. This &lt;em&gt;primarily&lt;/em&gt; means for isize/usize but for whatever reason rust lets you do &lt;code&gt;ptr as u8&lt;/code&gt; too and that is even &lt;em&gt;more&lt;/em&gt; gibberish.&lt;/p&gt;
+&lt;p&gt;The following new methods would be added:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;addr_of!((*ptr).field)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Deprecating the casts may seem extreme, but as far as I’m concerned this is the exact same situation as 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://gankra.github.io/blah/initialize-me-maybe/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;when we deprecated mem::uninitialized&lt;/a&gt;
+. The design of these casts is fundamentally broken under both Pointer Provenance and CHERI. Everyone needs to use a better design that actually has a coherent meaning.&lt;/p&gt;
+&lt;p&gt;Now &lt;em&gt;technically&lt;/em&gt; you could keep &lt;code&gt;ptr as usize&lt;/code&gt; but I think it’s better to replace both for several reasons:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Getting a deprecation warning for both sides of the cast raises a big red flag to &lt;em&gt;everyone&lt;/em&gt; doing anything even vaguely dubious with a usize that they have some thinking to do.&lt;/li&gt;
+&lt;li&gt;You can’t hang documentation off of casts. As I hope this post demonstrates, int-ptr stuff is extremely subtle and hairy, and deserves a lot of detailed documentation!&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ptr as usize&lt;/code&gt; is horribly clunky in practice so destroying it is honestly a mercy.&lt;/li&gt;
+&lt;li&gt;Straight-up symmetry/aesthetics. It’s weird to only have one!&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As the documentation notes, the new with_addr method allows us to reconstitute many things:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;What segment the address goes to (hopefully)&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Provenance&lt;/em&gt; for the purposes of memory models / alias analysis&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Metadata&lt;/em&gt; for the purposes of CHERI (but this is just a reification of provenance)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;…that it! It just fixes the issue. That’s all you need to fix provenance and CHERI! (And maybe also support segmenting.)&lt;/p&gt;
+&lt;p&gt;(In reality there might need to be some more special APIs added to satisfy the existing Jank uses of ptr-int conversions, but that really needs to be shaken out on crates.io and with the community.)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Unclear detail: is get_addr/with_addr also necessary/useful for 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://www.qualcomm.com/media/documents/files/whitepaper-pointer-authentication-on-armv8-3.pdf&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;ARMv8.3 Pointer Authentication&lt;/a&gt;
+? This is a technology that 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/apple/llvm-project/blob/next/clang/docs/PointerAuthentication.rst&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Apple ships&lt;/a&gt;
+ and involves some pointers getting signed/obfuscated to make it a bit harder to do memory-safety exploits. I haven’t looked into it enough to know what level of abstraction this “leaks” into. I just know about it because it shows up in minidumps and we have to 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/rust-minidump/rust-minidump/blob/7eed71e4075e0a81696ccc307d6ac68920de5db5/minidump-processor/src/stackwalker/arm64.rs#L252&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;hackily try to strip it out&lt;/a&gt;
+.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;32-fixing-places-and-offsetsfixing-places-and-offsets&#34;&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+
+    
+    href=&#34;#fixing-places-and-offsets&#34;
+
+
+&gt;3.2 Fixing Places and Offsets&lt;/a&gt;
+
+&lt;/h2&gt;&lt;p&gt;Ok here’s a two-part combo of syntactic niceties to make it a lot easier to work with unsafe pointers. I am almost &lt;em&gt;certain&lt;/em&gt; that I’m going to run afoul of parser ambiguities somewhere here but hey this isn’t a real RFC and I get to make the rules. Maybe it works fine. Maybe it can be fixed in an edition. Let’s find out!&lt;/p&gt;
+&lt;p&gt;Hey Did You Know Rust 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/rust-lang/reference/pull/1149&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Never Actually&lt;/a&gt;
+ Removed Tilde (&lt;code&gt;~&lt;/code&gt;) From 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://doc.rust-lang.org/nightly/reference/tokens.html#punctuation&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;The Syntax&lt;/a&gt;
+?&lt;/p&gt;
+&lt;p&gt;Did you also know that &lt;code&gt;~&lt;/code&gt; was one of the things that originally drew me to messing around with Rust back in like 2014, and that I was very sad to learn that it was already being removed?&lt;/p&gt;
+&lt;p&gt;Well today I get my justice. Today I return &lt;code&gt;~&lt;/code&gt; to its position of glory that is &lt;em&gt;deserved&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Here is my grand vision that will solve all of Rust’s woes around “staying in unsafe pointer mode” and just generally dealing with offsets: If you write &lt;code&gt;my_ptr~field&lt;/code&gt; (in analogy to &lt;code&gt;my_struct.field&lt;/code&gt;) it always does a raw pointer offset and doesn’t change the level of indirection (but does change the pointee’s type).&lt;/p&gt;
+&lt;p&gt;Note that this is &lt;em&gt;different&lt;/em&gt; from C’s &lt;code&gt;-&amp;gt;&lt;/code&gt; in that &lt;code&gt;ptr-&amp;gt;field&lt;/code&gt; is &lt;code&gt;(*ptr).field&lt;/code&gt; and therefore puts in you “place expression” mode. Nested &lt;code&gt;-&amp;gt;&lt;/code&gt;’s are actual &lt;em&gt;loads&lt;/em&gt; from memory (because you need to get the address to start the next level of offsets from). &lt;code&gt;~&lt;/code&gt; will never cause an implicit load/store because it doesn’t change levels of indirection or enter “place expression” mode. It is &lt;em&gt;purely&lt;/em&gt; sugar for:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;(*ptr).field1.field2[i].field4;     // load
+(*ptr).field1.field2[i].field4 = 5; // store
+&amp;amp;(*ptr).field1.field2[i].field4     // offset (*maybe*)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;ptr~field~subfield&lt;/code&gt; does not need to appeal to “place expressions” and can always be done (and parsed/implemented) as piecewise application of the binary &lt;code&gt;~&lt;/code&gt; operator:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;// Ditto for `*const T`
+
+impl&amp;lt;T: ?Sized&amp;gt; *mut T {
+    /// Gets the &amp;#34;address&amp;#34; portion of the pointer.
+    ///
+    /// On most platforms this is a no-op, as the pointer is just an address,
+    /// and is equivalent to the deprecated `ptr as usize` cast.
+    ///
+    /// On more complicated platforms like CHERI and segmented architectures,
+    /// this may remove some important metadata. See [`with_addr`][] for
+    /// details on this distinction and why it&amp;#39;s important.
+    fn addr(self) -&amp;gt; usize;
+
+    /// Creates a new pointer with the given address.
+    ///
+    /// This replaces the deprecated `usize as ptr` cast, which had
+    /// fundamentally broken semantics because it couldn&amp;#39;t restore 
+    /// *segment* and *provenance*.
+    ///
+    /// A pointer semantically has 3 pieces of information associated with it:
+    ///
+    /// * Segment: The address-space it is part of.
+    /// * Provenance: An allocation (slice) that it is allowed to access.
+    /// * Address: The actual address it points at.
+    ///
+    /// The compiler and hardware need to properly understand all 3 of these
+    /// values at all times to properly execute your code.
+    ///
+    /// Segment and Provenance are implicitly defined by *how* a pointer is
+    /// constructed and generally propagates verbatim to all derived pointers.
+    /// It is therefore *impossible* to convert an address into a pointer
+    /// on its own, because there is no way to know what its segment and
+    /// provenance should be.
+    ///
+    /// By introducing a &amp;#34;representative&amp;#34; pointer into the process we can
+    /// properly construct a new pointer with *its* segment and provenance,
+    /// just as any other derived pointer would. This *should* be equivalent
+    /// to `wrapping_offset`ting the given pointer to the new address. See the
+    /// docs for `wrapping_offset` for the restrictions this applies.
+    ///
+    /// # Example
+    ///
+    /// Here is an example of how to properly use this API to mess around
+    /// with tagged pointers. Here we have a tag in the lowest bit:
+    ///
+    /// ```rust,ignore
+    /// let my_tagged_ptr: *mut T = ...;
+    ///
+    /// // Get the address and do whatever bit tricks we like
+    /// let addr = my_tagged_ptr.addr();
+    /// let has_tag = (addr &amp;amp; 0x1) != 0;
+    /// let real_addr = addr &amp;amp; !0x1;
+    ///
+    /// // Reconstitute a pointer with the new address and use it
+    /// let my_untagged_ptr = my_tagged_ptr.with_addr(real_addr);
+    /// *my_untagged_ptr = ...;
+    /// ```
+    fn with_addr(self, addr: usize) -&amp;gt; Self;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Let’s look at some examples:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;ptr.cast::&amp;lt;u8&amp;gt;().offset(field_offset).cast::&amp;lt;FieldTy&amp;gt;()
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Yes &lt;code&gt;~[idx]&lt;/code&gt; is a bit wonky but it’s &lt;em&gt;clear&lt;/em&gt; and &lt;em&gt;concise&lt;/em&gt; and that’s the most important thing. Note that this is what you would have to do in today’s Rust:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;let ptr_field = ptr~field;
+let ptr_subfield = ptr_field~subfield;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Or if you’re being clever and trying to leverage the fact that POD types can be initialized without &lt;code&gt;write&lt;/code&gt; if your place-expression is derived from a raw pointer dereference:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;// Some non-POD type with some fields
+struct MyType {
+    field1: bool,
+    field2: Vec, // non-POD!!!
+    field3: [u32; 4],
+}
+
+// Using ~ syntax on a raw pointer to cleanly initialize MaybeUninit
+let init = unsafe {
+    let mut uninit = MaybeUninit::&amp;lt;MyType&amp;gt;::uninit();
+    let ptr = uninit.as_mut_ptr();
+
+    ptr~field1.write(true);
+    ptr~field2.write(vec![]);
+    ptr~field3~[0].write(7);
+    ptr~field3~[1].write(2);
+    ptr~field3~[2].write(12);
+    ptr~field3~[3].write(88);
+
+    uninit.assume_init();
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;What I &lt;em&gt;really&lt;/em&gt; like about the ~ version is that:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;It’s all postfix just like we learned is Very Good And Nice with &lt;code&gt;.await&lt;/code&gt;! Just look at how nasty &lt;code&gt;addr_of!((*ptr).field2).write(vec![])&lt;/code&gt; is!&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Each &lt;code&gt;~&lt;/code&gt; can be evaluated individually – there’s no need for the language to enter a “mode” where it’s evaluating a “place” as far as the programmer is concerned. (The compiler is free to do it that way behind the scenes, you just don’t need to know about it.)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Because you &lt;em&gt;stay&lt;/em&gt; in raw-pointer mode, it’s much less painful to reach for things like the &lt;code&gt;read&lt;/code&gt; and &lt;code&gt;write&lt;/code&gt; methods. This makes it just as easy to do more complicated things like &lt;code&gt;read_volatile&lt;/code&gt; and doesn’t encourage you to be “clever” and lean on the fact that things happen to be POD. All &lt;code&gt;write&lt;/code&gt;s is a very nice kind of &lt;em&gt;mindlessly right&lt;/em&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;You never have to worry about accidentally tripping over autoderef or any other thing that is nice for safe code but a huge hazard for unsafe code.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;By getting rid of the &lt;code&gt;(*ptr).&lt;/code&gt; “syntactic salt”, programmers are motivated to move to the nicer and more robust new syntax. Yes I &lt;em&gt;really&lt;/em&gt; think this syntax is nice! It’s certainly better than &lt;code&gt;-&amp;gt;&lt;/code&gt; in C!&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We can also conceptually extend this syntax so it’s allowed on types and computes a const offsetof in usize bytes. Note that unlike &lt;code&gt;~&lt;/code&gt; on values, this syntax can’t operate “one step at a time” and needs to be evaluated more like “path expressions”. Magic is less concerning in this context because any mistake is a compiler error. Here’s how you might use it to do more “sketchy” offsets:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;let init = unsafe {
+    let mut uninit = MaybeUninit::&amp;lt;MyType&amp;gt;::uninit();
+    let ptr = uninit.as_mut_ptr();
+
+    addr_of!((*ptr).field1).write(true);
+    addr_of!((*ptr).field2).write(vec![]);
+    addr_of!((*ptr).field3[0]).write(7);
+    addr_of!((*ptr).field3[1]).write(2);
+    addr_of!((*ptr).field3[2]).write(12);
+    addr_of!((*ptr).field3[3]).write(88);
+
+    uninit.assume_init();
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I am less passionate about the const offsetof stuff but it &lt;em&gt;seems&lt;/em&gt; like it could be made to work and I know people really want that stuff.&lt;/p&gt;
+&lt;p&gt;Additional notes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It should propagate &lt;code&gt;*const&lt;/code&gt; vs &lt;code&gt;*mut&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;I don’t know if it makes sense or is a good idea but maybe you could use &lt;code&gt;~&lt;/code&gt; on actual references and non-references (int, struct, array, tuple…) and not just raw pointers?
+&lt;ul&gt;
+&lt;li&gt;If so, it may be desirable to support &lt;code&gt;val~self&lt;/code&gt; as a nicer postfix way to write &lt;code&gt;&amp;amp;mut val as *mut _&lt;/code&gt; but this is messy if you support both references and non-references since that would be potentially ambiguous as to whether you want a raw-pointer-to-ref or just raw-pointer.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is the least well-formed idea in here, but as long as we’re cleaning up raw pointers with nice and clean postfix syntax it would be &lt;em&gt;really&lt;/em&gt; nice if we also had postfix deref. Note that because of the whole “creating a reference does magic assertions” thing you &lt;em&gt;can’t&lt;/em&gt; provide something like a &lt;code&gt;deref(self) -&amp;gt; &amp;amp;T&lt;/code&gt; method that actually has the same semantics as &lt;code&gt;*ptr&lt;/code&gt;! Dereferencing raw pointers &lt;em&gt;must&lt;/em&gt; have first-class syntax.&lt;/p&gt;
+&lt;p&gt;Consider for instance trying to access some multiply-indirected value.&lt;/p&gt;
+&lt;p&gt;Today:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;let init = unsafe {
+    let mut uninit = MaybeUninit::&amp;lt;MyType&amp;gt;::uninit();
+    let ptr = uninit.as_mut_ptr();
+
+    (*ptr).field1 = true;
+    addr_of!((*ptr).field2).write(vec![]);
+    (*ptr).field3[0] = 7;
+    (*ptr).field3[1] = 2;
+    (*ptr).field3[2] = 12;
+    (*ptr).field3[3] = 88;
+
+    uninit.assume_init();
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;With offset syntax:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;// Using ~ on a type for const offsetof (usize byte offset)
+const MY_FIELD_OFFSET: usize = MyType~field1~[2];
+
+// If you want this to be syntactically distinct,
+// then we can require some amount of `::`
+//
+// Option A: MyType::~field~[2];
+// Option B: MyType::~field::~[2];
+
+// A pointer to some sketchy memory
+// !!IMPORTANT THAT THIS IS IN BYTES!!
+let ptr: *mut u8 = ...;
+
+// We&amp;#39;re doing evil things, so wrapping_add
+let field_ptr = ptr.wrapping_add(MY_FIELD_OFFSET) as *mut FieldType;
+// use field_ptr somehow...
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;With offset syntax and reads (remember, we’re staying in pointer mode, so &lt;code&gt;ptr2.read()&lt;/code&gt; is loading &lt;code&gt;ptr2&lt;/code&gt; from memory, so we can actually keep just using &lt;code&gt;~&lt;/code&gt; syntax):&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;addr_of!((*(*(*ptr1).field1.ptr2).ptr3).field4).read()
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;With postfix deref:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;(*(*ptr1~field1~ptr2)~ptr3)~field4.read()
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;(I think I independently came up with this &lt;code&gt;.*&lt;/code&gt; syntax but I was very happy to learn that Zig 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://ziglang.org/documentation/master/#Pointers&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;actually has it&lt;/a&gt;
+, and &lt;code&gt;ptr.* += 1&lt;/code&gt; is valid Zig syntax!)&lt;/p&gt;
+&lt;p&gt;The ambiguity issue with &lt;code&gt;.*&lt;/code&gt; in Rust is that &lt;code&gt;1.&lt;/code&gt; is a valid float literal, so stuff like &lt;code&gt;1. * 1.&lt;/code&gt; is valid syntax and dangerously close to &lt;code&gt;1.*.1&lt;/code&gt;. I certainly can imagine nasty ambiguities!&lt;/p&gt;
+&lt;p&gt;One nice thing about the &lt;code&gt;~&lt;/code&gt; syntax is that because unary &lt;code&gt;*&lt;/code&gt; already binds pretty weakly (which is why we need to do &lt;code&gt;(*ptr).field&lt;/code&gt;), if you only need to do one deref, it’s as clean as using normal references:&lt;/p&gt;
+&lt;p&gt;So actually the more I write this section the less I’m feeling the &lt;em&gt;need&lt;/em&gt; for postfix deref, but in my heart-of-hearts I still want it.&lt;/p&gt;
+&lt;p&gt;Oh also you could imagine wanting &lt;code&gt;.&amp;amp;&lt;/code&gt; and &lt;code&gt;.&amp;amp;mut&lt;/code&gt; but similar syntax messes probably apply.&lt;/p&gt;
+&lt;p&gt;Jesus that was a lot.&lt;/p&gt;
+&lt;p&gt;I think about unsafe pointers in Rust a lot.&lt;/p&gt;
+&lt;p&gt;I wrote this all in one sitting and I really need dinner.&lt;/p&gt;
+&lt;p&gt;Head empty only pointers.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

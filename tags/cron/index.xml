@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Cron on </title>
+        <link>/tags/cron/</link>
+        <description>Recent content in Cron on </description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en</language>
+        <lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/cron/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Cron Best Practices</title>
+        <link>/posts/archives/linux/cron-best-practices/</link>
+        <pubDate>Mon, 12 Sep 2022 12:19:48 +0800</pubDate>
+        
+        <guid>/posts/archives/linux/cron-best-practices/</guid>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;本文由 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://ksria.com/simpread/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;简悦 SimpRead&lt;/a&gt;
+ 转码， 原文地址 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://blog.sanctum.geek.nz/cron-best-practices/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;blog.sanctum.geek.nz&lt;/a&gt;
+&lt;/p&gt;&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The time-based job scheduler cron(8) has been around since Version 7 Unix, and its crontab(5) syntax &amp;hellip;&amp;hellip;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;The time-based job scheduler 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://linux.die.net/man/8/cron&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;&lt;code&gt;cron(8)&lt;/code&gt;&lt;/a&gt;
+ has been around since Version 7 Unix, and its 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://linux.die.net/man/1/crontab&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;&lt;code&gt;crontab(5)&lt;/code&gt;&lt;/a&gt;
+ syntax is familiar even for people who don’t do much Unix system administration. It’s 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://pubs.opengroup.org/onlinepubs/7908799/xcu/crontab.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;standardised&lt;/a&gt;
+, reasonably flexible, simple to configure, and works reliably, and so it’s trusted by both system packages and users to manage many important tasks.&lt;/p&gt;
+&lt;p&gt;However, like many older Unix tools, &lt;code&gt;cron(8)&lt;/code&gt;‘s simplicity has a drawback: it relies upon the user to know some detail of how it works, and to correctly implement any other safety checking behaviour around it. Specifically, all it does is try and run the job at an appropriate time, and email the output. For simple and unimportant per-user jobs, that may be just fine, but for more crucial system tasks it’s worthwhile to wrap a little extra infrastructure around it and the tasks it calls.&lt;/p&gt;
+&lt;p&gt;There are a few ways to make the way you use &lt;code&gt;cron(8)&lt;/code&gt; more robust if you’re in a situation where keeping track of the running job is desirable.&lt;/p&gt;
+&lt;h2 id=&#34;apply-the-principle-of-least-privilege&#34;&gt;Apply the principle of least privilege
+&lt;/h2&gt;&lt;p&gt;The sixth column of a system &lt;code&gt;crontab(5)&lt;/code&gt; file is the username of the user as which the task should run:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;0 * * * *  root  cron-task
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To the extent that is practical, you should run the task as a user with only the privileges it needs to run, and nothing else. This can sometimes make it worthwhile to create a dedicated system user purely for running scheduled tasks relevant to your application.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;0 * * * *  myappcron  cron-task
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This is not just for security reasons, although those are good ones; it helps protect you against nasties like scripting errors attempting to 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/valvesoftware/steam-for-linux/issues/3671&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;remove entire system directories&lt;/a&gt;
+.&lt;/p&gt;
+&lt;p&gt;Similarly, for tasks with database systems such as MySQL, don’t use the administrative &lt;code&gt;root&lt;/code&gt; user if you can avoid it; instead, use or even create a dedicated user with a unique random password stored in a locked-down &lt;code&gt;~/.my.cnf&lt;/code&gt; file, with only the needed permissions. For a MySQL backup task, for example, only a few permissions should be required, including &lt;code&gt;SELECT&lt;/code&gt;, &lt;code&gt;SHOW VIEW&lt;/code&gt;, and &lt;code&gt;LOCK TABLES&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In some cases, of course, you really will need to be &lt;code&gt;root&lt;/code&gt;. In particularly sensitive contexts you might even consider using &lt;code&gt;sudo(8)&lt;/code&gt; with appropriate &lt;code&gt;NOPASSWD&lt;/code&gt; options, to allow the dedicated user to run only the appropriate tasks as &lt;code&gt;root&lt;/code&gt;, and nothing else.&lt;/p&gt;
+&lt;h2 id=&#34;test-the-tasks&#34;&gt;Test the tasks
+&lt;/h2&gt;&lt;p&gt;Before placing a task in a &lt;code&gt;crontab(5)&lt;/code&gt; file, you should test it on the command line, as the user configured to run the task and with the appropriate environment set. If you’re going to run the task as &lt;code&gt;root&lt;/code&gt;, use something like &lt;code&gt;su&lt;/code&gt; or &lt;code&gt;sudo -i&lt;/code&gt; to get a root shell with the user’s expected environment first:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ sudo -i -u cronuser
+$ cron-task
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Once the task works on the command line, place it in the &lt;code&gt;crontab(5)&lt;/code&gt; file with the timing settings modified to run the task a few minutes later, and then watch &lt;code&gt;/var/log/syslog&lt;/code&gt; with &lt;code&gt;tail -f&lt;/code&gt; to check that the task actually runs without errors, and that the task itself completes properly:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;May  7 13:30:01 yourhost CRON[20249]: (you) CMD (cron-task)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This may seem pedantic at first, but it becomes routine very quickly, and it saves a lot of hassles down the line as it’s very easy to make an assumption about something in your environment that doesn’t actually hold in the one that &lt;code&gt;cron(8)&lt;/code&gt; will use. It’s also a necessary acid test to make sure that your &lt;code&gt;crontab(5)&lt;/code&gt; file is well-formed, as some implementations of &lt;code&gt;cron(8)&lt;/code&gt; will refuse to load the entire file if one of the lines is malformed.&lt;/p&gt;
+&lt;p&gt;If necessary, you can set arbitrary environment variables for the tasks at the top of the file:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;MYVAR=myvalue
+
+0 * * * *  you  cron-task
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;dont-throw-away-errors-or-useful-output&#34;&gt;Don’t throw away errors or useful output
+&lt;/h2&gt;&lt;p&gt;You’ve probably seen tutorials on the web where in order to keep the &lt;code&gt;crontab(5)&lt;/code&gt; job from sending standard output and/or standard error emails every five minutes, shell redirection operators are included at the end of the job specification to discard both the standard output and standard error. This kluge is particularly common for running web development tasks by automating a request to a URL with 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://curl.haxx.se/docs/manpage.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;&lt;code&gt;curl(1)&lt;/code&gt;&lt;/a&gt;
+ or 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://linux.die.net/man/1/wget&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;&lt;code&gt;wget(1)&lt;/code&gt;&lt;/a&gt;
+:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;*/5 * * *  root  curl https://example.com/cron.php &amp;gt;/dev/null 2&amp;gt;&amp;amp;1
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Ignoring the output completely is generally not a good idea, because unless you have other tasks or monitoring ensuring the job does its work, you won’t notice problems (or know what they are), when the job emits output or errors that you actually care about.&lt;/p&gt;
+&lt;p&gt;In the case of &lt;code&gt;curl(1)&lt;/code&gt;, there are just way too many things that could go wrong, that you might notice far too late:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The script could get broken and return 500 errors.&lt;/li&gt;
+&lt;li&gt;The URL of the &lt;code&gt;cron.php&lt;/code&gt; task could change, and someone could forget to add a HTTP 301 redirect.&lt;/li&gt;
+&lt;li&gt;Even if a HTTP 301 redirect is added, if you don’t use &lt;code&gt;-L&lt;/code&gt; or &lt;code&gt;--location&lt;/code&gt; for &lt;code&gt;curl(1)&lt;/code&gt;, it won’t follow it.&lt;/li&gt;
+&lt;li&gt;The client could get blacklisted, firewalled, or otherwise impeded by automatic or manual processes that falsely flag the request as spam.&lt;/li&gt;
+&lt;li&gt;If using HTTPS, connectivity could break due to cipher or protocol mismatch.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The author has seen all of the above happen, in some cases very frequently.&lt;/p&gt;
+&lt;p&gt;As a general policy, it’s worth taking the time to read the manual page of the task you’re calling, and to look for ways to correctly control its output so that it emits only the output you actually want. In the case of &lt;code&gt;curl(1)&lt;/code&gt;, for example, I’ve found the following formula works well:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl -fLsS -o /dev/null http://example.com/
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-f&lt;/code&gt;: If the HTTP response code is an error, emit an error message rather than the 404 page.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-L&lt;/code&gt;: If there’s an HTTP 301 redirect given, try to follow it.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-sS&lt;/code&gt;: Don’t show progress meter (&lt;code&gt;-S&lt;/code&gt; stops &lt;code&gt;-s&lt;/code&gt; from also blocking error messages).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-o /dev/null&lt;/code&gt;: Send the standard output (the actual page returned) to &lt;code&gt;/dev/null&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This way, the &lt;code&gt;curl(1)&lt;/code&gt; request should stay silent if everything is well, per the old Unix philosophy 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://www.linfo.org/rule_of_silence.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Rule of Silence&lt;/a&gt;
+.&lt;/p&gt;
+&lt;p&gt;You may not agree with some of the choices above; you might think it important to e.g. log the complete output of the returned page, or to fail rather than silently accept a 301 redirect, or you might prefer to use &lt;code&gt;wget(1)&lt;/code&gt;. The point is that you take the time to understand in more depth what the called program will actually emit under what circumstances, and make it match your requirements as closely as possible, rather than blindly discarding all the output and (worse) the errors. Work with 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://en.wikipedia.org/wiki/Murphy%27s_law&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Murphy’s law&lt;/a&gt;
+; assume that anything that can go wrong eventually will.&lt;/p&gt;
+&lt;h2 id=&#34;send-the-output-somewhere-useful&#34;&gt;Send the output somewhere useful
+&lt;/h2&gt;&lt;p&gt;Another common mistake is failing to set a useful &lt;code&gt;MAILTO&lt;/code&gt; at the top of the &lt;code&gt;crontab(5)&lt;/code&gt; file, as the specified destination for any output and errors from the tasks. &lt;code&gt;cron(8)&lt;/code&gt; uses the system mail implementation to send its messages, and typically, default configurations for mail agents will simply send the message to an &lt;code&gt;mbox&lt;/code&gt; file in &lt;code&gt;/var/mail/$USER&lt;/code&gt;, that they may not ever read. This defeats much of the point of mailing output and errors.&lt;/p&gt;
+&lt;p&gt;This is easily dealt with, though; ensure that you can send a message to an address you actually &lt;em&gt;do&lt;/em&gt; check from the server, perhaps using &lt;code&gt;mail(1)&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ printf &amp;#39;%s\n&amp;#39; &amp;#39;Test message&amp;#39; | mail -s &amp;#39;Test subject&amp;#39; you@example.com
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Once you’ve verified that your mail agent is correctly configured and that the mail arrives in your inbox, set the address in a &lt;code&gt;MAILTO&lt;/code&gt; variable at the top of your file:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;MAILTO=you@example.com
+
+0 * * * *    you  cron-task-1
+*/5 * * * *  you  cron-task-2
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If you don’t want to use email for routine output, another method that works is sending the output to &lt;code&gt;syslog&lt;/code&gt; with a tool like 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://linux.die.net/man/1/logger&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;&lt;code&gt;logger(1)&lt;/code&gt;&lt;/a&gt;
+:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;0 * * * *   you  cron-task | logger -it cron-task
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Alternatively, you can configure aliases on your system to forward system mail destined for you on to an address you check. For Postfix, you’d use an 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://www.postfix.org/aliases.5.html&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;&lt;code&gt;aliases(5)&lt;/code&gt;&lt;/a&gt;
+ file.&lt;/p&gt;
+&lt;p&gt;I sometimes use this setup in cases where the task is expected to emit a few lines of output which might be useful for later review, but send &lt;code&gt;stderr&lt;/code&gt; output via &lt;code&gt;MAILTO&lt;/code&gt; as normal. If you’d rather not use &lt;code&gt;syslog&lt;/code&gt;, perhaps because the output is high in volume and/or frequency, you can always set up a log file &lt;code&gt;/var/log/cron-task.log&lt;/code&gt; … but don’t forget to add a 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://linux.die.net/man/8/logrotate&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;&lt;code&gt;logrotate(8)&lt;/code&gt;&lt;/a&gt;
+ rule for it!&lt;/p&gt;
+&lt;h2 id=&#34;put-the-tasks-in-their-own-shell-script-file&#34;&gt;Put the tasks in their own shell script file
+&lt;/h2&gt;&lt;p&gt;Ideally, the commands in your &lt;code&gt;crontab(5)&lt;/code&gt; definitions should only be a few words, in one or two commands. If the command is running off the screen, it’s likely too long to be in the &lt;code&gt;crontab(5)&lt;/code&gt; file, and you should instead put it into its own script. This is a particularly good idea if you want to reliably use features of &lt;code&gt;bash&lt;/code&gt; or some other shell besides POSIX/Bourne &lt;code&gt;/bin/sh&lt;/code&gt; for your commands, or even a scripting language like Awk or Perl; by default, &lt;code&gt;cron(8)&lt;/code&gt; uses the system’s &lt;code&gt;/bin/sh&lt;/code&gt; implementation for parsing the commands.&lt;/p&gt;
+&lt;p&gt;Because &lt;code&gt;crontab(5)&lt;/code&gt; files don’t allow multi-line commands, and have other gotchas like the need to escape percent signs &lt;code&gt;%&lt;/code&gt; with backslashes, keeping as much configuration out of the actual &lt;code&gt;crontab(5)&lt;/code&gt; file as you can is generally a good idea.&lt;/p&gt;
+&lt;p&gt;If you’re running &lt;code&gt;cron(8)&lt;/code&gt; tasks as a non-system user, and can’t add scripts into a system bindir like &lt;code&gt;/usr/local/bin&lt;/code&gt;, a tidy method is to start your own, and include a reference to it as part of your &lt;code&gt;PATH&lt;/code&gt;. I favour &lt;code&gt;~/.local/bin&lt;/code&gt;, and have seen references to &lt;code&gt;~/bin&lt;/code&gt; as well. Save the script in &lt;code&gt;~/.local/bin/cron-task&lt;/code&gt;, make it executable with &lt;code&gt;chmod +x&lt;/code&gt;, and include the directory in the &lt;code&gt;PATH&lt;/code&gt; environment definition at the top of the file:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;PATH=/home/you/.local/bin:/usr/local/bin:/usr/bin:/bin
+MAILTO=you@example.com
+
+0 * * * *  you  cron-task
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Having your own directory with custom scripts for your own purposes has a host of other benefits, but that’s another article…&lt;/p&gt;
+&lt;h2 id=&#34;avoid-etccrontab&#34;&gt;Avoid /etc/crontab
+&lt;/h2&gt;&lt;p&gt;If your implementation of &lt;code&gt;cron(8)&lt;/code&gt; supports it, rather than having an &lt;code&gt;/etc/crontab&lt;/code&gt; file a mile long, you can put tasks into separate files in &lt;code&gt;/etc/cron.d&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ ls /etc/cron.d
+system-a
+system-b
+raid-maint
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This approach allows you to group the configuration files meaningfully, so that you and other administrators can find the appropriate tasks more easily; it also allows you to make some files editable by some users and not others, and reduces the chance of edit conflicts. Using &lt;code&gt;sudoedit(8)&lt;/code&gt; helps here too. Another advantage is that it works better with version control; if I start collecting more than a few of these task files or to update them more often than every few months, I start a Git repository to track them:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cd /etc/cron.d
+$ sudo git init
+$ sudo git add --all
+$ sudo git commit -m &amp;#34;First commit&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If you’re editing a &lt;code&gt;crontab(5)&lt;/code&gt; file for tasks related only to the individual user, use the &lt;code&gt;crontab(1)&lt;/code&gt; tool; you can edit your own &lt;code&gt;crontab(5)&lt;/code&gt; by typing &lt;code&gt;crontab -e&lt;/code&gt;, which will open your &lt;code&gt;$EDITOR&lt;/code&gt; to edit a temporary file that will be installed on exit. This will save the files into a dedicated directory, which on my system is &lt;code&gt;/var/spool/cron/crontabs&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;On the systems maintained by the author, it’s quite normal for &lt;code&gt;/etc/crontab&lt;/code&gt; never to change from its packaged template.&lt;/p&gt;
+&lt;h2 id=&#34;include-a-timeout&#34;&gt;Include a timeout
+&lt;/h2&gt;&lt;p&gt;&lt;code&gt;cron(8)&lt;/code&gt; will normally allow a task to run indefinitely, so if this is not desirable, you should consider either using options of the program you’re calling to implement a timeout, or including one in the script. If there’s no option for the command itself, the 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://linux.die.net/man/1/timeout&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;&lt;code&gt;timeout(1)&lt;/code&gt;&lt;/a&gt;
+ command wrapper in &lt;code&gt;coreutils&lt;/code&gt; is one possible way of implementing this:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;0 * * * *  you  timeout 10s cron-task
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Greg’s wiki has some further suggestions on 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://mywiki.wooledge.org/BashFAQ/068&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;ways to implement timeouts&lt;/a&gt;
+.&lt;/p&gt;
+&lt;h2 id=&#34;include-file-locking-to-prevent-overruns&#34;&gt;Include file locking to prevent overruns
+&lt;/h2&gt;&lt;p&gt;&lt;code&gt;cron(8)&lt;/code&gt; will start a new process regardless of whether its previous runs have completed, so if you wish to avoid locking for long-running task, on GNU/Linux you could use the 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://linux.die.net/man/1/flock&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;&lt;code&gt;flock(1)&lt;/code&gt;&lt;/a&gt;
+ wrapper for the 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://linux.die.net/man/2/flock&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;&lt;code&gt;flock(2)&lt;/code&gt;&lt;/a&gt;
+ system call to set an exclusive lockfile, in order to prevent the task from running more than one instance in parallel.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;0 * * * *  you  flock -nx /var/lock/cron-task cron-task
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Greg’s wiki has some more in-depth discussion of the 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://mywiki.wooledge.org/BashFAQ/045&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;file locking&lt;/a&gt;
+ problem for scripts in a general sense, including important information about the caveats of “rolling your own” when &lt;code&gt;flock(1)&lt;/code&gt; is not available.&lt;/p&gt;
+&lt;p&gt;If it’s important that your tasks run in a certain order, consider whether it’s necessary to have them in separate tasks at all; it may be easier to guarantee they’re run sequentially by collecting them in a single shell script.&lt;/p&gt;
+&lt;h2 id=&#34;do-something-useful-with-exit-statuses&#34;&gt;Do something useful with exit statuses
+&lt;/h2&gt;&lt;p&gt;If your &lt;code&gt;cron(8)&lt;/code&gt; task or commands within its script exit non-zero, it can be useful to run commands that handle the failure appropriately, including cleanup of appropriate resources, and sending information to monitoring tools about the current status of the job. If you’re using Nagios Core or one of its derivatives, you could consider using &lt;code&gt;send_nsca&lt;/code&gt; to send passive checks reporting the status of jobs to your monitoring server. I’ve written 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://sanctum.geek.nz/cgit/nscaw.git/about&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;a simple script called &lt;code&gt;nscaw&lt;/code&gt;&lt;/a&gt;
+ to do this for me:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;0 * * * *  you  nscaw CRON_TASK -- cron-task
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;consider-alternatives-to-cron8&#34;&gt;Consider alternatives to &lt;code&gt;cron(8)&lt;/code&gt;
+&lt;/h2&gt;&lt;p&gt;If your machine isn’t always on and your task doesn’t need to run at a specific time, but rather needs to run once daily or weekly, you can install 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://linux.die.net/man/8/anacron&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;&lt;code&gt;anacron&lt;/code&gt;&lt;/a&gt;
+ and drop scripts into the &lt;code&gt;cron.hourly&lt;/code&gt;, &lt;code&gt;cron.daily&lt;/code&gt;, &lt;code&gt;cron.monthly&lt;/code&gt;, and &lt;code&gt;cron.weekly&lt;/code&gt; directories in &lt;code&gt;/etc&lt;/code&gt;, as appropriate. Note that on Debian and Ubuntu GNU/Linux systems, the default &lt;code&gt;/etc/crontab&lt;/code&gt; contains hooks that run these, but they run only if 
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;http://linux.die.net/man/8/anacron&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;&lt;code&gt;anacron(8)&lt;/code&gt;&lt;/a&gt;
+ is not installed.&lt;/p&gt;
+&lt;p&gt;If you’re using &lt;code&gt;cron(8)&lt;/code&gt; to poll a directory for changes and run a script if there are such changes, on GNU/Linux you could consider using a daemon based on &lt;code&gt;inotifywait(1)&lt;/code&gt; instead.&lt;/p&gt;
+&lt;p&gt;Finally, if you require more advanced control over when and how your task runs than &lt;code&gt;cron(8)&lt;/code&gt; can provide, you could perhaps consider writing a daemon to run on the server consistently and fork processes for its task. This would allow running a task more often than once a minute, as an example. Don’t get too bogged down into thinking that &lt;code&gt;cron(8)&lt;/code&gt; is your only option for any kind of asynchronous task management!&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://blog.sanctum.geek.nz/cron-best-practices/&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Cron best practices&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://serverfault.com/a/434902&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Better logging for cronjobs? Send cron output to syslog?&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://news.ycombinator.com/item?id=30636872&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;My best practice with cron is to not use cron if possible. Systemd has timers with practically the same functionality and you&amp;rsquo;ll never worry about:&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

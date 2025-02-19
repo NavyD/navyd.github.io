@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="I’ve spent the last week or so implementing a recursive DNS resolver in Rust. I’m not very good at either of those things, so this has been a bit of a learning experience.\nThis memo is about how I ended up implementing the caching layer. You don’t need to know much about DNS to follow this memo, just some basics:\nDNS is a distributed eventually-consistent database, and timeouts are how it achieves that eventual consistency. The keys in this database are domain names (like www.barrucadu.co.uk) and the values are resource records (RRs for short). A resource record has a type (like “A”, or “CNAME”), a class (like “IN”, for INternet), a ttl (how long it’s valid for), and some data. Finally, the format of that data depends on the type (but not on the class). Let’s make this a bit more concrete:\n">
+<title>Implementing a Size Bounded Lru Cache With Expiring Entries for My Dns Server in Rust</title>
+
+<link rel='canonical' href='/posts/archives/rust/implementing-a-size-bounded-lru-cache-with-expiring-entries-for-my-dns-server-in-rust/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="Implementing a Size Bounded Lru Cache With Expiring Entries for My Dns Server in Rust">
+<meta property='og:description' content="I’ve spent the last week or so implementing a recursive DNS resolver in Rust. I’m not very good at either of those things, so this has been a bit of a learning experience.\nThis memo is about how I ended up implementing the caching layer. You don’t need to know much about DNS to follow this memo, just some basics:\nDNS is a distributed eventually-consistent database, and timeouts are how it achieves that eventual consistency. The keys in this database are domain names (like www.barrucadu.co.uk) and the values are resource records (RRs for short). A resource record has a type (like “A”, or “CNAME”), a class (like “IN”, for INternet), a ttl (how long it’s valid for), and some data. Finally, the format of that data depends on the type (but not on the class). Let’s make this a bit more concrete:\n">
+<meta property='og:url' content='/posts/archives/rust/implementing-a-size-bounded-lru-cache-with-expiring-entries-for-my-dns-server-in-rust/'>
+<meta property='og:site_name' content=''>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='rust' /><meta property='article:tag' content='LRU' /><meta property='article:published_time' content='2022-03-16T11:11:47&#43;08:00'/><meta property='article:modified_time' content='2025-01-28T18:26:14&#43;08:00'/>
+<meta name="twitter:title" content="Implementing a Size Bounded Lru Cache With Expiring Entries for My Dns Server in Rust">
+<meta name="twitter:description" content="I’ve spent the last week or so implementing a recursive DNS resolver in Rust. I’m not very good at either of those things, so this has been a bit of a learning experience.\nThis memo is about how I ended up implementing the caching layer. You don’t need to know much about DNS to follow this memo, just some basics:\nDNS is a distributed eventually-consistent database, and timeouts are how it achieves that eventual consistency. The keys in this database are domain names (like www.barrucadu.co.uk) and the values are resource records (RRs for short). A resource record has a type (like “A”, or “CNAME”), a class (like “IN”, for INternet), a ttl (how long it’s valid for), and some data. Finally, the format of that data depends on the type (but not on the class). Let’s make this a bit more concrete:\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    <img src="https://avatars.githubusercontent.com/u/22490764" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/"></a></h1>
+            <h2 class="site-description">Hello World!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/47808239'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/NavyD'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/NavyD_hello'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="/" selected>English</option>
+                                
+                                    <option value="/zh-cn/" >中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#a-simple-cache">A Simple Cache</a></li>
+    <li><a href="#a-better-cache">A Better Cache</a>
+      <ul>
+        <li><a href="#getting-things-out">Getting things out</a></li>
+        <li><a href="#evicting-things">Evicting things</a></li>
+        <li><a href="#putting-things-in">Putting things in</a></li>
+        <li><a href="#testing">Testing</a></li>
+        <li><a href="#periodic-pruning">Periodic pruning</a></li>
+      </ul>
+    </li>
+    <li><a href="#what-next">What Next?</a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/posts/archives/rust/implementing-a-size-bounded-lru-cache-with-expiring-entries-for-my-dns-server-in-rust/">Implementing a Size Bounded Lru Cache With Expiring Entries for My Dns Server in Rust</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2022-03-16T11:11:47&#43;08:00</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    10 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>I’ve spent the last week or so implementing 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/barrucadu/resolved"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>a recursive DNS resolver</a>
+ in Rust. I’m not very good at either of those things, so this has been a bit of a learning experience.</p>
+<p>This memo is about how I ended up implementing the caching layer. You don’t need to know much about DNS to follow this memo, just some basics:</p>
+<ul>
+<li>DNS is a distributed eventually-consistent database, and timeouts are how it achieves that eventual consistency.</li>
+<li>The keys in this database are <strong>domain names</strong> (like <code>www.barrucadu.co.uk</code>) and the values are <strong>resource records</strong> (RRs for short).</li>
+<li>A resource record has a <strong>type</strong> (like “A”, or “CNAME”), a <strong>class</strong> (like “IN”, for INternet), a <strong>ttl</strong> (how long it’s valid for), and some <strong>data</strong>.</li>
+<li>Finally, the format of that data depends on the type (but not on the class).</li>
+</ul>
+<p>Let’s make this a bit more concrete:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">// we&#39;ll need these later
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">use</span> priority_queue::PriorityQueue;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::cmp::Reverse;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::collections::HashMap;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::net::Ipv4Addr;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::time::{Duration, Instant};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/// A resource record, or RR, is something we receive from another
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// nameserver, or which we send in answer to a client&#39;s query.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#75715e">#[derive(Debug)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">ResourceRecord</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> name: <span style="color:#a6e22e">DomainName</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> rtype: <span style="color:#a6e22e">RecordTypeWithData</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> rclass: <span style="color:#a6e22e">RecordClass</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> ttl: <span style="color:#a6e22e">Duration</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/// A domain name is a sequence of &#34;labels&#34;, eg, `www.barrucadu.co.uk`
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// is made up of the labels `[&#34;www&#34;, &#34;barrucadu&#34;, &#34;co&#34;, &#34;uk&#34;, &#34;&#34;]`.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// The final empty label is the root domain, which we normally don&#39;t
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// bother writing, but is meaningful in some contexts.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// Incidentally, the final empty label means that in the DNS wire
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// format, names are null-terminated.  I&#39;m sure this isn&#39;t a
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// coincidence.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// Labels are ASCII and case-insensitive, so make sure to construct
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// them correctly!
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#75715e">#[derive(Debug, Clone, PartialEq, Eq, Hash)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DomainName</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> labels: Vec<span style="color:#f92672">&lt;</span>Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;&gt;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/// Record data depends on its type, so this enum has one variant for
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// each type.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#75715e">#[derive(Debug, Clone, PartialEq, Eq)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">RecordTypeWithData</span> {
+</span></span><span style="display:flex;"><span>    A { address: <span style="color:#a6e22e">Ipv4Addr</span> },
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">CNAME</span> { cname: <span style="color:#a6e22e">DomainName</span> }, <span style="color:#75715e">// many more omitted
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/// We&#39;ll also need a notion of record type *without* data.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#75715e">#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">RecordType</span> {
+</span></span><span style="display:flex;"><span>    A,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">CNAME</span>, <span style="color:#75715e">// many more omitted
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> RecordTypeWithData {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">rtype</span>(<span style="color:#f92672">&amp;</span>self) -&gt; <span style="color:#a6e22e">RecordType</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">match</span> self {
+</span></span><span style="display:flex;"><span>            RecordTypeWithData::A { <span style="color:#f92672">..</span> } <span style="color:#f92672">=&gt;</span> RecordType::A,
+</span></span><span style="display:flex;"><span>            RecordTypeWithData::<span style="color:#66d9ef">CNAME</span> { <span style="color:#f92672">..</span> } <span style="color:#f92672">=&gt;</span> RecordType::<span style="color:#66d9ef">CNAME</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// many more omitted
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/// The record class identifies which sort of network the record is
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// for.  For the purposes of this memo, let&#39;s only consider the
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// internet.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#75715e">#[derive(Debug, Copy, Clone, PartialEq, Eq)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">RecordClass</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">IN</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Before we go any further, there’s one final prerequisite. When you ask a DNS server for some records, you don’t say,</p>
+<blockquote>
+<p>Give me all records of such-and-such record type and record class for <code>www.barrucadu.co.uk</code>.</p></blockquote>
+<p>You instead ask in terms of a <strong>query type</strong> and <strong>query class</strong>.</p>
+<p>In this memo, you can think of those as just the record types and classes we’ve just defined, plus a wildcard to mean “match anything”:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">#[derive(Debug, Copy, Clone)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">QueryType</span> {
+</span></span><span style="display:flex;"><span>    Record(RecordType),
+</span></span><span style="display:flex;"><span>    Wildcard,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// does a record match a query, or a query match a record?  this is
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// the way &#39;round I went for, but the other choice would make just as
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// much sense.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">impl</span> RecordType {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">matches</span>(<span style="color:#f92672">&amp;</span>self, qtype: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">QueryType</span>) -&gt; <span style="color:#66d9ef">bool</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">match</span> qtype {
+</span></span><span style="display:flex;"><span>            QueryType::Wildcard <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>            QueryType::Record(rtype) <span style="color:#f92672">=&gt;</span> rtype <span style="color:#f92672">==</span> self,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#[derive(Debug, Copy, Clone)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">QueryClass</span> {
+</span></span><span style="display:flex;"><span>    Record(RecordClass),
+</span></span><span style="display:flex;"><span>    Wildcard,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> RecordClass {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">matches</span>(<span style="color:#f92672">&amp;</span>self, qclass: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">QueryClass</span>) -&gt; <span style="color:#66d9ef">bool</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">match</span> qclass {
+</span></span><span style="display:flex;"><span>            QueryClass::Wildcard <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>            QueryClass::Record(rclass) <span style="color:#f92672">=&gt;</span> rclass <span style="color:#f92672">==</span> self,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>There are a few more in reality, but they’re not important for our purposes.</p>
+<p>So we’ll use the <code>Record*</code> types to <strong>put</strong> values into the cache and the <code>Query*</code> types to <strong>get</strong> values from the cache.</p>
+<h2 id="a-simple-cache">A Simple Cache
+</h2><p>Right, what’s the simplest possible cache we could implement?</p>
+<p>Perhaps something like this:00Not just “perhaps”: this is more-or-less copied straight from my original code.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">SimpleCache</span> {
+</span></span><span style="display:flex;"><span>    entries: <span style="color:#a6e22e">HashMap</span><span style="color:#f92672">&lt;</span>DomainName, Vec<span style="color:#f92672">&lt;</span>(RecordTypeWithData, RecordClass, Instant)<span style="color:#f92672">&gt;&gt;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> SimpleCache {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self {
+</span></span><span style="display:flex;"><span>            entries: <span style="color:#a6e22e">HashMap</span>::new(),
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>To put something in the cache, you just add it to the appropriate <code>Vec</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">insert</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self, name: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">DomainName</span>, rr: <span style="color:#a6e22e">ResourceRecord</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> entry <span style="color:#f92672">=</span> (rr.rtype, rr.rclass, Instant::now() <span style="color:#f92672">+</span> rr.ttl);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(entries) <span style="color:#f92672">=</span> self.entries.get_mut(name) {
+</span></span><span style="display:flex;"><span>            entries.push(entry);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            self.entries.insert(name.clone(), vec![entry]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>What if the user inserts the same record twice?</p>
+<p>Well, what about it? This is a proof-of-concept! The DNS resolver will return duplicate records I guess! Moving swiftly on…</p>
+<p>To get something from the cache, just iterate over the appropriate <code>Vec</code>, pulling out all the records with the right type and class:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">get</span>(
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&amp;</span>self,
+</span></span><span style="display:flex;"><span>        name: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">DomainName</span>,
+</span></span><span style="display:flex;"><span>        qtype: <span style="color:#a6e22e">QueryType</span>,
+</span></span><span style="display:flex;"><span>        qclass: <span style="color:#a6e22e">QueryClass</span>,
+</span></span><span style="display:flex;"><span>    ) -&gt; Vec<span style="color:#f92672">&lt;</span>ResourceRecord<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> now <span style="color:#f92672">=</span> Instant::now();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(entries) <span style="color:#f92672">=</span> self.entries.get(name) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> rrs <span style="color:#f92672">=</span> Vec::with_capacity(entries.len());
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (rtype_with_data, rclass, expires) <span style="color:#66d9ef">in</span> entries {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> rtype_with_data.rtype().matches(<span style="color:#f92672">&amp;</span>qtype) <span style="color:#f92672">&amp;&amp;</span> rclass.matches(<span style="color:#f92672">&amp;</span>qclass) {
+</span></span><span style="display:flex;"><span>                    rrs.push(ResourceRecord {
+</span></span><span style="display:flex;"><span>                        name: <span style="color:#a6e22e">name</span>.clone(),
+</span></span><span style="display:flex;"><span>                        rtype: <span style="color:#a6e22e">rtype_with_data</span>.clone(),
+</span></span><span style="display:flex;"><span>                        rclass: <span style="color:#f92672">*</span>rclass,
+</span></span><span style="display:flex;"><span>                        ttl: <span style="color:#a6e22e">expires</span>.saturating_duration_since(now),
+</span></span><span style="display:flex;"><span>                    });
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            rrs
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            Vec::new()
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>What if a record has expired?</p>
+<p>Proof-of-concept! The caller can deal with that by checking expiration times or something!</p>
+<p>So, this was the caching implementation I started with. It works, but it has some problems:</p>
+<ul>
+<li>There’s no deduplication.</li>
+<li>There’s no expiration.</li>
+<li>There’s no limit on the number of records.</li>
+<li>All domains get put in one <code>HashMap</code>, totally ignoring their hierarchical label structure.</li>
+<li>Getting records of one type involves iterating through records of another type.</li>
+</ul>
+<p>But it’s better than no cache!</p>
+<h2 id="a-better-cache">A Better Cache
+</h2><p>Ok, how do we do better? The most egregious problems with the simple cache are the duplicate entries and the unbounded growth.</p>
+<p>Using something that takes the hierarchical structure of domain names into account, like a trie, would also be nice, but I’m not dealing with enough live cache entries for that to be a concern yet.</p>
+<p>So, how do we remove entries?</p>
+<p>Well, we could periodically iterate over the entire cache, removing all expired entries. But if entries have a long expiration time, or just get accessed frequently enough, they won’t expire. So relying on expiration isn’t enough, we also need to occasionally remove <em>live</em> entries.</p>
+<p>This sounds like a job for an LRU11Least Recently Used cache: a size-bounded LRU cache with expiring entries for my DNS server!</p>
+<p>Before jumping straight to the <code>struct</code> definition, let’s think about how to model this:</p>
+<ul>
+<li>
+<p>To solve the problem of iterating through records of unrelated types, we’ll need to subdivide the entries by type as well as domain name.</p>
+</li>
+<li>
+<p>We’ll need to keep track of the most recent time each record has been accessed, so when the cache is full of unexpired records we can work out which one to evict first.</p>
+</li>
+<li>
+<p>But the cache may be big. There could be hundreds or thousands of domains in there, each likely with multiple records. Iterating through the whole thing to find records to evict is a bad choice. We need a more efficient data structure to map from eviction priority to domain name.</p>
+</li>
+<li>
+<p>For similar reasons, we don’t want to have to iterate through the entire cache to work out how big it is.</p>
+</li>
+</ul>
+<p>My usual mantra for designing data structures is to “make illegal states unrepresentable”, but I don’t think that will work here. To make this cache <em>efficient</em>, we’ll need to denormalise the data, and make our code ensure the correct invariants hold. Testing helps with this (and indeed testing did find some bugs in my implementation).</p>
+<p>So I decided to use a pair of priority queues22From the 
+
+<a  
+    class="link"
+ 
+    href="https://crates.io/crates/priority_queue"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>priority-queue</a>
+ crate. I started out trying to build something on top of 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/stable/std/collections/struct.BinaryHeap.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+><code>std::collections::BinaryHeap</code></a>
+ directly, but didn’t get very far. to efficiently track (1) which domain is next to have an expiring record, and (2) which domain has been least recently used. I also decided to keep track of sizes and times throughout the data structure, rather than just in the records.</p>
+<p>Here’s the new cache data structure:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">#[derive(Debug)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BetterCache</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// Cached records, indexed by domain name.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    entries: <span style="color:#a6e22e">HashMap</span><span style="color:#f92672">&lt;</span>DomainName, CachedDomainRecords<span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// Priority queue of domain names ordered by access times.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// When the cache is full and there are no expired records to
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// prune, domains will instead be pruned in LRU order.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// INVARIANT: the domains in here are exactly the domains in
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// `entries`.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    access_priority: <span style="color:#a6e22e">PriorityQueue</span><span style="color:#f92672">&lt;</span>DomainName, Reverse<span style="color:#f92672">&lt;</span>Instant<span style="color:#f92672">&gt;&gt;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// Priority queue of domain names ordered by expiry time.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// When the cache is pruned, expired records are removed first.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// INVARIANT: the domains in here are exactly the domains in
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// `entries`.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    expiry_priority: <span style="color:#a6e22e">PriorityQueue</span><span style="color:#f92672">&lt;</span>DomainName, Reverse<span style="color:#f92672">&lt;</span>Instant<span style="color:#f92672">&gt;&gt;</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// The number of records in the cache.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// INVARIANT: this is the sum of the `size` fields of the
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// entries.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    current_size: <span style="color:#66d9ef">usize</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// The desired maximum number of records in the cache.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    desired_size: <span style="color:#66d9ef">usize</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#[derive(Debug)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">CachedDomainRecords</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// The time this record was last read at.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    last_read: <span style="color:#a6e22e">Instant</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// When the next RR expires.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// INVARIANT: this is the minimum of the expiry times of the RRs.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    next_expiry: <span style="color:#a6e22e">Instant</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// How many records there are.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// INVARIANT: this is the sum of the vector lengths in `records`.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    size: <span style="color:#66d9ef">usize</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// The records, further divided by record type.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// INVARIANT: the `RecordType` and `RecordTypeWithData` match.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    records: <span style="color:#a6e22e">HashMap</span><span style="color:#f92672">&lt;</span>RecordType, Vec<span style="color:#f92672">&lt;</span>(RecordTypeWithData, RecordClass, Instant)<span style="color:#f92672">&gt;&gt;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> BetterCache {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>() -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self::with_desired_size(<span style="color:#ae81ff">512</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">with_desired_size</span>(desired_size: <span style="color:#66d9ef">usize</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> desired_size <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>            panic!(<span style="color:#e6db74">&#34;cannot create a zero-size cache&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        Self {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// `desired_size / 2` is a compromise: most domains will
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#75715e">// have more than one record, so `desired_size` would be
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#75715e">// too big for the `entries`.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            entries: <span style="color:#a6e22e">HashMap</span>::with_capacity(desired_size <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span>),
+</span></span><span style="display:flex;"><span>            access_priority: <span style="color:#a6e22e">PriorityQueue</span>::with_capacity(desired_size),
+</span></span><span style="display:flex;"><span>            expiry_priority: <span style="color:#a6e22e">PriorityQueue</span>::with_capacity(desired_size),
+</span></span><span style="display:flex;"><span>            current_size: <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>            desired_size,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>There are some invariants there in the comments. I’d prefer not to have those, but I don’t think there’s any getting around it given that we want better than linear time eviction.</p>
+<p>This is substantially more complex than the <code>SimpleCache</code>, and the operations we’re about to define on it are too. Make sure this all makes sense before continuing. In particular, you might notice that I’ve opted to have the LRU eviction expire entire domain names, rather than individual records within them.</p>
+<p>Let’s go through the new operations in order of complexity: querying, eviction, and insertion.</p>
+<h3 id="getting-things-out">Getting things out
+</h3><p>This isn’t too bad:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Get an entry from the cache.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// The TTL in the returned `ResourceRecord` is relative to the
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// current time - not when the record was inserted into the
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// cache.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// This entry may have expired: if so, the TTL will be 0.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// Consumers MUST check this before using the record!
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">get</span>(
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self,
+</span></span><span style="display:flex;"><span>        name: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">DomainName</span>,
+</span></span><span style="display:flex;"><span>        qtype: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">QueryType</span>,
+</span></span><span style="display:flex;"><span>        qclass: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">QueryClass</span>,
+</span></span><span style="display:flex;"><span>    ) -&gt; Vec<span style="color:#f92672">&lt;</span>ResourceRecord<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(entry) <span style="color:#f92672">=</span> self.entries.get_mut(name) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> now <span style="color:#f92672">=</span> Instant::now();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> rrs <span style="color:#f92672">=</span> Vec::new();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">match</span> qtype {
+</span></span><span style="display:flex;"><span>                QueryType::Wildcard <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">for</span> tuples <span style="color:#66d9ef">in</span> entry.records.values() {
+</span></span><span style="display:flex;"><span>                        to_rrs(name, qclass, now, tuples, <span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> rrs);
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                QueryType::Record(rtype) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(tuples) <span style="color:#f92672">=</span> entry.records.get(rtype) {
+</span></span><span style="display:flex;"><span>                        to_rrs(name, qclass, now, tuples, <span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> rrs);
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">!</span>rrs.is_empty() {
+</span></span><span style="display:flex;"><span>                entry.last_read <span style="color:#f92672">=</span> now;
+</span></span><span style="display:flex;"><span>                self.access_priority
+</span></span><span style="display:flex;"><span>                    .change_priority(name, Reverse(entry.last_read));
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            rrs
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            Vec::new()
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This is quite similar to what we had before. Sure, the extra layer of indirection adds a tad more complication, and there’s now a write operation in here (updating <code>last_read</code> and <code>access_priority</code>, which takes log time), but other than that nothing complex.</p>
+<p>The <code>to_rrs</code> function just exists to prevent some code duplication:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Helper for `get_without_checking_expiration`: converts the cached
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">/// record tuples into RRs.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">to_rrs</span>(
+</span></span><span style="display:flex;"><span>    name: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">DomainName</span>,
+</span></span><span style="display:flex;"><span>    qclass: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">QueryClass</span>,
+</span></span><span style="display:flex;"><span>    now: <span style="color:#a6e22e">Instant</span>,
+</span></span><span style="display:flex;"><span>    tuples: <span style="color:#66d9ef">&amp;</span>[(RecordTypeWithData, RecordClass, Instant)],
+</span></span><span style="display:flex;"><span>    rrs: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> Vec<span style="color:#f92672">&lt;</span>ResourceRecord<span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (rtype, rclass, expires) <span style="color:#66d9ef">in</span> tuples {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> rclass.matches(qclass) {
+</span></span><span style="display:flex;"><span>            rrs.push(ResourceRecord {
+</span></span><span style="display:flex;"><span>                name: <span style="color:#a6e22e">name</span>.clone(),
+</span></span><span style="display:flex;"><span>                rtype: <span style="color:#a6e22e">rtype</span>.clone(),
+</span></span><span style="display:flex;"><span>                rclass: <span style="color:#f92672">*</span>rclass,
+</span></span><span style="display:flex;"><span>                ttl: <span style="color:#a6e22e">expires</span>.saturating_duration_since(now),
+</span></span><span style="display:flex;"><span>            });
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>If you’re following along at home, put that definition <em>outside</em> the <code>impl BetterCache</code> block.</p>
+<h3 id="evicting-things">Evicting things
+</h3><p>Here’s are the simplest three functions in the entire <code>impl</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Delete all expired records, and then enough
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// least-recently-used records to reduce the cache to the desired
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// size.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// Returns the number of records deleted.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">prune</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self) -&gt; <span style="color:#66d9ef">usize</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self.current_size <span style="color:#f92672">&lt;=</span> self.desired_size {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> pruned <span style="color:#f92672">=</span> self.remove_expired();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> self.current_size <span style="color:#f92672">&gt;</span> self.desired_size {
+</span></span><span style="display:flex;"><span>            pruned <span style="color:#f92672">+=</span> self.remove_least_recently_used();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        pruned
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// Helper for `prune`: deletes all records associated with the
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// least recently used domain.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// Returns the number of records removed.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">remove_least_recently_used</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self) -&gt; <span style="color:#66d9ef">usize</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some((name, _)) <span style="color:#f92672">=</span> self.access_priority.pop() {
+</span></span><span style="display:flex;"><span>            self.expiry_priority.remove(<span style="color:#f92672">&amp;</span>name);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(entry) <span style="color:#f92672">=</span> self.entries.remove(<span style="color:#f92672">&amp;</span>name) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> pruned <span style="color:#f92672">=</span> entry.size;
+</span></span><span style="display:flex;"><span>                self.current_size <span style="color:#f92672">-=</span> pruned;
+</span></span><span style="display:flex;"><span>                pruned
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">/// Delete all expired records.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// Returns the number of records deleted.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">remove_expired</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self) -&gt; <span style="color:#66d9ef">usize</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> pruned <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> before <span style="color:#f92672">=</span> pruned;
+</span></span><span style="display:flex;"><span>            pruned <span style="color:#f92672">+=</span> self.remove_expired_step();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> before <span style="color:#f92672">==</span> pruned {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        pruned
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>So simple! So straightforward! If only all my code could be like this.</p>
+<ul>
+<li>
+<p><code>prune</code> shrinks the cache to the desired size by removing the expired entries and then removing enough domains (in LRU order) to get below the target.</p>
+</li>
+<li>
+<p><code>remove_least_recently_used</code> pops an entry from the <code>access_priority</code> queue, removes it from the <code>expiry_priority</code> queue (which takes log time), and deletes it from the top-level <code>entries</code> map. It also updates the <code>current_size</code>, and returns the number of records it just deleted.</p>
+</li>
+<li>
+<p><code>remove_expired</code> is deceptively simple. It looks easy at first glance, but it’s calling this <code>remove_expired_step</code> function in a loop, until no more get removed.</p>
+</li>
+</ul>
+<p>Removing an entire domain is easy, but removing individual records from a domain is harder:</p>
+<ul>
+<li>The <code>size</code> of the domain will change.</li>
+<li>The <code>next_expiry</code> of the domain may change.</li>
+<li>Those changes need to be reflected in the top-level <code>current_size</code> and <code>expiry_priority</code> fields.</li>
+<li>But if it’s the last record in the domain we should remove that entirely.</li>
+</ul>
+<p>Additionally, the queue gives us the domain name, and there may be one or more expiring records in it (or even zero, but that would be a bug).</p>
+<p>With all that said, here’s the implementation:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Helper for `remove_expired`: looks at the next-to-expire
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// domain and cleans up expired records from it.  This may delete
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// more than one record, and may even delete the whole domain.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">///
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#e6db74">/// Returns the number of records removed.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">remove_expired_step</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self) -&gt; <span style="color:#66d9ef">usize</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some((name, Reverse(expiry))) <span style="color:#f92672">=</span> self.expiry_priority.pop() {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> now <span style="color:#f92672">=</span> Instant::now();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> expiry <span style="color:#f92672">&gt;</span> now {
+</span></span><span style="display:flex;"><span>                self.expiry_priority.push(name, Reverse(expiry));
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(entry) <span style="color:#f92672">=</span> self.entries.get_mut(<span style="color:#f92672">&amp;</span>name) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> pruned <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> rtypes <span style="color:#f92672">=</span> entry.records.keys().cloned().collect::<span style="color:#f92672">&lt;</span>Vec<span style="color:#f92672">&lt;</span>RecordType<span style="color:#f92672">&gt;&gt;</span>();
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> next_expiry <span style="color:#f92672">=</span> None;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">for</span> rtype <span style="color:#66d9ef">in</span> rtypes {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(tuples) <span style="color:#f92672">=</span> entry.records.get_mut(<span style="color:#f92672">&amp;</span>rtype) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">let</span> len <span style="color:#f92672">=</span> tuples.len();
+</span></span><span style="display:flex;"><span>                        tuples.retain(<span style="color:#f92672">|</span>(_, _, expiry)<span style="color:#f92672">|</span> expiry <span style="color:#f92672">&gt;</span> <span style="color:#f92672">&amp;</span>now);
+</span></span><span style="display:flex;"><span>                        pruned <span style="color:#f92672">+=</span> len <span style="color:#f92672">-</span> tuples.len();
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">for</span> (_, _, expiry) <span style="color:#66d9ef">in</span> tuples {
+</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">match</span> next_expiry {
+</span></span><span style="display:flex;"><span>                                None <span style="color:#f92672">=&gt;</span> next_expiry <span style="color:#f92672">=</span> Some(<span style="color:#f92672">*</span>expiry),
+</span></span><span style="display:flex;"><span>                                Some(t) <span style="color:#66d9ef">if</span> <span style="color:#f92672">*</span>expiry <span style="color:#f92672">&lt;</span> t <span style="color:#f92672">=&gt;</span> next_expiry <span style="color:#f92672">=</span> Some(<span style="color:#f92672">*</span>expiry),
+</span></span><span style="display:flex;"><span>                                _ <span style="color:#f92672">=&gt;</span> (),
+</span></span><span style="display:flex;"><span>                            }
+</span></span><span style="display:flex;"><span>                        }
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                entry.size <span style="color:#f92672">-=</span> pruned;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(ne) <span style="color:#f92672">=</span> next_expiry {
+</span></span><span style="display:flex;"><span>                    entry.next_expiry <span style="color:#f92672">=</span> ne;
+</span></span><span style="display:flex;"><span>                    self.expiry_priority.push(name, Reverse(ne));
+</span></span><span style="display:flex;"><span>                } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>                    self.entries.remove(<span style="color:#f92672">&amp;</span>name);
+</span></span><span style="display:flex;"><span>                    self.access_priority.remove(<span style="color:#f92672">&amp;</span>name);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                self.current_size <span style="color:#f92672">-=</span> pruned;
+</span></span><span style="display:flex;"><span>                pruned
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>                self.access_priority.remove(<span style="color:#f92672">&amp;</span>name);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>It’s pretty complex. We could describe it in pseudocode like so:</p>
+<ol>
+<li>Pop the next expiring domain from the queue.</li>
+<li>Check the current time:
+<ul>
+<li>If the expiry time is in the future, put it back in the queue and return.</li>
+<li>Otherwise, get the cached records:
+<ul>
+<li>If there are no cached records, remove the domain from the access queue and return.</li>
+<li>Otherwise:
+<ol>
+<li>Iterate through all the records and check if each should expire:
+<ul>
+<li>If so, remove the record.</li>
+<li>Otherwise, keep track of the soonest future expiry time seen.</li>
+</ul>
+</li>
+<li>Check if this removed all the records:
+<ul>
+<li>If so, remove the domain from the cache.</li>
+<li>Otherwise, put it back in the expiry queue with the new expiry time.</li>
+</ul>
+</li>
+<li>Update the size fields.</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>In outline, fairly simple. In implementation, not fairly simple. Maybe someone better at Rust would be able to write this in a clearer way, but this is what I’ve got.</p>
+<p>Incidentally, one of the bugs found by testing (by inserting randomly generated entries, pruning the expired ones, and checking the invariants) was that I had that <code>entry.size -= pruned;</code> <em>inside</em> the <code>for rtype in rtypes</code>, which means that if a domain had multiple records <em>of different types</em> expire at the same time, the size would be wrong.</p>
+<h3 id="putting-things-in">Putting things in
+</h3><p>Unfortunately, this is the most complex part. Adding a new entry to our cache involves a lot of work to maintain those invariants, especially if we also want to handle duplicate entries.</p>
+<p>So before getting to the code, let’s think about what the behaviour should be.</p>
+<ol>
+<li>If the domain name isn’t in the cache at all, we need to:
+<ul>
+<li>Insert a <code>CachedDomainRecords</code> containing <em>just</em> our new record.</li>
+<li>Add the domain to the <code>access_priority</code> queue.</li>
+<li>Add the domain to the <code>expiry_priority</code> queue.</li>
+</ul>
+</li>
+<li>If the domain name is in the cache but it has no records of this type, we need to:
+<ul>
+<li>Add the record to the existing domain.</li>
+<li>Update the domain’s <code>size</code> and <code>last_read</code>.</li>
+<li>Update the <code>access_priority</code> queue.</li>
+<li>Update the domain’s <code>next_expiry</code> and the <code>expiry_priority</code> queue, if this new record expires sooner than the current soonest.</li>
+</ul>
+</li>
+<li>If the domain name is in the cache and it does have records of this type, we need to:
+<ul>
+<li>Check if there is a duplicate record, and if so:
+<ul>
+<li>Delete it.</li>
+<li>Decrement the domain’s <code>size</code> and the <code>current_size</code>.</li>
+<li>Update the domain’s <code>next_expiry</code> and the <code>expiry_priority</code> queue if the duplicate would have been the soonest record to expire.</li>
+</ul>
+</li>
+<li>Then, the same as in case (2).</li>
+</ul>
+</li>
+</ol>
+<p>Additionally, in all cases, we need to increment the <code>current_size</code>.</p>
+<p>Got all that? Here’s the code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#e6db74">/// Insert an entry into the cache.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">insert</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self, record: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">ResourceRecord</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> now <span style="color:#f92672">=</span> Instant::now();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> rtype <span style="color:#f92672">=</span> record.rtype.rtype();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> expiry <span style="color:#f92672">=</span> Instant::now() <span style="color:#f92672">+</span> record.ttl;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> tuple <span style="color:#f92672">=</span> (record.rtype.clone(), record.rclass, expiry);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(entry) <span style="color:#f92672">=</span> self.entries.get_mut(<span style="color:#f92672">&amp;</span>record.name) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(tuples) <span style="color:#f92672">=</span> entry.records.get_mut(<span style="color:#f92672">&amp;</span>rtype) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> duplicate_expires_at <span style="color:#f92672">=</span> None;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">for</span> i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span>tuples.len() {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">let</span> t <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>tuples[i];
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> t.<span style="color:#ae81ff">0</span> <span style="color:#f92672">==</span> tuple.<span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> t.<span style="color:#ae81ff">1</span> <span style="color:#f92672">==</span> tuple.<span style="color:#ae81ff">1</span> {
+</span></span><span style="display:flex;"><span>                        duplicate_expires_at <span style="color:#f92672">=</span> Some(t.<span style="color:#ae81ff">2</span>);
+</span></span><span style="display:flex;"><span>                        tuples.swap_remove(i);
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                tuples.push(tuple);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(dup_expiry) <span style="color:#f92672">=</span> duplicate_expires_at {
+</span></span><span style="display:flex;"><span>                    entry.size <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>                    self.current_size <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> dup_expiry <span style="color:#f92672">==</span> entry.next_expiry {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> new_next_expiry <span style="color:#f92672">=</span> expiry;
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">for</span> (_, _, e) <span style="color:#66d9ef">in</span> tuples {
+</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">if</span> <span style="color:#f92672">*</span>e <span style="color:#f92672">&lt;</span> new_next_expiry {
+</span></span><span style="display:flex;"><span>                                new_next_expiry <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>e;
+</span></span><span style="display:flex;"><span>                            }
+</span></span><span style="display:flex;"><span>                        }
+</span></span><span style="display:flex;"><span>                        entry.next_expiry <span style="color:#f92672">=</span> new_next_expiry;
+</span></span><span style="display:flex;"><span>                        self.expiry_priority
+</span></span><span style="display:flex;"><span>                            .change_priority(<span style="color:#f92672">&amp;</span>record.name, Reverse(entry.next_expiry));
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>                entry.records.insert(rtype, vec![tuple]);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            entry.last_read <span style="color:#f92672">=</span> now;
+</span></span><span style="display:flex;"><span>            entry.size <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>            self.access_priority
+</span></span><span style="display:flex;"><span>                .change_priority(<span style="color:#f92672">&amp;</span>record.name, Reverse(entry.last_read));
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> expiry <span style="color:#f92672">&lt;</span> entry.next_expiry {
+</span></span><span style="display:flex;"><span>                entry.next_expiry <span style="color:#f92672">=</span> expiry;
+</span></span><span style="display:flex;"><span>                self.expiry_priority
+</span></span><span style="display:flex;"><span>                    .change_priority(<span style="color:#f92672">&amp;</span>record.name, Reverse(entry.next_expiry));
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> records <span style="color:#f92672">=</span> HashMap::new();
+</span></span><span style="display:flex;"><span>            records.insert(rtype, vec![tuple]);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> entry <span style="color:#f92672">=</span> CachedDomainRecords {
+</span></span><span style="display:flex;"><span>                last_read: <span style="color:#a6e22e">now</span>,
+</span></span><span style="display:flex;"><span>                next_expiry: <span style="color:#a6e22e">expiry</span>,
+</span></span><span style="display:flex;"><span>                size: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>                records,
+</span></span><span style="display:flex;"><span>            };
+</span></span><span style="display:flex;"><span>            self.access_priority
+</span></span><span style="display:flex;"><span>                .push(record.name.clone(), Reverse(entry.last_read));
+</span></span><span style="display:flex;"><span>            self.expiry_priority
+</span></span><span style="display:flex;"><span>                .push(record.name.clone(), Reverse(entry.next_expiry));
+</span></span><span style="display:flex;"><span>            self.entries.insert(record.name.clone(), entry);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        self.current_size <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>I didn’t write this all in one go and get it right the first time. I first implemented this <em>without</em> the duplicate handling then, when it was working, I made it prevent duplicate records.</p>
+<p>If you allow duplicates, the <code>if let Some(tuples)</code> block becomes much simpler:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(tuples) <span style="color:#f92672">=</span> entry.records.get_mut(<span style="color:#f92672">&amp;</span>rtype) {
+</span></span><span style="display:flex;"><span>    tuples.push(tuple);
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    entry.records.insert(rtype, vec![tuple]);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>We’ve made it—the end of the operations!</p>
+<h3 id="testing">Testing
+</h3><p>This code is pretty involved, and I’ve already said that I made at least one mistake when first writing it. So how do I know it’s correct?</p>
+<p>Tests.</p>
+<p>Tests, tests, tests.</p>
+<p>I’m not going to go into the actual test code (
+
+<a  
+    class="link"
+ 
+    href="https://github.com/barrucadu/resolved/blob/master/src/resolver/cache.rs"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>see the source if you want that</a>
+), but I will outline the cases.</p>
+<p>The most important thing is to have a good way to generate inputs: you want distinct domains, overlapping domains, distinct types, overlapping types, overlapping but unequal records… the whole shebang. I’m generating random records, rather than trying to enumerate all the useful cases. I’m a big fan of random inputs in testing in general.</p>
+<p>Some say “oh, but if my test is randomised it’ll be flaky: it might pass some times and fail other times!” In which case… good? If your test fails, you’ve found a bug: fix it!</p>
+<p>Anyway, here are my test cases:</p>
+<ul>
+<li>Insert a record and then check I can retrieve it:
+<ul>
+<li>With <code>QueryType::Record(_)</code> and <code>QueryClass::Record(_)</code></li>
+<li>With <code>QueryType::Wildcard</code> and <code>QueryClass::Record(_)</code></li>
+<li>With <code>QueryType::Record(_)</code> and <code>QueryClass::Wildcard</code></li>
+<li>With <code>QueryType::Wildcard</code> and <code>QueryClass::Wildcard</code></li>
+</ul>
+</li>
+<li>Insert the same record twice and check the <code>current_size</code> only goes up by 1, and that the invariants hold.</li>
+<li>Insert 100 random records and check that the invariants hold.</li>
+<li>Insert 100 random records, check that they can all be retrieved, and that the invariants hold.</li>
+<li>Insert 100 random records into a cache with a <code>desired_size</code> of 25, call <code>prune</code>, and check that 25 records remain and that the invariants hold.</li>
+<li>Insert 100 random records, 49 of which have a TTL of 0, call <code>remove_expired</code>, and check that 51 remain and that the invariants hold.</li>
+<li>Insert 100 random records into a cache with a <code>desired_size</code> of 99, 49 of which have a TTL of 0, call <code>prune</code>, and check that 51 remain and that the invariants hold.</li>
+</ul>
+<p>In most of those tests I check that the data structure invariants hold, there I:</p>
+<ul>
+<li>Check that the <code>current_size</code> is equal to the total number of records.</li>
+<li>Check that the <code>entries</code> and the <code>access_priority</code> are the same size.</li>
+<li>Check that the <code>entries</code> and the <code>expiry_priority</code> are the same size.</li>
+<li>Check the <code>next_expiry</code> for each domain is equal to the minimum of its records’ expiry times.</li>
+<li>Build a new <code>access_priority</code> from the domains and check it’s the same as the stored one.</li>
+<li>Build a new <code>expiry_priority</code> from the domains and check it’s the same as the stored one.</li>
+</ul>
+<p>I feel pretty confident that my tests cover a variety of different cases and sequences of operations, and that I would have found any significant bugs. There could always be subtle bugs lurking, but that’s true of all code.</p>
+<h3 id="periodic-pruning">Periodic pruning
+</h3><p>I’ve opted to prune the cache in two places.</p>
+<p>Firstly, in my actual code, this cache is inside an <code>Arc&lt;Mutex&lt;_&gt;&gt;</code>, so it can be shared across threads. There’s not much point in having an unshared cache, after all. Anyway, this wrapper has some helper methods to get and insert entries, and the get helper calls <code>remove_expired</code> if it fetches any expired records:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> SharedCache {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">get</span>(
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&amp;</span>self,
+</span></span><span style="display:flex;"><span>        name: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">DomainName</span>,
+</span></span><span style="display:flex;"><span>        qtype: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">QueryType</span>,
+</span></span><span style="display:flex;"><span>        qclass: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">QueryClass</span>,
+</span></span><span style="display:flex;"><span>    ) -&gt; Vec<span style="color:#f92672">&lt;</span>ResourceRecord<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> rrs <span style="color:#f92672">=</span> self.get_without_checking_expiration(name, qtype, qclass);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> len <span style="color:#f92672">=</span> rrs.len();
+</span></span><span style="display:flex;"><span>        rrs.retain(<span style="color:#f92672">|</span>rr<span style="color:#f92672">|</span> rr.ttl <span style="color:#f92672">&gt;</span> Duration::<span style="color:#66d9ef">ZERO</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> rrs.len() <span style="color:#f92672">!=</span> len {
+</span></span><span style="display:flex;"><span>            self.remove_expired();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        rrs
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ... more omitted
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><p>Secondly, I spawn a 
+
+<a  
+    class="link"
+ 
+    href="https://tokio.rs/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>tokio</a>
+ task to periodically remove expired entries, and then do additional pruning if need be:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">prune_cache_task</span>(cache: <span style="color:#a6e22e">SharedCache</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>        sleep(Duration::from_secs(<span style="color:#ae81ff">60</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">5</span>)).<span style="color:#66d9ef">await</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> expired <span style="color:#f92672">=</span> cache.remove_expired();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> pruned <span style="color:#f92672">=</span> cache.prune();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        println!(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;[CACHE] expired </span><span style="color:#e6db74">{:?}</span><span style="color:#e6db74"> and pruned </span><span style="color:#e6db74">{:?}</span><span style="color:#e6db74"> entries&#34;</span>,
+</span></span><span style="display:flex;"><span>            expired, pruned
+</span></span><span style="display:flex;"><span>        );
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>It was very satisfying when I added this and first saw that <code>[CACHE]</code> output with non-zero expired and pruned records.</p>
+<h2 id="what-next">What Next?
+</h2><p>This cache works, and it works well. I get nice and fast responses from my DNS server for queries which are wholly or partially cached, and 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/barrucadu/resolved/blob/master/benches/cache.rs"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>the benchmarks I’ve written</a>
+ look promising:</p>
+<pre tabindex="0"><code>insert/unique/1         time:   [1.0965 us 1.1001 us 1.1044 us]
+                        thrpt:  [905.51 Kelem/s 909.00 Kelem/s 912.01 Kelem/s]
+insert/unique/100       time:   [115.72 us 115.96 us 116.24 us]
+                        thrpt:  [860.27 Kelem/s 862.39 Kelem/s 864.15 Kelem/s]
+insert/unique/1000      time:   [1.1769 ms 1.1787 ms 1.1807 ms]
+                        thrpt:  [846.96 Kelem/s 848.36 Kelem/s 849.67 Kelem/s]
+
+insert/duplicate/1      time:   [1.1927 us 1.1964 us 1.2003 us]
+                        thrpt:  [833.13 Kelem/s 835.86 Kelem/s 838.44 Kelem/s]
+insert/duplicate/100    time:   [56.880 us 57.047 us 57.221 us]
+                        thrpt:  [1.7476 Melem/s 1.7529 Melem/s 1.7581 Melem/s]
+insert/duplicate/1000   time:   [541.33 us 542.10 us 542.93 us]
+                        thrpt:  [1.8419 Melem/s 1.8447 Melem/s 1.8473 Melem/s]
+
+get_without_checking_expiration/hit/1
+                        time:   [1.4057 us 1.4249 us 1.4425 us]
+                        thrpt:  [693.22 Kelem/s 701.81 Kelem/s 711.40 Kelem/s]
+get_without_checking_expiration/hit/100
+                        time:   [84.651 us 84.999 us 85.322 us]
+                        thrpt:  [1.1720 Melem/s 1.1765 Melem/s 1.1813 Melem/s]
+get_without_checking_expiration/hit/1000
+                        time:   [991.64 us 997.89 us 1.0030 ms]
+                        thrpt:  [996.98 Kelem/s 1.0021 Melem/s 1.0084 Melem/s]
+
+get_without_checking_expiration/miss/1
+                        time:   [948.17 ns 961.92 ns 974.39 ns]
+                        thrpt:  [1.0263 Melem/s 1.0396 Melem/s 1.0547 Melem/s]
+get_without_checking_expiration/miss/100
+                        time:   [45.399 us 46.116 us 46.671 us]
+                        thrpt:  [2.1426 Melem/s 2.1684 Melem/s 2.2027 Melem/s]
+get_without_checking_expiration/miss/1000
+                        time:   [570.42 us 577.92 us 583.75 us]
+                        thrpt:  [1.7131 Melem/s 1.7303 Melem/s 1.7531 Melem/s]
+
+remove_expired/1        time:   [1.2796 us 1.2983 us 1.3151 us]
+                        thrpt:  [760.38 Kelem/s 770.26 Kelem/s 781.52 Kelem/s]
+remove_expired/100      time:   [55.622 us 56.761 us 57.895 us]
+                        thrpt:  [1.7273 Melem/s 1.7618 Melem/s 1.7978 Melem/s]
+remove_expired/1000     time:   [786.47 us 794.30 us 800.89 us]
+                        thrpt:  [1.2486 Melem/s 1.2590 Melem/s 1.2715 Melem/s]
+
+prune/1                 time:   [1.3455 us 1.3539 us 1.3617 us]
+                        thrpt:  [734.36 Kelem/s 738.63 Kelem/s 743.24 Kelem/s]
+prune/100               time:   [41.584 us 41.676 us 41.774 us]
+                        thrpt:  [2.3938 Melem/s 2.3995 Melem/s 2.4048 Melem/s]
+prune/1000              time:   [613.73 us 617.63 us 620.87 us]
+                        thrpt:  [1.6106 Melem/s 1.6191 Melem/s 1.6294 Melem/s]
+</code></pre><p>But could it be better?</p>
+<p>The only optimisation that really comes to mind is using a trie instead of the <code>HashMap</code> for domains. Another possibility is turning it into a more generic size-bounded-LRU-cache-with-expiration data structure with type parameters, and so making the DNS usage just a specialisation of that; perhaps genericising the code would make it easier to see improvements.</p>
+<p>But nothing <em>needs</em> to be done, it works pretty well as it is. When I start using my DNS server for my LAN, and it starts to get much more traffic than my test instance, I’m sure performance problems will start to crop up, but hopefully they won’t be with this cache.</p>
+<p>参考：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://memo.barrucadu.co.uk/dns-cache.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Implementing a size-bounded LRU cache with expiring entries for my DNS server (in Rust)</a>
+</li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/rust/">Rust</a>
+        
+            <a href="/tags/lru/">LRU</a>
+        
+    </section>
+
+
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on 2025-01-28T18:26:14&#43;08:00
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">Related content</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/request-coalescing-in-async-rust/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Request coalescing in async Rust</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/how-to-embed-a-static-variable-into-documentation/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">How to Embed a Static Variable Into Documentation</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/failed-to-run-custom-build-command-for-openssl-sys/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Failed to Run Custom Build Command for openssl-sys</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/install-rust-binary-by-cargo/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">使用cargo安装rust二进制文件</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/cargo-test-with-root-privilege/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">使用root权限运行cargo test</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.2760efe2b07bc1f771820787a816b980000936e884b19441806bce1518d37d8c.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

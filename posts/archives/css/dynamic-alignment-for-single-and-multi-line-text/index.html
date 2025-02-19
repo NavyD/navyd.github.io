@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content=" 本文由 简悦 SimpRead 转码， 原文地址 segmentfault.com 原文链接 [链接] 很久以前 刚入前端那会，产品经理提出了这样一个需求 这段文字能不能这样判断一下，当文字不足一行时，让它居中显示，当文字超过一行就让它居&hellip;\n">
+<title>Dynamic Alignment for Single and Multi Line Text</title>
+
+<link rel='canonical' href='/posts/archives/css/dynamic-alignment-for-single-and-multi-line-text/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="Dynamic Alignment for Single and Multi Line Text">
+<meta property='og:description' content=" 本文由 简悦 SimpRead 转码， 原文地址 segmentfault.com 原文链接 [链接] 很久以前 刚入前端那会，产品经理提出了这样一个需求 这段文字能不能这样判断一下，当文字不足一行时，让它居中显示，当文字超过一行就让它居&hellip;\n">
+<meta property='og:url' content='/posts/archives/css/dynamic-alignment-for-single-and-multi-line-text/'>
+<meta property='og:site_name' content=''>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2022-06-10T07:42:44&#43;08:00'/><meta property='article:modified_time' content='2025-01-28T18:26:14&#43;08:00'/>
+<meta name="twitter:title" content="Dynamic Alignment for Single and Multi Line Text">
+<meta name="twitter:description" content=" 本文由 简悦 SimpRead 转码， 原文地址 segmentfault.com 原文链接 [链接] 很久以前 刚入前端那会，产品经理提出了这样一个需求 这段文字能不能这样判断一下，当文字不足一行时，让它居中显示，当文字超过一行就让它居&hellip;\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    <img src="https://avatars.githubusercontent.com/u/22490764" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/"></a></h1>
+            <h2 class="site-description">Hello World!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/47808239'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/NavyD'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/NavyD_hello'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="/" selected>English</option>
+                                
+                                    <option value="/zh-cn/" >中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#很久以前">很久以前</a></li>
+    <li><a href="#关于-css-实现思路">关于 CSS 实现思路</a></li>
+    <li><a href="#更好的实现方式">更好的实现方式</a>
+      <ul>
+        <li><a href="#1-父级-text-aligncenter子级-inline-blocktext-alignleft">1. 父级 text-align:center，子级 inline-block+text-align:left</a></li>
+        <li><a href="#2widthfit-contentmarginauto">2.width:fit-content+margin:auto</a></li>
+        <li><a href="#3positionrelativetransform">3.position:relative+transform</a></li>
+        <li><a href="#4displaytablemarginauto">4.display:table+margin:auto</a></li>
+        <li><a href="#5flex-和-grid-实现">5.flex 和 grid 实现</a></li>
+        <li><a href="#6float-实现">6.float 实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#小结">小结</a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/posts/archives/css/dynamic-alignment-for-single-and-multi-line-text/">Dynamic Alignment for Single and Multi Line Text</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2022-06-10T07:42:44&#43;08:00</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    7 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <blockquote>
+<p>本文由 
+
+<a  
+    class="link"
+ 
+    href="http://ksria.com/simpread/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>简悦 SimpRead</a>
+ 转码， 原文地址 
+
+<a  
+    class="link"
+ 
+    href="https://segmentfault.com/a/1190000021385669"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>segmentfault.com</a>
+</p></blockquote>
+<blockquote>
+<p>原文链接 [链接] 很久以前 刚入前端那会，产品经理提出了这样一个需求 这段文字能不能这样判断一下，当文字不足一行时，让它居中显示，当文字超过一行就让它居&hellip;</p></blockquote>
+<blockquote>
+<p>原文链接
+
+
+<a  
+    class="link"
+ 
+    href="https://link.segmentfault.com/?enc=W7f2t33ZEBZFA2oExh3MQw%3D%3D.lU%2BQ6scSa3Go1sH71VzNkMDJJWZDeWriX%2FZZXC8KVcs74RVwOFB%2FJrjSkgw1L06%2F"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>https://github.com/XboxYan/notes/issues/13</a>
+</p></blockquote>
+<h2 id="很久以前">很久以前
+</h2><p>刚入前端那会，产品经理提出了这样一个需求</p>
+<blockquote>
+<p>这段文字能不能这样判断一下，当文字不足一行时，让它居中显示，当文字超过一行就让它居左，不然居中显示很奇怪，因为最后一行是吊着的</p></blockquote>
+<p><img src="https://segmentfault.com/img/remote/1460000021385672"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>琢磨了一下，当时我还真按照产品经理的逻辑，通过 <code>js</code> 判断一下文字的高度，如果超过一行，就添加一个类名，而且这样的文字很多地方都有，所以还做了遍历，还有最重要的一点是关于方法执行的时机，有可能刚加载的时候高度还获取不到（当时好像还用了定时器，还造成了先居中随后居左跳动的现象）&hellip;</p>
+<pre tabindex="0"><code>//伪代码
+$(&#39;.text&#39;).each(function(){
+    if($(this).height()&gt;30){
+        $(this).addClass(&#39;mul&#39;);
+    }
+})
+</code></pre><p>然后这些文本有可能还是动态生成的，所以还得在生成文本的地方再调用一次这个方法，功能是做出来了，可别说有多啰嗦了，体验也不咋地（虽然外面的人看不到）</p>
+<p>当时也在想，如果是 <code>CSS</code> 实现，那么就完全不用考虑这些问题了！</p>
+<h2 id="关于-css-实现思路">关于 CSS 实现思路
+</h2><p>其实只要你逻辑清晰，<code>js</code> 都能实现出来，按照正常的思路一步一步走下来就行了。<code>CSS</code> 可不是这样，她需要你有更多的想象力。</p>
+<p>比如上面这种需求，表面上来看是需要判断文本行数，这完全不是 <code>CSS</code> 能干的事呀，不过我们可以换个方向思考，文本默认是居左的（默认文本流），只有首行是居中的，首行可以联想到<code>::first-line</code> 伪元素，所以可以试着这样实现一下</p>
+<pre tabindex="0"><code>&lt;p&gt;这段文字能不能这样判断一下，当文字不足一行时，让它居中显示，当文字超过一行就让它居左&lt;/p&gt;
+</code></pre><pre tabindex="0"><code>p::first-line{
+    text-align:center;
+}
+</code></pre><p>很好理解是吧，只针对首行进行居中操作，当多行时，首行已经铺满了，居中或者居左效果已经不明显了，只是稍微有点瑕疵，首行的居中效果和后面的文字看着有些不太整齐的感觉（因为当一行剩余空间不足一个字符的时候会掉下去）</p>
+<p><img src="https://segmentfault.com/img/remote/1460000021385673"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>解决这个问题也很简单，上面的问题是由于首行一直处于居中状态，那有没有什么办法可以只要一行的时候才居中呢？这里可以借助一下 <code>text-align-last</code>，意思就是规定多行文本的最后一行的居中方式，如果和<code>::first-line</code> 一起使用，<strong>既要满足首行又要满足是最后一行</strong>，是不是就判断出了当前只有一行呢？</p>
+<pre tabindex="0"><code>p::first-line{/*匹配首行*/
+    text-align-last:center;/*最后一行居中*/
+}
+</code></pre><p><img src="https://segmentfault.com/img/remote/1460000021385675"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>这下就正常了，有点首尾夹击的味道～</p>
+<p>
+
+<a  
+    class="link"
+ 
+    href="https://codepen.io/xboxyan/pen/WNbjBEX"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>See the Pen</a>
+ 点击预览</p>
+<p>遗憾的是，由于<code>::first-line</code> 支持样式非常有限（
+
+<a  
+    class="link"
+ 
+    href="https://link.segmentfault.com/?enc=xaJeywhCKy%2BkKhmMCrczGA%3D%3D.vFXXJzl9X9GoaMcZnoeb%2FeI97QPn9Kt9Ywgq4%2F55sAQFQlezhAiYkuNgqL%2FF8eUdGcauVQZ4Fu5PmLCokUJZ4w%3D%3D"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>MDN</a>
+），上述实现方法仅在 <code>chrome</code> 下有效，不过这种逻辑还是和 <code>js</code> 差别很大的</p>
+<p><img src="https://segmentfault.com/img/remote/1460000021385674"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<blockquote>
+<p>虽然上述并没有 <code>text-align</code> 相关属性，不过 <code>chrome</code> 却已经支持了～</p></blockquote>
+<h2 id="更好的实现方式">更好的实现方式
+</h2><h3 id="1-父级-text-aligncenter子级-inline-blocktext-alignleft">1. 父级 text-align:center，子级 inline-block+text-align:left
+</h3><p>首先来看看兼容性最好的实现方式</p>
+<p>结构如下</p>
+<pre tabindex="0"><code>&lt;div class=&#34;content&#34;&gt;
+    &lt;span class=&#34;text&#34;&gt;这段文字能不能这样判断一下，当文字不足一行时，让它居中显示，当文字超过一行就让它居左&lt;/span&gt;
+&lt;/div&gt;
+</code></pre><p>样式如下</p>
+<pre tabindex="0"><code>.content{
+    text-align: center;
+}
+.text{
+    display: inline-block;
+    text-align: left;
+}
+</code></pre><p>这个方式最早是在
+
+<a  
+    class="link"
+ 
+    href="https://link.segmentfault.com/?enc=WA75huuBvmKDkdIFXWb1Xw%3D%3D.gX4O0%2FUNiFKkzmarnHBZKPaogL1Vo75d7mD2fZBuZWE%3D"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>《CSS 世界》</a>
+中学到的，</p>
+<p><img src="https://segmentfault.com/img/remote/1460000021385677"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>大概原理如下：</p>
+<blockquote>
+<p>对于一个元素，如果其 <code>display</code> 属性值是 <code>inline-block</code>，那么其宽度由内部元素决定，但永远小于 “包含块” 容器的尺寸，也就是 “包裹性（shrink-to-fit）”</p></blockquote>
+<p>可能这样描述的不够直观，来上述的案例简单来讲</p>
+<ul>
+<li>当文本比较少时，<code>.text</code> 的宽度跟随文本，然后我们可以使用父级 <code>text-align:center</code> 来使一个 <code>inline-block</code> 元素居中，所以可以满足单行文本居中的效果，</li>
+<li>当文本比较多时，<code>.text</code> 的宽度跟随父级容器，由于 <code>text-align:center</code> 会继承下去，所以在<code>.text</code> 上修复一下即可</li>
+</ul>
+<p>
+
+<a  
+    class="link"
+ 
+    href="https://codepen.io/xboxyan/pen/QWwvRBm"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>See the Pen</a>
+</p>
+<p>兼容性一级棒～</p>
+<h3 id="2widthfit-contentmarginauto">2.width:fit-content+margin:auto
+</h3><p>上述方式是通过父级 <code>text-align:center</code> 来实现 <code>inline-block</code> 居中的，很巧妙，但是额外增加了标签，因为 <code>inline-block</code> 元素无法本身居中的。</p>
+<p>块级 <code>block</code> 元素可以在设置宽度后直接通过 <code>margin:0 auto</code> 来实现居中，但是必须指明宽度，不然就水平填充了，这两者的关系很微妙，有没有什么办法能够让块级 <code>block</code> 元素的宽度像 <code>inline-block</code> 元素跟随内部元素呢？</p>
+<p>答案就是 <code>width:fit-content</code>，详细可参考
+
+<a  
+    class="link"
+ 
+    href="https://link.segmentfault.com/?enc=WmXUI2JIORAvpea2ZuHA%2BQ%3D%3D.z46PYRZgY6NSmCxgu5bp%2FiP31gvJM%2BwrqkBL9ta2k0nstmtypZ223%2FEZ6q0xh274ZXU5KKsope%2FX5TVnFh9WZDhtJR57pnCxud6WoRLqc%2F4rcWnP%2BLzVCJBZwRjGAWZc"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>这篇文章</a>
+</p>
+<blockquote>
+<p><code>width:fit-content</code> 可以实现元素收缩效果的同时，保持原本的 <code>block</code> 水平状态，于是，就可以直接使用 <code>margin:auto</code> 实现元素向内自适应同时的居中效果了。</p></blockquote>
+<p>下面的实现方式均只需要单层标签</p>
+<pre tabindex="0"><code>&lt;p class=&#34;text&#34;&gt;这段文字能不能这样判断一下，当文字不足一行时，让它居中显示，当文字超过一行就让它居左&lt;/p&gt;
+</code></pre><pre tabindex="0"><code>.text{
+    width: fit-content;
+    width: -moz-fit-content;//火狐需要-moz-前缀
+    margin: 0 auto;
+}
+</code></pre><p>
+
+<a  
+    class="link"
+ 
+    href="https://codepen.io/xboxyan/pen/QWwvRRB"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>See the Pen</a>
+ 点击预览</p>
+<p>当然，这种特性 <code>IE</code> 肯定是不支持的～</p>
+<p><img src="https://segmentfault.com/img/remote/1460000021385676"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<h3 id="3positionrelativetransform">3.position:relative+transform
+</h3><p>仍需设置 <code>display:inline-block</code> 来实现自适应，然后配合 <code>transform</code> 来实现水平方向居中效果，实现也很简洁～</p>
+<pre tabindex="0"><code>.text{
+    display: inline-block;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+</code></pre><p>
+
+<a  
+    class="link"
+ 
+    href="https://codepen.io/xboxyan/pen/QWwgWWV"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>See the Pen</a>
+ 点击预览</p>
+<h3 id="4displaytablemarginauto">4.display:table+margin:auto
+</h3><p>前一种方式 <code>width:fit-content</code> 很有效，<code>IE</code> 不支持怎么办呢？其实默认 <code>display</code> 已经有这种特性了，当 <code>display</code> 属性值是 <code>table</code>，元素会表现出和 <code>width:fit-content</code> 的效果，既支持宽度跟随内部元素，又支持水平方向上 <code>margin</code> 居中</p>
+<pre tabindex="0"><code>.text{
+    display: table;
+    margin: 0 auto;
+}
+</code></pre><p>
+
+<a  
+    class="link"
+ 
+    href="https://codepen.io/xboxyan/pen/PowmrYO"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>See the Pen</a>
+ 点击预览</p>
+<p><code>IE8</code> 也完美支持～</p>
+<p><img src="https://segmentfault.com/img/remote/1460000021385678"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<h3 id="5flex-和-grid-实现">5.flex 和 grid 实现
+</h3><p>对于 <code>flex</code> 和 <code>grid</code> 来说，实现这样一个效果还是挺容易的。</p>
+<p>在 <code>flex</code> 容器中，所有子项成为弹性项，包括纯文本节点（匿名盒子），就好像包裹了一层，所以很容易通过 <code>justify-content: center</code> 实现居中，同时（匿名盒子）也跟随文本自适应宽度，当超过一行时，就按照默认的文本对齐方式。</p>
+<p><code>grid</code> 同理，只不过对齐方式需要通过 <code>justify-items: center</code>。</p>
+<ul>
+<li><code>flex</code> 实现</li>
+</ul>
+<pre tabindex="0"><code>.text{
+    display: flex;
+    justify-content: center;
+}
+</code></pre><p>
+
+<a  
+    class="link"
+ 
+    href="https://codepen.io/xboxyan/pen/oNgWKzy"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>See the Pen</a>
+ 点击预览</p>
+<ul>
+<li><code>grid</code> 实现</li>
+</ul>
+<pre tabindex="0"><code>.text{
+    display: grid;
+    justify-items: center;
+}
+</code></pre><p>
+
+<a  
+    class="link"
+ 
+    href="https://codepen.io/xboxyan/pen/XWJRvNg"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>See the Pen</a>
+ 点击预览</p>
+<p>相对于 <code>flex</code>，<code>grid</code> 的兼容性要差一些，所以尽量选取 <code>flex</code> 方式，至少移动端和 <code>IE10</code>（需要 <code>-ms-</code>）是没问题的</p>
+<h3 id="6float-实现">6.float 实现
+</h3><p>本以为 <code>float</code> 实现不了的，感谢
+
+<a  
+    class="link"
+ 
+    href="https://segmentfault.com/u/linxz"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>林小志</a>
+提供了 <code>float</code> 居中的实现方法，大致原理如下：本身 <code>float</code> 元素是具备包裹特性的，主要难点在于如何居中，毕竟没有 <code>float:center</code> 这种写法，这里主要用到两层标签，利用 <code>position:relative;left:50%</code> 正负抵消来实现</p>
+<pre tabindex="0"><code>.content{
+    position: relative;
+    float: left;
+    left: 50%;/**父级设置50%**/
+}
+.text{
+    position: relative;
+    float: left;
+    left: -50%;/**子级设置-50%**/
+}
+</code></pre><p>
+
+<a  
+    class="link"
+ 
+    href="https://codepen.io/xboxyan/pen/KKwqKMJ"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>See the Pen</a>
+ 点击预览</p>
+<p>略微繁琐一点，不过也不失为一种方法，兼容性也极好</p>
+<h2 id="小结">小结
+</h2><p>上述一共列举了 8 种实现方式，当然第一种属于实验性质的，兼容性少的可怜，但也不失为一种思路。怎么想到这些方法呢？</p>
+<p>第一就是联想。比如上述提到了自适应（简单来讲就是尺寸由内容决定），我就想哪些可以实现自适应呢？除了 <code>inline-block</code>，还有 <code>float</code>、<code>position:absolute</code>、<code>display:table</code> 等&hellip; <del>首先 <code>float</code> 就排除了，元素设置了 <code>float</code> 后，整体居中其实是件麻烦的事，几乎不可能</del>（经过试验，可以实现）。<code>position:absolute</code> 还是挺有希望的，借助 <code>left:50%;transform:translateX(-50%)</code> 可以实现居中效果， 尝试了一番，发现宽度无法自适应父级宽度，同样失败（说不定可以，只是没有想到）~~ 最后选择了 <code>diaplay:table</code>，也算是循序渐进。<code>flex</code> 和 <code>grid</code> 就更不用说了，天然就是为弹性布局而生了，实现这类效果不奇怪。</p>
+<p>第二还是基础。<code>CSS</code> 属性可就那么多，那只是停留在表面，很多看起来不相关的属性在整个体系中又会有些微妙的关系，比如上面的 <code>width:fill-content</code>，单独看这个肯定很鸡肋，完全可以用 <code>inline-block</code> 来代替，但是他却可以让一个普通的 <code>div</code> 元素具备 <code>inline-block</code> 的特性，不得不佩服 <code>CSS</code> 的设计～（肯定有设计人员参与）</p>
+<p>前一段时间在思考做一个可视化编辑工具，希望可以通过一些属性，就像 <code>photoshop</code> 那样，直接作出一个页面来，想想看，发现只能作出最最基本的样式，也就颜色，大小什么的，如果要做成本文这样一个效果，八成是做不了的，除了本身是做开发，别人怎么可能知道这样设置呢？可视化编辑工具的道路还很长很长，所以做前端的也无需担心被其他什么 “一键生成工具” 给取代了～</p>
+<p><img src="https://segmentfault.com/img/remote/1460000021385679"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>各位小伙伴如果还有其他实现方式可在下方留言评论，如果文章有错误请及时指出，谢谢～</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on 2025-01-28T18:26:14&#43;08:00
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.2760efe2b07bc1f771820787a816b980000936e884b19441806bce1518d37d8c.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

@@ -1,0 +1,789 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Spring on NavyD的个人博客</title><link>/tags/spring/</link><description>Recent content in Spring on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/spring/index.xml" rel="self" type="application/rss+xml"/><item><title>Spring Boot Jar启动解析</title><link>/posts/archives/java/spring/spring-boot-jar-startup-principle/</link><pubDate>Sat, 19 Mar 2022 19:28:53 +0800</pubDate><guid>/posts/archives/java/spring/spring-boot-jar-startup-principle/</guid><description>&lt;img src="/posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-13-26-06.png" alt="Featured image of post Spring Boot Jar启动解析" />&lt;p>摘要: 原创出处
+&lt;a
+class="link"
+href="http://www.iocoder.cn/Spring-Boot/jar/"
+target="_blank"
+rel="noopener"
+>http://www.iocoder.cn/Spring-Boot/jar/&lt;/a>
+「芋道源码」欢迎转载，保留摘要，谢谢！&lt;/p>
+&lt;p>Spring Boot 提供了 Maven 插件
+&lt;a
+class="link"
+href="https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins.html#build-tool-plugins-maven-plugin"
+target="_blank"
+rel="noopener"
+>&lt;code>spring-boot-maven-plugin&lt;/code>&lt;/a>
+，可以方便的将 Spring Boot 项目打成 &lt;code>jar&lt;/code> 包或者 &lt;code>war&lt;/code> 包。&lt;/p>
+&lt;p>考虑到部署的便利性，我们绝大多数 99.99% 的场景下，我们会选择打成 &lt;code>jar&lt;/code> 包。这样，我们就无需在部署项目的服务器上，配置相应的 Tomcat、Jetty 等 Servlet 容器。&lt;/p>
+&lt;p>那么，&lt;code>jar&lt;/code> 包是如何运行，并启动 Spring Boot 项目的呢？这个就是本文的目的，一起弄懂 Spring Boot &lt;code>jar&lt;/code> 包的&lt;strong>运行原理&lt;/strong>。&lt;/p>
+&lt;h2 id="结构">结构
+&lt;/h2>&lt;p>下面，我们来打开一个 Spring Boot &lt;code>jar&lt;/code> 包，看看其里面的结构。根据
+&lt;a
+class="link"
+href="https://docs.spring.io/spring-boot/docs/current/reference/html/executable-jar.html#appendix.executable-jar.nested-jars.jar-structure"
+target="_blank"
+rel="noopener"
+>The Executable Jar File Structure&lt;/a>
+一共分成四部分：&lt;/p>
+&lt;pre tabindex="0">&lt;code>example.jar
+|
++-META-INF
+| +-MANIFEST.MF
++-org
+| +-springframework
+| +-boot
+| +-loader
+| +-&amp;lt;spring boot loader classes&amp;gt;
++-BOOT-INF
++-classes
+| +-mycompany
+| +-project
+| +-YourClasses.class
++-lib
++-dependency1.jar
++-dependency2.jar
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>
+&lt;p>&lt;code>META-INF&lt;/code> 目录：通过 &lt;code>MANIFEST.MF&lt;/code> 文件提供 &lt;code>jar&lt;/code> 包的&lt;strong>元数据&lt;/strong>，声明了 &lt;code>jar&lt;/code> 的启动类。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>org&lt;/code> 目录：为 Spring Boot 提供的
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/"
+target="_blank"
+rel="noopener"
+>&lt;code>spring-boot-loader&lt;/code>&lt;/a>
+项目，它是 &lt;code>java -jar&lt;/code> 启动 Spring Boot 项目的秘密所在，也是稍后我们将深入了解的部分。&lt;/p>
+&lt;blockquote>
+&lt;p>Spring Boot Loader provides the secret sauce that allows you to build a single jar file that can be launched using &lt;code>java -jar&lt;/code>. Generally you will not need to use &lt;code>spring-boot-loader&lt;/code> directly, but instead work with the
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin"
+target="_blank"
+rel="noopener"
+>Gradle&lt;/a>
+or
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-maven-plugin"
+target="_blank"
+rel="noopener"
+>Maven&lt;/a>
+plugin.&lt;/p>&lt;/blockquote>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>BOOT-INF/lib&lt;/code> 目录：我们 Spring Boot 项目中引入的&lt;strong>依赖&lt;/strong>的 &lt;code>jar&lt;/code> 包们。&lt;code>spring-boot-loader&lt;/code> 项目很大的一个作用，就是&lt;strong>解决 &lt;code>jar&lt;/code> 包里嵌套 &lt;code>jar&lt;/code> 的情况&lt;/strong>，如何加载到其中的类。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>BOOT-INF/classes&lt;/code> 目录：我们在 Spring Boot 项目中 Java 类所编译的 &lt;code>.class&lt;/code>、配置文件等等。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>先简单剧透下，&lt;code>spring-boot-loader&lt;/code> 项目需要解决两个问题：&lt;/p>
+&lt;ol>
+&lt;li>如何引导执行我们创建的 Spring Boot 应用的启动类，例如上述图中的 Application 类。&lt;/li>
+&lt;li>如何加载 &lt;code>BOOT-INF/class&lt;/code> 目录下的类，以及 &lt;code>BOOT-INF/lib&lt;/code> 目录下内嵌的 &lt;code>jar&lt;/code> 包中的类。&lt;/li>
+&lt;/ol>
+&lt;h2 id="manifestmf">MANIFEST.MF
+&lt;/h2>&lt;p>下面，尾随艿艿，一起来抽丝剥茧！&lt;/p>
+&lt;p>我们来查看 &lt;code>META-INF/MANIFEST.MF&lt;/code> 文件，里面的内容如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-Properties" data-lang="Properties">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">Manifest-Version&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">1.0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">Implementation-Title&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">lab-39-demo&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">Implementation-Version&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">2.2.2.RELEASE&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">Start-Class&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">cn.iocoder.springboot.lab39.skywalkingdemo.Application&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">Spring-Boot-Classes&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">BOOT-INF/classes/&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">Spring-Boot-Lib&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">BOOT-INF/lib/&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">Build-Jdk-Spec&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">1.8&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">Spring-Boot-Version&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">2.2.2.RELEASE&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">Created-By&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">Maven Archiver 3.4.0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">Main-Class&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">org.springframework.boot.loader.JarLauncher&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">\n&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">\n&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>它实际是一个 &lt;strong>Properties&lt;/strong> 配置文件，每一行都是一个配置项目。重点来看看两个配置项：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>Main-Class&lt;/code> 配置项：Java 规定的 &lt;code>jar&lt;/code> 包的启动类，这里设置为 &lt;code>spring-boot-loader&lt;/code> 项目的
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/JarLauncher.java"
+target="_blank"
+rel="noopener"
+>JarLauncher&lt;/a>
+类，进行 Spring Boot 应用的启动。&lt;/li>
+&lt;li>&lt;code>Start-Class&lt;/code> 配置项：Spring Boot 规定的&lt;strong>主&lt;/strong>启动类，这里设置为我们定义的 Application 类。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;em>小知识补充：为什么会有 &lt;code>Main-Class&lt;/code>/&lt;code>Start-Class&lt;/code> 配置项呢？因为我们是通过 Spring Boot 提供的 Maven 插件
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/"
+target="_blank"
+rel="noopener"
+>&lt;code>spring-boot-maven-plugin&lt;/code>&lt;/a>
+进行打包，该插件将该配置项写入到 &lt;code>MANIFEST.MF&lt;/code> 中，从而能让 &lt;code>spring-boot-loader&lt;/code> 能够引导启动 Spring Boot 应用。&lt;/em>&lt;/p>
+&lt;p>可能胖友会有疑惑，&lt;code>Start-Class&lt;/code> 对应的 Application 类自带了 &lt;code>#main(String[] args)&lt;/code> 方法，为什么我们不能直接运行会如何呢？我们来简单尝试一下哈，控制台执行如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ java -classpath lab-39-demo-2.2.2.RELEASE.jar cn.iocoder.springboot.lab39.skywalkingdemo.Application
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>错误: 找不到或无法加载主类 cn.iocoder.springboot.lab39.skywalkingdemo.Application
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>直接找不到 Application 类，因为它在 &lt;code>BOOT-INF/classes&lt;/code> 目录下，不符合 Java 默认的 &lt;code>jar&lt;/code> 包的加载规则。因此，需要通过 JarLauncher 启动加载。&lt;/p>
+&lt;p>当然实际还有一个更重要的原因，Java 规定可执行器的 &lt;code>jar&lt;/code> 包禁止嵌套其它 &lt;code>jar&lt;/code> 包。但是我们可以看到 &lt;code>BOOT-INF/lib&lt;/code> 目录下，实际有 Spring Boot 应用依赖的所有 &lt;code>jar&lt;/code> 包。因此，&lt;code>spring-boot-loader&lt;/code> 项目自定义实现了 ClassLoader 实现类
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/main/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/LaunchedURLClassLoader.java"
+target="_blank"
+rel="noopener"
+>LaunchedURLClassLoader&lt;/a>
+，支持加载 &lt;code>BOOT-INF/classes&lt;/code> 目录下的 &lt;code>.class&lt;/code> 文件，以及 &lt;code>BOOT-INF/lib&lt;/code> 目录下的 &lt;code>jar&lt;/code> 包。&lt;/p>
+&lt;h2 id="debug">Debug
+&lt;/h2>&lt;p>在看具体实现之前，如何才能直观的 debug 到 Spring Boot Loader 的执行过程呢？下面使用idea与maven配置debug&lt;/p>
+&lt;p>在典型的Spring boot应用（Spring initializr）的pom.xml中添加spring-boot-loader依赖并打包&lt;code>mvn package&lt;/code>得到&lt;code>target/xxx.jar&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-xml" data-lang="xml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">&amp;lt;dependency&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;groupId&amp;gt;&lt;/span>org.springframework.boot&lt;span style="color:#f92672">&amp;lt;/groupId&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;artifactId&amp;gt;&lt;/span>spring-boot-loader&lt;span style="color:#f92672">&amp;lt;/artifactId&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">&amp;lt;/dependency&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后在Idea的Run/Debug Configurations中配置Jar Application的Path to JAR为打包的&lt;code>xxx.jar&lt;/code>路径&lt;/p>
+&lt;p>&lt;img src="/posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-12-10-28.png"
+width="745"
+height="695"
+srcset="/posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-12-10-28_hu_4d6b5c670747c19c.png 480w, /posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-12-10-28_hu_5b355fd86425cd54.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="107"
+data-flex-basis="257px"
+>&lt;/p>
+&lt;p>最后在maven依赖中找到spring-boot-loader jar中的JarLauncher断点debug运行即可&lt;/p>
+&lt;h2 id="jarlauncher实现">JarLauncher实现
+&lt;/h2>&lt;p>
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/JarLauncher.java"
+target="_blank"
+rel="noopener"
+>JarLauncher&lt;/a>
+类是针对 Spring Boot &lt;code>jar&lt;/code> 包的启动类，整体类图如下所示：&lt;/p>
+&lt;p>&lt;img src="/posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-12-14-16.png"
+width="1106"
+height="558"
+srcset="/posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-12-14-16_hu_69fcce8890f4fdb1.png 480w, /posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-12-14-16_hu_8aa31f8c2812d1af.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="198"
+data-flex-basis="475px"
+>&lt;/p>
+&lt;blockquote>
+&lt;p>友情提示：
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/WarLauncher.java"
+target="_blank"
+rel="noopener"
+>WarLauncher&lt;/a>
+类，是针对 Spring Boot &lt;code>war&lt;/code> 包的启动类，后续胖友可以自己瞅瞅，差别并不大哈~&lt;/p>&lt;/blockquote>
+&lt;p>
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/JarLauncher.java#L64"
+target="_blank"
+rel="noopener"
+>JarLauncher 的源码&lt;/a>
+比较简单&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">JarLauncher&lt;/span> &lt;span style="color:#66d9ef">extends&lt;/span> ExecutableArchiveLauncher {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> String BOOT_INF_CLASSES &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;BOOT-INF/classes/&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> String BOOT_INF_LIB &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;BOOT-INF/lib/&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">//...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">protected&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isNestedArchive&lt;/span>(Archive.&lt;span style="color:#a6e22e">Entry&lt;/span> entry) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (entry.&lt;span style="color:#a6e22e">isDirectory&lt;/span>()) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> entry.&lt;span style="color:#a6e22e">getName&lt;/span>().&lt;span style="color:#a6e22e">equals&lt;/span>(BOOT_INF_CLASSES);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> entry.&lt;span style="color:#a6e22e">getName&lt;/span>().&lt;span style="color:#a6e22e">startsWith&lt;/span>(BOOT_INF_LIB);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>(String&lt;span style="color:#f92672">[]&lt;/span> args) &lt;span style="color:#66d9ef">throws&lt;/span> Exception {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">new&lt;/span> JarLauncher().&lt;span style="color:#a6e22e">launch&lt;/span>(args);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="createarchive">createArchive
+&lt;/h3>&lt;p>在
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/ExecutableArchiveLauncher.java#L51"
+target="_blank"
+rel="noopener"
+>ExecutableArchiveLauncher#ExecutableArchiveLauncher()&lt;/a>
+的构造方法中调用了父类
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/Launcher.java#L124:26"
+target="_blank"
+rel="noopener"
+>Launcher#createArchive()&lt;/a>
+，代码如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> Archive &lt;span style="color:#a6e22e">createArchive&lt;/span>() &lt;span style="color:#66d9ef">throws&lt;/span> Exception {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ProtectionDomain protectionDomain &lt;span style="color:#f92672">=&lt;/span> getClass().&lt;span style="color:#a6e22e">getProtectionDomain&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> CodeSource codeSource &lt;span style="color:#f92672">=&lt;/span> protectionDomain.&lt;span style="color:#a6e22e">getCodeSource&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> URI location &lt;span style="color:#f92672">=&lt;/span> (codeSource &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>) &lt;span style="color:#f92672">?&lt;/span> codeSource.&lt;span style="color:#a6e22e">getLocation&lt;/span>().&lt;span style="color:#a6e22e">toURI&lt;/span>() : &lt;span style="color:#66d9ef">null&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String path &lt;span style="color:#f92672">=&lt;/span> (location &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>) &lt;span style="color:#f92672">?&lt;/span> location.&lt;span style="color:#a6e22e">getSchemeSpecificPart&lt;/span>() : &lt;span style="color:#66d9ef">null&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (path &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">throw&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> IllegalStateException(&lt;span style="color:#e6db74">&amp;#34;Unable to determine code source archive&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> File root &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> File(path);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#f92672">!&lt;/span>root.&lt;span style="color:#a6e22e">exists&lt;/span>()) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">throw&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> IllegalStateException(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;Unable to determine code source archive from &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> root);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> (root.&lt;span style="color:#a6e22e">isDirectory&lt;/span>() &lt;span style="color:#f92672">?&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ExplodedArchive(root)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> : &lt;span style="color:#66d9ef">new&lt;/span> JarFileArchive(root));
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>根据根路径&lt;strong>是否为目录&lt;/strong>的情况，创建 ExplodedArchive 或 JarFileArchive 对象。那么问题就来了，这里的 &lt;code>root&lt;/code> 是什么呢？&lt;/p>
+&lt;p>通过debug发现&lt;code>root&lt;/code> 路径为 &lt;code>jar&lt;/code> 包的绝对地址，也就是说创建 JarFileArchive 对象。原因是，Launcher 所在包为 &lt;code>org&lt;/code> 下，它的根目录当然是 &lt;code>jar&lt;/code> 包的绝对路径哈！&lt;/p>
+&lt;h3 id="launcherlaunch">Launcher::launch
+&lt;/h3>&lt;p>通过 &lt;code>#main(String[] args)&lt;/code> 方法，创建 JarLauncher 对象，并调用其 &lt;code>#launch(String[] args)&lt;/code> 方法进行启动。整体的启动逻辑，其实是由父类
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/Launcher.java#L51"
+target="_blank"
+rel="noopener"
+>Launcher#launch(String[] args)&lt;/a>
+提供：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">launch&lt;/span>(String&lt;span style="color:#f92672">[]&lt;/span> args) &lt;span style="color:#66d9ef">throws&lt;/span> Exception {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 省略部分代码。。。&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> JarFile.&lt;span style="color:#a6e22e">registerUrlProtocolHandler&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 2&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ClassLoader classLoader &lt;span style="color:#f92672">=&lt;/span> createClassLoader(getClassPathArchivesIterator());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 3&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> launch(args, getMainClass(), classLoader);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol>
+&lt;li>调用 JarFile 的 &lt;code>#registerUrlProtocolHandler()&lt;/code> 方法，注册 Spring Boot 自定义的
+&lt;a
+class="link"
+href="https://github.com/openjdk-mirror/jdk7u-jdk/blob/master/src/share/classes/java/net/URLStreamHandler.java"
+target="_blank"
+rel="noopener"
+>URLStreamHandler&lt;/a>
+实现类，用于 &lt;code>jar&lt;/code> 包的加载读取。&lt;/li>
+&lt;li>调用自身的 &lt;code>#createClassLoader&lt;/code> 方法，创建自定义的
+&lt;a
+class="link"
+href="https://github.com/openjdk-mirror/jdk7u-jdk/blob/master/src/share/classes/java/lang/ClassLoader.java"
+target="_blank"
+rel="noopener"
+>ClassLoader&lt;/a>
+实现类，用于从 &lt;code>jar&lt;/code> 包中加载类。&lt;/li>
+&lt;li>执行我们声明的 Spring Boot 启动类，进行 Spring Boot 应用的启动。&lt;/li>
+&lt;/ol>
+&lt;p>简单来说，就是整一个可以读取 &lt;code>jar&lt;/code> 包中类的加载器，保证 &lt;code>BOOT-INF/lib&lt;/code> 目录下的类和 &lt;code>BOOT-classes&lt;/code> 内嵌的 &lt;code>jar&lt;/code> 中的类能够被正常加载到，之后执行 Spring Boot 应用的启动。&lt;/p>
+&lt;p>下面是&lt;code>Launcher::launch&lt;/code>的时序图：&lt;/p>
+&lt;p>&lt;img src="/posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-15-36-51.png"
+width="875"
+height="934"
+srcset="/posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-15-36-51_hu_57982bd5a6e7fa1.png 480w, /posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-15-36-51_hu_7ef53d3fbb1a88e.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="93"
+data-flex-basis="224px"
+>&lt;/p>
+&lt;p>下面，我们逐行代码来看看噢。即将代码多多，保持淡定，嘿嘿~&lt;/p>
+&lt;h3 id="registerurlprotocolhandler">registerUrlProtocolHandler
+&lt;/h3>&lt;p>友情提示：对应 &lt;code>JarFile.registerUrlProtocolHandler();&lt;/code> 代码段，不要迷路。&lt;/p>
+&lt;p>
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/jar/JarFile.java#L56"
+target="_blank"
+rel="noopener"
+>JarFile&lt;/a>
+是
+&lt;a
+class="link"
+href="https://github.com/openjdk-mirror/jdk7u-jdk/blob/master/src/share/classes/java/util/jar/JarFile.java"
+target="_blank"
+rel="noopener"
+>java.util.jar.JarFile&lt;/a>
+的子类，JarFile 主要增强支持对内嵌的 &lt;code>jar&lt;/code> 包的获取。&lt;/p>
+&lt;p>OK，介绍完之后，让我们回到
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/jar/JarFile.java#L430"
+target="_blank"
+rel="noopener"
+>JarFile#registerUrlProtocolHandler()&lt;/a>
+方法，注册 Spring Boot 自定义的 URL 协议的处理器。代码如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> String PROTOCOL_HANDLER &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;java.protocol.handler.pkgs&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> String HANDLERS_PACKAGE &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;org.springframework.boot.loader&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">registerUrlProtocolHandler&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// If possible, capture a URL that is configured with the original jar handler so that we can use it as a fallback context later. We can only do this if we know that we can reset the handlers after.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Handler.&lt;span style="color:#a6e22e">captureJarContextUrl&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String handlers &lt;span style="color:#f92672">=&lt;/span> System.&lt;span style="color:#a6e22e">getProperty&lt;/span>(PROTOCOL_HANDLER, &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> System.&lt;span style="color:#a6e22e">setProperty&lt;/span>(PROTOCOL_HANDLER,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ((handlers &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span> &lt;span style="color:#f92672">||&lt;/span> handlers.&lt;span style="color:#a6e22e">isEmpty&lt;/span>()) &lt;span style="color:#f92672">?&lt;/span> HANDLERS_PACKAGE : handlers &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#e6db74">&amp;#34;|&amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> HANDLERS_PACKAGE));
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> resetCachedUrlHandlers();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// 。。。&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">resetCachedUrlHandlers&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">try&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> URL.&lt;span style="color:#a6e22e">setURLStreamHandlerFactory&lt;/span>(&lt;span style="color:#66d9ef">null&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">catch&lt;/span> (Error ex) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// ignore&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>目的很明确，通过将 &lt;code>org.springframework.boot.loader&lt;/code> 包设置到 &lt;code>&amp;quot;java.protocol.handler.pkgs&amp;quot;&lt;/code> 环境变量，从而使用到自定义的 URLStreamHandler 实现类
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/jar/Handler.java#L414:14"
+target="_blank"
+rel="noopener"
+>Handler#captureJarContextUrl()&lt;/a>
+，处理 &lt;code>jar:&lt;/code> 协议的 URL。&lt;/p>
+&lt;blockquote>
+&lt;p>友情提示：这里我们暂时不深入 Handler 的源码，避免直接走的太深，丢失了主干。后续胖友可结合
+&lt;a
+class="link"
+href="https://www.iteye.com/blog/mercyblitz-735529"
+target="_blank"
+rel="noopener"
+>《Java URL 协议扩展实现》&lt;/a>
+文章，进行 Handler 的实现理解。&lt;/p>
+&lt;p>另外，
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/test/java/org/springframework/boot/loader/jar/HandlerTests.java"
+target="_blank"
+rel="noopener"
+>HandlerTests&lt;/a>
+提供的单元测试，也是非常有帮助的~&lt;/p>&lt;/blockquote>
+&lt;h3 id="getclasspatharchivesiterator">getClassPathArchivesIterator
+&lt;/h3>&lt;p>首先，我们先来看看
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/ExecutableArchiveLauncher.java#L120"
+target="_blank"
+rel="noopener"
+>ExecutableArchiveLauncher#getClassPathArchivesIterator()&lt;/a>
+，代码如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> Archive archive;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> Iterator&lt;span style="color:#f92672">&amp;lt;&lt;/span>Archive&lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#a6e22e">getClassPathArchivesIterator&lt;/span>() &lt;span style="color:#66d9ef">throws&lt;/span> Exception {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// Determine if the specified entry is a candidate for further searching.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Archive.&lt;span style="color:#a6e22e">EntryFilter&lt;/span> searchFilter &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">this&lt;/span>::isSearchCandidate;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Iterator&lt;span style="color:#f92672">&amp;lt;&lt;/span>Archive&lt;span style="color:#f92672">&amp;gt;&lt;/span> archives &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">this&lt;/span>.&lt;span style="color:#a6e22e">archive&lt;/span>.&lt;span style="color:#a6e22e">getNestedArchives&lt;/span>(searchFilter,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (entry) &lt;span style="color:#f92672">-&amp;gt;&lt;/span> isNestedArchive(entry) &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#f92672">!&lt;/span>isEntryIndexed(entry));
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (isPostProcessingClassPathArchives()) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> archives &lt;span style="color:#f92672">=&lt;/span> applyClassPathArchivePostProcessing(archives);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> archives;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> &lt;span style="color:#66d9ef">abstract&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isNestedArchive&lt;/span>(Archive.&lt;span style="color:#a6e22e">Entry&lt;/span> entry);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">postProcessClassPathArchives&lt;/span>(List&lt;span style="color:#f92672">&amp;lt;&lt;/span>Archive&lt;span style="color:#f92672">&amp;gt;&lt;/span> archives) &lt;span style="color:#66d9ef">throws&lt;/span> Exception {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>友情提示：这里我们会看到一个接口
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/archive/Archive.java#L34"
+target="_blank"
+rel="noopener"
+>Archive&lt;/a>
+对象，先可以暂时理解成一个一个的&lt;strong>档案&lt;/strong>，稍后会清晰认识的~&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> &lt;span style="color:#a6e22e">Archive&lt;/span> &lt;span style="color:#66d9ef">extends&lt;/span> Iterable&lt;span style="color:#f92672">&amp;lt;&lt;/span>Archive.&lt;span style="color:#a6e22e">Entry&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>, AutoCloseable {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">//。。。&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// Represents a single entry in the archive.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">interface&lt;/span> &lt;span style="color:#a6e22e">Entry&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isDirectory&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String &lt;span style="color:#a6e22e">getName&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// Strategy interface to filter {@link Entry Entries}.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">interface&lt;/span> &lt;span style="color:#a6e22e">EntryFilter&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">matches&lt;/span>(Entry entry);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="archivegetnestedarchives">archive.getNestedArchives
+&lt;/h4>&lt;p>&lt;code>this::isSearchCandidate&lt;/code> 代码段创建了 EntryFilter 用于过滤 &lt;code>jar&lt;/code> 包不需要的目录。这里在它的内部，实际调用了其实现类JarLauncher，目的就是过滤获得，&lt;code>BOOT-INF/&lt;/code> 目录下的类及 &lt;code>jar&lt;/code> 包&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> EntryFilter NESTED_ARCHIVE_ENTRY_FILTER &lt;span style="color:#f92672">=&lt;/span> (entry) &lt;span style="color:#f92672">-&amp;gt;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (entry.&lt;span style="color:#a6e22e">isDirectory&lt;/span>()) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> entry.&lt;span style="color:#a6e22e">getName&lt;/span>().&lt;span style="color:#a6e22e">equals&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;BOOT-INF/classes/&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> entry.&lt;span style="color:#a6e22e">getName&lt;/span>().&lt;span style="color:#a6e22e">startsWith&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;BOOT-INF/lib/&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>};
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isSearchCandidate&lt;/span>(Archive.&lt;span style="color:#a6e22e">Entry&lt;/span> entry) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> entry.&lt;span style="color:#a6e22e">getName&lt;/span>().&lt;span style="color:#a6e22e">startsWith&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;BOOT-INF/&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> &lt;span style="color:#66d9ef">boolean&lt;/span> &lt;span style="color:#a6e22e">isNestedArchive&lt;/span>(Archive.&lt;span style="color:#a6e22e">Entry&lt;/span> entry) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> NESTED_ARCHIVE_ENTRY_FILTER.&lt;span style="color:#a6e22e">matches&lt;/span>(entry);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>this.archive.getNestedArchives&lt;/code> 代码段，实际在iterator中通过
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/bce247eafb48c13eadca00f12704e755fc98518b/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/archive/JarFileArchive.java#L272"
+target="_blank"
+rel="noopener"
+>JarFileArchive.NestedArchiveIterator#adapt&lt;/a>
+调用 Archive 的
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/bce247eafb48c13eadca00f12704e755fc98518b/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/archive/JarFileArchive.java#L110"
+target="_blank"
+rel="noopener"
+>JarFileArchive#getNestedArchives(EntryFilter filter)&lt;/a>
+方法，获得 &lt;code>archive&lt;/code> 内嵌的 Archive 集合&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> String UNPACK_MARKER &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;UNPACK:&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> Archive &lt;span style="color:#a6e22e">getNestedArchive&lt;/span>(Entry entry) &lt;span style="color:#66d9ef">throws&lt;/span> IOException {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> JarEntry jarEntry &lt;span style="color:#f92672">=&lt;/span> ((JarFileEntry) entry).&lt;span style="color:#a6e22e">getJarEntry&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (jarEntry.&lt;span style="color:#a6e22e">getComment&lt;/span>().&lt;span style="color:#a6e22e">startsWith&lt;/span>(UNPACK_MARKER)) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> getUnpackedNestedArchive(jarEntry);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">try&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> JarFile jarFile &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">this&lt;/span>.&lt;span style="color:#a6e22e">jarFile&lt;/span>.&lt;span style="color:#a6e22e">getNestedJarFile&lt;/span>(jarEntry);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> JarFileArchive(jarFile);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">catch&lt;/span> (Exception ex) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">throw&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> IllegalStateException(&lt;span style="color:#e6db74">&amp;#34;Failed to get nested archive for entry &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> entry.&lt;span style="color:#a6e22e">getName&lt;/span>(), ex);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>尝试debug打印 JarFileArchive 的 &lt;code>#getNestedArchives&lt;/code> 方法的执行结果。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// Iterator&amp;lt;Archive&amp;gt; archives = this.archive.getNestedArchives(searchFilter,&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// (entry) -&amp;gt; isNestedArchive(entry) &amp;amp;&amp;amp; !isEntryIndexed(entry));&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> (Archive item : archives) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> System.&lt;span style="color:#a6e22e">out&lt;/span>.&lt;span style="color:#a6e22e">println&lt;/span>(item.&lt;span style="color:#a6e22e">getUrl&lt;/span>());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// jar:file:/Users/yunai/Java/SpringBoot-Labs/lab-39/lab-39-demo/target/lab-39-demo-2.2.2.RELEASE.jar!/BOOT-INF/classes!/&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// jar:file:/Users/yunai/Java/SpringBoot-Labs/lab-39/lab-39-demo/target/lab-39-demo-2.2.2.RELEASE.jar!/BOOT-INF/lib/spring-boot-starter-web-2.2.2.RELEASE.jar!/&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// jar:file:/Users/yunai/Java/SpringBoot-Labs/lab-39/lab-39-demo/target/lab-39-demo-2.2.2.RELEASE.jar!/BOOT-INF/lib/spring-boot-starter-2.2.2.RELEASE.jar!/&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// jar:file:/Users/yunai/Java/SpringBoot-Labs/lab-39/lab-39-demo/target/lab-39-demo-2.2.2.RELEASE.jar!/BOOT-INF/lib/spring-boot-2.2.2.RELEASE.jar!/&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// ... 省略其他 jar 包&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>从执行结果可以看出，&lt;code>BOOT-INF/classes/&lt;/code> 目录被归类为&lt;strong>一个&lt;/strong> Archive 对象，而 &lt;code>BOOT-INF/lib/&lt;/code> 目录下的&lt;strong>每个&lt;/strong>内嵌 &lt;code>jar&lt;/code> 包都对应&lt;strong>一个&lt;/strong> Archive 对象。&lt;/p>
+&lt;p>注意，通过debug，一般的spring jar包在&lt;code>jarEntry.getComment().startsWith(UNPACK_MARKER) == false&lt;/code>，不会执行&lt;code>getUnpackedNestedArchive&lt;/code>。但在
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/bce247eafb48c13eadca00f12704e755fc98518b/spring-boot-project/spring-boot-tools/spring-boot-loader/src/test/java/org/springframework/boot/loader/archive/JarFileArchiveTests.java#L108"
+target="_blank"
+rel="noopener"
+>JarFileArchiveTests#getNestedUnpackedArchive&lt;/a>
+测试中才能看到jar comment为&lt;code>UNPACK_MARKER&lt;/code>，几次尝试都找不到如何才能使comment为&lt;code>UNPACK_MARKER&lt;/code>！！&lt;/p>
+&lt;h3 id="createclassloader">createClassLoader
+&lt;/h3>&lt;p>友情提示：对应 &lt;code>ClassLoader classLoader = createClassLoader(getClassPathArchivesIterator())&lt;/code> 代码段，不要迷路。&lt;/p>
+&lt;p>然后，我再来看看
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/ExecutableArchiveLauncher.java#L101"
+target="_blank"
+rel="noopener"
+>ExecutableArchiveLauncher#createClassLoader(Iterator&amp;lt;Archive&amp;gt; archives)&lt;/a>
+。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> ClassLoader &lt;span style="color:#a6e22e">createClassLoader&lt;/span>(Iterator&lt;span style="color:#f92672">&amp;lt;&lt;/span>Archive&lt;span style="color:#f92672">&amp;gt;&lt;/span> archives) &lt;span style="color:#66d9ef">throws&lt;/span> Exception {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> List&lt;span style="color:#f92672">&amp;lt;&lt;/span>URL&lt;span style="color:#f92672">&amp;gt;&lt;/span> urls &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ArrayList&lt;span style="color:#f92672">&amp;lt;&amp;gt;&lt;/span>(guessClassPathSize());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> (archives.&lt;span style="color:#a6e22e">hasNext&lt;/span>()) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> urls.&lt;span style="color:#a6e22e">add&lt;/span>(archives.&lt;span style="color:#a6e22e">next&lt;/span>().&lt;span style="color:#a6e22e">getUrl&lt;/span>());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#66d9ef">this&lt;/span>.&lt;span style="color:#a6e22e">classPathIndex&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> urls.&lt;span style="color:#a6e22e">addAll&lt;/span>(&lt;span style="color:#66d9ef">this&lt;/span>.&lt;span style="color:#a6e22e">classPathIndex&lt;/span>.&lt;span style="color:#a6e22e">getUrls&lt;/span>());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> createClassLoader(urls.&lt;span style="color:#a6e22e">toArray&lt;/span>(&lt;span style="color:#66d9ef">new&lt;/span> URL&lt;span style="color:#f92672">[&lt;/span>0&lt;span style="color:#f92672">]&lt;/span>));
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// [Launcher#createClassLoader](https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/Launcher.java#L82)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> ClassLoader &lt;span style="color:#a6e22e">createClassLoader&lt;/span>(URL&lt;span style="color:#f92672">[]&lt;/span> urls) &lt;span style="color:#66d9ef">throws&lt;/span> Exception {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> LaunchedURLClassLoader(urls, getClass().&lt;span style="color:#a6e22e">getClassLoader&lt;/span>());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>基于获得的 Archive 数组，创建
+&lt;a
+class="link"
+href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/URLClassLoader.html"
+target="_blank"
+rel="noopener"
+>java.net.URLClassLoader&lt;/a>
+的自定义实现类
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/LaunchedURLClassLoader.java"
+target="_blank"
+rel="noopener"
+>LaunchedURLClassLoader&lt;/a>
+，通过它来加载 &lt;code>BOOT-INF/classes&lt;/code> 目录下的类，以及 &lt;code>BOOT-INF/lib&lt;/code> 目录下的 &lt;code>jar&lt;/code> 包中的类。&lt;/p>
+&lt;p>进一步的解析，我们在
+&lt;a
+class="link"
+href="#launchedurlclassloader"
+>LaunchedURLClassLoader&lt;/a>
+小节中，进行分享哈！&lt;/p>
+&lt;h3 id="launch">launch
+&lt;/h3>&lt;p>友情提示：对应 &lt;code>launch(args, getMainClass(), classLoader)&lt;/code> 代码段，不要迷路。&lt;/p>
+&lt;h4 id="getmainclass">getMainClass
+&lt;/h4>&lt;p>首先，我们先来看看
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/ExecutableArchiveLauncher.java#L88"
+target="_blank"
+rel="noopener"
+>ExecutableArchiveLauncher#getMainClass()&lt;/a>
+代码如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> String START_CLASS_ATTRIBUTE &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Start-Class&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">@Override&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> String &lt;span style="color:#a6e22e">getMainClass&lt;/span>() &lt;span style="color:#66d9ef">throws&lt;/span> Exception {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Manifest manifest &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">this&lt;/span>.&lt;span style="color:#a6e22e">archive&lt;/span>.&lt;span style="color:#a6e22e">getManifest&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String mainClass &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (manifest &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> mainClass &lt;span style="color:#f92672">=&lt;/span> manifest.&lt;span style="color:#a6e22e">getMainAttributes&lt;/span>().&lt;span style="color:#a6e22e">getValue&lt;/span>(START_CLASS_ATTRIBUTE);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (mainClass &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">throw&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> IllegalStateException(&lt;span style="color:#e6db74">&amp;#34;No &amp;#39;Start-Class&amp;#39; manifest entry specified in &amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#66d9ef">this&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> mainClass;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>从 &lt;code>jar&lt;/code> 包的 &lt;code>MANIFEST.MF&lt;/code> 文件的 &lt;code>Start-Class&lt;/code> 配置项，，获得我们设置的 Spring Boot 的&lt;strong>主&lt;/strong>启动类。&lt;/p>
+&lt;h4 id="createmainmethodrunner">createMainMethodRunner
+&lt;/h4>&lt;p>然后，我们再来看看
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/Launcher.java#L51"
+target="_blank"
+rel="noopener"
+>Launcher#launch()&lt;/a>
+代码如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">launch&lt;/span>(String&lt;span style="color:#f92672">[]&lt;/span> args) &lt;span style="color:#66d9ef">throws&lt;/span> Exception {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#f92672">!&lt;/span>isExploded()) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> JarFile.&lt;span style="color:#a6e22e">registerUrlProtocolHandler&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ClassLoader classLoader &lt;span style="color:#f92672">=&lt;/span> createClassLoader(getClassPathArchivesIterator());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String jarMode &lt;span style="color:#f92672">=&lt;/span> System.&lt;span style="color:#a6e22e">getProperty&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;jarmode&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String launchClass &lt;span style="color:#f92672">=&lt;/span> (jarMode &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#f92672">!&lt;/span>jarMode.&lt;span style="color:#a6e22e">isEmpty&lt;/span>()) &lt;span style="color:#f92672">?&lt;/span> JAR_MODE_LAUNCHER : getMainClass();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> launch(args, launchClass, classLoader);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">launch&lt;/span>(String&lt;span style="color:#f92672">[]&lt;/span> args, String mainClass, ClassLoader classLoader)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">throws&lt;/span> Exception {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Thread.&lt;span style="color:#a6e22e">currentThread&lt;/span>().&lt;span style="color:#a6e22e">setContextClassLoader&lt;/span>(classLoader);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> createMainMethodRunner(mainClass, args, classLoader).&lt;span style="color:#a6e22e">run&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">protected&lt;/span> MainMethodRunner &lt;span style="color:#a6e22e">createMainMethodRunner&lt;/span>(String mainClass, String&lt;span style="color:#f92672">[]&lt;/span> args, ClassLoader classLoader) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> MainMethodRunner(mainClass, args);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>该方法负责最终的 Spring Boot 应用真正的&lt;strong>启动&lt;/strong>。&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>设置
+&lt;a
+class="link"
+href="#createclassloader"
+>createClassLoader&lt;/a>
+创建的
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/LaunchedURLClassLoader.java"
+target="_blank"
+rel="noopener"
+>LaunchedURLClassLoader&lt;/a>
+作为类加载器，从而保证能够从 &lt;code>jar&lt;/code> 加载到相应的类。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>调用 &lt;code>Launcher#createMainMethodRunner(String mainClass, String[] args, ClassLoader classLoader)&lt;/code> 方法，创建对象并执行
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/MainMethodRunner.java#L45"
+target="_blank"
+rel="noopener"
+>MainMethodRunner#run()&lt;/a>
+来启动 Spring Boot 应用。&lt;/p>
+&lt;p>下面，我们来看看 &lt;strong>MainMethodRunner&lt;/strong> 类，负责 Spring Boot 应用的启动。代码如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">MainMethodRunner&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> String mainClassName;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">final&lt;/span> String&lt;span style="color:#f92672">[]&lt;/span> args;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#a6e22e">MainMethodRunner&lt;/span>(String mainClass, String&lt;span style="color:#f92672">[]&lt;/span> args) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">this&lt;/span>.&lt;span style="color:#a6e22e">mainClassName&lt;/span> &lt;span style="color:#f92672">=&lt;/span> mainClass;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">this&lt;/span>.&lt;span style="color:#a6e22e">args&lt;/span> &lt;span style="color:#f92672">=&lt;/span> (args &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span>) &lt;span style="color:#f92672">?&lt;/span> args.&lt;span style="color:#a6e22e">clone&lt;/span>() : &lt;span style="color:#66d9ef">null&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> &lt;span style="color:#a6e22e">run&lt;/span>() &lt;span style="color:#66d9ef">throws&lt;/span> Exception {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Class&lt;span style="color:#f92672">&amp;lt;?&amp;gt;&lt;/span> mainClass &lt;span style="color:#f92672">=&lt;/span> Class.&lt;span style="color:#a6e22e">forName&lt;/span>(&lt;span style="color:#66d9ef">this&lt;/span>.&lt;span style="color:#a6e22e">mainClassName&lt;/span>, &lt;span style="color:#66d9ef">false&lt;/span>, Thread.&lt;span style="color:#a6e22e">currentThread&lt;/span>().&lt;span style="color:#a6e22e">getContextClassLoader&lt;/span>());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Method mainMethod &lt;span style="color:#f92672">=&lt;/span> mainClass.&lt;span style="color:#a6e22e">getDeclaredMethod&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;main&amp;#34;&lt;/span>, String&lt;span style="color:#f92672">[]&lt;/span>.&lt;span style="color:#a6e22e">class&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> mainMethod.&lt;span style="color:#a6e22e">setAccessible&lt;/span>(&lt;span style="color:#66d9ef">true&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> mainMethod.&lt;span style="color:#a6e22e">invoke&lt;/span>(&lt;span style="color:#66d9ef">null&lt;/span>, &lt;span style="color:#66d9ef">new&lt;/span> Object&lt;span style="color:#f92672">[]&lt;/span> { &lt;span style="color:#66d9ef">this&lt;/span>.&lt;span style="color:#a6e22e">args&lt;/span> });
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol>
+&lt;li>通过 LaunchedURLClassLoader 类加载器，加载到我们设置的 Spring Boot 的主启动类。&lt;/li>
+&lt;li>通过&lt;strong>反射&lt;/strong>调用主启动类的 &lt;code>#main(String[] args)&lt;/code> 方法，启动 Spring Boot 应用。这里也告诉了我们答案，为什么我们通过编写一个带有 &lt;code>#main(String[] args)&lt;/code> 方法的类，就能够启动 Spring Boot 应用。&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="launchedurlclassloader">LaunchedURLClassLoader
+&lt;/h3>&lt;p>
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/LaunchedURLClassLoader.java"
+target="_blank"
+rel="noopener"
+>LaunchedURLClassLoader&lt;/a>
+是 &lt;code>spring-boot-loader&lt;/code> 项目自定义的&lt;strong>类加载器&lt;/strong>，实现对 &lt;code>jar&lt;/code> 包中 &lt;code>META-INF/classes&lt;/code> 目录下的&lt;strong>类&lt;/strong>和 &lt;code>META-INF/lib&lt;/code> 内嵌的 &lt;code>jar&lt;/code> 包中的&lt;strong>类&lt;/strong>的&lt;strong>加载&lt;/strong>。&lt;/p>
+&lt;blockquote>
+&lt;p>FROM
+&lt;a
+class="link"
+href="https://zh.wikipedia.org/wiki/Java%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"
+target="_blank"
+rel="noopener"
+>《维基百科 —— Java 类加载器》&lt;/a>
+&lt;/p>
+&lt;p>Java 类加载器是 Java 运行时环境的一个部件，负责动态加载 Java 类到 Java 虚拟机的内存空间中。类通常是按需加载，即第一次使用该类时才加载。&lt;/p>
+&lt;p>由于有了类加载器，Java 运行时系统不需要知道文件与文件系统。对学习类加载器而言，掌握 Java 的委派概念是很重要的。每个 Java 类必须由某个类加载器装入到内存。&lt;/p>&lt;/blockquote>
+&lt;p>在
+&lt;a
+class="link"
+href="#createclassloader"
+>createClassLoader&lt;/a>
+小节中，
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/LaunchedURLClassLoader.java#L63"
+target="_blank"
+rel="noopener"
+>LaunchedURLClassLoader#LaunchedURLClassLoader&lt;/a>
+构造器代码如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-java" data-lang="java">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">LaunchedURLClassLoader&lt;/span> &lt;span style="color:#66d9ef">extends&lt;/span> URLClassLoader {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#a6e22e">LaunchedURLClassLoader&lt;/span>(URL&lt;span style="color:#f92672">[]&lt;/span> urls, ClassLoader parent) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">super&lt;/span>(urls, parent);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol>
+&lt;li>&lt;code>urls&lt;/code>，使用的是 Archive 集合对应的 URL 地址们，从而告诉 LaunchedURLClassLoader 读取 &lt;code>jar&lt;/code> 的&lt;strong>地址&lt;/strong>。&lt;/li>
+&lt;li>&lt;code>parent&lt;/code>，设置 LaunchedURLClassLoader 的&lt;strong>父&lt;/strong>加载器。这里后续胖友可以理解下，类加载器的&lt;strong>双亲委派模型&lt;/strong>，这里就拓展开了。&lt;/li>
+&lt;/ol>
+&lt;p>我们主要来看看它是如何从 &lt;code>jar&lt;/code> 包中加载类的
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/17b5611ace7916fd581ea1d37636130b41f65e22/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/LaunchedURLClassLoader.java#L120"
+target="_blank"
+rel="noopener"
+>LaunchedURLClassLoader#loadClass&lt;/a>
+&lt;/p>
+&lt;p>&lt;img src="/posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-13-26-06.png"
+width="1646"
+height="2058"
+srcset="/posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-13-26-06_hu_8577934ec0f132a4.png 480w, /posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-13-26-06_hu_491a37452c0eda3e.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="79"
+data-flex-basis="191px"
+>&lt;/p>
+&lt;ol>
+&lt;li>在通过&lt;strong>父类&lt;/strong>的 &lt;code>#getPackage(String name)&lt;/code> 方法获取不到指定类所在的包时，&lt;strong>会通过遍历 &lt;code>urls&lt;/code> 数组，从 &lt;code>jar&lt;/code> 包中加载类所在的包&lt;/strong>。当找到包时，会调用 &lt;code>#definePackage(String name, Manifest man, URL url)&lt;/code> 方法，设置包所在的 &lt;strong>Archive&lt;/strong> 对应的 &lt;code>url&lt;/code>。&lt;/li>
+&lt;li>调用&lt;strong>父类&lt;/strong>的 &lt;code>#loadClass(String name, boolean resolve)&lt;/code> 方法，加载对应的类。&lt;/li>
+&lt;/ol>
+&lt;p>如此，我们就实现了通过 LaunchedURLClassLoader 加载 &lt;code>jar&lt;/code> 包中内嵌的类。&lt;/p>
+&lt;h2 id="总结">总结
+&lt;/h2>&lt;p>总体来说，Spring Boot &lt;code>jar&lt;/code> 启动的原理是非常清晰的，整体如下图所示：&lt;/p>
+&lt;p>&lt;img src="/posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-13-26-31.png"
+width="1584"
+height="1008"
+srcset="/posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-13-26-31_hu_d734a3b82f92eb6f.png 480w, /posts/archives/java/spring/spring-boot-jar-startup-principle/2022-03-20-13-26-31_hu_b9ca23542a2bf15b.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="157"
+data-flex-basis="377px"
+>&lt;/p>
+&lt;p>&lt;strong>红色&lt;/strong>部分，解决 &lt;code>jar&lt;/code> 包中的&lt;strong>类加载&lt;/strong>问题：&lt;/p>
+&lt;ul>
+&lt;li>通过
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/archive/Archive.java"
+target="_blank"
+rel="noopener"
+>Archive&lt;/a>
+，实现 &lt;code>jar&lt;/code> 包的&lt;strong>遍历&lt;/strong>，将 &lt;code>META-INF/classes&lt;/code> 目录和 &lt;code>META-INF/lib&lt;/code> 的每一个内嵌的 &lt;code>jar&lt;/code> 解析成一个 Archive 对象。&lt;/li>
+&lt;li>通过
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/jar/Handler.java"
+target="_blank"
+rel="noopener"
+>Handler&lt;/a>
+，处理 &lt;code>jar:&lt;/code> 协议的 URL 的资源&lt;strong>读取&lt;/strong>，也就是读取了每个 Archive 里的内容。&lt;/li>
+&lt;li>通过
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/LaunchedURLClassLoader.java"
+target="_blank"
+rel="noopener"
+>LaunchedURLClassLoader&lt;/a>
+，实现 &lt;code>META-INF/classes&lt;/code> 目录下的类和 &lt;code>META-INF/classes&lt;/code> 目录下内嵌的 &lt;code>jar&lt;/code> 包中的类的加载。具体的 URL 来源，是通过 Archive 提供；具体 URL 的读取，是通过 Handler 提供。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>橘色&lt;/strong>部分，解决 Spring Boot 应用的&lt;strong>启动&lt;/strong>问题：&lt;/p>
+&lt;ul>
+&lt;li>通过
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/MainMethodRunner.java"
+target="_blank"
+rel="noopener"
+>MainMethodRunner&lt;/a>
+，实现 Spring Boot 应用的启动类的执行。&lt;/li>
+&lt;/ul>
+&lt;p>当然，上述的一切都是通过
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/Launcher.java"
+target="_blank"
+rel="noopener"
+>Launcher&lt;/a>
+来完成引导和启动，通过 &lt;code>MANIFEST.MF&lt;/code> 进行具体配置。&lt;/p>
+&lt;p>😈 生活如此美好，本文就此结束！&lt;/p>
+&lt;p>另外，本文有两个部分，胖友可以自己再去撸一撸，玩一玩：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/WarLauncher.java"
+target="_blank"
+rel="noopener"
+>WarLauncher&lt;/a>
+类：实现 Spring Boot &lt;code>war&lt;/code> 包的启动。&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/spring-projects/spring-boot/blob/2.6.x/spring-boot-project/spring-boot-tools/spring-boot-loader/src/main/java/org/springframework/boot/loader/jar/"
+target="_blank"
+rel="noopener"
+>&lt;code>org.springframework.boot.loader.jar&lt;/code>&lt;/a>
+包：具体读取 &lt;code>jar&lt;/code> 的逻辑。&lt;/li>
+&lt;/ul>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.spring.io/spring-boot/docs/current/reference/html/executable-jar.html"
+target="_blank"
+rel="noopener"
+>springboot The Executable Jar Format&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/loader/package-summary.html"
+target="_blank"
+rel="noopener"
+>Package org.springframework.boot.loader description&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="http://www.iocoder.cn/Spring-Boot/jar/"
+target="_blank"
+rel="noopener"
+>http://www.iocoder.cn/Spring-Boot/jar/&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

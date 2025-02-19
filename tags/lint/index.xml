@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Lint on NavyD的个人博客</title><link>/tags/lint/</link><description>Recent content in Lint on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 19 Feb 2025 23:55:08 +0800</lastBuildDate><atom:link href="/tags/lint/index.xml" rel="self" type="application/rss+xml"/><item><title>CI Practice</title><link>/posts/2025/02/ci-practice/</link><pubDate>Tue, 18 Feb 2025 14:04:55 +0800</pubDate><guid>/posts/2025/02/ci-practice/</guid><description>&lt;h2 id="git-hook-manager">git hook manager
+&lt;/h2>&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook"
+target="_blank"
+rel="noopener"
+>evilmartians/lefthook: Fast and powerful Git hooks manager for any type of projects&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/pre-commit/pre-commit"
+target="_blank"
+rel="noopener"
+>pre-commit/pre-commit: A framework for managing and maintaining multi-language pre-commit hooks&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://xfyuan.github.io/2024/06/five-cool-and-surprising-ways-to-configure-lefthook-for-automation-joy/"
+target="_blank"
+rel="noopener"
+>Lefthook 的五种武器&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://evilmartians.com/chronicles/5-cool-and-surprising-ways-to-configure-lefthook-for-automation-joy"
+target="_blank"
+rel="noopener"
+>5 cool (and surprising) ways to configure Lefthook for automation joy&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="lefthook">lefthook
+&lt;/h3>&lt;h4 id="并行">并行
+&lt;/h4>&lt;p>在 pre-commit 时通常会存在检查与修复操作，一个问题，并行处理同一个文件且都尝试更新时，如何处理竞争条件。&lt;/p>
+&lt;p>配置
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/parallel.html#parallel"
+target="_blank"
+rel="noopener"
+>parallel&lt;/a>
+可以让
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/Commands.html#commands"
+target="_blank"
+rel="noopener"
+>&lt;code>commands&lt;/code>&lt;/a>
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/Scripts.html#scripts"
+target="_blank"
+rel="noopener"
+>Scripts&lt;/a>
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/jobs.html#jobs"
+target="_blank"
+rel="noopener"
+>&lt;code>jobs&lt;/code>&lt;/a>
+类型的任务并行，但有时对其中某些特定的任务是需要先后顺序的，如所有的 lint 可以并行，但 fixed 通常需要在 lint 后执行避免竞争&lt;/p>
+&lt;h5 id="jobs">jobs
+&lt;/h5>&lt;p>参考
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/jobs.html#differences-from-commands-and-scripts"
+target="_blank"
+rel="noopener"
+>Differences from Commands and Scripts&lt;/a>
+提供了 job 组的概念，分组后 jobs 并行串行可组合方便&lt;/p>
+&lt;h4 id="run-with-shell">run with shell
+&lt;/h4>&lt;p>在运行命令
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/run.html"
+target="_blank"
+rel="noopener"
+>&lt;code>run: command list&lt;/code>&lt;/a>
+时无法指定 shell，&lt;code>*nix&lt;/code>, &lt;code>windows&lt;/code> 不兼容语法，只能使用
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/Scripts.html"
+target="_blank"
+rel="noopener"
+>scripts&lt;/a>
+文件执行，对于某些简单的命令非常不方便。&lt;/p>
+&lt;p>如检查文件名在 windows 上是否合法参考
+&lt;a
+class="link"
+href="https://github.com/pre-commit/pre-commit-hooks/issues/589"
+target="_blank"
+rel="noopener"
+># Add check for illegal Windows filenames&lt;/a>
+使用 &lt;code>(?i)((^|/)(CON|PRN|AUX|NUL|COM[\d¹²³]|LPT[\d¹²³])(\.|/|$)|[&amp;lt;&amp;gt;:\&amp;quot;\\|?*\x00-\x1F]|/[^/]*[\.\s]/|[^/]*[\.\s]$)&lt;/code> 正则检查时需要创建文件而不能在 yaml 文件中写简单 python 的代码。&lt;/p>
+&lt;p>另外，在 &lt;code>run: command to {staged_files}&lt;/code> 看起来也非常不稳定，使用
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/run.html#quotes"
+target="_blank"
+rel="noopener"
+>quotes&lt;/a>
+处理模板，可能存在转义的问题&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook/issues/953"
+target="_blank"
+rel="noopener"
+># Wrap commands in Git bash on Windows&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook/issues/786"
+target="_blank"
+rel="noopener"
+># Invalid escaping of {staged_files}&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="lint">lint
+&lt;/h2>&lt;h3 id="yaml">yaml
+&lt;/h3>&lt;h4 id="schema">schema
+&lt;/h4>&lt;p>在
+&lt;a
+class="link"
+href="https://www.schemastore.org/json/"
+target="_blank"
+rel="noopener"
+>JSON Schema Store&lt;/a>
+中提供了 schema 结构以方便检查&lt;/p>
+&lt;p>yamllint 不支持验证
+&lt;a
+class="link"
+href="https://github.com/adrienverge/yamllint/issues/37"
+target="_blank"
+rel="noopener"
+>Support to validate against a schema&lt;/a>
+&lt;/p>
+&lt;p>
+&lt;a
+class="link"
+href="https://github.com/redhat-developer/yaml-language-server"
+target="_blank"
+rel="noopener"
+>redhat-developer/yaml-language-server&lt;/a>
+虽然支持验证
+&lt;a
+class="link"
+href="https://github.com/redhat-developer/yaml-language-server#using-inlined-schema"
+target="_blank"
+rel="noopener"
+>Using inlined schema&lt;/a>
+如 &lt;code># yaml-language-server: $schema=&amp;lt;urlToTheSchema&amp;gt;&lt;/code> ，但未提供 cli 接口运行
+&lt;a
+class="link"
+href="https://github.com/redhat-developer/yaml-language-server/issues/535"
+target="_blank"
+rel="noopener"
+>Command Line API/Option&lt;/a>
+&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/3971822/how-do-i-validate-my-yaml-file-from-command-line"
+target="_blank"
+rel="noopener"
+>How do I validate my YAML file from command line?&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="git-commit-message">git commit message
+&lt;/h3>&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/conventional-changelog/commitlint"
+target="_blank"
+rel="noopener"
+>conventional-changelog/commitlint: Lint commit messages&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/commitizen-tools/commitizen"
+target="_blank"
+rel="noopener"
+>commitizen-tools/commitizen: Create committing rules for projects 🚀 auto bump versions ⬆️ and auto changelog generation&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;p>注意：对于非 js 项目 &lt;code>npm install --save-dev @commitlint/config-conventional @commitlint/cli&lt;/code> 是无法使用的&lt;/p></description></item><item><title>github actions in hugo</title><link>/posts/2021/08/github-actions-in-hugo/</link><pubDate>Fri, 06 Aug 2021 17:30:53 +0800</pubDate><guid>/posts/2021/08/github-actions-in-hugo/</guid><description>&lt;img src="/posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23.png" alt="Featured image of post github actions in hugo" />&lt;h2 id="问题">问题
+&lt;/h2>&lt;p>使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致&lt;code>git-submodule-in-hugo/你好%20a.png&lt;/code>和&lt;code>git-submodule-in-hugo/你好 a.png&lt;/code>在vscode不同的插件中&lt;code>kisstkondoros.vscode-gutter-preview&lt;/code>, &lt;code>shd101wyy.markdown-preview-enhanced&lt;/code>存在有不同的解析结果，所以不能在文件名中出现空格&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23.png"
+width="1553"
+height="553"
+srcset="/posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23_hu_5fe4de5d163f7f97.png 480w, /posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23_hu_c6ffd11b29303fef.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="280"
+data-flex-basis="673px"
+>&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>在hugo渲染html时，可能也会出现空格的问题，如当前自定义的&lt;code>layouts/_default/_markup/render-link.html&lt;/code>，如果没有使用测试转义，可能导致&lt;code>hasPrefix .Destination $name&lt;/code>不一样的情况。当然，应该不会出现这样的情况，毕竟&lt;code>$name&lt;/code>与&lt;code>.Destination&lt;/code>都是经过hugo转义后的。但是本地不一致的行为影响体验，总之，空格禁用&lt;/p>
+&lt;h2 id="github-action">github action
+&lt;/h2>&lt;p>在github仓库上在hugo build前使用actions检查是否含空格&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">jobs&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">check&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">runs-on&lt;/span>: &lt;span style="color:#ae81ff">ubuntu-20.04&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">steps&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#f92672">uses&lt;/span>: &lt;span style="color:#ae81ff">actions/checkout@master&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Check file names with spaces&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">run&lt;/span>: |&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> # search spaces in all subfolder names
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> if s=$(find content/post | grep &amp;#39; &amp;#39;); then
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> # output to stderr
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> &amp;gt;&amp;amp;2 echo &amp;#34;found spaces in $s&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> exit 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">deploy&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">runs-on&lt;/span>: &lt;span style="color:#ae81ff">ubuntu-20.04&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># dependence check&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">needs&lt;/span>: &lt;span style="color:#ae81ff">check&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.github.com/en/actions/quickstart"
+target="_blank"
+rel="noopener"
+>Quickstart for GitHub Actions&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#creating-dependent-jobs"
+target="_blank"
+rel="noopener"
+>Creating dependent jobs&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

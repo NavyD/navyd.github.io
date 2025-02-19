@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Submodule on NavyD的个人博客</title><link>/tags/submodule/</link><description>Recent content in Submodule on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 30 Mar 2023 19:02:41 +0800</lastBuildDate><atom:link href="/tags/submodule/index.xml" rel="self" type="application/rss+xml"/><item><title>git submodule in hugo</title><link>/posts/2021/08/git-submodule-in-hugo/</link><pubDate>Fri, 06 Aug 2021 16:39:24 +0800</pubDate><guid>/posts/2021/08/git-submodule-in-hugo/</guid><description>&lt;img src="/posts/2021/08/git-submodule-in-hugo/2021-08-06-16-01-30.png" alt="Featured image of post git submodule in hugo" />&lt;h2 id="问题">问题
+&lt;/h2>&lt;p>在使用hugo添加主题时&lt;code>git submodule add https://github.com/olOwOlo/hugo-theme-even themes/even&lt;/code>。在push到github后，过了一晚，不知道为啥启动hugo时出现错误：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>❯ hugo server -D
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start building sites …
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hugo v0.87.0 linux/amd64 BuildDate&lt;span style="color:#f92672">=&lt;/span>unknown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARN 2021/08/06 15:21:17 found no layout file &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">&amp;#34;HTML&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> kind &lt;span style="color:#e6db74">&amp;#34;page&amp;#34;&lt;/span>: You should create a template file which matches Hugo Layouts Lookup Rules &lt;span style="color:#66d9ef">for&lt;/span> this combination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARN 2021/08/06 15:21:17 found no layout file &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">&amp;#34;HTML&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> kind &lt;span style="color:#e6db74">&amp;#34;home&amp;#34;&lt;/span>: You should create a template file which matches Hugo Layouts Lookup Rules &lt;span style="color:#66d9ef">for&lt;/span> this combination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARN 2021/08/06 15:21:17 found no layout file &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">&amp;#34;HTML&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> kind &lt;span style="color:#e6db74">&amp;#34;taxonomy&amp;#34;&lt;/span>: You should create a template file which matches Hugo Layouts Lookup Rules &lt;span style="color:#66d9ef">for&lt;/span> this combination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARN 2021/08/06 15:21:17 found no layout file &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">&amp;#34;HTML&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> kind &lt;span style="color:#e6db74">&amp;#34;section&amp;#34;&lt;/span>: You should create a template file which matches Hugo Layouts Lookup Rules &lt;span style="color:#66d9ef">for&lt;/span> this combination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARN 2021/08/06 15:21:17 found no layout file &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">&amp;#34;HTML&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> kind &lt;span style="color:#e6db74">&amp;#34;taxonomy&amp;#34;&lt;/span>: You should create a template file which matches Hugo Layouts Lookup Rules &lt;span style="color:#66d9ef">for&lt;/span> this combination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> | ZH-CN
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-+--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Pages | &lt;span style="color:#ae81ff">5&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Paginator pages | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Non-page files | &lt;span style="color:#ae81ff">6&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Static files | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Processed images | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Aliases | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Sitemaps | &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Cleaned | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Built in &lt;span style="color:#ae81ff">79&lt;/span> ms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Watching &lt;span style="color:#66d9ef">for&lt;/span> changes in /home/navyd/Workspaces/projects/navyd.github.io/&lt;span style="color:#f92672">{&lt;/span>archetypes,content,layouts&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Watching &lt;span style="color:#66d9ef">for&lt;/span> config changes in /home/navyd/Workspaces/projects/navyd.github.io/config.toml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Environment: &lt;span style="color:#e6db74">&amp;#34;development&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Serving pages from memory
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Running in Fast Render Mode. For full rebuilds on change: hugo server --disableFastRender
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Web Server is available at http://localhost:1313/ &lt;span style="color:#f92672">(&lt;/span>bind address 127.0.0.1&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Press Ctrl+C to stop
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WARN 2021/08/06 15:22:00 found no layout file &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#e6db74">&amp;#34;HTML&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> kind &lt;span style="color:#e6db74">&amp;#34;home&amp;#34;&lt;/span>: You should create a template file which matches Hugo Layouts Lookup Rules &lt;span style="color:#66d9ef">for&lt;/span> this combination.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>^C%
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>搜索后发现&lt;code>themes/even&lt;/code>下没有任何文件，使用&lt;code>trash-restore&lt;/code>一看，不会是我什么时候删除了？尝试重新添加失败&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ l themes/even
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total 8.0K
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x &lt;span style="color:#ae81ff">2&lt;/span> navyd navyd 4.0K Aug &lt;span style="color:#ae81ff">6&lt;/span> 01:11 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x &lt;span style="color:#ae81ff">3&lt;/span> navyd navyd 4.0K Aug &lt;span style="color:#ae81ff">6&lt;/span> 15:31 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ trash-restore
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">0&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/data
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/themes
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">2&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/themes/even
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">3&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/index.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">4&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">5&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/ .github
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">6&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/archetypes
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">7&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/config.toml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">8&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/README.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">9&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/static
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">10&lt;/span> 2021-08-06 00:58:32 /home/navyd/Workspaces/projects/navyd.github.io/resources
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>What file to restore &lt;span style="color:#f92672">[&lt;/span>0..10&lt;span style="color:#f92672">]&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ git submodule add https://github.com/olOwOlo/hugo-theme-even themes/even
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&amp;#39;themes/even&amp;#39;&lt;/span> already exists in the index
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>尝试移除submodule时&lt;code>git rm -f themes/even&lt;/code>出错：&lt;code>fatal: pathspec 'themes/even' did not match any files&lt;/code>，幸好github上存在完整的仓库，看下&lt;code>themes/even&lt;/code>是否存在&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/git-submodule-in-hugo/2021-08-06-16-01-30.png"
+width="1551"
+height="523"
+srcset="/posts/2021/08/git-submodule-in-hugo/2021-08-06-16-01-30_hu_32405cf7889843cd.png 480w, /posts/2021/08/git-submodule-in-hugo/2021-08-06-16-01-30_hu_7b903c6ec2e4eb10.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="296"
+data-flex-basis="711px"
+>
+&lt;img src="/posts/2021/08/git-submodule-in-hugo/2021-08-06-16-02-08.png"
+width="1458"
+height="566"
+srcset="/posts/2021/08/git-submodule-in-hugo/2021-08-06-16-02-08_hu_b67b2534a596956c.png 480w, /posts/2021/08/git-submodule-in-hugo/2021-08-06-16-02-08_hu_bd6e53d8f79fcf87.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="257"
+data-flex-basis="618px"
+>&lt;/p>
+&lt;p>github上的&lt;code>themes/even&lt;/code>链接到了原来的even仓库，并不是被删除了。&lt;/p>
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>如果直接&lt;code>git clone &amp;lt;repo&amp;gt;&lt;/code>是不包括submodule的，有两种方式：&lt;/p>
+&lt;ul>
+&lt;li>clone时指定：&lt;code>git clone --recurse-submodules -j8 git://github.com/foo/bar.git&lt;/code>&lt;/li>
+&lt;li>clone后更新：&lt;code>git submodule update --init --recursive&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>由于之前因为even操作rm过git本地仓库，为了避免git出现问题，直接从github clone完整的仓库，有一份完整的备份是多么重要！！仓库中只有main分支是原始的hugo文档，另一个gh-pages分支不需要clone。&lt;/p>
+&lt;p>一行命令：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ git clone -b main --recurse-submodules -j8 git@github.com:NavyD/navyd.github.io.git testgit
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Cloning into &lt;span style="color:#e6db74">&amp;#39;testgit&amp;#39;&lt;/span>...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Enumerating objects: 174, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Counting objects: 100% &lt;span style="color:#f92672">(&lt;/span>174/174&lt;span style="color:#f92672">)&lt;/span>, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Compressing objects: 100% &lt;span style="color:#f92672">(&lt;/span>114/114&lt;span style="color:#f92672">)&lt;/span>, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Total &lt;span style="color:#ae81ff">174&lt;/span> &lt;span style="color:#f92672">(&lt;/span>delta 34&lt;span style="color:#f92672">)&lt;/span>, reused &lt;span style="color:#ae81ff">157&lt;/span> &lt;span style="color:#f92672">(&lt;/span>delta 27&lt;span style="color:#f92672">)&lt;/span>, pack-reused &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Receiving objects: 100% &lt;span style="color:#f92672">(&lt;/span>174/174&lt;span style="color:#f92672">)&lt;/span>, 803.38 KiB | 863.00 KiB/s, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Resolving deltas: 100% &lt;span style="color:#f92672">(&lt;/span>34/34&lt;span style="color:#f92672">)&lt;/span>, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Submodule &lt;span style="color:#e6db74">&amp;#39;themes/even&amp;#39;&lt;/span> &lt;span style="color:#f92672">(&lt;/span>https://github.com/olOwOlo/hugo-theme-even&lt;span style="color:#f92672">)&lt;/span> registered &lt;span style="color:#66d9ef">for&lt;/span> path &lt;span style="color:#e6db74">&amp;#39;themes/even&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Cloning into &lt;span style="color:#e6db74">&amp;#39;/home/navyd/Workspaces/projects/testgit/themes/even&amp;#39;&lt;/span>...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Enumerating objects: 1689, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Total &lt;span style="color:#ae81ff">1689&lt;/span> &lt;span style="color:#f92672">(&lt;/span>delta 0&lt;span style="color:#f92672">)&lt;/span>, reused &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#f92672">(&lt;/span>delta 0&lt;span style="color:#f92672">)&lt;/span>, pack-reused &lt;span style="color:#ae81ff">1689&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Receiving objects: 100% &lt;span style="color:#f92672">(&lt;/span>1689/1689&lt;span style="color:#f92672">)&lt;/span>, 1.74 MiB | 278.00 KiB/s, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Resolving deltas: 100% &lt;span style="color:#f92672">(&lt;/span>984/984&lt;span style="color:#f92672">)&lt;/span>, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Submodule path &lt;span style="color:#e6db74">&amp;#39;themes/even&amp;#39;&lt;/span>: checked out &lt;span style="color:#e6db74">&amp;#39;564697987de962672112b910422682eb6f9c26ba&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/65745209/8566831"
+target="_blank"
+rel="noopener"
+>How to fix the error &lt;code>found no layout file for “HTML” for “page”&lt;/code> in Hugo CMS?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/1260982/8566831"
+target="_blank"
+rel="noopener"
+>How do I remove a submodule?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/16773779/8566831"
+target="_blank"
+rel="noopener"
+>Pull git submodules after cloning project from GitHub&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/4438292/8566831"
+target="_blank"
+rel="noopener"
+>How to “git clone” including submodules?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/4568323/8566831"
+target="_blank"
+rel="noopener"
+>How do I clone a specific Git branch? [duplicate]&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

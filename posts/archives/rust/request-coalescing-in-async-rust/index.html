@@ -1,0 +1,4126 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="As the popular saying goes, there are only two hard problems in computer science: caching, off-by-one errors, and getting a Rust job that isn&rsquo;t cryptocurrency-related.\nToday, we&rsquo;ll discuss caching! Or rather, we&rsquo;ll discuss&hellip; &ldquo;request coalescing&rdquo;, or &ldquo;request deduplication&rdquo;, or &ldquo;single-flighting&rdquo; - there&rsquo;s many names for that concept, which we&rsquo;ll get into fairly soon.\nThat is, as soon as we set the stage&hellip;\nA simple web server I don&rsquo;t publish the source code for my website . I try to concentrate on writing articles and producing videos. I do have a ton of proprietary code, though: over 8000 lines (according to tokei ) for the web server alone.\n">
+<title>Request coalescing in async Rust</title>
+
+<link rel='canonical' href='/posts/archives/rust/request-coalescing-in-async-rust/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="Request coalescing in async Rust">
+<meta property='og:description' content="As the popular saying goes, there are only two hard problems in computer science: caching, off-by-one errors, and getting a Rust job that isn&rsquo;t cryptocurrency-related.\nToday, we&rsquo;ll discuss caching! Or rather, we&rsquo;ll discuss&hellip; &ldquo;request coalescing&rdquo;, or &ldquo;request deduplication&rdquo;, or &ldquo;single-flighting&rdquo; - there&rsquo;s many names for that concept, which we&rsquo;ll get into fairly soon.\nThat is, as soon as we set the stage&hellip;\nA simple web server I don&rsquo;t publish the source code for my website . I try to concentrate on writing articles and producing videos. I do have a ton of proprietary code, though: over 8000 lines (according to tokei ) for the web server alone.\n">
+<meta property='og:url' content='/posts/archives/rust/request-coalescing-in-async-rust/'>
+<meta property='og:site_name' content=''>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:tag' content='rust' /><meta property='article:tag' content='http' /><meta property='article:tag' content='tracing' /><meta property='article:tag' content='tokio' /><meta property='article:tag' content='axum' /><meta property='article:published_time' content='2022-03-14T05:07:15&#43;08:00'/><meta property='article:modified_time' content='2025-01-28T18:26:14&#43;08:00'/>
+<meta name="twitter:title" content="Request coalescing in async Rust">
+<meta name="twitter:description" content="As the popular saying goes, there are only two hard problems in computer science: caching, off-by-one errors, and getting a Rust job that isn&rsquo;t cryptocurrency-related.\nToday, we&rsquo;ll discuss caching! Or rather, we&rsquo;ll discuss&hellip; &ldquo;request coalescing&rdquo;, or &ldquo;request deduplication&rdquo;, or &ldquo;single-flighting&rdquo; - there&rsquo;s many names for that concept, which we&rsquo;ll get into fairly soon.\nThat is, as soon as we set the stage&hellip;\nA simple web server I don&rsquo;t publish the source code for my website . I try to concentrate on writing articles and producing videos. I do have a ton of proprietary code, though: over 8000 lines (according to tokei ) for the web server alone.\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    <img src="https://avatars.githubusercontent.com/u/22490764" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/"></a></h1>
+            <h2 class="site-description">Hello World!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/47808239'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/NavyD'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/NavyD_hello'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="/" selected>English</option>
+                                
+                                    <option value="/zh-cn/" >中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#a-simple-web-server">A simple web server</a></li>
+    <li><a href="#the-case-for-async">The case for async</a></li>
+    <li><a href="#enter-tokio">Enter tokio</a></li>
+    <li><a href="#a-bit-of-tracing">A bit of tracing</a></li>
+    <li><a href="#and-now-a-proper-http-framework">And now, a proper http framework</a></li>
+    <li><a href="#a-useful-http-service">A useful http service</a></li>
+    <li><a href="#a-little-caching-cant-hurt">A little caching can&rsquo;t hurt</a></li>
+    <li><a href="#making-it-generic">Making it generic</a></li>
+    <li><a href="#panic-at-the-in-flight-request">Panic! at the in-flight request</a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/posts/archives/rust/request-coalescing-in-async-rust/">Request coalescing in async Rust</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2022-03-14T05:07:15&#43;08:00</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    31 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>As the popular saying goes, there are only two hard problems in computer science: caching, off-by-one errors, and getting a Rust job that isn&rsquo;t cryptocurrency-related.</p>
+<p>Today, we&rsquo;ll discuss caching! Or rather, we&rsquo;ll discuss&hellip; &ldquo;request coalescing&rdquo;, or &ldquo;request deduplication&rdquo;, or &ldquo;single-flighting&rdquo; - there&rsquo;s many names for that concept, which we&rsquo;ll get into fairly soon.</p>
+<p>That is, as soon as we set the stage&hellip;</p>
+<h2 id="a-simple-web-server">A simple web server
+</h2><p>I don&rsquo;t publish the source code for 
+
+<a  
+    class="link"
+ 
+    href="https://fasterthanli.me/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>my website</a>
+. I try to concentrate on writing articles and producing videos. I do have a ton of proprietary code, though: over 8000 lines (according to 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/tokei"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>tokei</a>
+) for the web server alone.</p>
+<p>But I don&rsquo;t want to spend the time to maintain it <em>for everyone</em>, and every possible use case, and burn myself out just doing that maintenance work, instead of writing new articles. So I can&rsquo;t point you at the repository and go&quot;here, just do that&quot;!</p>
+<p>Instead, let&rsquo;s write a simple version of just the parts we need to get into today&rsquo;s topic.</p>
+<p>And that part is&hellip; a web server. My actual website is powered by 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/warp"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>warp</a>
+, but I&rsquo;m planning to migrate to 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/axum"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>axum</a>
+ pretty quickly, so let&rsquo;s pretend it&rsquo;s already done and use that.</p>
+<p>Living in fantasy land again, are we.</p>
+<p>So first, a hello world:</p>
+<pre tabindex="0"><code>$ cargo new plaque
+     Created binary (application) `plaque` package
+
+$ cd plaque
+
+$ cargo run
+   Compiling plaque v0.1.0 (/home/amos/bearcove/plaque)
+    Finished dev [unoptimized + debuginfo] target(s) in 0.37s
+     Running `target/debug/plaque`
+Hello, world!
+</code></pre><p>Okay, that was easy. It doesn&rsquo;t serve web requests though!</p>
+<p>To serve web requests, we&rsquo;ll want to be able to do async I/O. We don&rsquo;t <em>have</em> to: we could just do blocking I/O.</p>
+<p>Here, let me show you:</p>
+<pre tabindex="0"><code>use std::{
+    error::Error,
+    io::{Read, Write},
+    net::{SocketAddr, TcpListener},
+};
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let addr: SocketAddr = &#34;0.0.0.0:3779&#34;.parse()?;
+    let listener = TcpListener::bind(addr)?;
+    println!(&#34;Listening on http://{}&#34;, addr);
+    loop {
+        let (mut stream, addr) = listener.accept()?;
+        println!(&#34;Accepted connection from {addr}&#34;);
+
+        let mut incoming = vec![];
+
+        loop {
+            let mut buf = vec![0u8; 1024];
+            let read = stream.read(&amp;mut buf)?;
+            incoming.extend_from_slice(&amp;buf[..read]);
+
+            if incoming.len() &gt; 4 &amp;&amp; &amp;incoming[incoming.len() - 4..] == b&#34;\r\n\r\n&#34; {
+                break;
+            }
+        }
+
+        let incoming = std::str::from_utf8(&amp;incoming)?;
+        println!(&#34;Got HTTP request:\n{}&#34;, incoming);
+        stream.write_all(b&#34;HTTP/1.1 200 OK\r\n&#34;)?;
+        stream.write_all(b&#34;\r\n&#34;)?;
+        stream.write_all(b&#34;Hello from plaque!\n&#34;)?;
+        println!(&#34;Closing connection for {addr}&#34;);
+    }
+}
+</code></pre><p>This works! I had to repress <em>several</em> urges to finish writing this, but it does, in fact, work:</p>
+<pre tabindex="0"><code># In terminal 1
+$ cargo run --quiet
+Listening on http://0.0.0.0:3779
+
+# In terminal 2
+$ curl http://0.0.0.0:3779
+Hello from plaque!
+
+# Meanwhile, in terminal 1
+Accepted connection from 127.0.0.1:34594
+Got HTTP request:
+GET / HTTP/1.1
+Host: 0.0.0.0:3779
+User-Agent: curl/7.79.1
+Accept: */*
+
+
+Closing connection for 127.0.0.1:34594
+</code></pre><p>It even works from an actual web browser!</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/everyone-loves-edge-right.8840c51826622d31.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>But it&rsquo;s not&hellip; good.</p>
+<h2 id="the-case-for-async">The case for async
+</h2><p>There&rsquo;s many not-so-good things about this web server (turns out there&rsquo;s a lot of depth to handling HTTP properly), but there&rsquo;s a glaring one: it can only service one client at a time.</p>
+<p>If we were to use netcat to open a TCP connection to our server, send a single HTTP request and just wait, it would prevent anyone else from connecting to the server.</p>
+<p>See, at first our server is blocked in an <code>accept4</code> syscall:</p>
+<pre tabindex="0"><code>$ rust-gdb -quiet -pid $(pidof plaque) -ex &#34;t a a bt&#34; -ex &#34;set confirm off&#34; -ex &#34;q&#34; | 2&gt;/dev/null | grep -A 90 &#39;Thread 1&#39; | grep -vE &#39;[dD]etach(ing|ed)&#39;
+Thread 1 (Thread 0x7f7c481d7780 (LWP 775276) &#34;plaque&#34;):
+#0  0x00007f7c482ed6aa in accept4 (fd=3, addr=..., addr_len=0x7ffdb31011ac, flags=524288) at ../sysdeps/unix/sysv/linux/accept4.c:32
+#1  0x0000558267510329 in std::sys::unix::net::{impl#0}::accept::{closure#0} () at library/std/src/sys/unix/net.rs:225
+#2  std::sys::unix::cvt_r&lt;i32, std::sys::unix::net::{impl#0}::accept::{closure#0}&gt; () at library/std/src/sys/unix/mod.rs:212
+#3  std::sys::unix::net::Socket::accept () at library/std/src/sys/unix/net.rs:225
+#4  std::sys_common::net::TcpListener::accept () at library/std/src/sys_common/net.rs:407
+#5  std::net::tcp::TcpListener::accept () at library/std/src/net/tcp.rs:811
+#6  0x00005582674fac75 in plaque::main () at src/main.rs:12
+</code></pre><p>The command above runs GDB (well, a wrapper for GDB that loads some Rust-specific scripts) in quiet mode, attaches to the given PID (process id), which is the PID of the only running instance of &ldquo;plaque&rdquo;, our sample application, then we run GDB command &ldquo;t a a bt&rdquo; (thread apply all backtrace), then exit gdb, then pipe all of that through a couple greps to clean up the output a little.</p>
+<p>And once it accepts a connection, it&rsquo;s blocked in a <code>read</code> syscall:</p>
+<pre tabindex="0"><code>$ rust-gdb -quiet -pid $(pidof plaque) -ex &#34;t a a bt&#34; -ex &#34;set confirm off&#34; -ex &#34;q&#34; | 2&gt;/dev/null | grep -A 90 &#39;Thread 1&#39; | grep -vE &#39;[dD]etach(ing|ed)&#39;
+Thread 1 (Thread 0x7f7c481d7780 (LWP 775276) &#34;plaque&#34;):
+#0  0x00007f7c482ed030 in __libc_recv (fd=4, buf=0x558267afeba0, len=1024, flags=0) at ../sysdeps/unix/sysv/linux/recv.c:28
+#1  0x0000558267510594 in std::sys::unix::net::Socket::recv_with_flags () at library/std/src/sys/unix/net.rs:245
+#2  std::sys::unix::net::Socket::read () at library/std/src/sys/unix/net.rs:251
+#3  std::sys_common::net::UdpSocket::recv () at library/std/src/sys_common/net.rs:638
+#4  std::net::udp::UdpSocket::recv () at library/std/src/net/udp.rs:693
+#5  0x00005582674faf26 in plaque::main () at src/main.rs:19
+</code></pre><p>Yes, yes, that makes sen- wait is that <code>UdpSocket</code> in the backtrace?</p>
+<p>Yeah so, funny story: you know how sometimes people say &ldquo;code optimizations make it harder to debug&rdquo;?</p>
+<p>That&rsquo;s one of these cases. Turns out if you have two functions with the exact same code, LLVM 
+
+<a  
+    class="link"
+ 
+    href="https://godbolt.org/z/WhG8GnEc6"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>only generates one</a>
+.</p>
+<p>Interestingly enough, if we dig a little with GDB:</p>
+<pre tabindex="0"><code>(gdb) frame 3
+#3  std::sys_common::net::UdpSocket::recv () at library/std/src/sys_common/net.rs:638
+638     in library/std/src/sys_common/net.rs
+(gdb) p $rip
+$2 = (*mut fn ()) 0x558267510594 &lt;std::net::udp::UdpSocket::recv+20&gt;
+(gdb) info symbol 0x558267510594
+&lt;std::net::tcp::TcpStream as std::io::Read&gt;::read + 20 in section .text of /home/amos/bearcove/plaque/target/debug/plaque
+(gdb)
+</code></pre><p>Oh good. But wait, isn&rsquo;t this a debug build? Why would LLVM do that?</p>
+<p>Well, our application is a debug build, but the standard lib is prebuilt (and optimized). Thanks to 
+
+<a  
+    class="link"
+ 
+    href="https://twitter.com/m_ou_se"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Mara</a>
+ for helping me solve the puzzle.</p>
+<p>Anyway! Let&rsquo;s pretend debugging is always ideal and that we&rsquo;re looking at this:</p>
+<pre tabindex="0"><code>$ rust-gdb -quiet -pid $(pidof plaque) -ex &#34;t a a bt&#34; -ex &#34;set confirm off&#34; -ex &#34;q&#34; | 2&gt;/dev/null | grep -A 90 &#39;Thread 1&#39; | grep -vE &#39;[dD]etach(ing|ed)&#39;
+Thread 1 (Thread 0x7f7c481d7780 (LWP 775276) &#34;plaque&#34;):
+#0  0x00007f7c482ed030 in __libc_recv (fd=4, buf=0x558267afeba0, len=1024, flags=0) at ../sysdeps/unix/sysv/linux/recv.c:28
+#1  0x0000558267510594 in std::sys::unix::net::Socket::recv_with_flags () at library/std/src/sys/unix/net.rs:245
+#2  std::sys::unix::net::Socket::read () at library/std/src/sys/unix/net.rs:251
+#3  std::sys_common::net::TcpSocket::recv () at library/std/src/sys_common/net.rs:638
+#4  std::net::tcp::TcpSocket::recv () at library/std/src/net/tcp.rs:whatever
+#5  0x00005582674faf26 in plaque::main () at src/main.rs:19
+</code></pre><p>That&rsquo;s the problem with blocking syscalls (which are roughly&quot;function calls into the kernel&quot;, by the way) - we can only do one thing at a time. Here, we&rsquo;re either accepting new connections, or reading from an already-established connection, but never both at the same time.</p>
+<p>We can solve this with more <del>violence</del> threads:</p>
+<pre tabindex="0"><code>use std::{
+    error::Error,
+    io::{Read, Write},
+    net::{SocketAddr, TcpListener, TcpStream},
+};
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let addr: SocketAddr = &#34;0.0.0.0:3779&#34;.parse()?;
+    let listener = TcpListener::bind(addr)?;
+    println!(&#34;Listening on http://{}&#34;, addr);
+    loop {
+        let (stream, addr) = listener.accept()?;
+        std::thread::spawn(move || {
+            if let Err(e) = handle_connection(stream, addr) {
+                println!(&#34;Error handling connection {addr}: {e}&#34;);
+            }
+        });
+    }
+}
+
+fn handle_connection(mut stream: TcpStream, addr: SocketAddr) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    println!(&#34;Accepted connection from {addr}&#34;);
+
+    let mut incoming = vec![];
+
+    loop {
+        let mut buf = vec![0u8; 1024];
+        let read = stream.read(&amp;mut buf)?;
+        incoming.extend_from_slice(&amp;buf[..read]);
+
+        if incoming.len() &gt; 4 &amp;&amp; &amp;incoming[incoming.len() - 4..] == b&#34;\r\n\r\n&#34; {
+            break;
+        }
+    }
+
+    let incoming = std::str::from_utf8(&amp;incoming)?;
+    println!(&#34;Got HTTP request:\n{}&#34;, incoming);
+    stream.write_all(b&#34;HTTP/1.1 200 OK\r\n&#34;)?;
+    stream.write_all(b&#34;\r\n&#34;)?;
+    stream.write_all(b&#34;Hello from plaque!\n&#34;)?;
+    println!(&#34;Closing connection for {addr}&#34;);
+
+    Ok(())
+}
+</code></pre><p>And now we can have <em>several</em> threads stuck on a syscall:</p>
+<pre tabindex="0"><code>$ rust-gdb -quiet -pid $(pidof plaque) -ex &#34;t a a bt&#34; -ex &#34;set confirm off&#34; -ex &#34;q&#34; | 2&gt;/dev/null | grep -E -A 90 &#39;Thread [0-9]*&#39; | grep -vE &#39;[dD]etach(ing|ed)&#39;
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library &#34;/lib64/libthread_db.so.1&#34;.
+0x00007fd5eb1cd6f0 in accept4 (fd=3, addr=..., addr_len=0x7ffe2b2886fc, flags=524288) at ../sysdeps/unix/sysv/linux/accept4.c:32
+32        return SYSCALL_CANCEL (accept4, fd, addr.__sockaddr__, addr_len, flags);
+
+Thread 4 (Thread 0x7fd5eacb4640 (LWP 792836) &#34;plaque&#34;):
+#0  __libc_recv (flags=&lt;optimized out&gt;, len=1024, buf=0x7fd5e0000c90, fd=6) at ../sysdeps/unix/sysv/linux/recv.c:28
+(cut)
+#20 0x00007fd5eb147b1a in start_thread (arg=&lt;optimized out&gt;) at pthread_create.c:443
+#21 0x00007fd5eb1cc650 in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:81
+
+Thread 3 (Thread 0x7fd5eaeb5640 (LWP 792671) &#34;plaque&#34;):
+#0  __libc_recv (flags=&lt;optimized out&gt;, len=1024, buf=0x7fd5dc000c90, fd=5) at ../sysdeps/unix/sysv/linux/recv.c:28
+(cut)
+#20 0x00007fd5eb147b1a in start_thread (arg=&lt;optimized out&gt;) at pthread_create.c:443
+#21 0x00007fd5eb1cc650 in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:81
+
+Thread 2 (Thread 0x7fd5eb0b6640 (LWP 792521) &#34;plaque&#34;):
+#0  __libc_recv (flags=&lt;optimized out&gt;, len=1024, buf=0x7fd5e4000c90, fd=4) at ../sysdeps/unix/sysv/linux/recv.c:28
+(cut)
+#20 0x00007fd5eb147b1a in start_thread (arg=&lt;optimized out&gt;) at pthread_create.c:443
+#21 0x00007fd5eb1cc650 in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:81
+
+Thread 1 (Thread 0x7fd5eb0b7780 (LWP 792264) &#34;plaque&#34;):
+#0  0x00007fd5eb1cd6f0 in accept4 (fd=3, addr=..., addr_len=0x7ffe2b2886fc, flags=524288) at ../sysdeps/unix/sysv/linux/accept4.c:32
+#1  0x000055d758e79de9 in std::sys::unix::net::{impl#0}::accept::{closure#0} () at library/std/src/sys/unix/net.rs:225
+#2  std::sys::unix::cvt_r&lt;i32, std::sys::unix::net::{impl#0}::accept::{closure#0}&gt; () at library/std/src/sys/unix/mod.rs:212
+#3  std::sys::unix::net::Socket::accept () at library/std/src/sys/unix/net.rs:225
+#4  std::sys_common::net::TcpListener::accept () at library/std/src/sys_common/net.rs:407
+#5  std::net::tcp::TcpListener::accept () at library/std/src/net/tcp.rs:811
+#6  0x000055d758e5e0ec in plaque::main () at src/main.rs:12
+</code></pre><p>Which is all well and good, until we start hitting some limits. Like, maybe we have SO MANY CONNECTIONS that we run out of memory, because each of these threads has its own stack, and that&rsquo;s not free. It&rsquo;s not <em>a lot</em>, but a lot of &ldquo;not a lot&rdquo; quickly becomes a lot, as we all learn sooner or later.</p>
+<p>Luckily, there&rsquo;s a way to make those syscalls in a non-blocking manner: you tell them &ldquo;I would like to please not block&rdquo; and they sometimes reply immediately with a result, and other times with &ldquo;well try again later, then&rdquo;.</p>
+<p>But <em>when</em> should you try again? Well, you can subscribe to events that let you know when a resource, say, a TCP socket, is ready to be read from, or written to.</p>
+<p>And&hellip; that all sounds like a lot of bookkeeping. Wouldn&rsquo;t it be convenient if there was a system that took care of all that, and allowed you to code as if you were writing blocking code, but it would still be able to do multiple things concurrently with a single thread???</p>
+<p>Well that&rsquo;s exactly what an async runtime is.</p>
+<h2 id="enter-tokio">Enter tokio
+</h2><p>So, let&rsquo;s make our program async! Well, let&rsquo;s make a simple async program and go from there.</p>
+<pre tabindex="0"><code>$ cargo add tokio --features full
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding tokio v1.17.0 to dependencies with features: [&#34;full&#34;]
+</code></pre><p>Because I don&rsquo;t want you to think <code>tokio::main</code> is magic, let&rsquo;s first go without it:</p>
+<pre tabindex="0"><code>use std::error::Error;
+
+use tokio::net::TcpListener;
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let rt = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()?;
+    rt.block_on(async {
+        let addr: SocketAddr = &#34;0.0.0.0:3779&#34;.parse()?;
+        println!(&#34;Listening on http://{}&#34;, addr);
+        let listener = TcpListener::bind(addr).await?;
+        loop {
+            let (stream, addr) = listener.accept().await?;
+            println!(&#34;Accepted connection from {addr}&#34;);
+            // do nothing for now, it&#39;s a simple example
+            drop(stream)
+        }
+    })
+}
+</code></pre><p>This accepts a connection and immediately closes it! I bet HTTP user agents (like curl and web browsers) won&rsquo;t be too happy about it.</p>
+<pre tabindex="0"><code># In terminal 1
+$ cargo run --quiet
+Listening on http://0.0.0.0:3779
+
+# In terminal 2
+$ curl http://0.0.0.0:3779
+curl: (56) Recv failure: Connection reset by peer
+
+# Meanwhile, in terminal 1
+Accepted connection from 127.0.0.1:34620
+</code></pre><p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/its-edge-again.1fa576b36756f280.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>And as promised, we&rsquo;re not&quot;blocked&quot;on a syscall. Well&hellip; we&rsquo;re not blocked on <code>accept4</code>:</p>
+<pre tabindex="0"><code>$ rust-gdb -quiet -pid $(pidof plaque) -ex &#34;t a a bt&#34; -ex &#34;set confirm off&#34; -ex &#34;q&#34; | 2&gt;/dev/null | grep -E -A 90 &#39;Thread [0-9]*&#39; | grep -vE &#39;[dD]etach(ing|ed)&#39;
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library &#34;/lib64/libthread_db.so.1&#34;.
+0x00007f0f6b8cabea in epoll_wait (epfd=3, events=0x560ec6a4b410, maxevents=1024, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+Downloading 0.00 MB source file /usr/src/debug/glibc-2.34-25.fc35.x86_64/misc/../sysdeps/unix/sysv/linux/epoll_wait.c...
+30        return SYSCALL_CANCEL (epoll_wait, epfd, events, maxevents, timeout);
+
+Thread 1 (Thread 0x7f0f6b7b7cc0 (LWP 1435153) &#34;plaque&#34;):
+#0  0x00007f0f6b8cabea in epoll_wait (epfd=3, events=0x560ec6a4b410, maxevents=1024, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+#1  0x0000560ec62f4c55 in mio::sys::unix::selector::epoll::Selector::select (self=0x7ffd9ab57950, events=0x7ffd9ab56ce0, timeout=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/mio-0.8.0/src/sys/unix/selector/epoll.rs:68
+#2  0x0000560ec62fa1c7 in mio::poll::Poll::poll (self=0x7ffd9ab57950, events=0x7ffd9ab56ce0, timeout=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/mio-0.8.0/src/poll.rs:337
+#3  0x0000560ec6276776 in tokio::io::driver::Driver::turn (self=0x7ffd9ab57770, max_wait=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/io/driver/mod.rs:163
+#4  0x0000560ec62770df in tokio::io::driver::{impl#3}::park (self=0x7ffd9ab57770) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/io/driver/mod.rs:234
+#5  0x0000560ec62a42ca in tokio::signal::unix::driver::{impl#1}::park (self=0x7ffd9ab57770) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/signal/unix/driver.rs:150
+#6  0x0000560ec62bdaaa in tokio::process::imp::driver::{impl#1}::park (self=0x7ffd9ab57770) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/process/unix/driver.rs:44
+#7  0x0000560ec627c363 in tokio::park::either::{impl#0}::park&lt;tokio::process::imp::driver::Driver, tokio::park::thread::ParkThread&gt; (self=0x7ffd9ab57768) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/park/either.rs:30
+#8  0x0000560ec62a59a4 in tokio::time::driver::Driver&lt;tokio::park::either::Either&lt;tokio::process::imp::driver::Driver, tokio::park::thread::ParkThread&gt;&gt;::park_internal&lt;tokio::park::either::Either&lt;tokio::process::imp::driver::Driver, tokio::park::thread::ParkThread&gt;&gt; (self=0x7ffd9ab57740, limit=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/time/driver/mod.rs:238
+#9  0x0000560ec62a5da0 in tokio::time::driver::{impl#3}::park&lt;tokio::park::either::Either&lt;tokio::process::imp::driver::Driver, tokio::park::thread::ParkThread&gt;&gt; (self=0x7ffd9ab57740) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/time/driver/mod.rs:436
+#10 0x0000560ec627c44d in tokio::park::either::{impl#0}::park&lt;tokio::time::driver::Driver&lt;tokio::park::either::Either&lt;tokio::process::imp::driver::Driver, tokio::park::thread::ParkThread&gt;&gt;, tokio::park::either::Either&lt;tokio::process::imp::driver::Driver, tokio::park::thread::ParkThread&gt;&gt; (self=0x7ffd9ab57738) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/park/either.rs:30
+#11 0x0000560ec623fa47 in tokio::runtime::driver::{impl#1}::park (self=0x7ffd9ab57738) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/driver.rs:198
+#12 0x0000560ec623e047 in tokio::runtime::basic_scheduler::{impl#4}::park::{closure#1} () at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:315
+#13 0x0000560ec623ea80 in tokio::runtime::basic_scheduler::Context::enter&lt;(), tokio::runtime::basic_scheduler::{impl#4}::park::{closure#1}&gt; (self=0x7ffd9ab58518, core=0x560ec6a522b0, f=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:356
+#14 0x0000560ec623dd39 in tokio::runtime::basic_scheduler::Context::park (self=0x7ffd9ab58518, core=0x560ec6a522b0) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:314
+#15 0x0000560ec622b0bf in tokio::runtime::basic_scheduler::{impl#9}::block_on::{closure#0}&lt;core::pin::Pin&lt;&amp;mut core::future::from_generator::GenFuture&lt;plaque::main::{generator#0}&gt;&gt;&gt; (core=0x560ec6a522b0, context=0x7ffd9ab58518) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:522
+#16 0x0000560ec622b8c2 in tokio::runtime::basic_scheduler::{impl#9}::enter::{closure#0}&lt;tokio::runtime::basic_scheduler::{impl#9}::block_on::{closure#0}, core::result::Result&lt;(), alloc::boxed::Box&lt;dyn std::error::Error, alloc::alloc::Global&gt;&gt;&gt; () at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:555
+#17 0x0000560ec622e6c6 in tokio::macros::scoped_tls::ScopedKey&lt;tokio::runtime::basic_scheduler::Context&gt;::set&lt;tokio::runtime::basic_scheduler::Context, tokio::runtime::basic_scheduler::{impl#9}::enter::{closure#0}, (alloc::boxed::Box&lt;tokio::runtime::basic_scheduler::Core, alloc::alloc::Global&gt;, core::result::Result&lt;(), alloc::boxed::Box&lt;dyn std::error::Error, alloc::alloc::Global&gt;&gt;)&gt; (self=0x560ec63aca88 &lt;tokio::runtime::basic_scheduler::CURRENT&gt;, t=0x7ffd9ab58518, f=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/macros/scoped_tls.rs:61
+#18 0x0000560ec622b648 in tokio::runtime::basic_scheduler::CoreGuard::enter&lt;tokio::runtime::basic_scheduler::{impl#9}::block_on::{closure#0}, core::result::Result&lt;(), alloc::boxed::Box&lt;dyn std::error::Error, alloc::alloc::Global&gt;&gt;&gt; (self=..., f=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:555
+#19 0x0000560ec622aaf0 in tokio::runtime::basic_scheduler::CoreGuard::block_on&lt;core::pin::Pin&lt;&amp;mut core::future::from_generator::GenFuture&lt;plaque::main::{generator#0}&gt;&gt;&gt; (self=..., future=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:488
+#20 0x0000560ec6229de5 in tokio::runtime::basic_scheduler::BasicScheduler::block_on&lt;core::future::from_generator::GenFuture&lt;plaque::main::{generator#0}&gt;&gt; (self=0x7ffd9ab58b68, future=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:168
+#21 0x0000560ec622eda3 in tokio::runtime::Runtime::block_on&lt;core::future::from_generator::GenFuture&lt;plaque::main::{generator#0}&gt;&gt; (self=0x7ffd9ab58b60, future=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/mod.rs:475
+#22 0x0000560ec6232af4 in plaque::main () at src/main.rs:9
+</code></pre><p>We can see the guts of the async runtime here. From bottom to top, we have our main function, our <code>block_on</code> invocation, some thread-local stuff (
+
+<a  
+    class="link"
+ 
+    href="https://en.wikipedia.org/wiki/Thread-local_storage"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>this TLS</a>
+, not 
+
+<a  
+    class="link"
+ 
+    href="https://en.wikipedia.org/wiki/Transport_Layer_Security"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>that TLS</a>
+), we can see that the thread is &ldquo;parked&rdquo;, which in this case means waiting for events coming out of &ldquo;epoll&rdquo;, the mechanism that happens to be used by 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/tokio"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>tokio</a>
+ to perform I/O asynchronously on Linux.</p>
+<p>Let&rsquo;s make the code shorter using the 
+
+<a  
+    class="link"
+ 
+    href="https://docs.rs/tokio/latest/tokio/attr.main.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>#[tokio::main]</a>
+ attribute macro:</p>
+<pre tabindex="0"><code>use std::{error::Error, net::SocketAddr};
+
+use tokio::net::TcpListener;
+
+// 👇 this will take care of building the runtime
+#[tokio::main(flavor = &#34;current_thread&#34;)]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    // note: our function is now `async fn`
+
+    let addr: SocketAddr = &#34;0.0.0.0:3779&#34;.parse()?;
+    println!(&#34;Listening on http://{}&#34;, addr);
+    //                       we can await from there!  👇
+    let listener = TcpListener::bind(addr).await?;
+    loop {
+        let (stream, addr) = listener.accept().await?;
+        println!(&#34;Accepted connection from {addr}&#34;);
+        // just do nothing, it&#39;s a simple example
+        drop(stream)
+    }
+}
+</code></pre><p>There! That&rsquo;s exactly equivalent to the longer version, just&hellip; more readable.</p>
+<p>Now that we&rsquo;ve convinced ourselves that <code>#[tokio::main]</code> is not too magic, let&rsquo;s keep porting our code to async Rust, via tokio:</p>
+<pre tabindex="0"><code>use std::{error::Error, net::SocketAddr};
+
+use tokio::{
+    io::{AsyncReadExt, AsyncWriteExt},
+    net::TcpListener,
+};
+
+#[tokio::main(flavor = &#34;current_thread&#34;)]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let addr: SocketAddr = &#34;0.0.0.0:3779&#34;.parse()?;
+    println!(&#34;Listening on http://{}&#34;, addr);
+    let listener = TcpListener::bind(addr).await?;
+    loop {
+        let (mut stream, addr) = listener.accept().await?;
+        println!(&#34;Accepted connection from {addr}&#34;);
+
+        let mut incoming = vec![];
+
+        loop {
+            let mut buf = vec![0u8; 1024];
+            let read = stream.read(&amp;mut buf).await?;
+            incoming.extend_from_slice(&amp;buf[..read]);
+
+            if incoming.len() &gt; 4 &amp;&amp; &amp;incoming[incoming.len() - 4..] == b&#34;\r\n\r\n&#34; {
+                break;
+            }
+        }
+
+        let incoming = std::str::from_utf8(&amp;incoming)?;
+        println!(&#34;Got HTTP request:\n{}&#34;, incoming);
+        stream.write_all(b&#34;HTTP/1.1 200 OK\r\n&#34;).await?;
+        stream.write_all(b&#34;\r\n&#34;).await?;
+        stream.write_all(b&#34;Hello from plaque!\n&#34;).await?;
+        println!(&#34;Closing connection for {addr}&#34;);
+    }
+}
+</code></pre><p>There! It looks deceivingly like the sync version, there&rsquo;s just a bunch of <code>.await</code> sprinkled everywhere that might block: <code>bind</code>, <code>accept</code>, <code>read</code> and <code>write_all</code>.</p>
+<p>Why <code>write_all</code>, by the way?</p>
+<p><code>write</code> doesn&rsquo;t have to write the whole buffer, that&rsquo;s why! <code>write_all</code> is a version that issues as many <code>write</code> as needed to write&hellip; all.</p>
+<p>That seems peculiar&hellip; why is the interface designed that way?</p>
+<p>Well, it&rsquo;s buffers all the way down. There might be room in the <em>kernel</em>&rsquo;s TCP socket buffer for half of our buffer right now, and we may have to wait until it&rsquo;s drained, to write the rest.</p>
+<p>Oh, that actually makes sense. I love it when things make sense!</p>
+<p>So, that program behaves just like its sync counterpart, as in: it only handles one connection at a time. If client A connects, client B won&rsquo;t be able to connect until client A closes its connection (or has its connection closed by the server):</p>
+<pre tabindex="0"><code># In the server&#39;s terminal
+$ cargo run --quiet
+Listening on http://0.0.0.0:3779
+
+# In client A&#39;s terminal
+$ nc localhost 3779
+
+# In the server&#39;s terminal
+Accepted connection from 127.0.0.1:34696
+
+# In client B&#39;s terminal
+$ curl http://localhost:3779
+</code></pre><p>But unlike the sync version of our code, it&rsquo;s not blocked on the <code>read</code> syscall. It&rsquo;s, again, blocked on <code>epoll_wait</code>:</p>
+<pre tabindex="0"><code>$ rust-gdb -quiet -pid $(pidof plaque) -ex &#34;t a a bt&#34; -ex &#34;set confirm off&#34; -ex &#34;q&#34; | 2&gt;/dev/null | grep -E -A 90 &#39;Thread [0-9]*&#39; | grep -vE &#39;[dD]etach(ing|ed)&#39;
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library &#34;/lib64/libthread_db.so.1&#34;.
+0x00007ff502a5fbea in epoll_wait (epfd=3, events=0x55ec9905b410, maxevents=1024, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+30        return SYSCALL_CANCEL (epoll_wait, epfd, events, maxevents, timeout);
+
+Thread 1 (Thread 0x7ff50294ccc0 (LWP 1441723) &#34;plaque&#34;):
+#0  0x00007ff502a5fbea in epoll_wait (epfd=3, events=0x55ec9905b410, maxevents=1024, timeout=-1) at ../sysdeps/unix/sysv/linux/epoll_wait.c:30
+#1  0x000055ec9871aef5 in mio::sys::unix::selector::epoll::Selector::select (self=0x7ffdc746ebf0, events=0x7ffdc746df80, timeout=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/mio-0.8.0/src/sys/unix/selector/epoll.rs:68
+#2  0x000055ec987204c7 in mio::poll::Poll::poll (self=0x7ffdc746ebf0, events=0x7ffdc746df80, timeout=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/mio-0.8.0/src/poll.rs:337
+#3  0x000055ec98699e66 in tokio::io::driver::Driver::turn (self=0x7ffdc746ea10, max_wait=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/io/driver/mod.rs:163
+#4  0x000055ec9869a7cf in tokio::io::driver::{impl#3}::park (self=0x7ffdc746ea10) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/io/driver/mod.rs:234
+(cut)
+#21 0x000055ec9864d993 in tokio::runtime::Runtime::block_on&lt;core::future::from_generator::GenFuture&lt;plaque::main::{generator#0}&gt;&gt; (self=0x7ffdc74701f0, future=...) at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/mod.rs:475
+#22 0x000055ec98651a8d in plaque::main () at src/main.rs:13
+</code></pre><p>And so&hellip; from GDB, there&rsquo;s no great way to tell where it&rsquo;s stuck.</p>
+<p>Async runtimes have, one way or another, their own stack traces to handle.</p>
+<p>If we look at a somewhat equivalent Go program, for example:</p>
+<pre tabindex="0"><code>package main
+
+import (
+	&#34;fmt&#34;
+	&#34;net&#34;
+	&#34;strings&#34;
+)
+
+func main() {
+	addr := &#34;0.0.0.0:3779&#34;
+	// the original example only listens on IPv4,
+	listener, err := net.Listen(&#34;tcp4&#34;, addr)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf(&#34;Listening on http://%s\n&#34;, addr)
+
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf(&#34;Accepted connection from %v\n&#34;, conn.RemoteAddr())
+
+		var incoming []byte
+		for {
+			buf := make([]byte, 1024)
+			n, err := conn.Read(buf)
+			if err != nil {
+				panic(err)
+			}
+
+			incoming = append(incoming, buf[:n]...)
+
+			if len(incoming) &gt; 4 &amp;&amp; strings.HasSuffix(string(incoming), &#34;\r\n\r\n&#34;) {
+				break
+			}
+		}
+
+		// Go doesn&#39;t let us shadow bindings, let&#39;s use a scope to stay close to the
+		// original example.
+		{
+			incoming := string(incoming)
+			fmt.Printf(&#34;Got HTTP request:\n%s\n&#34;, incoming)
+			conn.Write([]byte(&#34;HTTP/1.1 200 OK\r\n&#34;))
+			conn.Write([]byte(&#34;\r\n&#34;))
+			conn.Write([]byte(&#34;Hello from plaque!\n&#34;))
+			fmt.Printf(&#34;Closing connection for %v\n&#34;, conn.RemoteAddr())
+			err = conn.Close()
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+}
+</code></pre><p>It exhibits the exact same behavior: because we&rsquo;re not spawning a goroutine per connection, we can only service one connection at a time.</p>
+<p>At startup, it&rsquo;s&quot;blocked&quot;on accepting connections, but we can&rsquo;t really see that from gdb <em>just by looking at threads</em>:</p>
+<pre tabindex="0"><code>$ go build ./main.go
+$ gdb --quiet --args ./main
+Reading symbols from ./main...
+Loading Go Runtime support.
+(gdb) r
+Starting program: /home/amos/bearcove/plaque/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library &#34;/lib64/libthread_db.so.1&#34;.
+Listening on http://0.0.0.0:3779
+^C
+Thread 1 &#34;main&#34; received signal SIGINT, Interrupt.
+runtime.epollwait () at /usr/local/go/src/runtime/sys_linux_amd64.s:666
+666             MOVL    AX, ret+24(FP)
+(gdb) t a a bt
+
+Thread 5 (Thread 0x7fffcb7fe640 (LWP 1461205) &#34;main&#34;):
+#0  runtime.futex () at /usr/local/go/src/runtime/sys_linux_amd64.s:520
+#1  0x000000000042f196 in runtime.futexsleep (addr=0xfffffffffffffe00, val=0, ns=4598179) at /usr/local/go/src/runtime/os_linux.go:44
+#2  0x000000000040bd27 in runtime.notesleep (n=0xfffffffffffffe00) at /usr/local/go/src/runtime/lock_futex.go:160
+#3  0x00000000004398d1 in runtime.templateThread () at /usr/local/go/src/runtime/proc.go:2385
+#4  0x0000000000438393 in runtime.mstart1 () at /usr/local/go/src/runtime/proc.go:1407
+#5  0x00000000004382d9 in runtime.mstart0 () at /usr/local/go/src/runtime/proc.go:1365
+#6  0x000000000045e925 in runtime.mstart () at /usr/local/go/src/runtime/asm_amd64.s:248
+#7  0x0000000000463025 in runtime.mstart () at &lt;autogenerated&gt;:1
+#8  0x000000000040181b in runtime/cgo(.text) ()
+#9  0x0000000000000000 in ?? ()
+
+(Threads 4 through 2 are parked, like Thread 5)
+
+Thread 1 (Thread 0x7ffff7d9b740 (LWP 1461198) &#34;main&#34;):
+#0  runtime.epollwait () at /usr/local/go/src/runtime/sys_linux_amd64.s:666
+#1  0x000000000042eefc in runtime.netpoll (delay=&lt;optimized out&gt;) at /usr/local/go/src/runtime/netpoll_epoll.go:127
+#2  0x000000000043abd3 in runtime.findrunnable () at /usr/local/go/src/runtime/proc.go:2947
+#3  0x000000000043bdd9 in runtime.schedule () at /usr/local/go/src/runtime/proc.go:3367
+#4  0x000000000043c32d in runtime.park_m (gp=0xc0000ce000) at /usr/local/go/src/runtime/proc.go:3516
+#5  0x000000000045e9a3 in runtime.mcall () at /usr/local/go/src/runtime/asm_amd64.s:307
+#6  0x0000000000463109 in runtime.newproc (siz=4581669, fn=0x45e8db &lt;runtime.rt0_go+315&gt;) at &lt;autogenerated&gt;:1
+#7  0x0000000000000000 in ?? ()
+(gdb)
+</code></pre><p>All we can see <em>by looking at threads</em> is that there&rsquo;s a thread blocking on <code>epollwait</code>.</p>
+<p>As it turns out, there&rsquo;s GDB integration for the Go runtime (it ships with Go itself, see 
+
+<a  
+    class="link"
+ 
+    href="https://go.dev/doc/gdb"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>this page</a>
+ for more info), so we can also print the backtraces for goroutines:</p>
+<pre tabindex="0"><code>(gdb) goroutine all backtrace
+#0  runtime.gopark (unlockf=&lt;optimized out&gt;, lock=&lt;optimized out&gt;, reason=&lt;optimized out&gt;, traceEv=&lt;optimized out&gt;, traceskip=&lt;optimized out&gt;) at /usr/local/go/src/runtime/proc.go:367
+#1  0x000000000042e613 in runtime.netpollblock (pd=&lt;optimized out&gt;, mode=&lt;optimized out&gt;, waitio=&lt;optimized out&gt;) at /usr/local/go/src/runtime/netpoll.go:454
+#2  0x000000000045c4e9 in internal/poll.runtime_pollWait (pd=&lt;optimized out&gt;, mode=0) at /usr/local/go/src/runtime/netpoll.go:234
+#3  0x000000000048b932 in internal/poll.(*pollDesc).wait (pd=&lt;optimized out&gt;, mode=0, isFile=192) at /usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#4  0x000000000048cbac in internal/poll.(*pollDesc).waitRead (isFile=192, pd=&lt;optimized out&gt;) at /usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#5  internal/poll.(*FD).Accept (fd=0xc0000d4000, ~r0=&lt;optimized out&gt;, ~r1=..., ~r2=..., ~r3=...) at /usr/local/go/src/internal/poll/fd_unix.go:402
+#6  0x00000000004ae7b5 in net.(*netFD).accept (fd=0xc0000d4000) at /usr/local/go/src/net/fd_unix.go:173
+#7  0x00000000004beb48 in net.(*TCPListener).accept (ln=0xc00000e048) at /usr/local/go/src/net/tcpsock_posix.go:140
+#8  0x00000000004bdf5d in net.(*TCPListener).Accept (l=0xfffffffffffffffc) at /usr/local/go/src/net/tcpsock.go:262
+#9  0x00000000004c5b18 in main.main () at /home/amos/bearcove/plaque/main.go:19
+No such goroutine:  17
+#0  runtime.gopark (unlockf=&lt;optimized out&gt;, lock=&lt;optimized out&gt;, reason=&lt;optimized out&gt;, traceEv=&lt;optimized out&gt;, traceskip=&lt;optimized out&gt;) at /usr/local/go/src/runtime/proc.go:367
+#1  0x00000000004359ed in runtime.goparkunlock (reason=&lt;optimized out&gt;, traceEv=&lt;optimized out&gt;, traceskip=&lt;optimized out&gt;, lock=&lt;optimized out&gt;) at /usr/local/go/src/runtime/proc.go:372
+#2  runtime.forcegchelper () at /usr/local/go/src/runtime/proc.go:306
+#3  0x0000000000460be1 in runtime.goexit () at /usr/local/go/src/runtime/asm_amd64.s:1581
+#4  0x0000000000000000 in ?? ()
+(cut: three other parked goroutines)
+</code></pre><p>And <em>here</em> we can see where we&rsquo;re stuck on: <code>net.(*TCPListener).Accept</code>.</p>
+<p>Can we get something similar for our Rust program?</p>
+<p>Not really. At least, not yet.</p>
+<p>As of early March 2022, here&rsquo;s what <em>I</em> would do to help with that problem.</p>
+<h2 id="a-bit-of-tracing">A bit of tracing
+</h2><p>
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/tracing"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>tracing</a>
+ is a crate ecosystem that lets you&hellip; trace what&rsquo;s going on in your application. And it works for async code, too!</p>
+<p>Right now, we&rsquo;ve been using <code>println!</code> to log what&rsquo;s happening. Let&rsquo;s see what it would look like if we were using <code>tracing</code> instead:</p>
+<pre tabindex="0"><code>$ cargo add tracing   
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding tracing v0.1.31 to dependencies
+
+$ cargo add tracing-subscriber --features env-filter
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding tracing-subscriber v0.3.9 to dependencies with features: [&#34;env-filter&#34;]
+</code></pre><pre tabindex="0"><code>use std::{error::Error, net::SocketAddr};
+
+use tokio::{
+    io::{AsyncReadExt, AsyncWriteExt},
+    net::TcpListener,
+};
+use tracing::{debug, info};
+
+#[tokio::main(flavor = &#34;current_thread&#34;)]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    // 👇 this will print tracing events to standard output for humans to read
+    tracing_subscriber::fmt::init();
+    // (you can configure a bunch of options, but we&#39;re going all defaults for now)
+
+    let addr: SocketAddr = &#34;0.0.0.0:3779&#34;.parse()?;
+    info!(&#34;Listening on http://{}&#34;, addr);
+    let listener = TcpListener::bind(addr).await?;
+    loop {
+        let (mut stream, addr) = listener.accept().await?;
+        info!(%addr, &#34;Accepted connection&#34;);
+
+        let mut incoming = vec![];
+
+        loop {
+            let mut buf = vec![0u8; 1024];
+            let read = stream.read(&amp;mut buf).await?;
+            incoming.extend_from_slice(&amp;buf[..read]);
+
+            if incoming.len() &gt; 4 &amp;&amp; &amp;incoming[incoming.len() - 4..] == b&#34;\r\n\r\n&#34; {
+                break;
+            }
+        }
+
+        let incoming = std::str::from_utf8(&amp;incoming)?;
+        debug!(%incoming, &#34;Got HTTP request&#34;);
+        stream.write_all(b&#34;HTTP/1.1 200 OK\r\n&#34;).await?;
+        stream.write_all(b&#34;\r\n&#34;).await?;
+        stream.write_all(b&#34;Hello from plaque!\n&#34;).await?;
+        info!(%addr, &#34;Closing connection&#34;);
+    }
+}
+</code></pre><p>By default, we get timestamps, log levels (which we can filter with the <code>RUST_LOG</code> environment variable - that&rsquo;s the <code>env-filter</code> feature we asked 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/cargo-edit"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>cargo-edit</a>
+ to enable earlier when we invoked <code>cargo add</code>), and neat formatting:</p>
+<pre tabindex="0"><code>$ RUST_LOG=debug cargo run
+    Finished dev [unoptimized + debuginfo] target(s) in 0.01s
+     Running `target/debug/plaque`
+2022-03-03T17:22:22.837683Z  INFO plaque: Listening on http://0.0.0.0:3779
+2022-03-03T17:22:24.077415Z  INFO plaque: Accepted connection addr=127.0.0.1:34718
+2022-03-03T17:22:24.077511Z DEBUG plaque: Got HTTP request incoming=GET / HTTP/1.1
+Host: localhost:3779
+User-Agent: curl/7.79.1
+Accept: */*
+
+
+2022-03-03T17:22:24.077579Z  INFO plaque: Closing connection addr=127.0.0.1:34718
+</code></pre><p>Also, colors!</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/tracing-subscriber-colors.56f8a2c79cfa8312.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>That&rsquo;s just scratching the surface though. Those are events, but we can also have spans: we could have a span for the whole server, another for accepting connections, another for our connection handler, one for accepting incoming connections, one for reading the incoming request and one for writing the response:</p>
+<pre tabindex="0"><code>use std::{error::Error, net::SocketAddr};
+
+use tokio::{
+    io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt},
+    net::{TcpListener, TcpStream},
+};
+use tracing::{debug, info, info_span, Instrument};
+
+#[tokio::main(flavor = &#34;current_thread&#34;)]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    tracing_subscriber::fmt::init();
+
+    run_server().await
+}
+
+// 👇 here we use an attribute macro
+#[tracing::instrument]
+async fn run_server() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let addr: SocketAddr = &#34;0.0.0.0:3779&#34;.parse()?;
+    info!(&#34;Listening on http://{}&#34;, addr);
+    let listener = TcpListener::bind(addr).await?;
+    loop {
+        //                      here we use a Future extension trait 👇
+        let (stream, addr) = listener.accept().instrument(info_span!(&#34;accept&#34;)).await?;
+        handle_connection(stream, addr).await?;
+    }
+}
+
+#[tracing::instrument(skip(stream))]
+async fn handle_connection(mut stream: TcpStream, addr: SocketAddr) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let req = read_http_request(&amp;mut stream).await?;
+    debug!(%req, &#34;Got HTTP request&#34;);
+    write_http_response(&amp;mut stream).await?;
+
+    Ok(())
+}
+
+#[tracing::instrument(skip(stream))]
+async fn read_http_request(mut stream: impl AsyncRead + Unpin) -&gt; Result&lt;String, Box&lt;dyn Error&gt;&gt; {
+    let mut incoming = vec![];
+
+    loop {
+        let mut buf = vec![0u8; 1024];
+        let read = stream.read(&amp;mut buf).await?;
+        incoming.extend_from_slice(&amp;buf[..read]);
+
+        if incoming.len() &gt; 4 &amp;&amp; &amp;incoming[incoming.len() - 4..] == b&#34;\r\n\r\n&#34; {
+            break;
+        }
+    }
+
+    Ok(String::from_utf8(incoming)?)
+}
+
+#[tracing::instrument(skip(stream))]
+async fn write_http_response(mut stream: impl AsyncWrite + Unpin) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    stream.write_all(b&#34;HTTP/1.1 200 OK\r\n&#34;).await?;
+    stream.write_all(b&#34;\r\n&#34;).await?;
+    stream.write_all(b&#34;Hello from plaque!\n&#34;).await?;
+    Ok(())
+}
+</code></pre><pre tabindex="0"><code>$ RUST_LOG=debug cargo run
+   Compiling plaque v0.1.0 (/home/amos/bearcove/plaque)
+    Finished dev [unoptimized + debuginfo] target(s) in 1.19s
+     Running `target/debug/plaque`
+2022-03-03T17:47:10.565608Z  INFO run_server: plaque: Listening on http://0.0.0.0:3779
+2022-03-03T17:47:11.203471Z DEBUG run_server:handle_connection{addr=127.0.0.1:34722}: plaque: Got HTTP request req=GET / HTTP/1.1
+Host: localhost:3779
+User-Agent: curl/7.79.1
+Accept: */*
+</code></pre><p>At first glance, there&rsquo;s not much of a difference&hellip; at least with the default <code>tracing-subscriber</code> formatter.</p>
+<p>But let&rsquo;s try something like 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/tracing-tree"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>tracing-tree</a>
+:</p>
+<pre tabindex="0"><code>$ cargo add tracing-tree
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding tracing-tree v0.2.0 to dependencies
+</code></pre><pre tabindex="0"><code>// omitted: other `use` directives
+
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, Registry};
+use tracing_tree::HierarchicalLayer;
+
+#[tokio::main(flavor = &#34;current_thread&#34;)]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    // 👇 new!
+    Registry::default()
+        .with(EnvFilter::from_default_env())
+        .with(
+            HierarchicalLayer::new(2)
+                .with_targets(true)
+                .with_bracketed_fields(true),
+        )
+        .init();
+
+    run_server().await
+}
+</code></pre><p>Now we get hierarchical output!</p>
+<pre tabindex="0"><code>$ RUST_LOG=debug cargo run
+   Compiling plaque v0.1.0 (/home/amos/bearcove/plaque)
+    Finished dev [unoptimized + debuginfo] target(s) in 1.25s
+     Running `target/debug/plaque`
+plaque::run_server{}
+  0ms  INFO plaque Listening on http://0.0.0.0:3779
+  plaque::accept{}
+  
+  plaque::handle_connection{addr=127.0.0.1:34728}
+    plaque::read_http_request{}
+    
+    0ms DEBUG plaque Got HTTP request, req=GET / HTTP/1.1
+    Host: localhost:3779
+    User-Agent: curl/7.79.1
+    Accept: */*
+    
+    
+    plaque::write_http_response{}
+    
+  
+  plaque::accept{}
+</code></pre><p>Here it is with colors:</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/tracing-tree.99c7b4a8b0c8d6be.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>I love <code>tracing-tree</code> because it shows not only events, but also when we enter/exit spans. There&rsquo;s 
+
+<a  
+    class="link"
+ 
+    href="https://docs.rs/tracing-tree/0.2.0/tracing_tree/struct.HierarchicalLayer.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>a bunch of knobs you can turn</a>
+ to get the output juuuuust right.</p>
+<p>And that means&hellip; we can kinda see where we get &ldquo;stuck&rdquo;! Here we can see it&rsquo;s in&quot;accept&quot;.</p>
+<p>Of course that&rsquo;s definitely not the same as a debugger: if there were other tasks running in our async runtime, we wouldn&rsquo;t see them. We&rsquo;re not able to list all the tasks, see their full backtrace, etc.</p>
+<p>Here&rsquo;s another thing we can do with tracing: it&rsquo;s all structured, so instead of printing human-readable, we can print newline-delimited JSON! And because it&rsquo;s all composable, we can use that at the same time as tracing-tree: just add a layer!</p>
+<pre tabindex="0"><code>$ cargo add tracing-subscriber --features &#34;env-filter json&#34;
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding tracing-subscriber v0.3.9 to dependencies with features: [&#34;env-filter&#34;, &#34;json&#34;]
+</code></pre><pre tabindex="0"><code>#[tokio::main(flavor = &#34;current_thread&#34;)]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    Registry::default()
+        .with(EnvFilter::from_default_env())
+        .with(
+            HierarchicalLayer::new(2)
+                .with_targets(true)
+                .with_bracketed_fields(true),
+        )
+        // 👇 new!
+        .with(
+            tracing_subscriber::fmt::layer()
+                .json()
+                .with_writer(|| File::create(&#34;/tmp/log.json&#34;).unwrap()),
+        )
+        .init();
+
+    run_server().await
+}
+</code></pre><p>Here&rsquo;s a request from Chrome logged as JSON, for example:</p>
+<pre tabindex="0"><code>{
+  &#34;timestamp&#34;: &#34;2022-03-03T18:11:04.867737Z&#34;,
+  &#34;level&#34;: &#34;DEBUG&#34;,
+  &#34;fields&#34;: {
+    &#34;message&#34;: &#34;Got HTTP request&#34;,
+    &#34;req&#34;: &#34;GET /favicon.ico HTTP/1.1\r\nHost: localhost:3779\r\nConnection: keep-alive\r\nsec-ch-ua: \&#34; Not A;Brand\&#34;;v=\&#34;99\&#34;, \&#34;Chromium\&#34;;v=\&#34;98\&#34;, \&#34;Google Chrome\&#34;;v=\&#34;98\&#34;\r\nDNT: 1\r\nsec-ch-ua-mobile: ?0\r\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36\r\nsec-ch-ua-platform: \&#34;Windows\&#34;\r\nAccept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8\r\nSec-Fetch-Site: same-origin\r\nSec-Fetch-Mode: no-cors\r\nSec-Fetch-Dest: image\r\nReferer: http://localhost:3779/\r\nAccept-Encoding: gzip, deflate, br\r\nAccept-Language: en-US,en;q=0.9,fr-FR;q=0.8,fr;q=0.7,de;q=0.6\r\nCookie: admin=\r\n\r\n&#34;
+  },
+  &#34;target&#34;: &#34;plaque&#34;,
+  &#34;span&#34;: {
+    &#34;addr&#34;: &#34;127.0.0.1:34734&#34;,
+    &#34;name&#34;: &#34;handle_connection&#34;
+  },
+  &#34;spans&#34;: [
+    {
+      &#34;name&#34;: &#34;run_server&#34;
+    },
+    {
+      &#34;addr&#34;: &#34;127.0.0.1:34734&#34;,
+      &#34;name&#34;: &#34;handle_connection&#34;
+    }
+  ]
+}
+</code></pre><p>But let&rsquo;s dream bigger. Let&rsquo;s dream <em>better</em>.</p>
+<p>It&rsquo;s easy to imagine that, given the examples we&rsquo;ve seen, we have enough information about spans and traces to be able to send them, in a structured way, to various tools and services to allow us to dig even deeper into them.</p>
+<p>For example, we could generate a Chrome trace out of it:</p>
+<pre tabindex="0"><code>$ cargo add tracing-chrome
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding tracing-chrome v0.4.0 to dependencies
+</code></pre><pre tabindex="0"><code>#[tokio::main(flavor = &#34;current_thread&#34;)]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let (chrome_layer, _guard) = tracing_chrome::ChromeLayerBuilder::new()
+        .file(&#34;/shared/chrome-trace.json&#34;.into())
+        .build();
+    Registry::default()
+        .with(EnvFilter::from_default_env())
+        .with(
+            HierarchicalLayer::new(2)
+                .with_targets(true)
+                .with_bracketed_fields(true),
+        )
+        .with(chrome_layer)
+        .init();
+
+    run_server().await
+}
+</code></pre><p>And visualize it from Chrome:</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/tracing-chrome.61ea5d352908b1f8.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>Which is not even the best visualizer for these btw: there&rsquo;s a lot of tools out there that process this format, like 
+
+<a  
+    class="link"
+ 
+    href="https://ui.perfetto.dev/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Perfetto</a>
+ and 
+
+<a  
+    class="link"
+ 
+    href="https://www.speedscope.app/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Speedscope</a>
+.</p>
+<p>The Chrome tracing format isn&rsquo;t the best fit for what we&rsquo;re after though (which is figuring out what&rsquo;s happening in our async app): we might want to look at a number of 
+
+<a  
+    class="link"
+ 
+    href="https://opentelemetry.io/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>OpenTelemetry</a>
+ collectors.</p>
+<p>We could go for 
+
+<a  
+    class="link"
+ 
+    href="https://www.honeycomb.io/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Honeycomb</a>
+, 
+
+<a  
+    class="link"
+ 
+    href="https://www.datadoghq.com/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Datadog</a>
+, and many others. Heck, even 
+
+<a  
+    class="link"
+ 
+    href="https://sentry.io/welcome/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Sentry</a>
+ accepts traces now.</p>
+<p>Because I&rsquo;m always trying to make my articles&quot;do-try-this-at-home&quot;, we&rsquo;ll go with something self-hosted here: 
+
+<a  
+    class="link"
+ 
+    href="https://www.jaegertracing.io/download/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Jaeger</a>
+.</p>
+<p>Because of the OpenTelemetry indirection, the setup is a tad more involved, but it&rsquo;s just that: setup. The code remains the same, and is instrumented the same way.</p>
+<pre tabindex="0"><code>$ cargo add opentelemetry --features rt-tokio
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding opentelemetry v0.17.0 to dependencies with features: [&#34;rt-tokio&#34;]
+
+$ cargo add opentelemetry-jaeger --features rt-tokio
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding opentelemetry-jaeger v0.16.0 to dependencies with features: [&#34;rt-tokio&#34;]
+
+$ cargo add tracing-opentelemetry
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding tracing-opentelemetry v0.17.2 to dependencies
+</code></pre><pre tabindex="0"><code>#[tokio::main(flavor = &#34;current_thread&#34;)]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let tracer =
+        opentelemetry_jaeger::new_pipeline().install_batch(opentelemetry::runtime::Tokio)?;
+
+    let telemetry = tracing_opentelemetry::layer().with_tracer(tracer);
+
+    Registry::default()
+        .with(EnvFilter::from_default_env())
+        .with(
+            HierarchicalLayer::new(2)
+                .with_targets(true)
+                .with_bracketed_fields(true),
+        )
+        .with(telemetry)
+        .init();
+
+    run_server().await?;
+
+    opentelemetry::global::shutdown_tracer_provider();
+
+    Ok(())
+}
+</code></pre><p>Hey that wasn&rsquo;t even half bad!</p>
+<p>Now let&rsquo;s start Jaeger in the background, as a container:</p>
+<pre tabindex="0"><code>$ docker run -d -p6831:6831/udp -p6832:6832/udp -p16686:16686 -p14268:14268 jaegertracing/all-in-one:latest
+</code></pre><p>Huh. No output? Is it even running?</p>
+<pre tabindex="0"><code>$ docker ps
+CONTAINER ID   IMAGE                             COMMAND                  CREATED              STATUS              PORTS                                                                                                                                                                                        NAMES
+3b0727ba7f92   jaegertracing/all-in-one:latest   &#34;/go/bin/all-in-one-…&#34;   About a minute ago   Up About a minute   5778/tcp, 0.0.0.0:14268-&gt;14268/tcp, :::14268-&gt;14268/tcp, 5775/udp, 14250/tcp, 0.0.0.0:6831-6832-&gt;6831-6832/udp, :::6831-6832-&gt;6831-6832/udp, 0.0.0.0:16686-&gt;16686/tcp, :::16686-&gt;16686/tcp   crazy_volhard
+</code></pre><p>The Jaeger &ldquo;all-in-one&rdquo; container is serving its web UI on 
+
+<a  
+    class="link"
+ 
+    href="http://localhost:16686/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>http://localhost:16686</a>
+:</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/jaeger-empty.56abbdb41c91d47a.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>If we run our server and hit it with curl, then refresh Jaeger, we can see that it received traces from two services: <code>jaeger-query</code> (jaeger instruments itself!), and <code>unknown_service</code>: we haven&rsquo;t really done any configuration at all, and OpenTelemetry accepts extra metadata compared to tracing, so we&rsquo;re gonna see a bunch of default values here.</p>
+<p>Clicking &ldquo;Search&rdquo; shows the traces we&rsquo;ve received so far:</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/jaeger-unknown-service.bf45e1ded39990bc.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>Clicking on a trace shows an expanded view, with all the associated spans:</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/jaeger-trace.e0fab4e1bf8a26a5.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>And notice that the attributes we&rsquo;ve set are there: they&rsquo;re called &ldquo;tags&rdquo; here. <code>accept_connection</code> has the <code>addr</code>. The &ldquo;Got HTTP request&rdquo; event has the full HTTP request header associated to it.</p>
+<p>Because we have a top-level span, <em>all requests</em> are actually grouped together: if we run several requests, we can see that they all have a parent in common, and we can see us &ldquo;spending time&rdquo; in accept (in scare quotes because again, the thread is actually parked, and so it&rsquo;s mostly idle - mostly because there&rsquo;s background tasks now, flushing traces and whatnot).</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/jaeger-many-traces.b78aa273a2bfdd0b.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>If we remove some spans, by removing the <code>#[tracing::instrument]</code> attribute on <code>run_server</code>, each connection has its own trace:</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/jaeger-no-toplevel.e66c14313edc2a71.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>On top of all traces, there&rsquo;s a graph that shows latency for the <code>handle_connection</code> &ldquo;operation&rdquo;: it&rsquo;s between 500 and 600 microseconds.</p>
+<p>That&rsquo;s on a debug build. If I do <code>RUST_LOG=debug cargo run --release</code> instead, I see latencies of around 150 microseconds instead.</p>
+<p>There would be a lot more to say about OpenTelemetry, but for now, let&rsquo;s skip to the last tool we&rsquo;ll see before addressing the topic at hand: 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/tokio-console"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>tokio-console</a>
+.</p>
+<pre tabindex="0"><code>$ cargo install tokio-console
+    Updating crates.io index
+     Ignored package `tokio-console v0.1.2` is already installed, use --force to override
+</code></pre><p>It gives us a dynamic realtime view into what&rsquo;s going on within a Tokio runtime: it&rsquo;s less GDB and more 
+
+<a  
+    class="link"
+ 
+    href="https://linux.die.net/man/1/top"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>top(1)</a>
+.</p>
+<p>Unfortunately, for performance reasons, we can&rsquo;t really use that on a production app, but since we&rsquo;re playing around locally, there&rsquo;s nothing stopping us.</p>
+<p>The full instructions to enable it are 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/tokio-console"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>in tokio-console&rsquo;s documentation</a>
+: I won&rsquo;t reproduce them here because <code>tokio-console</code> is still in the early stages and I expect the instructions to change.</p>
+<p>At the time of this writing, <code>tokio-console</code> relies on 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/console-subscriber"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>console-subscriber</a>
+, which is, you guessed it, a <code>tracing</code> layer!</p>
+<p>So, we can just add it to the pile:</p>
+<pre tabindex="0"><code>#[tokio::main(flavor = &#34;current_thread&#34;)]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let tracer =
+        opentelemetry_jaeger::new_pipeline().install_batch(opentelemetry::runtime::Tokio)?;
+
+    let telemetry = tracing_opentelemetry::layer().with_tracer(tracer);
+
+    let (console, server) = console_subscriber::ConsoleLayer::builder().build();
+    tokio::spawn(async move {
+        server.serve().await.unwrap();
+    });
+
+    Registry::default()
+        .with(EnvFilter::from_default_env())
+        .with(
+            HierarchicalLayer::new(2)
+                .with_targets(true)
+                .with_bracketed_fields(true),
+        )
+        .with(telemetry)
+        .with(console)
+        .init();
+
+    run_server().await?;
+
+    opentelemetry::global::shutdown_tracer_provider();
+
+    Ok(())
+}
+</code></pre><p><em>There&rsquo;s other steps I&rsquo;m not showing: several features to enable, via <code>Cargo.toml</code>, also <code>.cargo/config.toml</code>. Read the docs!</em></p>
+<p>The instructions I&rsquo;m reading now state that we must have <code>tokio=trace,runtime=trace</code> in our env filter, so, that&rsquo;s how we want to start the app in order to let <code>console-subscriber</code> work:</p>
+<pre tabindex="0"><code>$ RUST_LOG=tokio=trace,runtime=trace,debug cargo run
+</code></pre><p>And now, after starting our application, we can run <code>tokio-console</code>.</p>
+<p>By default, it opens on the tasks view:</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/tokio-console-tasks.06d19126d60ee038.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>We can see two of console-subscriber&rsquo;s internal tasks, and two hyper tasks. We can scroll through tasks with the up and down arrows (or k and j, for the 
+
+<a  
+    class="link"
+ 
+    href="https://en.wikipedia.org/wiki/Arrow_keys#HJKL_keys"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>vi-inclined</a>
+), and pressing enter shows details for a task&hellip;</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/tokio-console-single-task.2be63f0e6338bca2.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>&hellip;including its name, target, the location in code where it was spawned, how long it&rsquo;s existed, and how much CPU time we&rsquo;ve spent on it. There&rsquo;s also statistics about its wakers (think about asynchronous I/O operations on TCP sockets again: we need to have a way to wake up a task when the socket is ready to be read from/written to), and a wonderful poll time histogram, along with percentiles: we can see it&rsquo;s usually done in under 5 milliseconds (that&rsquo;s a debug build again).</p>
+<p>Unfortunately, for now:</p>
+<ul>
+<li>There&rsquo;s no stack trace (unsurprising, stack traces are not recorded)</li>
+<li>There&rsquo;s no <em>span trace</em> either: we don&rsquo;t know the context in which this was spanned</li>
+<li>The only API to set the name of a task is internal and behind feature flags</li>
+<li>I have no idea how fields are set: I have never seen a field other than &ldquo;kind=task&rdquo;</li>
+</ul>
+<p>I see those as hints of what&rsquo;s planned for <code>tokio-console</code> - and I can&rsquo;t wait to see more!</p>
+<p>Let&rsquo;s take a quick look at the&quot;resources&quot; view as well:</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/tokio-console-resources.27d84e738032dfcc.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>This is a recent improvement: timers are only tracked since tokio 1.13.0, and mutexes / rwlocks / channels are only tracked since tokio 1.15.0.</p>
+<p>Just looking at this, I&rsquo;m guessing that our&quot;batched&quot; opentelemetry span exporter exports&hellip; every thirty seconds! Since it seems to be sleeping for 30 seconds.</p>
+<p>I have no idea what all those semaphores are used for, it seems like <code>console-subscriber</code> is doing things at an interval (probably sending data to <code>tokio-console</code>), and it seems tokio&rsquo;s intervals are implemented in terms of <code>sleep</code>, if the last line is to be believed.</p>
+<p>Like for tasks, scrolling to a specific resource and pressing enter shows us a detail view: for the interval, we can see a list of async ops:</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/tokio-console-async-ops.2e83527357c5ab3f.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>Which is neat, because it means the relationship between resources and tasks is already being tracked. Again, there&rsquo;s a lot planned for tokio-console, you can check out 
+
+<a  
+    class="link"
+ 
+    href="https://github.com/tokio-rs/console/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>its repository</a>
+ to keep track of what&rsquo;s happening.</p>
+<p>I can&rsquo;t help but notice there&rsquo;s nothing in there about us accepting connections&hellip; right?</p>
+<p>Ah, right&hellip; well it&rsquo;s not spawned as a task, maybe if we spawn it as a task?</p>
+<pre tabindex="0"><code>#[tokio::main(flavor = &#34;current_thread&#34;)]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    // omitted: tracing + opentelemetry setup
+
+    let handle = tokio::task::spawn(async { run_server().await.unwrap() });
+    handle.await?;
+
+    opentelemetry::global::shutdown_tracer_provider();
+
+    Ok(())
+}
+</code></pre><p>If we do that, then yes indeed, our task does show up! It has an empty name, but the <code>location</code> is right: it&rsquo;s in <code>main.rs</code> somewhere.</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/tokio-console-main-task.61b61670f89ed25f.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>And we can see from the poll time histogram that we&rsquo;re spending around 100 microseconds to 260 microseconds polling it: this is not the same as latency, because it might need to be polled multiple times for a single HTTP request to be handled, since it involves an accept, one or more reads, and multiple writes.</p>
+<p>Looking at thread backtraces isn&rsquo;t too useful when we&rsquo;re using an async runtime. This is true of Go, too, but they track enough information about goroutines and have added enough support to GDB that you can list all goroutine backtraces (also via 
+
+<a  
+    class="link"
+ 
+    href="https://pkg.go.dev/net/http/pprof"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>pprof</a>
+ over HTTP), and that&rsquo;s invaluable.</p>
+<p>In Rust, with the tokio runtime, there is no such thing - yet. That&rsquo;s typically something the 
+
+<a  
+    class="link"
+ 
+    href="https://rust-lang.github.io/wg-async/index.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Async workgroup</a>
+ would be working on.</p>
+<p>However, we&rsquo;ve discovered the 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/keywords/tracing"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>tracing ecosystem</a>
+, which makes it extremely easy to collect structured spans and events and send them to various places: as human-readable logs, JSON lines, profiler dumps, any OpenTelemetry tracing solution, etc.</p>
+<p>Crates like 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/color-eyre"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>color-eyre</a>
+, although not shown here, also integrate nicely into the tracing ecosystem, showing not only stacktraces, but also spantraces.</p>
+<p>
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/tokio-console"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>tokio-console</a>
+ brands itself &ldquo;top(1) for tokio&rdquo;, and although it&rsquo;s not usable in production yet, there are many exciting plans around it, notably around answering questions like &ldquo;why is this task not making progress? what resources does it depend on?&rdquo;. There&rsquo;s still a lot of open questions about the exact design of the plumbing around all of this.</p>
+<p>Before we move on beyond TCP APIs to a proper HTTP framework, let&rsquo;s just make a version of our async program that can actually service multiple clients in parallel, just for comparison with the sync version.</p>
+<pre tabindex="0"><code>// omitted: everything else (which stays the same)
+
+async fn run_server() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let addr: SocketAddr = &#34;0.0.0.0:3779&#34;.parse()?;
+    info!(&#34;Listening on http://{}&#34;, addr);
+    let listener = TcpListener::bind(addr).await?;
+    loop {
+        let (stream, addr) = listener.accept().instrument(info_span!(&#34;accept&#34;)).await?;
+        tokio::spawn(async move {
+            if let Err(err) = handle_connection(stream, addr).await {
+                error!(%err, &#34;Error handling connection&#34; );
+            }
+        });
+    }
+}
+</code></pre><p>It&rsquo;s very similar, except it uses <code>tokio::spawn</code> rather than <code>std::thread::spawn</code>. Just like we can move resources (a <code>TcpStream</code> and a <code>SocketAddr</code>) into threads, we can move then into futures (which are then spawned as tasks on a runtime, so that they get polled in the background).</p>
+<p>I couldn&rsquo;t resist running 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/oha"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>oha</a>
+ against a release build of this program: the numbers are completely meaningless and should be ignored, but look at the nice TUI (text user interface):</p>
+<p><img src="https://fasterthanli.me/content/articles/request-coalescing-in-async-rust/assets/oha-tcp.bcb0150a81a50afb.jpg"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>oha&rsquo;s final report (again, just for show, this is all very unscientific and zero effort went into making this fair or meaningful) reads:</p>
+<pre tabindex="0"><code>$ oha -z 10s http://localhost:3779
+Summary:
+  Success rate: 1.0000
+  Total:        10.0003 secs
+  Slowest:      0.0135 secs
+  Fastest:      0.0002 secs
+  Average:      0.0011 secs
+  Requests/sec: 46809.3602
+
+  Total data:   8.48 MiB
+  Size/request: 19 B
+  Size/sec:     868.53 KiB
+
+Response time histogram:
+  0.000 [201]    |
+  0.001 [1204]   |
+  0.001 [277131] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.001 [167022] |■■■■■■■■■■■■■■■■■■■
+  0.001 [12561]  |■
+  0.002 [3754]   |
+  0.002 [1728]   |
+  0.002 [1146]   |
+  0.002 [927]    |
+  0.003 [333]    |
+  0.003 [2101]   |
+
+Latency distribution:
+  10% in 0.0009 secs
+  25% in 0.0010 secs
+  50% in 0.0010 secs
+  75% in 0.0011 secs
+  90% in 0.0012 secs
+  95% in 0.0013 secs
+  99% in 0.0021 secs
+
+Details (average, fastest, slowest):
+  DNS+dialup:   0.0001 secs, 0.0000 secs, 0.0114 secs
+  DNS-lookup:   0.0000 secs, 0.0000 secs, 0.0059 secs
+
+Status code distribution:
+  [200] 468108 responses
+</code></pre><h2 id="and-now-a-proper-http-framework">And now, a proper http framework
+</h2><p>So we&rsquo;ve had our fun, implementing HTTP by hand - a tiny tiny fraction of it, incorrectly, with terrible buffering hygiene, etc. It allowed us to compare synchronous and asynchronous code, talk about why async code is hard to debug in general, and discover the tracing ecosystem.</p>
+<p>All of this comes in handy&hellip; right now!</p>
+<p>Let&rsquo;s change our server application to use 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/axum"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>axum</a>
+ instead. It&rsquo;s built on top of 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/hyper"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>hyper</a>
+, which powers 
+
+<a  
+    class="link"
+ 
+    href="https://fly.io/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>fly.io</a>
+&rsquo;s edge network, among many other things.</p>
+<pre tabindex="0"><code>$ cargo add axum
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding axum v0.4.8 to dependencies
+</code></pre><p>We&rsquo;ll keep all our tracing setup intact, in a module:</p>
+<pre tabindex="0"><code>// in `src/tracing_stuff.rs`
+
+use std::error::Error;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Registry};
+use tracing_tree::HierarchicalLayer;
+
+pub(crate) fn setup() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let tracer =
+        opentelemetry_jaeger::new_pipeline().install_batch(opentelemetry::runtime::Tokio)?;
+    let telemetry = tracing_opentelemetry::layer().with_tracer(tracer);
+    Registry::default()
+        .with(EnvFilter::from_default_env())
+        .with(
+            HierarchicalLayer::new(2)
+                .with_targets(true)
+                .with_bracketed_fields(true),
+        )
+        .with(telemetry)
+        .init();
+
+    Ok(())
+}
+
+pub(crate) fn teardown() {
+    opentelemetry::global::shutdown_tracer_provider();
+}
+</code></pre><p>&hellip;and write the simplest axum app that behaves exactly like our cobbled-together HTTP server did:</p>
+<pre tabindex="0"><code>// in `src/main.rs`
+
+use std::{error::Error, net::SocketAddr};
+
+use axum::{response::IntoResponse, routing::get, Router, Server};
+use tracing::info;
+
+mod tracing_stuff;
+
+#[tokio::main(flavor = &#34;current_thread&#34;)]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    tracing_stuff::setup()?;
+    run_server().await?;
+    tracing_stuff::teardown();
+    Ok(())
+}
+
+async fn run_server() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let addr: SocketAddr = &#34;0.0.0.0:3779&#34;.parse()?;
+    info!(&#34;Listening on http://{}&#34;, addr);
+
+    let app = Router::new().route(&#34;/&#34;, get(root));
+    Server::bind(&amp;addr).serve(app.into_make_service()).await?;
+
+    Ok(())
+}
+
+#[tracing::instrument]
+async fn root() -&gt; impl IntoResponse {
+    &#34;Hello from plaque!\n&#34;
+}
+</code></pre><p>Well, I like the looks of that.</p>
+<p>Right??? I&rsquo;ve been waiting for something like <code>axum</code> forever.</p>
+<p>It works fine in curl:</p>
+<pre tabindex="0"><code>curl -v http://localhost:3779
+*   Trying 127.0.0.1:3779...
+* Connected to localhost (127.0.0.1) port 3779 (#0)
+&gt; GET / HTTP/1.1
+&gt; Host: localhost:3779
+&gt; User-Agent: curl/7.79.1
+&gt; Accept: */*
+&gt; 
+* Mark bundle as not supporting multiuse
+&lt; HTTP/1.1 200 OK
+&lt; content-type: text/plain; charset=utf-8
+&lt; content-length: 19
+&lt; date: Thu, 03 Mar 2022 20:44:39 GMT
+&lt; 
+Hello from plaque!
+* Connection #0 to host localhost left intact
+</code></pre><p>&hellip;and, you know, it actually sends some useful response headers.</p>
+<p>Predictably, it also works fine in a proper web browser, and&hellip; I couldn&rsquo;t resist running 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/oha"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>oha</a>
+ on it as well:</p>
+<pre tabindex="0"><code>(results shortened)
+
+Response time histogram:
+  0.000 [430]     |
+  0.000 [3277]    |
+  0.000 [233959]  |■■■■■■
+  0.000 [1074275] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.000 [123655]  |■■■
+  0.001 [7550]    |
+  0.001 [1951]    |
+  0.001 [1155]    |
+  0.001 [519]     |
+  0.001 [177]     |
+  0.001 [7737]    |
+
+Latency distribution:
+  10% in 0.0003 secs
+  25% in 0.0003 secs
+  50% in 0.0003 secs
+  75% in 0.0004 secs
+  90% in 0.0004 secs
+  95% in 0.0004 secs
+  99% in 0.0005 secs
+</code></pre><p>Wait&hellip; 4? Didn&rsquo;t our latency numbers end in 1 earlier?</p>
+<p>Yeah. 0.001 vs 0.0004 seconds.</p>
+<p>So, now that we&rsquo;ve reassured ourselves performance-wise, let&rsquo;s take a look at tracing!</p>
+<p>We still have <code>tracing-tree</code> set up and everything, and we&rsquo;ve instrumented the <code>root</code> async function, but it doesn&rsquo;t have a lot of information:</p>
+<pre tabindex="0"><code>$ RUST_LOG=info cargo run --release
+    Finished release [optimized] target(s) in 0.03s
+     Running `target/release/plaque`
+ INFO plaque Listening on http://0.0.0.0:3779
+plaque::root{}
+
+plaque::root{}
+
+plaque::root{}
+
+plaque::root{}
+</code></pre><p>&hellip;because a lot of things are handled by <code>hyper</code> and <code>axum</code> now.</p>
+<p>But what&rsquo;s cool is that <code>hyper</code> taps into the <code>tower</code> ecosystem, which is made of composable layers, much like <code>tracing</code>!</p>
+<p>So if we pull in <code>tower-http</code>, we can add some tracing easily:</p>
+<pre tabindex="0"><code>$ cargo add tower
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding tower v0.4.12 to dependencies
+
+$ cargo add tower-http --features trace
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding tower-http v0.2.3 to dependencies with features: [&#34;trace&#34;]
+</code></pre><pre tabindex="0"><code>async fn run_server() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let addr: SocketAddr = &#34;0.0.0.0:3779&#34;.parse()?;
+    info!(&#34;Listening on http://{}&#34;, addr);
+
+    let app = Router::new().route(&#34;/&#34;, get(root)).layer(
+        ServiceBuilder::new()
+            // 👇 new!
+            .layer(TraceLayer::new_for_http())
+            .into_inner(),
+    );
+    Server::bind(&amp;addr).serve(app.into_make_service()).await?;
+
+    Ok(())
+}
+</code></pre><p>There&rsquo;s a wealth of middleware to pick from, that&rsquo;s just one of them!</p>
+<p>And now, our server emits events whenever it serves a request:</p>
+<pre tabindex="0"><code>$ RUST_LOG=tower_http=debug cargo run --release
+    Finished release [optimized] target(s) in 0.03s
+     Running `target/release/plaque`
+tower_http::trace::make_span::request{method=GET, uri=/, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+  0ms DEBUG tower_http::trace::on_response finished processing request, latency=0 ms, status=200
+
+tower_http::trace::make_span::request{method=GET, uri=/uh-oh, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+  0ms DEBUG tower_http::trace::on_response finished processing request, latency=0 ms, status=404
+</code></pre><p>&hellip;no matter whether it serves it over plaintext HTTP/1, HTTPS, HTTP/2, etc.</p>
+<p>We&rsquo;d probably want to roll our own layer if we needed something a little more detailed: and we&rsquo;d have all the required integration points to do so.</p>
+<h2 id="a-useful-http-service">A useful http service
+</h2><p>And now, to move beyond the hello world.</p>
+<p>Let&rsquo;s make an HTTP request handler that returns the ID of the latest video on 
+
+<a  
+    class="link"
+ 
+    href="https://www.youtube.com/c/fasterthanlime"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>my YouTube channel</a>
+.</p>
+<p>I picked this example because:</p>
+<ul>
+<li>It can be done using the public YouTube API: no API key required!</li>
+<li>I&rsquo;m somewhat scared of being rate-limited when doing this</li>
+</ul>
+<p>Because of potential rate-limiting going on, that&rsquo;s one of the first things I deduplicated/memoized/single-flighted/cached in my site (not counting static content).</p>
+<p>So! We&rsquo;ll be using the 
+
+<a  
+    class="link"
+ 
+    href="https://www.youtube.com/feeds/videos.xml"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>https://www.youtube.com/feeds/videos.xml</a>
+ API endpoint. It accepts a <code>channel_id</code> query parameter, and my channel ID is <code>UCs4fQRyl1TJvoeOdekW6lYA</code>.</p>
+<p>We&rsquo;ll make all of that happen in a separate module named <code>youtube</code>:</p>
+<pre tabindex="0"><code>// in `src/main.rs`
+
+mod youtube;
+</code></pre><p>First we&rsquo;ll want to build the URL. And I don&rsquo;t feel like doing string interpolation right now - I want only your strongest types, potion seller
+
+<a  
+    class="link"
+ 
+    href="https://www.youtube.com/watch?v=R_FQU4KzN7A&amp;t=2s"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>.</a>
+</p>
+<pre tabindex="0"><code>$ cargo add url
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding url v2.2.2 to dependencie
+</code></pre><p>Ok, let&rsquo;s build!</p>
+<pre tabindex="0"><code>// in `src/youtube.rs`
+
+use std::error::Error;
+use url::Url;
+
+const YT_CHANNEL_ID: &amp;str = &#34;UCs4fQRyl1TJvoeOdekW6lYA&#34;;
+
+#[tracing::instrument]
+pub(crate) async fn fetch_video_id() -&gt; Result&lt;String, Box&lt;dyn Error&gt;&gt; {
+    let mut api_url = Url::parse(&#34;https://www.youtube.com/feeds/videos.xml&#34;)?;
+    {
+        let mut q = api_url.query_pairs_mut();
+        q.append_pair(&#34;channel_id&#34;, YT_CHANNEL_ID);
+    }
+
+    todo!(&#34;fetch from {api_url}&#34;);
+}
+</code></pre><p>And we&rsquo;ll change our <code>root</code> endpoint to call it&hellip;</p>
+<pre tabindex="0"><code>// in `src/main.rs`
+
+#[tracing::instrument]
+async fn root() -&gt; impl IntoResponse {
+    youtube::fetch_video_id().await.unwrap()
+}
+</code></pre><pre tabindex="0"><code>$ RUST_LOG=tower_http=debug cargo run --release
+    Finished release [optimized] target(s) in 0.03s
+     Running `target/release/plaque`
+tower_http::trace::make_span::request{method=GET, uri=/, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+thread &#39;main&#39; panicked at &#39;not yet implemented: fetch from https://www.youtube.com/feeds/videos.xml?channel_id=UCs4fQRyl1TJvoeOdekW6lYA&#39;, src/youtube.rs:13:5
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</code></pre><p>Okay! URL looks good (I checked by opening it in a browser).</p>
+<p>I&rsquo;m not super happy with the error handling though - making the whole task panic seems a little heavy-handed.</p>
+<p>It also feels like the perfect time to showcase 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/color-eyre"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>color-eyre</a>
+.</p>
+<pre tabindex="0"><code>$ cargo add color-eyre 
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding color-eyre v0.6.1 to dependencies
+</code></pre><p>To get spantrace capture to work, we&rsquo;ll also need to install a 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/tracing-error"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>tracing-error</a>
+ layer:</p>
+<pre tabindex="0"><code>$ cargo add tracing-error
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding tracing-error v0.2.0 to dependencies
+</code></pre><pre tabindex="0"><code>// in `src/tracing_stuff.rs`
+
+use tracing_error::ErrorLayer;
+
+// in the `setup` function,
+// deep in the `.with` chain:
+
+    Registry::default()
+        .with(EnvFilter::from_default_env())
+        .with(
+            HierarchicalLayer::new(2)
+                .with_targets(true)
+                .with_bracketed_fields(true),
+        )
+        // 👇 there!
+        .with(ErrorLayer::default())
+        .with(telemetry)
+        .init();
+</code></pre><p>And now, we install <code>color_eyre</code> as the default panic handler, in <code>main</code>:</p>
+<pre tabindex="0"><code>// in `src/main.rs`
+
+// (omitted: everything else)
+
+#[tokio::main(flavor = &#34;current_thread&#34;)]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    color_eyre::install()?;
+
+    tracing_stuff::setup()?;
+    run_server().await?;
+    tracing_stuff::teardown();
+    Ok(())
+}
+</code></pre><pre tabindex="0"><code>$ RUST_LOG=tower_http=debug,info cargo run --release
+    Finished release [optimized] target(s) in 0.03s
+     Running `target/release/plaque`
+ INFO plaque Listening on http://0.0.0.0:3779
+tower_http::trace::make_span::request{method=GET, uri=/, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+  plaque::root{}
+    plaque::youtube::fetch_video_id{}
+The application panicked (crashed).
+Message:  not yet implemented: fetch from https://www.youtube.com/feeds/videos.xml?channel_id=UCs4fQRyl1TJvoeOdekW6lYA
+Location: src/youtube.rs:14
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ SPANTRACE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   0: plaque::youtube::fetch_video_id
+      at src/youtube.rs:6
+   1: plaque::root
+      at src/main.rs:35
+   2: tower_http::trace::make_span::request with method=GET uri=/ version=HTTP/1.1
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tower-http-0.2.3/src/trace/make_span.rs:116
+
+Backtrace omitted. Run with RUST_BACKTRACE=1 environment variable to display it.
+Run with RUST_BACKTRACE=full to include source snippets.
+</code></pre><p>Well, isn&rsquo;t that delightful!</p>
+<p>In case you&rsquo;re <em>not</em> following along at home, let&rsquo;s see what the thread backtrace looks like. Because I&rsquo;m running a release build here (I&rsquo;m passing <code>--release</code> to cargo), let&rsquo;s make sure just enough debug information is included so that we get source file / line numbers info in our stacktrace:</p>
+<pre tabindex="0"><code># in `Cargo.toml`
+
+# omitted: everything else ([package], [dependencies], etc.)
+
+[profile.release]
+# 2/true is too much, 0 is not enough, 1 is just right for backtraces
+debug = 1
+</code></pre><p>And now:</p>
+<pre tabindex="0"><code>$ RUST_BACKTRACE=1 cargo run --release
+Finished release [optimized + debuginfo] target(s) in 0.03s
+     Running `target/release/plaque`
+ INFO plaque Listening on http://0.0.0.0:3779
+tower_http::trace::make_span::request{method=GET, uri=/, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+  plaque::root{}
+    plaque::youtube::fetch_video_id{}
+The application panicked (crashed).
+Message:  not yet implemented: fetch from https://www.youtube.com/feeds/videos.xml?channel_id=UCs4fQRyl1TJvoeOdekW6lYA
+Location: src/youtube.rs:14
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ SPANTRACE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   0: plaque::youtube::fetch_video_id
+      at src/youtube.rs:6
+   1: plaque::root
+      at src/main.rs:35
+   2: tower_http::trace::make_span::request with method=GET uri=/ version=HTTP/1.1
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tower-http-0.2.3/src/trace/make_span.rs:116
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ BACKTRACE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                                ⋮ 7 frames hidden ⋮                               
+   8: plaque::youtube::fetch_video_id::{{closure}}::{{closure}}::hab8f271bc61b75d4
+      at /home/amos/bearcove/plaque/src/youtube.rs:14
+   9: &lt;core::future::from_generator::GenFuture&lt;T&gt; as core::future::future::Future&gt;::poll::h6e0e23eb00ce4823
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/core/src/future/mod.rs:84
+  10: &lt;tracing::instrument::Instrumented&lt;T&gt; as core::future::future::Future&gt;::poll::h0be1db02d1392ae8
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tracing-0.1.31/src/instrument.rs:272
+  11: plaque::youtube::fetch_video_id::{{closure}}::hf6d51b72f3f19269
+      at /home/amos/bearcove/plaque/src/youtube.rs:6
+  12: &lt;core::future::from_generator::GenFuture&lt;T&gt; as core::future::future::Future&gt;::poll::h6cb6341d279017f6
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/core/src/future/mod.rs:84
+  13: plaque::root::{{closure}}::{{closure}}::h630b187fb3cddb8a
+      at /home/amos/bearcove/plaque/src/main.rs:37
+  14: &lt;core::future::from_generator::GenFuture&lt;T&gt; as core::future::future::Future&gt;::poll::h6ddf6f485ebbd74f
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/core/src/future/mod.rs:84
+  15: &lt;tracing::instrument::Instrumented&lt;T&gt; as core::future::future::Future&gt;::poll::h0b761b74342ffab4
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tracing-0.1.31/src/instrument.rs:272
+  16: plaque::root::{{closure}}::hf30871c07e78c6fd
+      at /home/amos/bearcove/plaque/src/main.rs:35
+  17: &lt;core::future::from_generator::GenFuture&lt;T&gt; as core::future::future::Future&gt;::poll::hc5fc9ae1f1172d28
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/core/src/future/mod.rs:84
+  18: &lt;F as axum::handler::Handler&lt;(),B&gt;&gt;::call::{{closure}}::h4b190ad50776c570
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/axum-0.4.8/src/handler/mod.rs:274
+  19: &lt;core::future::from_generator::GenFuture&lt;T&gt; as core::future::future::Future&gt;::poll::hd4c31eb92d321c5c
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/core/src/future/mod.rs:84
+  20: &lt;core::pin::Pin&lt;P&gt; as core::future::future::Future&gt;::poll::h194730287d082d5b
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/core/src/future/future.rs:123
+  21: &lt;futures_util::future::future::map::Map&lt;Fut,F&gt; as core::future::future::Future&gt;::poll::hda5093c773501670
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-util-0.3.21/src/future/future/map.rs:55
+  22: &lt;futures_util::future::future::Map&lt;Fut,F&gt; as core::future::future::Future&gt;::poll::h35098e19f97e2dfa
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-util-0.3.21/src/lib.rs:91
+  23: &lt;axum::handler::future::IntoServiceFuture as core::future::future::Future&gt;::poll::h83968b7e939194bc
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/axum-0.4.8/src/macros.rs:42
+  24: &lt;core::pin::Pin&lt;P&gt; as core::future::future::Future&gt;::poll::h1d3bccc0ccc1322c
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/core/src/future/future.rs:123
+  25: &lt;tower::util::oneshot::Oneshot&lt;S,Req&gt; as core::future::future::Future&gt;::poll::ha7c9f6e93564c479
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tower-0.4.12/src/util/oneshot.rs:97
+  26: &lt;axum::routing::route::RouteFuture&lt;B,E&gt; as core::future::future::Future&gt;::poll::he8321bd83c70eaf0
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/axum-0.4.8/src/routing/route.rs:108
+  27: &lt;tower_http::trace::future::ResponseFuture&lt;Fut,C,OnResponseT,OnBodyChunkT,OnEosT,OnFailureT&gt; as core::future::future::Future&gt;::poll::h146cd7d5d1401fa8
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tower-http-0.2.3/src/trace/future.rs:52
+  28: &lt;tower_http::map_response_body::ResponseFuture&lt;Fut,F&gt; as core::future::future::Future&gt;::poll::h052add6c17b2403c
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tower-http-0.2.3/src/map_response_body.rs:204
+  29: &lt;tower_http::map_response_body::ResponseFuture&lt;Fut,F&gt; as core::future::future::Future&gt;::poll::hf0cd011d85831398
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tower-http-0.2.3/src/map_response_body.rs:204
+  30: &lt;core::pin::Pin&lt;P&gt; as core::future::future::Future&gt;::poll::h1d3bccc0ccc1322c
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/core/src/future/future.rs:123
+  31: &lt;tower::util::oneshot::Oneshot&lt;S,Req&gt; as core::future::future::Future&gt;::poll::ha7c9f6e93564c479
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tower-0.4.12/src/util/oneshot.rs:97
+  32: &lt;axum::routing::route::RouteFuture&lt;B,E&gt; as core::future::future::Future&gt;::poll::he8321bd83c70eaf0
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/axum-0.4.8/src/routing/route.rs:108
+  33: &lt;futures_util::future::either::Either&lt;A,B&gt; as core::future::future::Future&gt;::poll::h5c1aa3799a3a97a8
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/futures-util-0.3.21/src/future/either.rs:89
+  34: &lt;axum::routing::future::RouterFuture&lt;B&gt; as core::future::future::Future&gt;::poll::ha3aaa039e3a1cd54
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/axum-0.4.8/src/macros.rs:42
+  35: &lt;hyper::proto::h1::dispatch::Server&lt;S,hyper::body::body::Body&gt; as hyper::proto::h1::dispatch::Dispatch&gt;::poll_msg::hda35a226e6f560e0
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.14.17/src/proto/h1/dispatch.rs:491
+  36: hyper::proto::h1::dispatch::Dispatcher&lt;D,Bs,I,T&gt;::poll_write::hae4fc7f534b34390
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.14.17/src/proto/h1/dispatch.rs:297
+  37: hyper::proto::h1::dispatch::Dispatcher&lt;D,Bs,I,T&gt;::poll_loop::h45f8006b014e2845
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.14.17/src/proto/h1/dispatch.rs:161
+  38: hyper::proto::h1::dispatch::Dispatcher&lt;D,Bs,I,T&gt;::poll_inner::h7b0e9f76871f96a5
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.14.17/src/proto/h1/dispatch.rs:137
+  39: hyper::proto::h1::dispatch::Dispatcher&lt;D,Bs,I,T&gt;::poll_catch::h955db4e72e7b9ab8
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.14.17/src/proto/h1/dispatch.rs:120
+  40: &lt;hyper::proto::h1::dispatch::Dispatcher&lt;D,Bs,I,T&gt; as core::future::future::Future&gt;::poll::h126968541a4386be
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.14.17/src/proto/h1/dispatch.rs:424
+  41: &lt;hyper::server::conn::ProtoServer&lt;T,B,S,E&gt; as core::future::future::Future&gt;::poll::h0d8b641b8484c8a6
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.14.17/src/server/conn.rs:1142
+  42: &lt;hyper::server::conn::upgrades::UpgradeableConnection&lt;I,S,E&gt; as core::future::future::Future&gt;::poll::h2a9fb2b64056d7c4
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.14.17/src/server/conn.rs:1346
+  43: &lt;hyper::server::conn::spawn_all::NewSvcTask&lt;I,N,S,E,W&gt; as core::future::future::Future&gt;::poll::he87cab1ebceecb94
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/hyper-0.14.17/src/server/conn.rs:1283
+  44: tokio::runtime::task::core::CoreStage&lt;T&gt;::poll::{{closure}}::hf838d353f1f39232
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/task/core.rs:161
+  45: tokio::loom::std::unsafe_cell::UnsafeCell&lt;T&gt;::with_mut::h5c1a5f3e29a5a536
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/loom/std/unsafe_cell.rs:14
+  46: tokio::runtime::task::core::CoreStage&lt;T&gt;::poll::h410a4d2378fe1425
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/task/core.rs:151
+  47: tokio::runtime::task::harness::poll_future::{{closure}}::h7e66f49a70a48bf4
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/task/harness.rs:467
+  48: &lt;core::panic::unwind_safe::AssertUnwindSafe&lt;F&gt; as core::ops::function::FnOnce&lt;()&gt;&gt;::call_once::ha4ede35dc8c09d23
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/core/src/panic/unwind_safe.rs:271
+  49: std::panicking::try::do_call::h9bf1526b1481658f
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/std/src/panicking.rs:406
+  50: std::panicking::try::hce34bb9cb3d6f762
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/std/src/panicking.rs:370
+  51: std::panic::catch_unwind::hff0de339c046ca05
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/std/src/panic.rs:133
+  52: tokio::runtime::task::harness::poll_future::h22a0571f341a8fe4
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/task/harness.rs:455
+  53: tokio::runtime::task::harness::Harness&lt;T,S&gt;::poll_inner::he829968450070f3b
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/task/harness.rs:103
+  54: tokio::runtime::task::harness::Harness&lt;T,S&gt;::poll::hf1ae4d7dc3894514
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/task/harness.rs:57
+  55: tokio::runtime::task::LocalNotified&lt;S&gt;::run::h23a4057f42b678c2
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/task/mod.rs:347
+  56: tokio::runtime::basic_scheduler::CoreGuard::block_on::{{closure}}::{{closure}}::h6bdc27d064499238
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:532
+  57: tokio::coop::with_budget::{{closure}}::he21073af0a9fe50c
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/coop.rs:102
+  58: std::thread::local::LocalKey&lt;T&gt;::try_with::ha3868a0b480c262b
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/std/src/thread/local.rs:412
+  59: std::thread::local::LocalKey&lt;T&gt;::with::h3b38379aec814a78
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/std/src/thread/local.rs:388
+  60: tokio::coop::with_budget::he33e37f59c7ff8b0
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/coop.rs:95
+  61: tokio::coop::budget::h27f9e6eaf2d6cfe1
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/coop.rs:72
+  62: tokio::runtime::basic_scheduler::Context::run_task::{{closure}}::h36036a49569cf8fc
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:291
+  63: tokio::runtime::basic_scheduler::Context::enter::h10fac43713f24837
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:356
+  64: tokio::runtime::basic_scheduler::Context::run_task::hd09c9d487557d6ef
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:291
+  65: tokio::runtime::basic_scheduler::CoreGuard::block_on::{{closure}}::he67b4b3fdfbc4ace
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:531
+  66: tokio::runtime::basic_scheduler::CoreGuard::enter::{{closure}}::hde9b67ddaf06cae1
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:555
+  67: tokio::macros::scoped_tls::ScopedKey&lt;T&gt;::set::hed655ba933b2ec0f
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/macros/scoped_tls.rs:61
+  68: tokio::runtime::basic_scheduler::CoreGuard::enter::hb6b4338769eb9cba
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:555
+  69: tokio::runtime::basic_scheduler::CoreGuard::block_on::h8510ffa7213dec9a
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:488
+  70: tokio::runtime::basic_scheduler::BasicScheduler::block_on::hc0e1922df1329249
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/basic_scheduler.rs:168
+  71: tokio::runtime::Runtime::block_on::h20934397d494fcbb
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/runtime/mod.rs:475
+  72: plaque::main::h955bdc1216baefce
+      at /home/amos/bearcove/plaque/src/main.rs:18
+  73: core::ops::function::FnOnce::call_once::he99aaacc5fbd0766
+      at /rustc/9d1b2106e23b1abd32fce1f17267604a5102f57a/library/core/src/ops/function.rs:227
+                                ⋮ 15 frames hidden ⋮                              
+
+Run with COLORBT_SHOW_HIDDEN=1 environment variable to disable frame filtering.
+Run with RUST_BACKTRACE=full to include source snippets.
+</code></pre><p>It&rsquo;s a pretty noisy backtrace. The async working group is 
+
+<a  
+    class="link"
+ 
+    href="https://rust-lang.github.io/wg-async/vision/roadmap/polish/stacktraces.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>also thinking about that</a>
+.</p>
+<p>But we have <em>everything</em> here. Well, minus the hidden frames. We got <code>Runtime::block_on</code> we used to call ourselves when we weren&rsquo;t using <code>#[tokio::main]</code> (proof that it&rsquo;s not so magic!).</p>
+<p>We got <code>tokio</code>&rsquo;s coop system that 
+
+<a  
+    class="link"
+ 
+    href="https://tokio.rs/blog/2020-04-preemption"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>improves tail latencies</a>
+, we got <code>hyper</code>&rsquo;s http1 server, we got <code>axum</code>&rsquo;s router, some more <code>axum</code> handlers, and at the very top, we have our very own <code>fetch_video_id</code>.</p>
+<p>Okay, so now we have pretty good error reporting&hellip; but it still panics!</p>
+<p>Well, let&rsquo;s do two things: one, let&rsquo;s make <code>fetch_video_id</code> return an error not of type <code>Box&lt;dyn Error&gt;</code>, but of type <code>color_eyre::Report</code>:</p>
+<pre tabindex="0"><code>// in `src/youtube.rs`
+
+use color_eyre::{eyre::eyre, Report};
+use url::Url;
+
+const YT_CHANNEL_ID: &amp;str = &#34;UCs4fQRyl1TJvoeOdekW6lYA&#34;;
+
+#[tracing::instrument]
+pub(crate) async fn fetch_video_id() -&gt; Result&lt;String, Report&gt; {
+    let mut api_url = Url::parse(&#34;https://www.youtube.com/feeds/videos.xml&#34;)?;
+    {
+        let mut q = api_url.query_pairs_mut();
+        q.append_pair(&#34;channel_id&#34;, YT_CHANNEL_ID);
+    }
+
+    Err(eyre!(&#34;TODO: fetch from {api_url}&#34;))
+}
+</code></pre><p>And two, let&rsquo;s&hellip; no, wait, let&rsquo;s not do anything and see what kind of spantrace we get now:</p>
+<pre tabindex="0"><code>$ RUST_LOG=tower_http=debug,info cargo run --release
+   Compiling plaque v0.1.0 (/home/amos/bearcove/plaque)
+    Finished release [optimized + debuginfo] target(s) in 3.40s
+     Running `target/release/plaque`
+ INFO plaque Listening on http://0.0.0.0:3779
+tower_http::trace::make_span::request{method=GET, uri=/, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+  plaque::root{}
+    plaque::youtube::fetch_video_id{}
+The application panicked (crashed).
+Message:  called `Result::unwrap()` on an `Err` value: 
+   0: TODO: fetch from https://www.youtube.com/feeds/videos.xml?channel_id=UCs4fQRyl1TJvoeOdekW6lYA
+
+Location:
+   src/youtube.rs:14
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ SPANTRACE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   0: plaque::youtube::fetch_video_id
+      at src/youtube.rs:6
+   1: plaque::root
+      at src/main.rs:35
+   2: tower_http::trace::make_span::request with method=GET uri=/ version=HTTP/1.1
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tower-http-0.2.3/src/trace/make_span.rs:116
+
+Backtrace omitted. Run with RUST_BACKTRACE=1 environment variable to display it.
+Run with RUST_BACKTRACE=full to include source snippets.
+Location: src/main.rs:37
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ SPANTRACE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   0: plaque::root
+      at src/main.rs:35
+   1: tower_http::trace::make_span::request with method=GET uri=/ version=HTTP/1.1
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tower-http-0.2.3/src/trace/make_span.rs:116
+
+Backtrace omitted. Run with RUST_BACKTRACE=1 environment variable to display it.
+Run with RUST_BACKTRACE=full to include source snippets.
+</code></pre><p>Okay! Nice! It shows us where the original error happened (first span trace), and then where we unwrapped it (which just happens to be the same line).</p>
+<p>That said, we&rsquo;re writing a web service. We don&rsquo;t want to panic, we probably want to return an 
+
+<a  
+    class="link"
+ 
+    href="https://httpstatuses.com/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>HTTP 500</a>
+ instead.</p>
+<p>Is there a way to do that in axum? Yes there is! And it&rsquo;s actually quite interesting. Axum&rsquo;s <code>IntoReponse</code> trait is implemented for&hellip; <code>Result&lt;T, E&gt; where T: IntoResponse, E: IntoResponse</code>.</p>
+<p>Which means we can write code like this:</p>
+<pre tabindex="0"><code>#[tracing::instrument]
+async fn root() -&gt; Result&lt;impl IntoResponse, (StatusCode, String)&gt; {
+    let res = youtube::fetch_video_id().await.map_err(|err| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!(&#34;youtube error: {err}&#34;),
+        )
+    })?;
+    Ok(res)
+}
+</code></pre><p>Here, both the <code>Ok</code> and <code>Err</code> variant of <code>Result</code> contain something that can be turned into a response! The <code>Ok</code> variant is just a string (which defaults to an HTTP 200 status code), and the <code>Err</code> variant is straight up a <code>(StatusCode, String)</code>, and we&rsquo;re specifying HTTP 500 ourselves.</p>
+<p>I don&rsquo;t love this though, I think we can improve the ergonomics a bit&hellip; because unless I specifically match on the result of some fallible function or future, I&rsquo;d want it to default to HTTP 500 (Internal Server Error) - and I&rsquo;d like the <code>?</code> sigil to mean that.</p>
+<p>Luckily, <code>axum</code>&rsquo;s design is flexible enough for that!</p>
+<p>All we gotta do is make a little newtype around <code>eyre::Report</code> and then implement <code>IntoResponse</code> for it!</p>
+<pre tabindex="0"><code>struct ReportError(Report);
+
+impl From&lt;Report&gt; for ReportError {
+    fn from(err: Report) -&gt; Self {
+        ReportError(err)
+    }
+}
+
+impl IntoResponse for ReportError {
+    fn into_response(self) -&gt; Response {
+        // {:?} shows the backtrace / spantrace, see 
+        // https://docs.rs/eyre/0.6.7/eyre/struct.Report.html#display-representations
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!(&#34;Internal server error: {:?}&#34;, self.0),
+        )
+            .into_response()
+    }
+}
+</code></pre><p>And now, we can change the signature of <code>root</code>, and&hellip; tada!</p>
+<pre tabindex="0"><code>#[tracing::instrument]
+async fn root() -&gt; Result&lt;impl IntoResponse, ReportError&gt; {
+    let res = youtube::fetch_video_id().await?;
+    Ok(res)
+}
+</code></pre><p>And now, our handler doesn&rsquo;t panic anymore - instead, the failure is logged:</p>
+<pre tabindex="0"><code>$ RUST_LOG=tower_http=debug,info cargo run --release
+   Compiling plaque v0.1.0 (/home/amos/bearcove/plaque)
+    Finished release [optimized + debuginfo] target(s) in 3.53s
+     Running `target/release/plaque`
+ INFO plaque Listening on http://0.0.0.0:3779
+tower_http::trace::make_span::request{method=GET, uri=/, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+  plaque::root{}
+    plaque::youtube::fetch_video_id{}
+  
+  
+  0ms DEBUG tower_http::trace::on_response finished processing request, latency=0 ms, status=500
+  0ms ERROR tower_http::trace::on_failure response failed, classification=Status code: 500 Internal Server Error, latency=0 ms
+</code></pre><p>And the spantrace is sent within the HTTP response:</p>
+<pre tabindex="0"><code>$ curl http://localhost:3779/
+Internal server error: 
+   0: TODO: fetch from https://www.youtube.com/feeds/videos.xml?channel_id=UCs4fQRyl1TJvoeOdekW6lYA
+
+Location:
+   src/youtube.rs:14
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ SPANTRACE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   0: plaque::youtube::fetch_video_id
+      at src/youtube.rs:6
+   1: plaque::root
+      at src/main.rs:41
+   2: tower_http::trace::make_span::request with method=GET uri=/ version=HTTP/1.1
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tower-http-0.2.3/src/trace/make_span.rs:116
+
+Backtrace omitted. Run with RUST_BACKTRACE=1 environment variable to display it.
+Run with RUST_BACKTRACE=full to include source snippets.
+</code></pre><p>In a real-world application, we&rsquo;d probably want to disable that for production. But that&rsquo;s left as an exercise to the (very patient) reader.</p>
+<p>Okay, well. Time to hit that YouTube API.</p>
+<p>I normally prefer to use 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/hyper"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>hyper</a>
+ directly instead of 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/reqwest"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>reqwest</a>
+, but let&rsquo;s use the latter to keep it short.</p>
+<pre tabindex="0"><code>$ cargo add reqwest --no-default-features --features rustls-tls
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding reqwest v0.11.9 to dependencies with features: [&#34;rustls-tls&#34;]
+</code></pre><p>The API response happens to be an Atom feed:</p>
+<pre tabindex="0"><code>&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;
+&lt;feed xmlns:yt=&#34;http://www.youtube.com/xml/schemas/2015&#34; xmlns:media=&#34;http://search.yahoo.com/mrss/&#34; xmlns=&#34;http://www.w3.org/2005/Atom&#34;&gt;
+ &lt;link rel=&#34;self&#34; href=&#34;http://www.youtube.com/feeds/videos.xml?channel_id=UCs4fQRyl1TJvoeOdekW6lYA&#34;/&gt;
+ &lt;id&gt;yt:channel:UCs4fQRyl1TJvoeOdekW6lYA&lt;/id&gt;
+ &lt;yt:channelId&gt;UCs4fQRyl1TJvoeOdekW6lYA&lt;/yt:channelId&gt;
+ &lt;title&gt;fasterthanlime&lt;/title&gt;
+ &lt;link rel=&#34;alternate&#34; href=&#34;https://www.youtube.com/channel/UCs4fQRyl1TJvoeOdekW6lYA&#34;/&gt;
+ &lt;author&gt;
+  &lt;name&gt;fasterthanlime&lt;/name&gt;
+  &lt;uri&gt;https://www.youtube.com/channel/UCs4fQRyl1TJvoeOdekW6lYA&lt;/uri&gt;
+ &lt;/author&gt;
+ &lt;published&gt;2019-10-16T09:57:58+00:00&lt;/published&gt;
+ &lt;!-- omitted: rest of the feed --&gt;
+&lt;/feed&gt;
+</code></pre><p>&hellip;so let&rsquo;s bring in another crate to parse it:</p>
+<pre tabindex="0"><code>$ cargo add feed-rs
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding feed-rs v1.0.0 to dependencies
+</code></pre><p>Ooh, version 1.0.0, take a sip!</p>
+<p>And just because I feel like being silly, let&rsquo;s try out 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/tap"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>tap</a>
+:</p>
+<pre tabindex="0"><code>$ cargo add tap
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding tap v1.0.1 to dependencies
+</code></pre><p>And then&hellip; weeeeeeeeeeeEEEEEEeeeee:</p>
+<pre tabindex="0"><code>// in `src/youtube.rs`
+
+use color_eyre::{eyre::eyre, Report};
+use reqwest::Client;
+use tap::Pipe;
+use url::Url;
+
+const YT_CHANNEL_ID: &amp;str = &#34;UCs4fQRyl1TJvoeOdekW6lYA&#34;;
+
+#[tracing::instrument]
+pub(crate) async fn fetch_video_id() -&gt; Result&lt;String, Report&gt; {
+    Ok(Client::new()
+        .get({
+            let mut url = Url::parse(&#34;https://www.youtube.com/feeds/videos.xml&#34;)?;
+            url.query_pairs_mut()
+                .append_pair(&#34;channel_id&#34;, YT_CHANNEL_ID);
+            url
+        })
+        // make our mark on the world
+        .header(&#34;user-agent&#34;, &#34;cool/bear&#34;)
+        .send()
+        .await? // this will cover connect errors
+        .error_for_status()? // this will cover HTTP errors
+        .bytes()
+        .await? // errors while streaming the response body?
+        .pipe(|bytes| feed_rs::parser::parse(&amp;bytes[..]))? // parse the feed
+        .pipe_ref(|feed| feed.entries.get(0))
+        .ok_or(eyre!(&#34;no entries in video feed&#34;))?
+        .pipe_ref(|entry| entry.id.strip_prefix(&#34;yt:video:&#34;))
+        .ok_or(eyre!(&#34;first video feed item wasn&#39;t a video&#34;))?
+        .to_string())
+}
+</code></pre><p>Whew, that&rsquo;s&hellip; that&rsquo;s a lot.</p>
+<p>It&rsquo;s allllll suffix baby. Who needs statements?</p>
+<p>Well? Let&rsquo;s try it out!</p>
+<p>Oh, wait, no! Let&rsquo;s return it as JSON! Because we can! We&rsquo;ll just add the <code>json</code> feature to <code>axum</code>:</p>
+<pre tabindex="0"><code># in `Cargo.toml`
+
+[dependencies]
+axum = { version = &#34;0.4.8&#34;, features = [&#34;json&#34;] }
+</code></pre><p>Also add serde with its derive macros:</p>
+<pre tabindex="0"><code>$ cargo add serde --features derive
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding serde v1.0.136 to dependencies with features: [&#34;derive&#34;]
+</code></pre><p>And now our <code>root</code> handler becomes:</p>
+<pre tabindex="0"><code>// in `src/main.rs`
+
+// new imports:
+use axum::Json;
+use serde::Serialize;
+
+#[tracing::instrument]
+async fn root() -&gt; Result&lt;impl IntoResponse, ReportError&gt; {
+    #[derive(Serialize)]
+    struct Response {
+        video_id: String,
+    }
+
+    Ok(Json(Response {
+        video_id: youtube::fetch_video_id().await?,
+    }))
+}
+</code></pre><p>And there we go! This is what we see from <code>curl</code>:</p>
+<pre tabindex="0"><code>$ curl -v http://localhost:3779/
+*   Trying 127.0.0.1:3779...
+* Connected to localhost (127.0.0.1) port 3779 (#0)
+&gt; GET / HTTP/1.1
+&gt; Host: localhost:3779
+&gt; User-Agent: curl/7.79.1
+&gt; Accept: */*
+&gt; 
+* Mark bundle as not supporting multiuse
+&lt; HTTP/1.1 200 OK
+&lt; content-type: application/json
+&lt; content-length: 26
+&lt; date: Thu, 03 Mar 2022 23:57:30 GMT
+&lt; 
+* Connection #0 to host localhost left intact
+{&#34;video_id&#34;:&#34;nKyf4gVE5n0&#34;}%
+</code></pre><p>And from the server side:</p>
+<pre tabindex="0"><code>$ RUST_LOG=tower_http=debug,info cargo run --release
+    Finished release [optimized + debuginfo] target(s) in 0.05s
+     Running `target/release/plaque`
+ INFO plaque Listening on http://0.0.0.0:3779
+tower_http::trace::make_span::request{method=GET, uri=/, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+  plaque::root{}
+    plaque::youtube::fetch_video_id{}
+    
+  
+  57ms DEBUG tower_http::trace::on_response finished processing request, latency=57 ms, status=200
+
+tower_http::trace::make_span::request{method=GET, uri=/, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+  plaque::root{}
+    plaque::youtube::fetch_video_id{}
+    
+  
+  55ms DEBUG tower_http::trace::on_response finished processing request, latency=55 ms, status=200
+</code></pre><p>Now we have our endpoint. How do we make it better?</p>
+<p>Well, we&rsquo;re making a fresh <code>reqwest</code> <code>Client</code> for every request. That&rsquo;s not ideal. This is arguably <em>yet another</em> distraction, because our plan involves caching, but if we weren&rsquo;t aiming for that, this might be the first thing we try: just re-use the same <code>Client</code> so we can re-use an existing connection to the YouTube server.</p>
+<p>But first, you know what I realized? We don&rsquo;t really need tower&rsquo;s <code>ServiceBuilder</code> - I was looking at an example that had <em>fallible</em> layers, so they needed that extra flexibility, but us? We can just turn this:</p>
+<pre tabindex="0"><code>let app = Router::new().route(&#34;/&#34;, get(root)).layer(
+        ServiceBuilder::new()
+            .layer(TraceLayer::new_for_http())
+            .into_inner(),
+    );
+</code></pre><p>Into this:</p>
+<pre tabindex="0"><code>let app = Router::new()
+        .route(&#34;/&#34;, get(root))
+        .layer(TraceLayer::new_for_http());
+</code></pre><p>Now: axum has a neat way to share state between handlers - and it&rsquo;s just another layer that adds an extension to the request! That&rsquo;s pretty standard hyper stuff, just wrapped nicely.</p>
+<p>Our layer stack becomes:</p>
+<pre tabindex="0"><code>let app = Router::new()
+        .route(&#34;/&#34;, get(root))
+        .layer(TraceLayer::new_for_http())
+        .layer(Extension(reqwest::Client::new()));
+</code></pre><p>A single <code>reqwest</code> Client is constructed when we build the app&rsquo;s layer stack, and it&rsquo;s accessible to any request handler that wants it, via axum extractor:</p>
+<pre tabindex="0"><code>// in `src/main.rs`
+
+#[tracing::instrument]
+//               👇 here!
+async fn root(client: Extension&lt;reqwest::Client&gt;) -&gt; Result&lt;impl IntoResponse, ReportError&gt; {
+    #[derive(Serialize)]
+    struct Response {
+        video_id: String,
+    }
+
+    Ok(Json(Response {
+        //                      passed here 👇
+        video_id: youtube::fetch_video_id(&amp;client).await?,
+    }))
+}
+</code></pre><p>And we have to change up our <code>fetch_video_id</code> function as well:</p>
+<pre tabindex="0"><code>// in `src/youtube.rs`
+
+#[tracing::instrument]
+//                                    👇
+pub(crate) async fn fetch_video_id(client: &amp;reqwest::Client) -&gt; Result&lt;String, Report&gt; {
+    Ok(client
+        .get({
+            // (etc.)
+        })
+        // (etc.)
+    )
+}
+</code></pre><p>Will that improve latency? Theoretically, we shouldn&rsquo;t have to pay the cost of a TCP handshake for subsequent requests - the connection should only be closed if it remains idle for some time.</p>
+<p>But this is the internet. Anything can happen.</p>
+<pre tabindex="0"><code>$ RUST_LOG=tower_http=debug cargo run --release
+    Finished release [optimized + debuginfo] target(s) in 0.05s
+     Running `target/release/plaque`
+tower_http::trace::make_span::request{method=GET, uri=/, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+  58ms DEBUG tower_http::trace::on_response finished processing request, latency=58 ms, status=200
+
+tower_http::trace::make_span::request{method=GET, uri=/, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+  13ms DEBUG tower_http::trace::on_response finished processing request, latency=13 ms, status=200
+
+tower_http::trace::make_span::request{method=GET, uri=/, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+  13ms DEBUG tower_http::trace::on_response finished processing request, latency=13 ms, status=200
+
+tower_http::trace::make_span::request{method=GET, uri=/, version=HTTP/1.1}
+  0ms DEBUG tower_http::trace::on_request started processing request
+  13ms DEBUG tower_http::trace::on_response finished processing request, latency=13 ms, status=200
+</code></pre><p>Heck yeah! What do you know! Sometimes things <em>do</em> work as expected.</p>
+<p>But that&rsquo;s not what we came here for, though. It&rsquo;s good&hellip; but we want to be able to process a lot more traffic! The kind of traffic that will make the YouTube API servers go &ldquo;please go away for a while&rdquo;, and then the request fails and we lose out on that sweet cross-promo. Or whatever marketing term is appropriate.</p>
+<p>So, let&rsquo;s come up with schemes.</p>
+<h2 id="a-little-caching-cant-hurt">A little caching can&rsquo;t hurt
+</h2><p>Now that we have a way to share some state across request handlers, we could put a cached version of the latest video ID in there, right?</p>
+<p>And we&rsquo;d want it to expire at some point, so maybe we store an <code>Instant</code> as well, and decide on a duration after which we consider the data stale.</p>
+<p>Because multiple handlers can run concurrently, we want to protect that cached value with something like an <code>std::sync::Mutex</code> (we could use an <code>RwLock</code>, but let&rsquo;s keep it simple).</p>
+<p>So maybe we make a new struct:</p>
+<pre tabindex="0"><code>// in `src/main.rs`
+
+use std::sync::{Arc, Mutex};
+use std::time::Instant;
+
+#[derive(Clone, Default)]
+struct CachedLatestVideo {
+    value: Arc&lt;Mutex&lt;Option&lt;(Instant, String)&gt;&gt;&gt;,
+}
+</code></pre><p>And then we change the <code>root</code> handler to use the cache:</p>
+<pre tabindex="0"><code>// in `src/main.rs`
+
+#[tracing::instrument(skip(client, cached))]
+async fn root(
+    client: Extension&lt;reqwest::Client&gt;,
+    cached: Extension&lt;CachedLatestVideo&gt;,
+) -&gt; Result&lt;impl IntoResponse, ReportError&gt; {
+    #[derive(Serialize)]
+    struct Response {
+        video_id: String,
+    }
+
+    {
+        if let Some((cached_at, video_id)) = cached.value.lock().unwrap().as_ref() {
+            if cached_at.elapsed() &lt; std::time::Duration::from_secs(5) {
+                return Ok(Json(Response {
+                    video_id: video_id.clone(),
+                }));
+            } else {
+                // was stale, let&#39;s refresh
+                debug!(&#34;stale video, let&#39;s refresh&#34;);
+            }
+        } else {
+            debug!(&#34;not cached, let&#39;s fetched&#34;);
+        }
+    }
+
+    let video_id = youtube::fetch_video_id(&amp;client).await?;
+    cached
+        .value
+        .lock()
+        .unwrap()
+        .replace((Instant::now(), video_id.clone()));
+
+    Ok(Json(Response { video_id }))
+}
+</code></pre><p>Because our <code>Mutex</code> is synchronous, and not asynchronous, we don&rsquo;t want to hold it across await points - otherwise we could deadlock: I discuss this at length in 
+
+<a  
+    class="link"
+ 
+    href="https://fasterthanli.me/articles/a-rust-match-made-in-hell"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>A Rust match made in hell</a>
+.</p>
+<p>So, we lock it, check if there&rsquo;s a value we can use - if not, we start a fetch, and then lock it again to store it in the cache.</p>
+<p>Is that going to make requests faster? Let&rsquo;s find out!</p>
+<p>Let&rsquo;s run 10 requests in sequence, using <code>xargs</code> and <code>curl</code>:</p>
+<pre tabindex="0"><code>$ xargs -I %n -P 1 /usr/bin/time --format=&#34;request %n: %e seconds (wall time)&#34; curl -s http://localhost:3779 -o /dev/null &lt; &lt;(printf &#39;%s\n&#39; {0..9})
+request 0: 0.06 seconds (wall time)
+request 1: 0.00 seconds (wall time)
+request 2: 0.00 seconds (wall time)
+request 3: 0.00 seconds (wall time)
+request 4: 0.00 seconds (wall time)
+request 5: 0.00 seconds (wall time)
+request 6: 0.00 seconds (wall time)
+request 7: 0.00 seconds (wall time)
+request 8: 0.00 seconds (wall time)
+request 9: 0.00 seconds (wall time)
+</code></pre><p>This appears to work! The first response is slow (it&rsquo;s a cache miss), and the others are fast (they&rsquo;re cache hits).</p>
+<p>If we wait 5 seconds and repeat, we see roughly the same distribution, except the first request is faster, because it reuses the connection (0.01s instead of 0.06s).</p>
+<p>But what happens if there&rsquo;s an onslaught of requests at first? Say, 5 at the same time? (Or rather, very close together?)</p>
+<pre tabindex="0"><code>xargs -I %n -P 5 /usr/bin/time --format=&#34;request %n: %e seconds (wall time)&#34; curl -s http://localhost:3779 -o /dev/null &lt; &lt;(printf &#39;%s\n&#39; {0..9})
+request 0: 0.01 seconds (wall time)
+request 1: 0.01 seconds (wall time)
+request 2: 0.01 seconds (wall time)
+request 7: 0.00 seconds (wall time)
+request 6: 0.00 seconds (wall time)
+request 5: 0.00 seconds (wall time)
+rreeqquueests t8 :9 : 0.000.00  sseeccoonnddss  ((wwaallll  ttiimmee))
+
+request 3: 0.02 seconds (wall time)
+request 4: 0.03 seconds (wall time)
+</code></pre><p>Uhhhhhhhhhhhhh&hellip;</p>
+<p>&hellip;let&rsquo;s try that again:</p>
+<pre tabindex="0"><code>$ xargs -I %n -P 5 /usr/bin/time --format=&#34;request %n: %e seconds (wall time)&#34; curl -s http://localhost:3779 -o /dev/null &lt; &lt;(printf &#39;%s\n&#39; {0..9})
+request 1: 0.01 seconds (wall time)
+request 0: 0.01 seconds (wall time)
+request 5: 0.00 seconds (wall time)
+request 6: 0.00 seconds (wall time)
+request 7: 0.00 seconds (wall time)
+request 8: 0.00 seconds (wall time)
+request 9: 0.00 seconds (wall time)
+request 2: 0.02 seconds (wall time)
+request 3: 0.02 seconds (wall time)
+request 4: 0.02 seconds (wall time)
+</code></pre><p>The requests are printed out of order, but you can see that requests 0 through 4 (inclusive) are cache misses: we did multiple concurrent fetches!</p>
+<p>And we&rsquo;d like to avoid that. They&rsquo;re all getting the same result anyway, so there&rsquo;s no point in making multiple concurrent requests to the YouTube API.</p>
+<p>We need to do&hellip; request deduplication (or request coalescing, or single-flighting).</p>
+<p>In our case, because we&rsquo;re caching the results anyway, there&rsquo;s really nothing preventing us from just moving to an asynchronous <code>Mutex</code>. A mutex that would let us hold guards across await points.</p>
+<p>Since only one request can hold the lock to the cache entry, that would effectively deduplicate requests:</p>
+<pre tabindex="0"><code>// in `src/main.rs`
+
+// instead of std::sync::Mutex
+use tokio::sync::Mutex;
+
+#[tracing::instrument(skip(client, cached))]
+async fn root(
+    client: Extension&lt;reqwest::Client&gt;,
+    cached: Extension&lt;CachedLatestVideo&gt;,
+) -&gt; Result&lt;impl IntoResponse, ReportError&gt; {
+    #[derive(Serialize)]
+    struct Response {
+        video_id: String,
+    }
+
+    // keep that lock throughout. that&#39;s async: 👇
+    let mut cached_value = cached.value.lock().await;
+
+    {
+        if let Some((cached_at, video_id)) = cached_value.as_ref() {
+            if cached_at.elapsed() &lt; std::time::Duration::from_secs(5) {
+                return Ok(Json(Response {
+                    video_id: video_id.clone(),
+                }));
+            } else {
+                // was stale, let&#39;s refresh
+                debug!(&#34;stale video, let&#39;s refresh&#34;);
+            }
+        } else {
+            debug!(&#34;not cached, let&#39;s fetched&#34;);
+        }
+    }
+
+    let video_id = youtube::fetch_video_id(&amp;client).await?;
+    cached_value.replace((Instant::now(), video_id.clone()));
+
+    Ok(Json(Response { video_id }))
+}
+</code></pre><p>Let&rsquo;s try this again:</p>
+<pre tabindex="0"><code>$ xargs -I %n -P 5 /usr/bin/time --format=&#34;request %n: %e seconds (wall time)&#34; curl -s http://localhost:3779 -o /dev/null &lt; &lt;(printf &#39;%s\n&#39; {0..9})
+request 2: request 0: 0.01 seconds (warll etqiumees)t
+ 4: 0.01 seconds (wall time)
+0.01 seconds (wall time)
+request 1: 0.01 seconds (wall time)
+request 3: 0.01 seconds (wall time)
+request 5: 0.00 seconds (wall time)
+request 8: 0.00 seconds (wall time)
+rreeqquueesstt  67::  0.00 seconds (0.00w aslelc otnidmse )(
+wall time)
+request 9: 0.00 seconds (wall time)
+</code></pre><p>Oh boy. Maybe using <code>xargs</code> for this was a mistake. We could probably just use <code>oha</code> right? Make it do 10 requests with 5 clients, the latency distributions should show us cached / uncached requests:</p>
+<pre tabindex="0"><code>$ oha -n 10 -c 5 http://localhost:3779
+(cut)
+Response time histogram:
+  0.007 [5] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.015 [0] |
+  0.022 [0] |
+  0.029 [0] |
+  0.037 [0] |
+  0.044 [0] |
+  0.051 [0] |
+  0.059 [0] |
+  0.066 [0] |
+  0.073 [0] |
+  0.081 [5] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+</code></pre><p>There, beautiful! 5 cache misses, 5 cache hits.</p>
+<p>But I don&rsquo;t like this method: it only really works if you have one cache key.</p>
+<p>Otherwise, if you have something like that:</p>
+<pre tabindex="0"><code>#[derive(Clone, Default)]
+struct CachedLatestVideos {
+    value: Arc&lt;Mutex&lt;HashMap&lt;ChannelId, (Instant, LatestVideoId)&gt;&gt;&gt;,
+}
+</code></pre><p>(Where <code>ChannelId</code> and <code>LatestVideoId</code> are just newtypes for <code>String</code> to make our type signature readable)</p>
+<p>&hellip;then requests for the latest video of channel A would block requests for the latest video of channel B, even if those were fresh and in cache.</p>
+<p>A problem we can solve with <del>even more violence</del> even more mutexes, something like that:</p>
+<pre tabindex="0"><code>#[derive(Clone, Default)]
+struct CachedLatestVideos {
+    value: Arc&lt;Mutex&lt;HashMap&lt;ChannelId, CachedVideoSlot&gt;&gt;&gt;
+}
+
+#[derive(Clone, Default)]
+struct CachedVideoSlot {
+    value: Arc&lt;Mutex&lt;Option&lt;(Instant, LatestVideoId)&gt;&gt;&gt;,
+}
+</code></pre><p>That might work, I just&hellip; I just find myself yearning for something a little more elegant. I need a little more grace in my life, not more locks.</p>
+<p>And I&rsquo;d also like to stick with synchronous locks: the shorter we hold them, the better.</p>
+<p>We should be able to:</p>
+<ul>
+<li>Acquire the lock</li>
+<li>If there&rsquo;s a fresh value in cache, get it and release the lock</li>
+<li>Otherwise, if there&rsquo;s an in-flight request, subscribe to it and release the lock</li>
+<li>Otherwise, start our own request (and let other requests subscribe to it) and release the lock while it&rsquo;s in-flight</li>
+</ul>
+<p>And there&rsquo;s a surprising amount of subtlety around doing just that!</p>
+<p>My instinct tells me &ldquo;we&rsquo;re gonna need channels&rdquo;: we essentially need a channel from the &ldquo;task&rdquo;, the &ldquo;in-flight request&rdquo; that we can receive a value from.</p>
+<p>But there could be multiple subscribers for the same in-flight request, so we can&rsquo;t use an 
+
+<a  
+    class="link"
+ 
+    href="https://docs.rs/tokio/latest/tokio/sync/mpsc/fn.channel.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>mpsc channel</a>
+, the most common kind of channel: it&rsquo;s multi-producer (<code>Sender</code> is <code>Clone</code>), but single-consumer.</p>
+<p>Instead, we want a 
+
+<a  
+    class="link"
+ 
+    href="https://docs.rs/tokio/latest/tokio/sync/broadcast/index.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>broadcast channel</a>
+, which is multi-producer, multi-consumer.</p>
+<p>What&rsquo;s interesting here is that <code>Receiver</code> is not <code>Clone</code> - so we can&rsquo;t store a <code>Receiver</code> in our state, we have to store a <code>Sender</code>, and subscribe to it.</p>
+<p>Let&rsquo;s see what a naive version would look like:</p>
+<pre tabindex="0"><code>// in `src/main.rs`
+
+// back to sync mutexes (instead of `tokio::sync::Mutex`)
+use std::sync::Mutex;
+use tokio::sync::broadcast;
+
+#[derive(Clone, Default)]
+struct CachedLatestVideo {
+    inner: Arc&lt;Mutex&lt;CachedLastVideoInner&gt;&gt;,
+}
+
+#[derive(Default)]
+struct CachedLastVideoInner {
+    last_fetched: Option&lt;(Instant, String)&gt;,
+    inflight: Option&lt;broadcast::Sender&lt;Result&lt;String, Box&lt;dyn Error&gt;&gt;&gt;&gt;,
+}
+</code></pre><p>Immediately, we run into issues: we can&rsquo;t send <code>Box&lt;dyn Error&gt;</code> between threads: and we definitely will, because various request handlers all run in different tasks, which might be scheduled on different OS threads.</p>
+<p>So, let&rsquo;s ask for the <code>Send</code> and <code>Sync</code> bounds as well:</p>
+<pre tabindex="0"><code>#[derive(Default)]
+struct CachedLastVideoInner {
+    last_fetched: Option&lt;(Instant, String)&gt;,
+    // here
+    inflight: Option&lt;broadcast::Sender&lt;Result&lt;String, Box&lt;dyn Error + Sync + Send&gt;&gt;&gt;&gt;,
+}
+</code></pre><p>Then, we run into some <em>more</em> problems because&hellip; whatever values are sent to a broadcast channel need to be <code>Clone</code>. Which make sense: each consumer will get its own copy (its own clone, I guess) of the value. And we didn&rsquo;t ask for the Error type to be <code>Clone</code>, so let&rsquo;s add one more bound&hellip;</p>
+<pre tabindex="0"><code>inflight: Option&lt;broadcast::Sender&lt;Result&lt;String, Box&lt;dyn Error + Sync + Send + Clone&gt;&gt;&gt;&gt;,
+</code></pre><p>But then&hellip;</p>
+<pre tabindex="0"><code>error[E0225]: only auto traits can be used as additional traits in a trait object
+  --&gt; src/main.rs:42:85
+   |
+42 |     inflight: Option&lt;broadcast::Sender&lt;Result&lt;String, Box&lt;dyn Error + Sync + Send + Clone&gt;&gt;&gt;&gt;,
+   |                                                               -----                 ^^^^^ additional non-auto trait
+   |                                                               |
+   |                                                               first non-auto trait
+   |
+   = help: consider creating a new trait with all of these as supertraits and using that trait here instead: `trait NewTrait: StdError + Clone {}`
+   = note: auto-traits like `Send` and `Sync` are traits that have special properties; for more information on them, visit &lt;https://doc.rust-lang.org/reference/special-types-and-traits.html#auto-traits&gt;
+</code></pre><p>Mhhh we might be on the wrong road here. I&rsquo;m not even sure all the errors we could possibly get are <code>Clone</code> anyway (or <code>Send</code>, or <code>Sync</code>). Instead, let&rsquo;s just make an error type that carries the human-readable string representation of the error.</p>
+<pre tabindex="0"><code>$ cargo add thiserror
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding thiserror v1.0.30 to dependencies
+</code></pre><pre tabindex="0"><code>// in `src/main.rs`
+
+#[derive(Debug, Clone, thiserror::Error)]
+#[error(&#34;stringified error: {inner}&#34;)]
+pub struct CachedError {
+    inner: String,
+}
+
+impl CachedError {
+    pub fn new&lt;E: std::fmt::Display&gt;(e: E) -&gt; Self {
+        Self {
+            inner: e.to_string(),
+        }
+    }
+}
+
+impl From&lt;Report&gt; for CachedError {
+    fn from(e: Report) -&gt; Self {
+        CachedError::new(e)
+    }
+}
+
+impl From&lt;broadcast::error::RecvError&gt; for CachedError {
+    fn from(e: broadcast::error::RecvError) -&gt; Self {
+        CachedError::new(e)
+    }
+}
+
+// and for completeness
+
+impl From&lt;CachedError&gt; for ReportError {
+    fn from(err: CachedError) -&gt; Self {
+        ReportError(err.into())
+    }
+}
+</code></pre><p>Now we can have this be our error type, which is automatically <code>Send</code> and <code>Sync</code>, also <code>Clone</code> because we derived it, and implements <code>std::error::Error</code> thanks to 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/thiserror"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>thiserror</a>
+.</p>
+<pre tabindex="0"><code>#[derive(Default)]
+struct CachedLastVideoInner {
+    last_fetched: Option&lt;(Instant, String)&gt;,
+    inflight: Option&lt;broadcast::Sender&lt;Result&lt;String, CachedError&gt;&gt;&gt;,
+}
+</code></pre><p>And now we &ldquo;just&rdquo; have to implement our deduplicating handler:</p>
+<pre tabindex="0"><code>#[tracing::instrument(skip(client, cached))]
+async fn root(
+    client: Extension&lt;reqwest::Client&gt;,
+    cached: Extension&lt;CachedLatestVideo&gt;,
+) -&gt; Result&lt;impl IntoResponse, ReportError&gt; {
+    #[derive(Serialize)]
+    struct Response {
+        video_id: String,
+    }
+
+    // keep that lock throughout
+    let mut inner = cached.inner.lock().unwrap();
+
+    if let Some((fetched_at, video_id)) = inner.last_fetched.as_ref() {
+        // is it fresh?
+        if fetched_at.elapsed() &lt; std::time::Duration::from_secs(5) {
+            return Ok(Json(Response {
+                video_id: video_id.clone(),
+            }));
+        } else {
+            // was stale, let&#39;s refresh
+            debug!(&#34;stale video, let&#39;s refresh&#34;);
+        }
+    }
+
+    // is there an in-flight request?
+    if let Some(inflight) = inner.inflight.as_ref() {
+        // yes, subscribe to it!
+        let mut rx = inflight.subscribe();
+        let video_id = rx
+            .recv()
+            .await
+            .map_err(|_| eyre!(&#34;in-flight request died&#34;))??;
+        debug!(&#34;received deduplicated fetch&#34;);
+        return Ok(Json(Response { video_id }));
+    }
+
+    // there isn&#39;t, let&#39;s fetch
+    let (tx, mut rx) = broadcast::channel::&lt;Result&lt;String, CachedError&gt;&gt;(1);
+    tokio::spawn(async move {
+        let video_id = youtube::fetch_video_id(&amp;client).await;
+        match video_id {
+            Ok(video_id) =&gt; {
+                inner
+                    .last_fetched
+                    .replace((Instant::now(), video_id.clone()));
+                tx.send(Ok(video_id))
+            }
+            Err(e) =&gt; tx.send(Err(e.into())),
+        };
+    });
+    let video_id = rx
+        .recv()
+        .await
+        .map_err(|_| eyre!(&#34;in-flight request died&#34;))??;
+    debug!(&#34;received deduplicated fetch&#34;);
+    Ok(Json(Response { video_id }))
+}
+</code></pre><p>This code is wrong, and thankfully, the Rust compiler catches it:</p>
+<pre tabindex="0"><code>$ cargo check
+    Checking plaque v0.1.0 (/home/amos/bearcove/plaque)
+error: future cannot be sent between threads safely
+   --&gt; src/main.rs:124:5
+    |
+124 |     tokio::spawn(async move {
+    |     ^^^^^^^^^^^^ future created by async block is not `Send`
+    |
+    = help: within `impl Future&lt;Output = [async output]&gt;`, the trait `Send` is not implemented for `std::sync::MutexGuard&lt;&#39;_, CachedLastVideoInner&gt;`
+note: captured value is not `Send`
+   --&gt; src/main.rs:128:17
+    |
+128 |                 inner
+    |                 ^^^^^ has type `std::sync::MutexGuard&lt;&#39;_, CachedLastVideoInner&gt;` which is not `Send`
+note: required by a bound in `tokio::spawn`
+   --&gt; /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-1.17.0/src/task/spawn.rs:127:21
+    |
+127 |         T: Future + Send + &#39;static,
+    |                     ^^^^ required by this bound in `tokio::spawn`
+
+error: could not compile `plaque` due to previous error
+</code></pre><p>Woops! We actually sent a <code>MutexGuard</code> across threads (by spawning a task, which may be scheduled on any thread).</p>
+<p>It&rsquo;s a good thing the compiler caught it, because that&rsquo;s not what we meant to do: we didn&rsquo;t want to hang onto that lock, we wanted to release it and re-acquire it when we fill in the result.</p>
+<p>Also, we forgot to store the sender in <code>inner.inflight</code> and clear it when it&rsquo;s done. But even more importantly: when we subscribe to an in-flight task, we keep holding onto the <code>inner</code> lock! That would&rsquo;ve been a deadlock.</p>
+<p>The compiler catches this, too, but the message isn&rsquo;t great this time:</p>
+<pre tabindex="0"><code>$ cargo check
+    Checking plaque v0.1.0 (/home/amos/bearcove/plaque)
+error[E0277]: the trait bound `fn(Extension&lt;reqwest::Client&gt;, Extension&lt;CachedLatestVideo&gt;) -&gt; impl Future&lt;Output = Result&lt;Opaque(DefId(0:229 ~ plaque[f569]::root::{opaque#0}::{opaque#0}), []), ReportError&gt;&gt; {root}: axum::handler::Handler&lt;_, _&gt;` is not satisfied
+   --&gt; src/main.rs:76:25
+    |
+76  |         .route(&#34;/&#34;, get(root))
+    |                     --- ^^^^ the trait `axum::handler::Handler&lt;_, _&gt;` is not implemented for `fn(Extension&lt;reqwest::Client&gt;, Extension&lt;CachedLatestVideo&gt;) -&gt; impl Future&lt;Output = Result&lt;Opaque(DefId(0:229 ~ plaque[f569]::root::{opaque#0}::{opaque#0}), []), ReportError&gt;&gt; {root}`
+    |                     |
+    |                     required by a bound introduced by this call
+    |
+note: required by a bound in `axum::routing::get`
+   --&gt; /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/axum-0.4.8/src/routing/method_routing.rs:394:1
+    |
+394 | top_level_handler_fn!(get, GET);
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `axum::routing::get`
+    = note: this error originates in the macro `top_level_handler_fn` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `plaque` due to previous error
+</code></pre><p>So this time, we&rsquo;ll have to think a little: we <em>only</em> want to do synchronous things while holding onto that lock guard: we <em>cannot</em> <code>.await</code> anything.</p>
+<p>So, we&rsquo;ll have to get a little creative. To be entirely safe, we&rsquo;ll use a scope to limit how long we hold the lock - to make sure that when we&rsquo;re out of this scope, the lock is released.</p>
+<p>Something like this:</p>
+<pre tabindex="0"><code>fn() {
+    let whatever = {
+        let inner = cached.inner.lock().unwrap();
+
+        // do sync stuff with `inner`
+    };
+
+    // do async stuff with `whatever`
+}
+</code></pre><p>Giving, with real code, this:</p>
+<pre tabindex="0"><code>#[tracing::instrument(skip(client, cached))]
+async fn root(
+    client: Extension&lt;reqwest::Client&gt;,
+    cached: Extension&lt;CachedLatestVideo&gt;,
+) -&gt; Result&lt;impl IntoResponse, ReportError&gt; {
+    #[derive(Serialize)]
+    struct Response {
+        video_id: String,
+    }
+
+    let mut rx = {
+        // only sync code in this block
+        let mut inner = cached.inner.lock().unwrap();
+
+        if let Some((fetched_at, video_id)) = inner.last_fetched.as_ref() {
+            // is it fresh?
+            if fetched_at.elapsed() &lt; std::time::Duration::from_secs(5) {
+                return Ok(Json(Response {
+                    video_id: video_id.clone(),
+                }));
+            } else {
+                // was stale, let&#39;s refresh
+                debug!(&#34;stale video, let&#39;s refresh&#34;);
+            }
+        }
+
+        // is there an in-flight request?
+        if let Some(inflight) = inner.inflight.as_ref() {
+            inflight.subscribe()
+        } else {
+            // there isn&#39;t, let&#39;s fetch
+            let (tx, rx) = broadcast::channel::&lt;Result&lt;String, CachedError&gt;&gt;(1);
+            inner.inflight = Some(tx.clone());
+            let cached = cached.clone();
+            tokio::spawn(async move {
+                let video_id = youtube::fetch_video_id(&amp;client).await;
+
+                {
+                    // only sync code in this block
+                    let mut inner = cached.inner.lock().unwrap();
+                    inner.inflight = None;
+
+                    match video_id {
+                        Ok(video_id) =&gt; {
+                            inner
+                                .last_fetched
+                                .replace((Instant::now(), video_id.clone()));
+                            let _ = tx.send(Ok(video_id));
+                        }
+                        Err(e) =&gt; {
+                            let _ = tx.send(Err(e.into()));
+                        }
+                    };
+                }
+            });
+            rx
+        }
+    };
+
+    // if we reached here, we&#39;re waiting for an in-flight request (we weren&#39;t
+    // able to serve from cache)
+    Ok(Json(Response {
+        video_id: rx
+            .recv()
+            .await
+            .map_err(|_| eyre!(&#34;in-flight request died&#34;))??,
+    }))
+}
+</code></pre><p>And that appears to work:</p>
+<pre tabindex="0"><code>$ oha -n 10 -c 5 http://localhost:3779
+(cut)
+Response time histogram:
+  0.005 [5] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.011 [0] |
+  0.016 [0] |
+  0.022 [0] |
+  0.027 [0] |
+  0.033 [0] |
+  0.038 [0] |
+  0.044 [0] |
+  0.049 [0] |
+  0.055 [0] |
+  0.060 [5] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+</code></pre><h2 id="making-it-generic">Making it generic
+</h2><p>Chances are, that&rsquo;s not the only thing we want to cache! And if we have 
+
+<a  
+    class="link"
+ 
+    href="https://en.wikipedia.org/wiki/Rule_of_three_%28computer_programming%29"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>three or more</a>
+, we won&rsquo;t want to copy-paste that code everywhere.</p>
+<p>Well, no big deal, we&rsquo;ll just make it generic!</p>
+<p>In fact, let&rsquo;s move all caching/deduplication-related code to its own module:</p>
+<pre tabindex="0"><code>// in `src/main.rs`
+
+mod cached;
+use cached::{CachedError, Cached};
+</code></pre><pre tabindex="0"><code>// in `src/cached.rs`
+
+use std::{
+    sync::{Arc, Mutex},
+    time::{Duration, Instant},
+};
+
+use color_eyre::{eyre::eyre, Report};
+use tokio::sync::broadcast;
+use tracing::debug;
+
+#[derive(Debug, Clone, thiserror::Error)]
+#[error(&#34;stringified error: {inner}&#34;)]
+pub struct CachedError {
+    inner: String,
+}
+
+impl CachedError {
+    pub fn new&lt;E: std::fmt::Display&gt;(e: E) -&gt; Self {
+        Self {
+            inner: e.to_string(),
+        }
+    }
+}
+
+impl From&lt;Report&gt; for CachedError {
+    fn from(e: Report) -&gt; Self {
+        CachedError::new(e)
+    }
+}
+
+impl From&lt;broadcast::error::RecvError&gt; for CachedError {
+    fn from(e: broadcast::error::RecvError) -&gt; Self {
+        CachedError::new(e)
+    }
+}
+
+#[derive(Clone)]
+pub struct Cached&lt;T&gt;
+where
+    T: Clone + Send + Sync + &#39;static,
+{
+    inner: Arc&lt;Mutex&lt;CachedLastVideoInner&lt;T&gt;&gt;&gt;,
+    refresh_interval: Duration,
+}
+
+struct CachedLastVideoInner&lt;T&gt;
+where
+    T: Clone + Send + Sync + &#39;static,
+{
+    last_fetched: Option&lt;(Instant, T)&gt;,
+    inflight: Option&lt;broadcast::Sender&lt;Result&lt;T, CachedError&gt;&gt;&gt;,
+}
+
+impl&lt;T&gt; Default for CachedLastVideoInner&lt;T&gt;
+where
+    T: Clone + Send + Sync + &#39;static,
+{
+    fn default() -&gt; Self {
+        Self {
+            last_fetched: None,
+            inflight: None,
+        }
+    }
+}
+
+impl&lt;T&gt; Cached&lt;T&gt;
+where
+    T: Clone + Send + Sync + &#39;static,
+{
+    pub fn new(refresh_interval: Duration) -&gt; Self {
+        Self {
+            inner: Default::default(),
+            refresh_interval,
+        }
+    }
+
+    pub async fn get_cached(&amp;self) -&gt; Result&lt;T, CachedError&gt; {
+        let mut rx = {
+            // only sync code in this block
+            let mut inner = self.inner.lock().unwrap();
+
+            if let Some((fetched_at, value)) = inner.last_fetched.as_ref() {
+                if fetched_at.elapsed() &lt; self.refresh_interval {
+                    return Ok(value.clone());
+                } else {
+                    debug!(&#34;stale, let&#39;s refresh&#34;);
+                }
+            }
+
+            if let Some(inflight) = inner.inflight.as_ref() {
+                inflight.subscribe()
+            } else {
+                // there isn&#39;t, let&#39;s fetch
+                let (tx, rx) = broadcast::channel::&lt;Result&lt;T, CachedError&gt;&gt;(1);
+                inner.inflight = Some(tx.clone());
+                let inner = self.inner.clone();
+                tokio::spawn(async move {
+                    let res = todo!(&#34;how do we actually perform a request?&#34;);
+
+                    {
+                        // only sync code in this block
+                        let mut inner = inner.lock().unwrap();
+                        inner.inflight = None;
+
+                        match res {
+                            Ok(value) =&gt; {
+                                inner.last_fetched.replace((Instant::now(), value.clone()));
+                                let _ = tx.send(Ok(value));
+                            }
+                            Err(e) =&gt; {
+                                let _ = tx.send(Err(e.into()));
+                            }
+                        };
+                    }
+                });
+                rx
+            }
+        };
+
+        // if we reached here, we&#39;re waiting for an in-flight request (we weren&#39;t
+        // able to serve from cache)
+        Ok(rx
+            .recv()
+            .await
+            .map_err(|_| eyre!(&#34;in-flight request died&#34;))??)
+    }
+}
+</code></pre><p>There&rsquo;s just one little wrinkle&hellip; as the <code>todo!</code> mentions: how do we actually perform a request? Where do we get our values from? That too, needs to be generic.</p>
+<p>We could take a future directly, but that means we&rsquo;d need to build a future (e.g. call <code>youtube::fetch_video_id</code> without awaiting it) every time we want to call <code>get_cached</code> - and that&rsquo;s unnecessary work.</p>
+<p>Here&rsquo;s my take: instead, let&rsquo;s accept a closure that can build a future. Here I&rsquo;ll assume that it&rsquo;s okay to heap-allocate in that code path, so we&rsquo;ll have it return a boxed future for simplicity. Our implementation of <code>youtube::fetch_video_id</code> is an async fn anyway, so its future type cannot be named, as of Rust 1.59.0 stable, unless I&rsquo;m missing something.</p>
+<p>So, quick type alias:</p>
+<pre tabindex="0"><code>// in `src/cached.rs`
+
+use std::future::Future;
+
+pub type BoxFut&lt;&#39;a, O&gt; = Pin&lt;Box&lt;dyn Future&lt;Output = O&gt; + Send + &#39;a&gt;&gt;;
+</code></pre><p>And let&rsquo;s accept a function returning a boxed future that returns a <code>T</code> (and can fail! with any error type that we know how to display!)</p>
+<pre tabindex="0"><code>// in `src/cached.rs`
+
+    pub async fn get_cached&lt;F, E&gt;(&amp;self, f: F) -&gt; Result&lt;T, CachedError&gt;
+    where
+        F: FnOnce() -&gt; BoxFut&lt;&#39;static, Result&lt;T, E&gt;&gt; + Send + &#39;static,
+        E: std::fmt::Display + &#39;static,
+    {
+        // (cut)
+    }
+</code></pre><p>And our code becomes:</p>
+<pre tabindex="0"><code>// in `src/cached.rs`
+
+            if let Some(inflight) = inner.inflight.as_ref() {
+                inflight.subscribe()
+            } else {
+                // there isn&#39;t, let&#39;s fetch
+                let (tx, rx) = broadcast::channel::&lt;Result&lt;T, CachedError&gt;&gt;(1);
+                inner.inflight = Some(tx.clone());
+                let inner = self.inner.clone();
+
+                // call the closure first, so we don&#39;t send _it_ across threads,
+                // just the Future it returns
+                let fut = f();
+
+                tokio::spawn(async move {
+                    let res = fut.await;
+
+                    {
+                        // only sync code in this block
+                        let mut inner = inner.lock().unwrap();
+                        inner.inflight = None;
+
+                        match res {
+                            Ok(value) =&gt; {
+                                inner.last_fetched.replace((Instant::now(), value.clone()));
+                                let _ = tx.send(Ok(value));
+                            }
+                            Err(e) =&gt; {
+                                let _ = tx.send(Err(CachedError {
+                                    inner: e.to_string(),
+                                }));
+                            }
+                        };
+                    }
+                });
+                rx
+            }
+</code></pre><p>Now to use our beautifully generic code for real:</p>
+<pre tabindex="0"><code>// in `src/main.rs`
+
+#[derive(Clone)]
+struct LatestVideo(String);
+</code></pre><p>Our layer stack becomes this:</p>
+<pre tabindex="0"><code>let app = Router::new()
+        .route(&#34;/&#34;, get(root))
+        .layer(TraceLayer::new_for_http())
+        .layer(Extension(reqwest::Client::new()))
+        .layer(Extension(Cached::&lt;LatestVideo&gt;::new(Duration::from_secs(
+            5,
+        ))));
+</code></pre><p>And <code>root</code>, just this:</p>
+<pre tabindex="0"><code>#[tracing::instrument(skip(client, cached))]
+async fn root(
+    client: Extension&lt;reqwest::Client&gt;,
+    cached: Extension&lt;Cached&lt;LatestVideo&gt;&gt;,
+) -&gt; Result&lt;impl IntoResponse, ReportError&gt; {
+    #[derive(Serialize)]
+    struct Response {
+        video_id: String,
+    }
+
+    let LatestVideo(video_id) = cached
+        .get_cached(|| {
+            Box::pin(async move {
+                let video_id = youtube::fetch_video_id(&amp;client).await?;
+                Ok::&lt;_, Report&gt;(LatestVideo(video_id))
+            })
+        })
+        .await?;
+
+    Ok(Json(Response { video_id }))
+}
+</code></pre><p>That&rsquo;s.. nice! Well, there&rsquo;s a box-pinned async-move block in a closure, and we have to use a lil&rsquo; 
+
+<a  
+    class="link"
+ 
+    href="https://turbo.fish/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>turbofish</a>
+ to let the compiler know the error type, but we&rsquo;ve separated concerns, so as far as I&rsquo;m concerned: mission accomplished.</p>
+<p>If the cached items were keyed, we could easily imagine that the outer <code>Cached</code> structure had a <code>HashMap</code> of <code>CachedInner</code> instead: we&rsquo;d still have a single lock, which would only ever be held for very short periods of time.</p>
+<p>In a production app, we might actually want to have a <em>negative</em> cache as well: if we can&rsquo;t fetch the video for some reason, and it fails <em>almost immedialy</em>, we wouldn&rsquo;t want to hammer YouTube&rsquo;s API servers with requests. We&rsquo;d want to sleep between retries, and have our handler either wait for some retries, or immediately return an error.</p>
+<p>We also might want to set a timeout on that HTTP request: I don&rsquo;t think there&rsquo;s any timeouts (connection timeout, idle read/write timeout) on that default reqwest client, and that usually makes me nervous. Timeout all the things, always!</p>
+<p>But that&rsquo;s not what I&rsquo;m concerned with - y&rsquo;all can solve all of these on your own.</p>
+<p>What I&rsquo;m concerned with is we left a terrific, horrific bug in there. One that, in a past <del>life</del> day job, led to a pretty bad incident that was really hard to investigate.</p>
+<h2 id="panic-at-the-in-flight-request">Panic! at the in-flight request
+</h2><p>What happens if any part of our code panics? That&rsquo;s something we need to think about, and that Rust protects us <em>less than usual</em> from. They&rsquo;re not safety concerns, &ldquo;just&rdquo; logic errors.</p>
+<p>Let&rsquo;s make&hellip; the 3rd request panic.</p>
+<pre tabindex="0"><code>// in `src/cached.rs`
+
+use std::sync::atomic::{AtomicU64, Ordering};
+
+static DOOM_COUNTER: AtomicU64 = AtomicU64::new(0);
+
+impl&lt;T&gt; Cached&lt;T&gt;
+where
+    T: Clone + Send + Sync + &#39;static,
+{
+    pub async fn get_cached&lt;F, E&gt;(&amp;self, f: F) -&gt; Result&lt;T, CachedError&gt;
+    where
+        F: FnOnce() -&gt; BoxFut&lt;&#39;static, Result&lt;T, E&gt;&gt;,
+        E: std::fmt::Display + &#39;static,
+    {
+        if DOOM_COUNTER.fetch_add(1, Ordering::SeqCst) == 2 {
+            panic!(&#34;doom!&#34;);
+        }
+
+        // etc.
+    }
+}
+</code></pre><pre tabindex="0"><code>$ oha -n 10 -c 5 http://localhost:3779
+
+Status code distribution:
+  [200] 9 responses
+
+Error distribution:
+  [1] connection closed before message completed
+</code></pre><p>Okay, that&rsquo;s fine - only the third request was impacted. Because our handler panicked, axum/hyper just closed the connection. Seems like a reasonable response, even though if we wanted, we could probably catch the panic and turn it into a 500 instead.</p>
+<p>Now let&rsquo;s panic someplace else! Say, after we&rsquo;ve acquired the lock:</p>
+<pre tabindex="0"><code>pub async fn get_cached&lt;F, E&gt;(&amp;self, f: F) -&gt; Result&lt;T, CachedError&gt;
+    where
+        F: FnOnce() -&gt; BoxFut&lt;&#39;static, Result&lt;T, E&gt;&gt;,
+        E: std::fmt::Display + &#39;static,
+    {
+        let mut rx = {
+            // only sync code in this block
+            let mut inner = self.inner.lock().unwrap();
+
+            if DOOM_COUNTER.fetch_add(1, Ordering::SeqCst) == 2 {
+                panic!(&#34;doom!&#34;);
+            }
+
+            // etc.
+        };
+
+        // if we reached here, we&#39;re waiting for an in-flight request (we weren&#39;t
+        // able to serve from cache)
+        Ok(rx
+            .recv()
+            .await
+            .map_err(|_| eyre!(&#34;in-flight request died&#34;))??)
+    }
+</code></pre><p>Now, oha never completes: it&rsquo;s stuck in the TUI with 8&quot;connection closed before the message completed&quot;, and 2 requests that just&hellip; never complete.</p>
+<p>Our server logs tell the story:</p>
+<pre tabindex="0"><code>The application panicked (crashed).
+Message:  called `Result::unwrap()` on an `Err` value: PoisonError { .. }
+Location: src/cached.rs:91
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ SPANTRACE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   0: plaque::root
+      at src/main.rs:49
+   1: tower_http::trace::make_span::request with method=GET uri=/ version=HTTP/1.1
+      at /home/amos/.cargo/registry/src/github.com-1ecc6299db9ec823/tower-http-0.2.3/src/trace/make_span.rs:116
+
+Backtrace omitted. Run with RUST_BACKTRACE=1 environment variable to display it.
+Run with RUST_BACKTRACE=full to include source snippets.
+</code></pre><p>Because we panicked while holding a <code>MutexGuard</code>, the mutex is now poisoned, and nobody can ever acquire it again.</p>
+<p>So what happens is:</p>
+<ul>
+<li>The first request finds nothing in cache, starts a task</li>
+<li>The second task finds an in-flight request, subscribes to it</li>
+<li>The third task acquires the lock, panics holding it</li>
+<li>Tasks 4 through 10 panic as they try to acquire the poisoned lock</li>
+</ul>
+<p>The first and second requests are waiting for a task that will never complete, because it too, panicked while trying to acquire the poisoned lock. So we get eight connection resets, and two requests stuck forever.</p>
+<p>I guess that&rsquo;s where tower&rsquo;s 
+
+<a  
+    class="link"
+ 
+    href="https://docs.rs/tower/latest/tower/builder/struct.ServiceBuilder.html#method.timeout"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>timeout facilities</a>
+ would come in handy, to have those requests eventually fail.</p>
+<p>Yes! Timeout <em>all the things</em>.</p>
+<p>Told you there was subtlety!</p>
+<p>But that&rsquo;s not even the bug I&rsquo;m getting at. And that one&rsquo;s pretty easy to solve: we can just switch to a non-poisoning <code>Mutex</code>, like 
+
+<a  
+    class="link"
+ 
+    href="https://lib.rs/crates/parking_lot"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>parking_lot</a>
+&rsquo;s.</p>
+<pre tabindex="0"><code>$ cargo add parking_lot
+    Updating &#39;https://github.com/rust-lang/crates.io-index&#39; index
+      Adding parking_lot v0.12.0 to dependencies
+</code></pre><p>We just need to swap <code>std::sync::Mutex</code> with <code>parking_lot::Mutex</code>, and remove a couple <code>.unwrap()</code> calls, since <code>parking_lot::Mutex::unlock()</code> is infallible.</p>
+<p>And now, still with the third request panicking while holding the lock, we have:</p>
+<pre tabindex="0"><code>$ oha -n 10 -c 5 http://localhost:3779
+(cut)
+Status code distribution:
+  [200] 9 responses
+
+Error distribution:
+  [1] connection closed before message completed
+</code></pre><p>&hellip;just the third request failing, exactly what we wanted.</p>
+<p>But now&hellip; what if we panic <em>in the task itself</em>? In the &ldquo;in-flight request&rdquo;?</p>
+<p>Let&rsquo;s panic only the first time, this time:</p>
+<pre tabindex="0"><code>tokio::spawn(async move {
+                    let res = fut.await;
+
+                    if DOOM_COUNTER.fetch_add(1, Ordering::SeqCst) == 0 {
+                        panic!(&#34;doom!&#34;);
+                    }
+
+                    {
+                        // only sync code in this block
+                        let mut inner = inner.lock();
+                        inner.inflight = None;
+
+                        // etc.
+                    }
+                });
+</code></pre><p>In <em>that</em> case, we do see the panic in the server logs:</p>
+<pre tabindex="0"><code>The application panicked (crashed).
+Message:  doom!
+Location: src/cached.rs:118
+
+Backtrace omitted. Run with RUST_BACKTRACE=1 environment variable to display it.
+Run with RUST_BACKTRACE=full to include source snippets.
+</code></pre><p>But from the outside, all we see is that all requests are stuck.</p>
+<p><em>All</em> requests.</p>
+<p>Not just the first one, not just for the first five seconds, all requests, forever.</p>
+<p>And that&rsquo;s what my big bad dayjob incident was about: a bunch of in-flight requests got in a bad state, and so we&rsquo;d be forever stuck waiting for them, long past any chance they&rsquo;d ever complete, and never starting new requests.</p>
+<p>To make matters worse, it wasn&rsquo;t even a panic! That&rsquo;s just the example I&rsquo;ve chosen to show you the bug. A panic would&rsquo;ve been caught by the 
+
+<a  
+    class="link"
+ 
+    href="https://sentry.io/welcome/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Sentry</a>
+ reporter, and we&rsquo;d have received an alert about it.</p>
+<p>No, it was a timeout. The task was simply taking longer than a few seconds, and it was timed out - which in Rust, amounts to just dropping the future.</p>
+<p>And with an 
+
+<a  
+    class="link"
+ 
+    href="https://docs.rs/tokio/latest/tokio/sync/mpsc/index.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>MPSC channel</a>
+, you can detect that condition: if you hold a <code>Receiver</code> and all <code>Sender</code>s are dropped, the future returned by <code>recv</code> just yields <code>None</code> - that would be our cue that something went wrong with the in-flight request, and we&rsquo;re at liberty to try again.</p>
+<p>But here&hellip; there&rsquo;s no such thing! Because the only way to be able to subscribe to the result of the in-flight request is to hold a <code>Sender</code>. So there&rsquo;s two places holding a <code>Sender</code> for the same channel: the in-flight request <em>and</em> our mutex-protected state.</p>
+<p>If the in-flight request doesn&rsquo;t run to completion, it never replaces <code>inner.inflight</code> with <code>None</code>, and the channel is never closed. A bug reminiscent of the Go channel spaghetti I find everywhere I look.</p>
+<p>So&hellip;.. how do we solve this?</p>
+<p>Well!</p>
+<p>We&rsquo;d like the channel to close whether the task completes successfully or panics. Which is to say, we&rsquo;d like the <code>Sender</code> to drop either way. <em>All</em> senders for that channel.</p>
+<p>We can&rsquo;t <em>not</em> hold a <code>Sender</code> in our internal state, because that&rsquo;s how we subscribe to in-flight tasks (unless we want to go back to the two-level mutex solution I hinted at above).</p>
+<p>But maybe we can hold a reference to <code>Sender</code> that&hellip; doesn&rsquo;t prevent it from dropping.</p>
+<p>A reference that would let us access the <code>Sender</code> <em>if it still exists</em>, if it hasn&rsquo;t been dropped by the in-flight request yet.</p>
+<p>And that&rsquo;s exactly what 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/stable/std/sync/struct.Weak.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Weak</a>
+ lets us do: it&rsquo;s a version of 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/stable/std/sync/struct.Arc.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Arc</a>
+ that holds a <em>non-owning reference</em> to a <code>T</code>.</p>
+<p>That way:</p>
+<ul>
+<li>The task will hold an <code>Arc&lt;Sender&gt;</code>, and it <em>will</em> drop it whether it panics or completes successfully</li>
+<li>The internal state will hold a <code>Weak&lt;Sender&gt;</code>, which won&rsquo;t prevent the <code>Sender</code> from being dropped</li>
+</ul>
+<p>And to access the <code>Sender</code> from the state (when we want to subscribe to its result), we simply use 
+
+<a  
+    class="link"
+ 
+    href="https://doc.rust-lang.org/stable/std/sync/struct.Weak.html#method.upgrade"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Weak::upgrade</a>
+, which returns an <code>Option&lt;Arc&lt;T&gt;&gt;</code>. If we get a <code>Some</code>, we know the task is still alive. If we get a <code>None</code>, we know it&rsquo;s not.</p>
+<p>But isn&rsquo;t that a race condition? Couldn&rsquo;t we get an <code>Arc&lt;Sender&gt;</code> <em>right before the task finishes</em>, and then we&rsquo;d never receive anything?</p>
+<p>No, because we&rsquo;re only ever manipulating <code>inner.inflight</code> while holding a lock.</p>
+<p>So, without further ado, here&rsquo;s my idea of a fix:</p>
+<pre tabindex="0"><code>// in `src/cached.rs`
+
+use std::sync::Weak;
+
+struct CachedLastVideoInner&lt;T&gt;
+where
+    T: Clone + Send + Sync + &#39;static,
+{
+    last_fetched: Option&lt;(Instant, T)&gt;,
+    // now weak!      👇
+    inflight: Option&lt;Weak&lt;broadcast::Sender&lt;Result&lt;T, CachedError&gt;&gt;&gt;&gt;,
+}
+
+impl&lt;T&gt; Cached&lt;T&gt;
+where
+    T: Clone + Send + Sync + &#39;static,
+{
+    pub async fn get_cached&lt;F, E&gt;(&amp;self, f: F) -&gt; Result&lt;T, CachedError&gt;
+    where
+        F: FnOnce() -&gt; BoxFut&lt;&#39;static, Result&lt;T, E&gt;&gt;,
+        E: std::fmt::Display + &#39;static,
+    {
+        let mut rx = {
+            let mut inner = self.inner.lock();
+
+            if let Some((fetched_at, value)) = inner.last_fetched.as_ref() {
+                // etc.
+            }
+
+            // it&#39;s only in-flight if we can upgrade it to an `Arc`:  👇👇👇
+            if let Some(inflight) = inner.inflight.as_ref().and_then(Weak::upgrade) {
+                inflight.subscribe()
+            } else {
+                let (tx, rx) = broadcast::channel::&lt;Result&lt;T, CachedError&gt;&gt;(1);
+                // let&#39;s reference-count a single `Sender`:
+                let tx = Arc::new(tx);
+                // and only store a weak reference in our state:
+                //                            👇
+                inner.inflight = Some(Arc::downgrade(&amp;tx));
+                let inner = self.inner.clone();
+
+                let fut = f();
+
+                tokio::spawn(async move {
+                    let res = fut.await;
+
+                    // still testing that panic...
+                    if DOOM_COUNTER.fetch_add(1, Ordering::SeqCst) == 0 {
+                        panic!(&#34;doom!&#34;);
+                    }
+
+                    {
+                        // etc.
+                    }
+                });
+                rx
+            }
+        };
+
+        // etc.
+    }
+}
+</code></pre><p>And let me tell you, I was pretty pleased with myself when I found this pattern.</p>
+<p>(That&rsquo;s <em>not</em> the fix we used at that dayjob: I went with something a lot more complicated with a <code>Drop</code> impl and everything. This solution is pretty elegant in comparison).</p>
+<p>Let&rsquo;s take it for a test-drive.</p>
+<p>Here&rsquo;s our first batch of requests:</p>
+<pre tabindex="0"><code>$ oha etc.
+Status code distribution:
+  [200] 5 responses
+  [500] 5 responses
+</code></pre><p>And the second:</p>
+<pre tabindex="0"><code>$ oha etc.
+Status code distribution:
+  [200] 10 responses
+</code></pre><p>Now, a task dying simply makes room for another one. And we get nice 500 errors that look like this:</p>
+<pre tabindex="0"><code>$ curl http://localhost:3779          
+Internal server error: 
+   0: stringified error: in-flight request died
+</code></pre><p>&hellip;because it&rsquo;s the <code>rx.recv()</code> call that fails, and that doesn&rsquo;t panic, it just propagates the error all the way up, which gets turned into a 500 by our <code>impl IntoResponse for ReportError</code>.</p>
+<p>And that&rsquo;s all I wanted to show y&rsquo;all today!</p>
+<p>Until next time, take excellent care of yourselves.</p>
+<p>This article was made possible thanks to my patrons: tonygo_, queenfartbutt, asaaki, Jonathan Knapp, Julien Roncaglia, Jonathan Strickland, Ted Mielczarek, Michael Watzko, MW, Chad Birch, Justin Ossevoort, Maximilian, Olivia Crain, Ives van Hoorne, Matt Jadczak, Prince Wilson, Thomas Corbin, Rasmus Larsen, Jane Lusby, Benjamin Röjder Delnavaz, Vladyslav Batyrenko, koivunej, Pete Bevin, Andronik, Douglas Creager and 119 more</p>
+<p>参考：</p>
+<ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://fasterthanli.me/articles/request-coalescing-in-async-rust"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Request coalescing in async Rust</a>
+</li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/rust/">Rust</a>
+        
+            <a href="/tags/http/">Http</a>
+        
+            <a href="/tags/tracing/">Tracing</a>
+        
+            <a href="/tags/tokio/">Tokio</a>
+        
+            <a href="/tags/axum/">Axum</a>
+        
+    </section>
+
+
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on 2025-01-28T18:26:14&#43;08:00
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">Related content</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/how-to-embed-a-static-variable-into-documentation/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">How to Embed a Static Variable Into Documentation</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/failed-to-run-custom-build-command-for-openssl-sys/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Failed to Run Custom Build Command for openssl-sys</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/install-rust-binary-by-cargo/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">使用cargo安装rust二进制文件</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/cargo-test-with-root-privilege/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">使用root权限运行cargo test</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/posts/archives/rust/cargo-doc-open-does-not-work-in-wsl/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Cargo Doc Open Does Not Work in Wsl</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.2760efe2b07bc1f771820787a816b980000936e884b19441806bce1518d37d8c.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

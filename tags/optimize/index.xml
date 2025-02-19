@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Optimize on </title>
+        <link>/tags/optimize/</link>
+        <description>Recent content in Optimize on </description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en</language>
+        <lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/optimize/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Min Sized Rust</title>
+        <link>/posts/archives/rust/min-sized-rust/</link>
+        <pubDate>Mon, 04 Apr 2022 23:48:44 +0800</pubDate>
+        
+        <guid>/posts/archives/rust/min-sized-rust/</guid>
+        <description>&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/johnthagen/min-sized-rust#minimizing-rust-binary-size&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;johnthagen/min-sized-rust&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://stackoverflow.com/a/29008355/8566831&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Why are Rust executables so huge?&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+        </item>
+        
+    </channel>
+</rss>

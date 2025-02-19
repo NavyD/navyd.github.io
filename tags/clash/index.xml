@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Clash on NavyD的个人博客</title><link>/tags/clash/</link><description>Recent content in Clash on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 30 Mar 2023 19:02:41 +0800</lastBuildDate><atom:link href="/tags/clash/index.xml" rel="self" type="application/rss+xml"/><item><title>重定向已启动程序的输出</title><link>/posts/2021/09/redirect-output-of-running-process/</link><pubDate>Mon, 06 Sep 2021 12:22:01 +0800</pubDate><guid>/posts/2021/09/redirect-output-of-running-process/</guid><description>&lt;p>在使用
+&lt;a
+class="link"
+href="https://github.com/Dreamacro/clash"
+target="_blank"
+rel="noopener"
+>clash&lt;/a>
+时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。&lt;/p>
+&lt;p>如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>下面是典型的clash的启动输出：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ clash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider HK&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider IEPL&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider SGP&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider US&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider NeteaseMusic&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider TW&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider GoogleCN&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Proxy&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Epic&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Apple&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider SSH22&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Icloud&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Final-Match&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Telegram&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider direct&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider telegramcidr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider reject&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider gfw&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider tld-not-cn&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider cncidr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider proxy&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider lancidr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider icloud&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider netease-music&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider greatfire&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider apple&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider private&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider google&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;RESTful API listening at: 0.0.0.0:9090&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;DNS server listening at: 0.0.0.0:5353&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>通常可以在启动程序时重定向如&lt;code>clash &amp;amp;&amp;gt; temp.log&lt;/code>，有没有一种可能，复制或重定向已启动程序的输出，这样可以不用局限于启动clash，只要clash进程存在就行&lt;/p>
+&lt;p>&lt;em>&lt;strong>更新：如果要检查clash是否成功启动，可以简单的判断clash的端口是否被使用&lt;/strong>&lt;/em>&lt;/p>
+&lt;h3 id="strace">strace
+&lt;/h3>&lt;p>过滤strace的输出&lt;/p>
+&lt;ul>
+&lt;li>过滤write指定的文件描述符fd&lt;/li>
+&lt;/ul>
+&lt;p>使用&lt;code>-e write=1,2&lt;/code>表示仅列出fd 1与2即stdout,stderr。但是在docker的进程中与宿主机存在区别，无法生效。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ strace -p &lt;span style="color:#66d9ef">$(&lt;/span>pgrep clash&lt;span style="color:#66d9ef">)&lt;/span> -e write&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> -e signal&lt;span style="color:#f92672">=&lt;/span>none -e trace&lt;span style="color:#f92672">=&lt;/span>write
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>strace: Process &lt;span style="color:#ae81ff">220553&lt;/span> attached
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>14, &lt;span style="color:#e6db74">&amp;#34;E\0\0\220\304\206@\0?\21\352\250\306\22\0\10\306\22\0\1&amp;#39;\34\36a\0|\204\334\0\1\0`&amp;#34;&lt;/span>..., 144&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">144&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>14, &lt;span style="color:#e6db74">&amp;#34;E\0\4\351\17\36@\0@\21&amp;amp;\\\337J\2\335\300\250]\272\\@\312J\4\325\302m\27\376\375\0&amp;#34;&lt;/span>..., 1257&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1257&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>strace使用&lt;code>-y&lt;/code>显示对应的fd&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo strace -p &lt;span style="color:#66d9ef">$(&lt;/span>pgrep clash&lt;span style="color:#66d9ef">)&lt;/span> -e trace&lt;span style="color:#f92672">=&lt;/span>write -y
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>strace: Process &lt;span style="color:#ae81ff">220553&lt;/span> attached
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>14&amp;lt;/dev/net/tun&amp;gt;, &lt;span style="color:#e6db74">&amp;#34;E\0\0004\237D@\0?\6\20S\306\22\0\7\306\22\0\1\221 \36a&amp;gt;[\376\316\234k\271\274&amp;#34;&lt;/span>..., 52&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">52&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>35&amp;lt;socket:&lt;span style="color:#f92672">[&lt;/span>1897396&lt;span style="color:#f92672">]&lt;/span>&amp;gt;, &lt;span style="color:#e6db74">&amp;#34;\202\301!\16F\234\256\3733\270\307H\203\265!\223H\344_#\337)d\223\310~]%m\362\250\202&amp;#34;&lt;/span>..., 71&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">71&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>1&amp;lt;pipe:&lt;span style="color:#f92672">[&lt;/span>1652130&lt;span style="color:#f92672">]&lt;/span>&amp;gt;, &lt;span style="color:#e6db74">&amp;#34;...&amp;#34;&lt;/span>, 40&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">40&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>查看对应进程的fd&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>在docker中&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ docker exec -it clash bash -c &lt;span style="color:#e6db74">&amp;#39;ls -al /proc/$(pgrep clash)/fd&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> root root &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> nobody nobody &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l-wx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; pipe:&lt;span style="color:#f92672">[&lt;/span>1652130&lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 &lt;span style="color:#ae81ff">10&lt;/span> -&amp;gt; socket:&lt;span style="color:#f92672">[&lt;/span>1645489&lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># docker clash进程在主机上的fd&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo ls -al /proc/&lt;span style="color:#66d9ef">$(&lt;/span>pgrep clash&lt;span style="color:#66d9ef">)&lt;/span>/fd
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> root root &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:24 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> nobody nogroup &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:09 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:29 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l-wx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:29 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; &lt;span style="color:#e6db74">&amp;#39;pipe:[1652130]&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:29 &lt;span style="color:#ae81ff">10&lt;/span> -&amp;gt; &lt;span style="color:#e6db74">&amp;#39;socket:[1645489]&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>在host中&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># no redirection&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bash -c &lt;span style="color:#e6db74">&amp;#39;while true; do echo &amp;#39;&lt;/span>1&lt;span style="color:#e6db74">&amp;#39;; sleep 1; done &amp;amp; ls -al /proc/$!/fd &amp;amp;&amp;amp; kill -9 $!&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lr-x &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 &lt;span style="color:#ae81ff">2&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># redirect to /dev/null&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#66d9ef">while&lt;/span> true; &lt;span style="color:#66d9ef">do&lt;/span> echo &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>; sleep 1; &lt;span style="color:#66d9ef">done&lt;/span> &amp;gt;/dev/null &amp;amp; ls -al /proc/$!/fd &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> kill -9 $!
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l-wx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">10&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lr-x &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">11&lt;/span> -&amp;gt; /home/navy
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;p>可以明显的看到docker中的stdout被链接到了&lt;code>pipe:[1652130]&lt;/code>，而host中是一个本地路径链接，strace可能无法正确访问docker的stdout，可以使用readlink读取链接给strace过滤：&lt;code>-P &amp;quot;$(readlink /proc/&amp;quot;$CLASH_PID&amp;quot;/fd/1)&amp;quot;&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>start_clash&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sudo -u &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$RUN_USER&lt;span style="color:#e6db74">&amp;#34;&lt;/span> clash -d &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_DIR&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strace -P &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>readlink /proc/&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_PID&lt;span style="color:#e6db74">&amp;#34;&lt;/span>/fd/1&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> -e trace&lt;span style="color:#f92672">=&lt;/span>write -e signal&lt;span style="color:#f92672">=&lt;/span>none -s &lt;span style="color:#ae81ff">1000&lt;/span> -X raw -p &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_PID&lt;span style="color:#e6db74">&amp;#34;&lt;/span> 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> | &lt;span style="color:#66d9ef">while&lt;/span> read -r line; &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># 修改&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> line&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>sed -n -r &lt;span style="color:#e6db74">&amp;#39;s/^write\([0-9]+,\s*&amp;#34;(.+)&amp;#34;,\s*[0-9]+\)\s*=\s*[[:digit:]]+$/\1/p&amp;#39;&lt;/span> &lt;span style="color:#f92672">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># echo &amp;#34;dumping line: $line&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> $line &lt;span style="color:#f92672">==&lt;/span> *&lt;span style="color:#e6db74">&amp;#34;listening at&amp;#34;&lt;/span>* &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;clash has started at line: &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> break
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意：&lt;/p>
+&lt;ul>
+&lt;li>strace默认输出到stderr重定向到标准输出&lt;code>2&amp;gt;&amp;amp;1&lt;/code>&lt;/li>
+&lt;li>&lt;code>-X raw&lt;/code>使用原始的输出防止乱码&lt;/li>
+&lt;li>&lt;code>-s 1000&lt;/code>指定最大的打印字符串避免默认32过小截断输出&lt;/li>
+&lt;li>&lt;code>-e trace=write -e signal=none&lt;/code>过滤非write输出&lt;/li>
+&lt;/ul>
+&lt;p>&lt;em>&lt;strong>但是上面存在一个问题，strace是对sys call作用，clash输出log时没有&lt;code>Start initial rule provider&lt;/code>与后面的&lt;code>listening at&lt;/code>，同时使用sync命令没用，可能是缓存没有刷新。这里不清楚 TODO&lt;/strong>&lt;/em>&lt;/p>
+&lt;!-- TODO -->
+&lt;p>另外还有gdb,screen两种方式可以重定向，但是无法简单编程使用&lt;/p>
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;h3 id="重定向">重定向
+&lt;/h3>&lt;p>最简单的方法就是在后台重定向clash的输出到文件，再读取文件确认启动&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># start clash and confirm and return pid&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>start_clash&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sudo -u &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$RUN_USER&lt;span style="color:#e6db74">&amp;#34;&lt;/span> clash -d &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_DIR&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &amp;amp;&amp;gt; temp.log
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> local pid&lt;span style="color:#f92672">=&lt;/span>$!
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> tail -f temp.log | &lt;span style="color:#66d9ef">while&lt;/span> read -r line
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> $line &lt;span style="color:#f92672">==&lt;/span> *&lt;span style="color:#e6db74">&amp;#34;listening at&amp;#34;&lt;/span>* &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;clash has started at line: &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> pid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意不能使用&lt;code>sudo -u &amp;quot;$RUN_USER&amp;quot; clash -d &amp;quot;$CLASH_DIR&amp;quot; | while read -r line; do ... done&lt;/code>，在while退出break后将会使clash直接退出。下面使用bash一行命令测试：无限循环while退出后整个管道命令终止&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>local count&lt;span style="color:#f92672">=&lt;/span>0; &lt;span style="color:#66d9ef">while&lt;/span> true; &lt;span style="color:#66d9ef">do&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;sleeping &lt;/span>&lt;span style="color:#66d9ef">$((&lt;/span>count&lt;span style="color:#f92672">+=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#66d9ef">))&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>; sleep 1; &lt;span style="color:#66d9ef">done&lt;/span> | &lt;span style="color:#66d9ef">while&lt;/span> read line; &lt;span style="color:#66d9ef">do&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;read &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>; &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> $line &lt;span style="color:#f92672">==&lt;/span> *&lt;span style="color:#e6db74">&amp;#34;9&amp;#34;&lt;/span>* &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;end &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>; break; &lt;span style="color:#66d9ef">fi&lt;/span>; &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外，可以使用python等方式完全重写更好维护，算上iptables相关的配置都200多行了&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/593724/redirect-stderr-stdout-of-a-process-after-its-been-started-using-command-lin"
+target="_blank"
+rel="noopener"
+>Redirect STDERR / STDOUT of a process AFTER it&amp;rsquo;s been started, using command line?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.baeldung.com/linux/redirect-output-of-running-process"
+target="_blank"
+rel="noopener"
+>Redirecting the Output of an Already Running Process&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://askubuntu.com/a/731237"
+target="_blank"
+rel="noopener"
+>How do I save terminal output to a file?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://jvns.ca/blog/2020/04/29/why-strace-doesnt-work-in-docker/"
+target="_blank"
+rel="noopener"
+>Why strace doesn&amp;rsquo;t work in Docker&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/229606/8566831"
+target="_blank"
+rel="noopener"
+>How to check if a string contains a substring in Bash&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/questions/30370/how-to-get-the-pid-of-the-last-executed-command-in-shell-script"
+target="_blank"
+rel="noopener"
+>How to get the pid of the last executed command in shell script?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/163814"
+target="_blank"
+rel="noopener"
+>grep on a variable&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>clash代理在Google Play Store下载时失败</title><link>/posts/2021/08/play-store-failed-to-download-in-clash-proxy/</link><pubDate>Mon, 09 Aug 2021 17:21:47 +0800</pubDate><guid>/posts/2021/08/play-store-failed-to-download-in-clash-proxy/</guid><description>&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-09-35.png" alt="Featured image of post clash代理在Google Play Store下载时失败" />&lt;p>&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-14-35.png"
+width="353"
+height="136"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-14-35_hu_97df052f4e172299.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-14-35_hu_45cfe7916d7e2a42.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="259"
+data-flex-basis="622px"
+>&lt;/p>
+&lt;p>clash透明代理使用规则发现GOOGLE PLAY商店下载应用一直处于等待中，全局代理能够正常下载。在我的oneplus3t上是可以正常使用play商店的，但是在redmi k40上只能浏览，无法下载，一直处于pending状态。&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-06-18.gif"
+width="354"
+height="356"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-06-18_hu_4dbd1f2cdc3b6853.gif 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-06-18_hu_9d542237083ac5a0.gif 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="99"
+data-flex-basis="238px"
+>
+&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-09-35.png"
+width="348"
+height="435"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-09-35_hu_1307f99fc1ac9bac.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-09-35_hu_a626632a3504c32.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="80"
+data-flex-basis="192px"
+>&lt;/p>
+&lt;p>相关环境：&lt;/p>
+&lt;ul>
+&lt;li>redmi k40&lt;/li>
+&lt;li>miui 12.5.4&lt;/li>
+&lt;li>从小米商店下载的 &lt;code>Play Store version: 258.21-19 [0] [PR] 379071060&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>这个问题持续了2个月，开始遇到时使用oneplus3t上的其它的代理软件如老王、pandavpn测试没有clash环境下play商店是否可用，这两种免费的代理都无法使用，根本没法连接国外网站，测试失败&lt;/p>
+&lt;p>还有各种miui无法下载时的搜索问题&lt;code>小米google play一直显示正在下载, miui12 google play 不能下载&lt;/code>，基本都是下面这种操作：包括清除下载管理器的缓存，清除googlePlay缓存和数据等&lt;/p>
+&lt;ol>
+&lt;li>打开系统自带的【下载管理】应用&lt;/li>
+&lt;li>点击【设置】&lt;/li>
+&lt;li>将【使用迅雷下载引擎】关闭
+&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-19-06.png"
+width="806"
+height="1070"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-19-06_hu_2be841a9ad8b763c.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-19-06_hu_a4767e50875ad708.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="75"
+data-flex-basis="180px"
+>&lt;/li>
+&lt;li>重新打开Google Play应用商店进行下载或者更新应用&lt;/li>
+&lt;/ol>
+&lt;p>依然不可用。&lt;/p>
+&lt;p>有时候感觉就是这么突然，就在今天，可能是之前在什么地方看到过clash与play store的问题，而且是有关clash规则的，也就是我现在正在使用的
+&lt;a
+class="link"
+href="https://github.com/Loyalsoldier/clash-rules"
+target="_blank"
+rel="noopener"
+>clash-rules&lt;/a>
+。&lt;/p>
+&lt;p>打开issues中搜索&lt;code>play&lt;/code>果然发现了问题：&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-19-13-51.png"
+width="1535"
+height="422"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-19-13-51_hu_c6b270881238f46f.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-19-13-51_hu_7101cd209cfd328f.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="363"
+data-flex-basis="872px"
+>&lt;/p>
+&lt;p>根据
+&lt;a
+class="link"
+href="https://github.com/Loyalsoldier/clash-rules/issues/28#issuecomment-829886733"
+target="_blank"
+rel="noopener"
+>clash 规则模式下google play无法下载 #28&lt;/a>
+的方法是&lt;code>services.googleapis.cn&lt;/code>没有使用代理，下面是在clash使用play下载时的google连接：&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-34-55.png"
+width="1703"
+height="380"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-34-55_hu_eb0baccf62e62df8.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-34-55_hu_de7b8e7a0cb5bead.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="448"
+data-flex-basis="1075px"
+>&lt;/p>
+&lt;p>可以看到最后的&lt;code>services.googleapis.cn&lt;/code>确实是直连TCP。&lt;/p>
+&lt;h3 id="后记">后记
+&lt;/h3>&lt;p>在这之后，依然存在无法下载的问题，可能是由于下面的神奇操作使得之前的分析不可用：&lt;/p>
+&lt;ol>
+&lt;li>启用clash&lt;/li>
+&lt;li>进入play store下载更新应用&lt;/li>
+&lt;li>等待一段时间后一直显示正在下载&lt;/li>
+&lt;li>断网等待几秒不要退出play store&lt;/li>
+&lt;li>重连网络可以看到play store开始下载/更新应用&lt;/li>
+&lt;/ol>
+&lt;p>上面这个操作看运气，不具有稳定性，导致代理&lt;code>services.googleapis.cn&lt;/code>分析不可用，就连使用全局代理都无法使用。&lt;/p>
+&lt;p>google搜索&lt;code>miui12 clash 代理 play store&lt;/code>，在这篇文章
+&lt;a
+class="link"
+href="https://www.v2ex.com/t/696735"
+target="_blank"
+rel="noopener"
+>关于 Google Play 商店只能浏览不能下载的一点奇怪发现&lt;/a>
+和我的情况十分相似：&lt;/p>
+&lt;blockquote>
+&lt;p>ping 后发现这个网址的 IP 是 203.208 网段的，也就是 Google 部署在中国大陆的 IP 之一。更奇怪的是只有在我使用 HK 线路的时候，哪怕是全局，Play 商店都不能下载更新。一但使用别的地区（ SG/US&amp;hellip;）的网络，Play 商店就正常了。&lt;/p>
+&lt;p>Google Play 能不能下载及更新只跟机场有关。与手机是否国行，services.googl 去掉 eapis.cn 是否走代理都无关。 好的机场无需任何设置，在国行上也可以下载更新。（小米手机必须关闭迅雷功能）&lt;/p>
+&lt;p>一般来说，这个问题发生在香港节点较多。原因的本质是 ip 被谷歌识别为中国 ip 。 （虽然你的 ip 的确是香港的）&lt;/p>
+&lt;p>直接的结果是某些谷歌服务不可用。 已知的有 Google Play 无法更新下载。 地图时间轴打开 400，YoutubePremium 不可用。&lt;/p>
+&lt;p>判断的方式上面已经有人提过，可以通过以下两个链接：&lt;/p>
+&lt;p>&lt;code>https://www.google.com/maps/timeline&lt;/code> 打开 400 错误表示 ip 被封
+&lt;code>https://www.youtube.com/red&lt;/code> 网页打开提示“YouTube Premium 在您所在的国家 /地区尚未推出”。在手机上使用链接直接跳转到 YouTube app 里，它会明确地告诉你 YouTube Premium 在中国未推出。&lt;/p>
+&lt;p>这种节点无论做什么努力都是无法改变无法使用 Google Play 的本质问题的。只有换节点一个办法。&lt;/p>&lt;/blockquote>
+&lt;p>在多次实验后，发现global+iepl专线节点有效，同时，除了HK节点，其它节点都可以在&lt;code>services.googleapis.cn&lt;/code>代理下使得play store正常下载&lt;/p>
+&lt;h3 id="代理udp">代理UDP
+&lt;/h3>&lt;p>另外，由于存在另一个&lt;code>services.googleapis.cn&lt;/code>UDP连接，尝试了多种方式都无法代理UDP，解析&lt;code>services.googleapis.cn&lt;/code>常见ip有：&lt;/p>
+&lt;pre tabindex="0">&lt;code>120.253.253.98 中国 上海 上海 移动
+180.163.150.162 中国 上海 上海 电信
+203.208.39.226 中国 北京 北京 谷歌云
+203.208.43.66 中国 北京 北京 谷歌云
+180.163.150.34 中国 上海 上海 电信
+#...
+&lt;/code>&lt;/pre>&lt;p>用&lt;code>180.163.150.34&lt;/code>尝试在配置文件中添加&lt;code>IP-CIDR,180.163.0.0/16,Proxy&lt;/code>但无法对UDP生效。在clash-rules中的
+&lt;a
+class="link"
+href="https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt"
+target="_blank"
+rel="noopener"
+>中国大陆 IPv4 地址列表 cncidr.txt&lt;/a>
+规则中存在对该ip的配置&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yml" data-lang="yml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">rules&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">GEOIP,,DIRECT&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">GEOIP,CN,DIRECT&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">MATCH,Final-Match&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-26-01-49-06.png"
+width="598"
+height="208"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-26-01-49-06_hu_36fdacf4ddfbe8cc.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-26-01-49-06_hu_709aaf5e486fd810.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="287"
+data-flex-basis="690px"
+>&lt;/p>
+&lt;p>什么时候有时间好好研究下&lt;/p>
+&lt;!-- todo -->
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>在clash配置文件中加上&lt;code>DOMAIN,services.googleapis.cn,Proxy&lt;/code>，注意&lt;code>Proxy&lt;/code>尽量不要使用香港节点如：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yml" data-lang="yml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">proxy-groups&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Proxy&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">type&lt;/span>: &lt;span style="color:#ae81ff">select&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">proxies&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># - HK-Test&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">IEPL-Test&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">SGP-Test&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">US-Test&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">TW-Test&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">DIRECT&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">rules&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">RULE-SET,private,DIRECT&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">RULE-SET,reject,REJECT&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># clash 规则模式下google play无法下载 https://github.com/Loyalsoldier/clash-rules/issues/28&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">DOMAIN,services.googleapis.cn,Proxy&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">RULE-SET,icloud,Icloud&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">RULE-SET,apple,Apple&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">RULE-SET,google,Google&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">DOMAIN-KEYWORD,epic,Epic&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">RULE-SET,proxy,Proxy&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">RULE-SET,direct,DIRECT&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">RULE-SET,telegramcidr,Telegram&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">GEOIP,,DIRECT&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">GEOIP,CN,DIRECT&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">MATCH,Final-Match&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>重启clash后可以正常下载应用，这里存在tcp与udp的&lt;code>services.googleapis.cn&lt;/code>，tcp的使用了代理&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-44-36.png"
+width="1102"
+height="317"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-44-36_hu_a08c665e39ebb3a2.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-44-36_hu_6edda6712302cbb3.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="347"
+data-flex-basis="834px"
+>&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/Loyalsoldier/clash-rules"
+target="_blank"
+rel="noopener"
+>Loyalsoldier/clash-rules&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/Loyalsoldier/clash-rules/issues/28"
+target="_blank"
+rel="noopener"
+>clash 规则模式下google play无法下载 #28&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://yueyue200830.github.io/2020/02/29/%E8%A7%A3%E5%86%B3Google-Play-Store%E4%B8%80%E7%9B%B4%E3%80%8C%E6%AD%A3%E5%9C%A8%E7%AD%89%E5%BE%85%E4%B8%8B%E8%BD%BD%E3%80%8D%E7%9A%84%E9%97%AE%E9%A2%98/"
+target="_blank"
+rel="noopener"
+>解决Google Play Store一直「正在等待下载」的问题&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="http://www.chinacion.cn/article/8209.html"
+target="_blank"
+rel="noopener"
+>小米手机 Google Play 一直等待下载/安装不了软件解决办法&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.v2ex.com/t/696735"
+target="_blank"
+rel="noopener"
+>关于 Google Play 商店只能浏览不能下载的一点奇怪发现&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/Kr328/ClashForAndroid/issues/113"
+target="_blank"
+rel="noopener"
+>Play商店和youtube代理不了 #113&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/Kr328/ClashForAndroid/issues/478"
+target="_blank"
+rel="noopener"
+>[BUG] Play Store应用无法下载 #478&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://lancellc.gitbook.io/clash/clash-config-file/rules/ip-based-rule"
+target="_blank"
+rel="noopener"
+>clash IP-based Rule&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

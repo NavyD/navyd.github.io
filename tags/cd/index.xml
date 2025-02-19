@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Cd on NavyD的个人博客</title><link>/tags/cd/</link><description>Recent content in Cd on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/cd/index.xml" rel="self" type="application/rss+xml"/><item><title>进入目录后自动运行shell命令</title><link>/posts/archives/linux/auto-run-shell-commands-in-zsh-after-entering-the-directory/</link><pubDate>Fri, 01 Oct 2021 02:22:59 +0800</pubDate><guid>/posts/archives/linux/auto-run-shell-commands-in-zsh-after-entering-the-directory/</guid><description>&lt;p>在使用hugo时需要启动服务实时查看本地渲染情况，每次启动都要键入命令&lt;code>hugo server -D&lt;/code>比较麻烦，有没有一种方式在hugo博客目录时自动运行命令。&lt;/p>
+&lt;p>另外，通常会检查当前目录是否是一个git项目，并自动运行相关命令&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>在编写博客时通常要进入命令行（vscode terminal），只要在cd后自动运行就行了。zsh提供了一个hook函数&lt;code>chpwd()&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">function&lt;/span> chpwd&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> emulate -L zsh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ls -a
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>实际在zsh中使用chpwd_functions定义当改变目录时运行多个function，对于耗时的任务需要后台运行&lt;/p>
+&lt;p>注意&lt;/p>
+&lt;p>在使用子shell时环境变量修改应该谨慎，在后台任务subshell无法修改其环境变量，可能需要其它方式与当前shell通信，如使用缓存文件替换环境变量&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>declare -A _onefetch_repos&lt;span style="color:#f92672">=()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 注意：不要使用后台任务更新vars，无效&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ONEFETCH_TIMEOUT&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>ONEFETCH_TIMEOUT:=10&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> timeout &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>ONEFETCH_TIMEOUT&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> onefetch &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> _onefetch_repos&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$cur_repo&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">]=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span> &amp;amp;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># _onefetch_repos 无法被更新&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>不要使用wait后台任务等待另一个后台任务。由于前一个任务修改了setopt nomonitor，禁止了任务输出，如果在后台任务中最后setopt monitor会出现任务输出，所以想要使用下一个后台任务去&lt;code>setopt monitor&lt;/code>，但是这样的后台任务的方式一定是会出现任务输出。且不能在subshell中使用wait&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 禁止zsh 任务控制&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> -o monitor &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> local -r monitor_enabled&lt;span style="color:#f92672">=&lt;/span>true
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> setopt nomonitor
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sleep &lt;span style="color:#ae81ff">3&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># [ -n &amp;#34;$monitor_enabled&amp;#34; ] &amp;amp;&amp;amp; setopt monitor # 将会出现任务输出：&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># [7] + exit 1 { ... }&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span> &amp;amp;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># wait %% # 等待&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 尝试重启用任务控制，任务输出还是会出现的&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># { sleep 4; [ -n &amp;#34;$monitor_enabled&amp;#34; ] &amp;amp;&amp;amp; setopt monitor } &amp;amp;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 无法在subshell中使用wait另一个job&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sleep &lt;span style="color:#ae81ff">21&lt;/span> &amp;amp;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>1&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#ae81ff">27095&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#f92672">{&lt;/span> wait 27095; echo aa; &lt;span style="color:#f92672">}&lt;/span> &amp;amp;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>2&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#ae81ff">27378&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wait: pid &lt;span style="color:#ae81ff">27095&lt;/span> is not a child of this shell
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外，
+&lt;a
+class="link"
+href="https://github.com/romkatv/zsh-defer"
+target="_blank"
+rel="noopener"
+>zsh-defer: Deferred execution of zsh commands&lt;/a>
+使用zsh-defer异步运行job，同时可以修改shell变量，但只能运行完成后才能响应键入命令&lt;/p>
+&lt;blockquote>
+&lt;p>zsh-defer defers execution of a zsh command until zsh has nothing else to do and is waiting for user input. Its intended purpose is staged zsh startup. It works similarly to Turbo mode in zinit.&lt;/p>&lt;/blockquote>
+&lt;h2 id="方案">方案
+&lt;/h2>&lt;p>对于使用chpwd，可以参考这里使用了相关的zsh hook：
+&lt;a
+class="link"
+href="https://github.com/direnv/direnv/blob/c74bab86d2c547364c0f5c282ff41d76f1ebadde/internal/cmd/shell_zsh.go#L10-L22"
+target="_blank"
+rel="noopener"
+>direnv/direnv: internal/cmd/shell_zsh.go&lt;/a>
+，
+&lt;a
+class="link"
+href="https://github.com/ajeetdsouza/zoxide/blob/main/templates/zsh.txt"
+target="_blank"
+rel="noopener"
+>ajeetdsouza/zoxide: templates/zsh.txt&lt;/a>
+&lt;/p>
+&lt;h3 id="zsh-defer">zsh-defer
+&lt;/h3>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>declare -A _onefetch_repos&lt;span style="color:#f92672">=()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>_onefetch_hook_chpwd&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> emulate -L zsh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> git rev-parse 2&amp;gt;/dev/null; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> _onefetch_cur_repo&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>git rev-parse --show-toplevel | xargs basename&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> ! &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>_onefetch_repos[&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$_onefetch_cur_repo&lt;span style="color:#e6db74">&amp;#34;&lt;/span>]&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> timeout 0.8 onefetch; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> _onefetch_repos&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$_onefetch_cur_repo&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">]=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># for key val in &amp;#34;${(@kv)_onefetch_repos}&amp;#34;; do echo &amp;#34;$key -&amp;gt; $val&amp;#34;; done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;defering onefetch timeout &lt;/span>&lt;span style="color:#e6db74">${&lt;/span>ONEFETCH_TIMEOUT:=10&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74"> for &lt;/span>$_onefetch_cur_repo&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># -12: enable redir to stdin/stderr https://github.com/romkatv/zsh-defer#usage&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># +p: Call zle reset-prompt，即在最后模拟键入enter刷新prompt&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> zsh-defer -12 -c &lt;span style="color:#e6db74">&amp;#39;timeout &amp;#34;${ONEFETCH_TIMEOUT:=2}&amp;#34; onefetch &amp;amp;&amp;amp; _onefetch_repos[&amp;#34;$_onefetch_cur_repo&amp;#34;]=1&amp;#39;&lt;/span> &lt;span style="color:#75715e"># eval&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> -z &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>chpwd_functions[(r)_onefetch_hook_chpwd]+1&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> chpwd_functions&lt;span style="color:#f92672">=(&lt;/span> _onefetch_hook_chpwd &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>chpwd_functions[@]&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="ohmyzsh-dotenv">ohmyzsh dotenv
+&lt;/h3>&lt;p>
+&lt;a
+class="link"
+href="https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/dotenv"
+target="_blank"
+rel="noopener"
+>ohmyzsh/plugins/dotenv&lt;/a>
+提供了类似的方式自动加载.env文件，可以使用.env文件实现&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># project/.env&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># auto start hugo server in entering dir of this project&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> command -v hugo &amp;gt;/dev/null &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> ! pidof hugo &amp;gt;/dev/null; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#39;hugo serving&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># in the shell session background&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> hugo server -D &amp;gt;/dev/null &amp;amp;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="background-jobs">background jobs
+&lt;/h3>&lt;p>TODO：使用缓存文件替换环境变量&lt;/p>
+&lt;h3 id="参考">参考
+&lt;/h3>&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/3964198/8566831"
+target="_blank"
+rel="noopener"
+>ZSH: automatically run ls after every cd&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/21364"
+target="_blank"
+rel="noopener"
+>Execute bash scripts on entering a directory&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/227411"
+target="_blank"
+rel="noopener"
+>zsh wait for jobs to complete&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/122743"
+target="_blank"
+rel="noopener"
+>zsh: How to check if an option is enabled&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://zsh.sourceforge.io/Doc/Release/Functions.html"
+target="_blank"
+rel="noopener"
+>9 Functions - zsh 9.3.1 Hook Functions chpwd&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/direnv/direnv/blob/c74bab86d2c547364c0f5c282ff41d76f1ebadde/internal/cmd/shell_zsh.go#L10-L22"
+target="_blank"
+rel="noopener"
+>direnv/direnv: internal/cmd/shell_zsh.go&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/ajeetdsouza/zoxide/blob/main/templates/zsh.txt"
+target="_blank"
+rel="noopener"
+>ajeetdsouza/zoxide: templates/zsh.txt&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.shellcheck.net/wiki/SC2031"
+target="_blank"
+rel="noopener"
+>SC2031 – ShellCheck Wiki var was modified in a subshell. That change might be lost.&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/romkatv/zsh-defer"
+target="_blank"
+rel="noopener"
+>zsh-defer: Deferred execution of zsh commands&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://superuser.com/a/1237504"
+target="_blank"
+rel="noopener"
+>Iterating over keys (or k/v pairs) in zsh associative array?&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tar on NavyD的个人博客</title><link>/tags/tar/</link><description>Recent content in Tar on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 29 Mar 2023 16:49:45 +0800</lastBuildDate><atom:link href="/tags/tar/index.xml" rel="self" type="application/rss+xml"/><item><title>How to Extract a Single File From Tar to a Different Directory</title><link>/posts/2022/11/how-to-extract-a-single-file-from-tar-to-a-different-directory/</link><pubDate>Mon, 21 Nov 2022 17:57:04 +0800</pubDate><guid>/posts/2022/11/how-to-extract-a-single-file-from-tar-to-a-different-directory/</guid><description>&lt;p>在使用tar时如何解压其中某个文件到指定的目录&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>通常使用&lt;code>-C&lt;/code>选项放在后面&lt;code>-f&lt;/code>也没问题，但是当结合指定的解压文件时&lt;code>-C&lt;/code>将失效并解压到当前目录，并不会出现提示&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>curl -L &lt;span style="color:#e6db74">&amp;#34;https://github.com/xxx.tar.gz&amp;#34;&lt;/span> | tar -xzf - --strip-components &lt;span style="color:#ae81ff">1&lt;/span> --wildcards &lt;span style="color:#e6db74">&amp;#39;*/rest-server&amp;#39;&lt;/span> -C ./testdir
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 解压到当前目录&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>正确的方式应该将&lt;code>-C&lt;/code>放在&lt;code>-f&lt;/code>之前&lt;/p>
+&lt;h2 id="方案">方案
+&lt;/h2>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>tar --strip-components &lt;span style="color:#ae81ff">1&lt;/span> --wildcards -C ./testdir -xzf - &lt;span style="color:#e6db74">&amp;#39;*/rest-server&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/9249779/8566831"
+target="_blank"
+rel="noopener"
+>How to extract a single file from tar to a different directory? [closed]&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

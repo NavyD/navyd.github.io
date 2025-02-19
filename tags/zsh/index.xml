@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Zsh on NavyD的个人博客</title><link>/tags/zsh/</link><description>Recent content in Zsh on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/zsh/index.xml" rel="self" type="application/rss+xml"/><item><title>Zsh History Encoding</title><link>/posts/archives/linux/zsh-history-encoding/</link><pubDate>Sun, 11 Sep 2022 15:35:01 +0800</pubDate><guid>/posts/archives/linux/zsh-history-encoding/</guid><description>&lt;p>在使用python读取zsh_history输出时出现编码问题&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ python3 -c &lt;span style="color:#e6db74">&amp;#39;import sys; print(sys.stdin.read())&amp;#39;&lt;/span> &amp;lt;~/.zsh_history
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Traceback (most recent call last):&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># File &amp;#34;&amp;lt;string&amp;gt;&amp;#34;, line 1, in &amp;lt;module&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># File &amp;#34;/usr/lib/python3.9/codecs.py&amp;#34;, line 322, in decode&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># (result, consumed) = self._buffer_decode(data, self.errors, final)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># UnicodeDecodeError: &amp;#39;utf-8&amp;#39; codec can&amp;#39;t decode byte 0x81 in position 292191: invalid start by&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>找出当前出现问题的行后发现无法使用utf-8解码中文，打开是乱码，但使用history命令又是正常的&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>: 16......93:0;z Workspaces/learnings/惾�它�-箃...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>: 16...8...6:0;bat 第14课丨3僯�...�解.docx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在这里
+&lt;a
+class="link"
+href="https://github.com/rsalmei/zsh-history-to-fish/issues/2"
+target="_blank"
+rel="noopener"
+>UnicodeDecodeError: &amp;lsquo;utf-8&amp;rsquo; codec can&amp;rsquo;t decode byte 0xb8 in position 27: invalid start byte #2&lt;/a>
+提到这不是一个bug，是作为一种格式存储的：&lt;/p>
+&lt;blockquote>
+&lt;p>the history file is saved in metafied format&lt;/p>&lt;/blockquote>
+&lt;p>如果要解码，可以使用其提供的一个简单c程序&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c" data-lang="c">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#define Meta ((char) 0x83)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#define _GNU_SOURCE
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;stdio.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;stdlib.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">/* from zsh utils.c */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">char&lt;/span> &lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">unmetafy&lt;/span>(&lt;span style="color:#66d9ef">char&lt;/span> &lt;span style="color:#f92672">*&lt;/span>s, &lt;span style="color:#66d9ef">int&lt;/span> &lt;span style="color:#f92672">*&lt;/span>len)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">char&lt;/span> &lt;span style="color:#f92672">*&lt;/span>p, &lt;span style="color:#f92672">*&lt;/span>t;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> (p &lt;span style="color:#f92672">=&lt;/span> s; &lt;span style="color:#f92672">*&lt;/span>p &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#f92672">*&lt;/span>p &lt;span style="color:#f92672">!=&lt;/span> Meta; p&lt;span style="color:#f92672">++&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> (t &lt;span style="color:#f92672">=&lt;/span> p; (&lt;span style="color:#f92672">*&lt;/span>t &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">*&lt;/span>p&lt;span style="color:#f92672">++&lt;/span>);)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#f92672">*&lt;/span>t&lt;span style="color:#f92672">++&lt;/span> &lt;span style="color:#f92672">==&lt;/span> Meta)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> t[&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>] &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">*&lt;/span>p&lt;span style="color:#f92672">++&lt;/span> &lt;span style="color:#f92672">^&lt;/span> &lt;span style="color:#ae81ff">32&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (len)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">*&lt;/span>len &lt;span style="color:#f92672">=&lt;/span> t &lt;span style="color:#f92672">-&lt;/span> s;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> s;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">int&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>(&lt;span style="color:#66d9ef">int&lt;/span> argc, &lt;span style="color:#66d9ef">char&lt;/span> &lt;span style="color:#f92672">*&lt;/span>argv[]) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">char&lt;/span> &lt;span style="color:#f92672">*&lt;/span>line &lt;span style="color:#f92672">=&lt;/span> NULL;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">size_t&lt;/span> size;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">while&lt;/span> (&lt;span style="color:#a6e22e">getline&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>line, &lt;span style="color:#f92672">&amp;amp;&lt;/span>size, stdin) &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">unmetafy&lt;/span>(line, NULL);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">printf&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;%s&amp;#34;&lt;/span>, line);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (line) &lt;span style="color:#a6e22e">free&lt;/span>(line);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> EXIT_SUCCESS;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>下面是一个python版本
+&lt;a
+class="link"
+href="https://gist.github.com/max747/4029742"
+target="_blank"
+rel="noopener"
+>max747/pyzhist zsh history file decoder&lt;/a>
+，但实测没法解决开始提到的&lt;code>0x81&lt;/code>错误&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">decodehist&lt;/span>(_in, out):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> change &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> _c &lt;span style="color:#f92672">in&lt;/span> _in&lt;span style="color:#f92672">.&lt;/span>read():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> c &lt;span style="color:#f92672">=&lt;/span> ord(_c)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> c &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0x83&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> d &lt;span style="color:#f92672">=&lt;/span> c&lt;span style="color:#f92672">^&lt;/span>&lt;span style="color:#ae81ff">32&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> change &lt;span style="color:#66d9ef">else&lt;/span> c
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> out&lt;span style="color:#f92672">.&lt;/span>write(chr(d))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> change &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">False&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> change &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">True&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;__main__&amp;#34;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">import&lt;/span> sys
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> decodehist(sys&lt;span style="color:#f92672">.&lt;/span>stdin, sys&lt;span style="color:#f92672">.&lt;/span>stdout)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决方案">解决方案
+&lt;/h2>&lt;p>考虑到我的实际需求并不是转换zsh history，而是解析是否存在内容并备份，不需要解析utf-8，可以在python作为byte处理即可&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> sys
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>reader &lt;span style="color:#f92672">=&lt;/span> sys&lt;span style="color:#f92672">.&lt;/span>stdin&lt;span style="color:#f92672">.&lt;/span>buffer
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>writer &lt;span style="color:#f92672">=&lt;/span> sys&lt;span style="color:#f92672">.&lt;/span>stdout&lt;span style="color:#f92672">.&lt;/span>buffer
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.zsh.org/mla/users/2011/msg00154.html"
+target="_blank"
+rel="noopener"
+>Re: Fw: ZSH history file VS. UTF-8 data&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://segmentfault.com/q/1010000002517754"
+target="_blank"
+rel="noopener"
+>如何更改 zsh 历史记录的编码？&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/rsalmei/zsh-history-to-fish/issues/2"
+target="_blank"
+rel="noopener"
+>UnicodeDecodeError: &amp;lsquo;utf-8&amp;rsquo; codec can&amp;rsquo;t decode byte 0xb8 in position 27: invalid start byte #2&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gist.github.com/max747/4029742"
+target="_blank"
+rel="noopener"
+>max747/pyzhist zsh history file decoder&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Powerline in WSL2</title><link>/posts/2021/10/powerline-in-wsl2/</link><pubDate>Sun, 17 Oct 2021 16:19:48 +0800</pubDate><guid>/posts/2021/10/powerline-in-wsl2/</guid><description>&lt;img src="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02.png" alt="Featured image of post Powerline in WSL2" />&lt;p>在wsl2中使用zsh主题出现乱码时需要安装powerline字体才能显示，windows terminal使用的Cascadia Code字体也支持powerline版本
+&lt;a
+class="link"
+href="https://github.com/microsoft/cascadia-code#installation"
+target="_blank"
+rel="noopener"
+>Cascadia Code&lt;/a>
+，常用的还有
+&lt;a
+class="link"
+href="https://github.com/powerline/fonts"
+target="_blank"
+rel="noopener"
+>powerline/fonts&lt;/a>
+&lt;/p>
+&lt;p>对于Cascadia Code字体下载
+&lt;a
+class="link"
+href="https://github.com/microsoft/cascadia-code/releases"
+target="_blank"
+rel="noopener"
+>microsoft/cascadia-code/releases&lt;/a>
+解压安装即可：&lt;/p>
+&lt;p>&lt;img src="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02.png"
+width="836"
+height="385"
+srcset="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02_hu_4005b900ffdf5d0b.png 480w, /posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02_hu_c0c55995f2f387dc.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="217"
+data-flex-basis="521px"
+>&lt;/p>
+&lt;p>对于powerline字体文件可以使用&lt;code>git clone https://github.com/powerline/fonts.git --depth=1&lt;/code>下载后在管理员权限下执行安装
+&lt;a
+class="link"
+href="https://github.com/powerline/fonts/blob/master/install.ps1"
+target="_blank"
+rel="noopener"
+>install.ps1&lt;/a>
+&lt;/p>
+&lt;h2 id="配置使用">配置使用
+&lt;/h2>&lt;ul>
+&lt;li>
+&lt;p>vscode：在settings.json中添加&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;terminal.integrated.fontFamily&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Cascadia Mono PL&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>windows terminal：在settings.json中添加&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;profiles&amp;#34;&lt;/span>: {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;defaults&amp;#34;&lt;/span>: {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;#34;fontFace&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Cascadia Code PL&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> },
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>
+&lt;a
+class="link"
+href="https://docs.microsoft.com/en-us/windows/terminal/tutorials/powerline-setup"
+target="_blank"
+rel="noopener"
+>Tutorial: Set up Powerline in Windows Terminal&lt;/a>
+&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>
+&lt;a
+class="link"
+href="https://code.visualstudio.com/docs/editor/integrated-terminal#_can-i-use-powerline-fonts-in-the-integrated-terminal"
+target="_blank"
+rel="noopener"
+>Can I use Powerline fonts in the integrated terminal?&lt;/a>
+&lt;/p>
+&lt;/li>
+&lt;/ul></description></item><item><title>进入目录后自动运行shell命令</title><link>/posts/archives/linux/auto-run-shell-commands-in-zsh-after-entering-the-directory/</link><pubDate>Fri, 01 Oct 2021 02:22:59 +0800</pubDate><guid>/posts/archives/linux/auto-run-shell-commands-in-zsh-after-entering-the-directory/</guid><description>&lt;p>在使用hugo时需要启动服务实时查看本地渲染情况，每次启动都要键入命令&lt;code>hugo server -D&lt;/code>比较麻烦，有没有一种方式在hugo博客目录时自动运行命令。&lt;/p>
+&lt;p>另外，通常会检查当前目录是否是一个git项目，并自动运行相关命令&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>在编写博客时通常要进入命令行（vscode terminal），只要在cd后自动运行就行了。zsh提供了一个hook函数&lt;code>chpwd()&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">function&lt;/span> chpwd&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> emulate -L zsh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ls -a
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>实际在zsh中使用chpwd_functions定义当改变目录时运行多个function，对于耗时的任务需要后台运行&lt;/p>
+&lt;p>注意&lt;/p>
+&lt;p>在使用子shell时环境变量修改应该谨慎，在后台任务subshell无法修改其环境变量，可能需要其它方式与当前shell通信，如使用缓存文件替换环境变量&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>declare -A _onefetch_repos&lt;span style="color:#f92672">=()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 注意：不要使用后台任务更新vars，无效&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ONEFETCH_TIMEOUT&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>ONEFETCH_TIMEOUT:=10&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> timeout &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>ONEFETCH_TIMEOUT&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> onefetch &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> _onefetch_repos&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$cur_repo&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">]=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span> &amp;amp;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># _onefetch_repos 无法被更新&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>不要使用wait后台任务等待另一个后台任务。由于前一个任务修改了setopt nomonitor，禁止了任务输出，如果在后台任务中最后setopt monitor会出现任务输出，所以想要使用下一个后台任务去&lt;code>setopt monitor&lt;/code>，但是这样的后台任务的方式一定是会出现任务输出。且不能在subshell中使用wait&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 禁止zsh 任务控制&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> -o monitor &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> local -r monitor_enabled&lt;span style="color:#f92672">=&lt;/span>true
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> setopt nomonitor
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sleep &lt;span style="color:#ae81ff">3&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># [ -n &amp;#34;$monitor_enabled&amp;#34; ] &amp;amp;&amp;amp; setopt monitor # 将会出现任务输出：&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># [7] + exit 1 { ... }&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span> &amp;amp;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># wait %% # 等待&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 尝试重启用任务控制，任务输出还是会出现的&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># { sleep 4; [ -n &amp;#34;$monitor_enabled&amp;#34; ] &amp;amp;&amp;amp; setopt monitor } &amp;amp;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 无法在subshell中使用wait另一个job&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sleep &lt;span style="color:#ae81ff">21&lt;/span> &amp;amp;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>1&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#ae81ff">27095&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#f92672">{&lt;/span> wait 27095; echo aa; &lt;span style="color:#f92672">}&lt;/span> &amp;amp;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>2&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#ae81ff">27378&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wait: pid &lt;span style="color:#ae81ff">27095&lt;/span> is not a child of this shell
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外，
+&lt;a
+class="link"
+href="https://github.com/romkatv/zsh-defer"
+target="_blank"
+rel="noopener"
+>zsh-defer: Deferred execution of zsh commands&lt;/a>
+使用zsh-defer异步运行job，同时可以修改shell变量，但只能运行完成后才能响应键入命令&lt;/p>
+&lt;blockquote>
+&lt;p>zsh-defer defers execution of a zsh command until zsh has nothing else to do and is waiting for user input. Its intended purpose is staged zsh startup. It works similarly to Turbo mode in zinit.&lt;/p>&lt;/blockquote>
+&lt;h2 id="方案">方案
+&lt;/h2>&lt;p>对于使用chpwd，可以参考这里使用了相关的zsh hook：
+&lt;a
+class="link"
+href="https://github.com/direnv/direnv/blob/c74bab86d2c547364c0f5c282ff41d76f1ebadde/internal/cmd/shell_zsh.go#L10-L22"
+target="_blank"
+rel="noopener"
+>direnv/direnv: internal/cmd/shell_zsh.go&lt;/a>
+，
+&lt;a
+class="link"
+href="https://github.com/ajeetdsouza/zoxide/blob/main/templates/zsh.txt"
+target="_blank"
+rel="noopener"
+>ajeetdsouza/zoxide: templates/zsh.txt&lt;/a>
+&lt;/p>
+&lt;h3 id="zsh-defer">zsh-defer
+&lt;/h3>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>declare -A _onefetch_repos&lt;span style="color:#f92672">=()&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>_onefetch_hook_chpwd&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> emulate -L zsh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> git rev-parse 2&amp;gt;/dev/null; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> _onefetch_cur_repo&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>git rev-parse --show-toplevel | xargs basename&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[&lt;/span> ! &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>_onefetch_repos[&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$_onefetch_cur_repo&lt;span style="color:#e6db74">&amp;#34;&lt;/span>]&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> timeout 0.8 onefetch; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> _onefetch_repos&lt;span style="color:#f92672">[&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$_onefetch_cur_repo&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#f92672">]=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># for key val in &amp;#34;${(@kv)_onefetch_repos}&amp;#34;; do echo &amp;#34;$key -&amp;gt; $val&amp;#34;; done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;defering onefetch timeout &lt;/span>&lt;span style="color:#e6db74">${&lt;/span>ONEFETCH_TIMEOUT:=10&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74"> for &lt;/span>$_onefetch_cur_repo&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># -12: enable redir to stdin/stderr https://github.com/romkatv/zsh-defer#usage&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># +p: Call zle reset-prompt，即在最后模拟键入enter刷新prompt&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> zsh-defer -12 -c &lt;span style="color:#e6db74">&amp;#39;timeout &amp;#34;${ONEFETCH_TIMEOUT:=2}&amp;#34; onefetch &amp;amp;&amp;amp; _onefetch_repos[&amp;#34;$_onefetch_cur_repo&amp;#34;]=1&amp;#39;&lt;/span> &lt;span style="color:#75715e"># eval&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> -z &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>chpwd_functions[(r)_onefetch_hook_chpwd]+1&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> chpwd_functions&lt;span style="color:#f92672">=(&lt;/span> _onefetch_hook_chpwd &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>chpwd_functions[@]&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="ohmyzsh-dotenv">ohmyzsh dotenv
+&lt;/h3>&lt;p>
+&lt;a
+class="link"
+href="https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/dotenv"
+target="_blank"
+rel="noopener"
+>ohmyzsh/plugins/dotenv&lt;/a>
+提供了类似的方式自动加载.env文件，可以使用.env文件实现&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># project/.env&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># auto start hugo server in entering dir of this project&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> command -v hugo &amp;gt;/dev/null &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> ! pidof hugo &amp;gt;/dev/null; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#39;hugo serving&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># in the shell session background&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> hugo server -D &amp;gt;/dev/null &amp;amp;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="background-jobs">background jobs
+&lt;/h3>&lt;p>TODO：使用缓存文件替换环境变量&lt;/p>
+&lt;h3 id="参考">参考
+&lt;/h3>&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/3964198/8566831"
+target="_blank"
+rel="noopener"
+>ZSH: automatically run ls after every cd&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/21364"
+target="_blank"
+rel="noopener"
+>Execute bash scripts on entering a directory&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/227411"
+target="_blank"
+rel="noopener"
+>zsh wait for jobs to complete&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/122743"
+target="_blank"
+rel="noopener"
+>zsh: How to check if an option is enabled&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://zsh.sourceforge.io/Doc/Release/Functions.html"
+target="_blank"
+rel="noopener"
+>9 Functions - zsh 9.3.1 Hook Functions chpwd&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/direnv/direnv/blob/c74bab86d2c547364c0f5c282ff41d76f1ebadde/internal/cmd/shell_zsh.go#L10-L22"
+target="_blank"
+rel="noopener"
+>direnv/direnv: internal/cmd/shell_zsh.go&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/ajeetdsouza/zoxide/blob/main/templates/zsh.txt"
+target="_blank"
+rel="noopener"
+>ajeetdsouza/zoxide: templates/zsh.txt&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.shellcheck.net/wiki/SC2031"
+target="_blank"
+rel="noopener"
+>SC2031 – ShellCheck Wiki var was modified in a subshell. That change might be lost.&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/romkatv/zsh-defer"
+target="_blank"
+rel="noopener"
+>zsh-defer: Deferred execution of zsh commands&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://superuser.com/a/1237504"
+target="_blank"
+rel="noopener"
+>Iterating over keys (or k/v pairs) in zsh associative array?&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>在shell中访问上次运行的命令</title><link>/posts/archives/linux/access-to-last-command-in-shell/</link><pubDate>Wed, 15 Sep 2021 21:40:47 +0800</pubDate><guid>/posts/archives/linux/access-to-last-command-in-shell/</guid><description>&lt;p>如何在shell中使用快捷键运行上次命令&lt;/p>
+&lt;h2 id="快捷键运行sh脚本命令">快捷键运行sh脚本命令
+&lt;/h2>&lt;p>在绑定key的时候需要找到对应键位的ascii码，对于特殊的键位可能很难找到，linux中提供了&lt;code>showkey -a&lt;/code>可以查询ascii码。下面是键入&lt;code>F10, ctrl+d&lt;/code>两个快捷键的输出：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ showkey -a
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Press any keys - Ctrl-D will terminate this program
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>^&lt;span style="color:#f92672">[[&lt;/span>21~ &lt;span style="color:#ae81ff">27&lt;/span> &lt;span style="color:#ae81ff">0033&lt;/span> 0x1b
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">91&lt;/span> &lt;span style="color:#ae81ff">0133&lt;/span> 0x5b
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">0062&lt;/span> 0x32
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">49&lt;/span> &lt;span style="color:#ae81ff">0061&lt;/span> 0x31
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">126&lt;/span> &lt;span style="color:#ae81ff">0176&lt;/span> 0x7e
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>^D &lt;span style="color:#ae81ff">4&lt;/span> &lt;span style="color:#ae81ff">0004&lt;/span> 0x04
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>zsh中内置了bindkey使用快捷键，在&lt;code>man zshzle&lt;/code>中可以找到。&lt;/p>
+&lt;blockquote>
+&lt;p>bindkey [ options ] -s in-string out-string
+Bind each in-string to each out-string. When in-string is typed, out-string will be pushed back
+and treated as input to the line editor. When -R is also used, interpret the in-strings as ranges.&lt;/p>
+&lt;p>Note that both in-string and out-string are subject to the same form of interpretation, as de‐
+scribed below.&lt;/p>&lt;/blockquote>
+&lt;p>下面是演示绑定命令与脚本文件：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 绑定F10&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bindkey -s &lt;span style="color:#e6db74">&amp;#39;^[[21~&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;echo test\n&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 键入F10 自动输入&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ echo test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># test.sh: echo test&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bindkey -s &lt;span style="color:#e6db74">&amp;#39;^[[21~&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>pwd&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">/test.sh\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ /home/navyd/Workspaces/projects/navyd.github.io/test.sh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>test
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://superuser.com/a/248568"
+target="_blank"
+rel="noopener"
+>Show keys pressed in Linux [closed]&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://jdhao.github.io/2019/06/13/zsh_bind_keys/"
+target="_blank"
+rel="noopener"
+>Binding Keys in Zsh&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/226062"
+target="_blank"
+rel="noopener"
+>How can I use bindkey to run a script?&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="获取上次命令的参数">获取上次命令的参数
+&lt;/h2>&lt;p>在shell使用时可能需要上次命令中的某些参数，避免重复输入如：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ ls -al ~/.local
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 想要的效果：du -sh ~/.local&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ du -sh !$
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 输入!$后回车不会执行而是替换成&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ du -sh ~/.local
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在shell中&lt;code>!&lt;/code>用法可以直接在&lt;code>man bash&lt;/code>中搜索&lt;code>\!!&lt;/code>如下：&lt;/p>
+&lt;blockquote>
+&lt;p>Word Designators
+Word designators are used to select desired words from the event. A : separates the event specification from the
+word designator. It may be omitted if the word designator begins with a ^, $, *, -, or %. Words are numbered
+from the beginning of the line, with the first word being denoted by 0 (zero). Words are inserted into the cur‐
+rent line separated by single spaces.&lt;/p>
+&lt;pre>&lt;code> 0 (zero)
+The zeroth word. For the shell, this is the command word.
+n The nth word.
+^ The first argument. That is, word 1.
+$ The last word. This is usually the last argument, but will expand to the zeroth word if there is only one
+word in the line.
+% The word matched by the most recent `?string?' search.
+x-y A range of words; `-y' abbreviates `0-y'.
+* All of the words but the zeroth. This is a synonym for `1-$'. It is not an error to use * if there is
+just one word in the event; the empty string is returned in that case.
+x* Abbreviates x-$.
+x- Abbreviates x-$ like x*, but omits the last word
+&lt;/code>&lt;/pre>&lt;/blockquote>
+&lt;p>具体的用法后面慢慢探索&lt;/p>
+&lt;!-- TODO -->
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/25305091/8566831"
+target="_blank"
+rel="noopener"
+>Access to last command in Zsh (not previous command line)&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.gnu.org/software/bash/manual/html_node/Word-Designators.html#Word-Designators"
+target="_blank"
+rel="noopener"
+>bash Word Designators&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/151110"
+target="_blank"
+rel="noopener"
+>Is there a shortcut for repeat the second proximate command in bash?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/38176552/8566831"
+target="_blank"
+rel="noopener"
+>Re run previous command with different arguments&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="快捷键运行上次执行的命令">快捷键运行上次执行的命令
+&lt;/h2>&lt;p>读取上次命令可以使用zsh内置&lt;code>fc -ln -1&lt;/code>，结合上面的&lt;code>bindkey -s&lt;/code>使用，发现无法工作&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>bindkey -s &lt;span style="color:#e6db74">&amp;#39;^[[21~&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;fc -ln -1\n\n&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ echo test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 键入F10&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ fc -ln -1 &lt;span style="color:#75715e">#\n&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>echo test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#75715e">#\n&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在网上找到答案，可以参考
+&lt;a
+class="link"
+href="https://zsh.sourceforge.io/Guide/zshguide04.html"
+target="_blank"
+rel="noopener"
+>zsh zle Chapter 4: The Z-Shell Line Editor&lt;/a>
+&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># define function that retrieves and runs last command&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">function&lt;/span> run-again &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># get previous history item&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> zle up-history
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># confirm command&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> zle accept-line
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># define run-again widget from function of the same name&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>zle -N run-again
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># bind widget to Ctrl+X in viins mode&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># bindkey -M viins &amp;#39;^E&amp;#39; run-again&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># bind widget to Ctrl+X in vicmd mode&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>bindkey &lt;span style="color:#e6db74">&amp;#39;^[[21~&amp;#39;&lt;/span> run-again
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/28938270/8566831"
+target="_blank"
+rel="noopener"
+>In zsh how do I bind a keyboard shortcut to run the last command?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://askubuntu.com/a/530687"
+target="_blank"
+rel="noopener"
+>Rerun previous command under sudo&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

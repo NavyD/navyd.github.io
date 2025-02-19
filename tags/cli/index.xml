@@ -1,0 +1,663 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Cli on NavyD的个人博客</title><link>/tags/cli/</link><description>Recent content in Cli on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 30 Mar 2023 19:02:41 +0800</lastBuildDate><atom:link href="/tags/cli/index.xml" rel="self" type="application/rss+xml"/><item><title>Python Installed From Mstore Not Found in Terminal</title><link>/posts/2022/07/python-installed-from-mstore-not-found-in-terminal/</link><pubDate>Fri, 01 Jul 2022 14:24:24 +0800</pubDate><guid>/posts/2022/07/python-installed-from-mstore-not-found-in-terminal/</guid><description>&lt;p>在升级win 11后，正常使用之前的python，但是在一次修改了环境变量path后，之前正常使用python无法使用了，无论是正常安装还是商店的都无法使用&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>可能是由于更新的问题，在动了path后出现问题，更新path就好，windows 商店的问题可能也是未加入path的问题&lt;/p>
+&lt;h2 id="解决方式">解决方式
+&lt;/h2>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$env:PATH += &lt;span style="color:#e6db74">&amp;#39;%USERPROFILE%\AppData\Local\Microsoft\WindowsApps&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/58773979/8566831"
+target="_blank"
+rel="noopener"
+>CMD opens Windows Store when I type &amp;lsquo;python&amp;rsquo;&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>源码分析：代码计数工具及其效率与准确度</title><link>/posts/2021/10/count-lines-of-code/</link><pubDate>Tue, 12 Oct 2021 23:36:56 +0800</pubDate><guid>/posts/2021/10/count-lines-of-code/</guid><description>&lt;img src="https://tokei.rs/b1/github/tinyclub/linux-0.11-lab" alt="Featured image of post 源码分析：代码计数工具及其效率与准确度" />&lt;p>原文地址
+&lt;a
+class="link"
+href="http://tinylab.org/source-code-analysis-the-best-code-counting-tool/"
+target="_blank"
+rel="noopener"
+>tinylab.org&lt;/a>
+&lt;/p>
+&lt;p>本文详细介绍了关于源码统计的 7 大工具，8 类数据，准确度相当，效率相差甚远，rust 和 go 语言展现巨大优势。&lt;/p>
+&lt;h2 id="1-背景">1 背景
+&lt;/h2>&lt;p>源码分析是程序员离不开的话题。无论是研究开源项目，还是平时做各类移植、开发，都避免不了对源码的深入解读。&lt;/p>
+&lt;p>一次偶然的著作权申请需要获取项目代码行数以及代码用到的编程语言，于是有了这一篇。这篇文章主要介绍如何统计项目代码，能用的工具以及它们的优劣。&lt;/p>
+&lt;h2 id="2-wc">2 wc
+&lt;/h2>&lt;p>统计代码行数最直观的想法是用 &lt;code>wc&lt;/code> 统计代码文件的行数。&lt;/p>
+&lt;p>首先得用 &lt;code>find&lt;/code> 工具找出所有源代码，然后再用 &lt;code>wc&lt;/code> 统计，然后删掉空行和评论，以
+&lt;a
+class="link"
+href="https://github.com/tinyclub/linux-0.11-lab"
+target="_blank"
+rel="noopener"
+>Linux 0.11&lt;/a>
+为例，粗略统计如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ git clone https://github.com/tinyclub/linux-0.11-lab.git
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ cd linux-0.11-lab/0.11
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ find . -name &lt;span style="color:#e6db74">&amp;#34;*.[hcs]&amp;#34;&lt;/span> | xargs -i cat &lt;span style="color:#f92672">{}&lt;/span> | grep -v &lt;span style="color:#e6db74">&amp;#34;^ *&lt;/span>$&lt;span style="color:#e6db74">&amp;#34;&lt;/span> | grep -v &lt;span style="color:#e6db74">&amp;#34; */\*.*\*/&amp;#34;&lt;/span> | wc -l
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">10816&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>可是我们对于评论的处理过于粗糙，而且漏掉了 Shell 和 Makefile 代码，加上这两个语言：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ find . -name &lt;span style="color:#e6db74">&amp;#34;*.[hcs]&amp;#34;&lt;/span> -or -name *.sh -or -name Makefile | xargs -i cat &lt;span style="color:#f92672">{}&lt;/span> | grep -v &lt;span style="color:#e6db74">&amp;#34;^ *&lt;/span>$&lt;span style="color:#e6db74">&amp;#34;&lt;/span> | grep -v &lt;span style="color:#e6db74">&amp;#34; */\*.*\*/&amp;#34;&lt;/span> | wc -l
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">11356&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>但是，这种临时拼凑的脚本的工作效率和准确度都大打折扣，所以应该有更好的办法？&lt;/p>
+&lt;p>3 cloc &amp;amp; sloccount&lt;/p>
+&lt;p>简单的检索过后发现了 &lt;code>cloc&lt;/code> 和 &lt;code>sloccount&lt;/code>，两款都是用 &lt;code>perl&lt;/code> 编写的，直观的印象是两者首次运行时间都很长。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo apt-get install cloc sloccount
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ cloc .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">106&lt;/span> text files.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">106&lt;/span> unique files.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">4&lt;/span> files ignored.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>http://cloc.sourceforge.net v 1.60 T&lt;span style="color:#f92672">=&lt;/span>0.56 s &lt;span style="color:#f92672">(&lt;/span>181.8 files/s, 24607.5 lines/s&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Language files blank comment code
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>C &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">770&lt;/span> &lt;span style="color:#ae81ff">1034&lt;/span> &lt;span style="color:#ae81ff">6640&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>C/C++ Header &lt;span style="color:#ae81ff">33&lt;/span> &lt;span style="color:#ae81ff">329&lt;/span> &lt;span style="color:#ae81ff">283&lt;/span> &lt;span style="color:#ae81ff">2154&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Assembly &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">164&lt;/span> &lt;span style="color:#ae81ff">209&lt;/span> &lt;span style="color:#ae81ff">1579&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>make &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">97&lt;/span> &lt;span style="color:#ae81ff">59&lt;/span> &lt;span style="color:#ae81ff">449&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Bourne Shell &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">9&lt;/span> &lt;span style="color:#ae81ff">23&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>SUM: &lt;span style="color:#ae81ff">102&lt;/span> &lt;span style="color:#ae81ff">1368&lt;/span> &lt;span style="color:#ae81ff">1594&lt;/span> &lt;span style="color:#ae81ff">10845&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>cloc&lt;/code> 统计出来的纯代码行数为 10845 行，比自己用脚本计算的少一些，可能原因就是部分注释我们未能彻底过滤掉。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sloccount .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Have a non-directory at the top, so creating directory top_dir
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Adding /media/falcon/develop/cloud-lab/labs/linux-0.11-lab/0.11/./Makefile to top_dir
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Adding /media/falcon/develop/cloud-lab/labs/linux-0.11-lab/0.11/./Makefile.head to top_dir
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> boot
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> fs
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> include
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> init
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> kernel
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> lib
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> mm
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Creating filelist &lt;span style="color:#66d9ef">for&lt;/span> tools
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Categorizing files.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Finding a working MD5 command....
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Found a working MD5 command.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Computing results.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>SLOC Directory SLOC-by-Language &lt;span style="color:#f92672">(&lt;/span>Sorted&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">4355&lt;/span> kernel ansic&lt;span style="color:#f92672">=&lt;/span>3391,asm&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">964&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">2677&lt;/span> fs ansic&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">2677&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">2062&lt;/span> include ansic&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">2062&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">474&lt;/span> boot asm&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">474&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">332&lt;/span> mm ansic&lt;span style="color:#f92672">=&lt;/span>304,asm&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">28&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">208&lt;/span> lib ansic&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">208&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">152&lt;/span> init ansic&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">152&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">22&lt;/span> tools sh&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">22&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">0&lt;/span> top_dir &lt;span style="color:#f92672">(&lt;/span>none&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Totals grouped by language &lt;span style="color:#f92672">(&lt;/span>dominant language first&lt;span style="color:#f92672">)&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ansic: &lt;span style="color:#ae81ff">8794&lt;/span> &lt;span style="color:#f92672">(&lt;/span>85.53%&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>asm: &lt;span style="color:#ae81ff">1466&lt;/span> &lt;span style="color:#f92672">(&lt;/span>14.26%&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sh: &lt;span style="color:#ae81ff">22&lt;/span> &lt;span style="color:#f92672">(&lt;/span>0.21%&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Total Physical Source Lines of Code &lt;span style="color:#f92672">(&lt;/span>SLOC&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> 10,282
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Development Effort Estimate, Person-Years &lt;span style="color:#f92672">(&lt;/span>Person-Months&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> 2.31 &lt;span style="color:#f92672">(&lt;/span>27.73&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">(&lt;/span>Basic COCOMO model, Person-Months &lt;span style="color:#f92672">=&lt;/span> 2.4 * &lt;span style="color:#f92672">(&lt;/span>KSLOC**1.05&lt;span style="color:#f92672">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Schedule Estimate, Years &lt;span style="color:#f92672">(&lt;/span>Months&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> 0.74 &lt;span style="color:#f92672">(&lt;/span>8.84&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">(&lt;/span>Basic COCOMO model, Months &lt;span style="color:#f92672">=&lt;/span> 2.5 * &lt;span style="color:#f92672">(&lt;/span>person-months**0.38&lt;span style="color:#f92672">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Estimated Average Number of Developers &lt;span style="color:#f92672">(&lt;/span>Effort/Schedule&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> 3.14
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Total Estimated Cost to Develop &lt;span style="color:#f92672">=&lt;/span> $ 312,121
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">(&lt;/span>average salary &lt;span style="color:#f92672">=&lt;/span> $56,286/year, overhead &lt;span style="color:#f92672">=&lt;/span> 2.40&lt;span style="color:#f92672">)&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>SLOCCount, Copyright &lt;span style="color:#f92672">(&lt;/span>C&lt;span style="color:#f92672">)&lt;/span> 2001-2004 David A. Wheeler
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>SLOCCount is Open Source Software/Free Software, licensed under the GNU GPL.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>SLOCCount comes with ABSOLUTELY NO WARRANTY, and you are welcome to
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>redistribute it under certain conditions as specified by the GNU GPL license;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>see the documentation &lt;span style="color:#66d9ef">for&lt;/span> details.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Please credit this data as &lt;span style="color:#e6db74">&amp;#34;generated using David A. Wheeler&amp;#39;s &amp;#39;SLOCCount&amp;#39;.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>sloccount&lt;/code> 按目录统计了不同语言的占比以及整个项目的各语言代码行数，在这个项目上统计出来的 C 语言代码行数跟 &lt;code>cloc&lt;/code> 高度一致，都是 8794 行，但是在统计 Assembly 的时候出现了偏差。&lt;/p>
+&lt;p>很有意思的是， &lt;code>sloccount&lt;/code> 还基于 Basic COCOMO 模型，给出了项目开发所需的人月数估算以及人力投入成本预估。
+&lt;a
+class="link"
+href="https://en.wikipedia.org/wiki/COCOMO"
+target="_blank"
+rel="noopener"
+>COCOMO 模型&lt;/a>
+由 TRW 公司开发，Boehm 提出的结构化成本估算模型。它是一种精确的、易于使用的成本估算方法，例如 Basic COCOMO 模型是用一个以已估算出来的源代码行数 （LOC） 为自变量的函数来计算软件开发工作量。&lt;/p>
+&lt;h2 id="4-loc--tokei">4 loc &amp;amp; tokei
+&lt;/h2>&lt;p>&lt;code>cloc&lt;/code> 与 &lt;code>sloccount&lt;/code> 的慢对于大型项目确实是难以忍受的，所以进一步的检索发现还有 &lt;code>loc&lt;/code> 和 &lt;code>tokei&lt;/code>，两个都用 &lt;code>rust&lt;/code> 语言编写，效率有数十倍到 100 倍左右的提升。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo apt-get install cargo
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ cargo install loc tokei
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ echo &lt;span style="color:#e6db74">&amp;#34;export PATH=\$PATH:~/.cargo/bin&amp;#34;&lt;/span> &amp;gt;&amp;gt; ~/.bashrc
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ . ~/.bashrc
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ loc .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Language Files Lines Blank Comment Code
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">8444&lt;/span> &lt;span style="color:#ae81ff">770&lt;/span> &lt;span style="color:#ae81ff">1035&lt;/span> &lt;span style="color:#ae81ff">6639&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C/C++ Header &lt;span style="color:#ae81ff">33&lt;/span> &lt;span style="color:#ae81ff">2766&lt;/span> &lt;span style="color:#ae81ff">329&lt;/span> &lt;span style="color:#ae81ff">283&lt;/span> &lt;span style="color:#ae81ff">2154&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Assembly &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">1952&lt;/span> &lt;span style="color:#ae81ff">164&lt;/span> &lt;span style="color:#ae81ff">333&lt;/span> &lt;span style="color:#ae81ff">1455&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Makefile &lt;span style="color:#ae81ff">11&lt;/span> &lt;span style="color:#ae81ff">656&lt;/span> &lt;span style="color:#ae81ff">107&lt;/span> &lt;span style="color:#ae81ff">64&lt;/span> &lt;span style="color:#ae81ff">485&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Bourne Shell &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">40&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">22&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Total &lt;span style="color:#ae81ff">103&lt;/span> &lt;span style="color:#ae81ff">13858&lt;/span> &lt;span style="color:#ae81ff">1378&lt;/span> &lt;span style="color:#ae81ff">1725&lt;/span> &lt;span style="color:#ae81ff">10755&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ tokei .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Language Files Lines Code Comments Blanks
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Assembly &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">1952&lt;/span> &lt;span style="color:#ae81ff">1788&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">164&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">8444&lt;/span> &lt;span style="color:#ae81ff">6637&lt;/span> &lt;span style="color:#ae81ff">1037&lt;/span> &lt;span style="color:#ae81ff">770&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C Header &lt;span style="color:#ae81ff">33&lt;/span> &lt;span style="color:#ae81ff">2766&lt;/span> &lt;span style="color:#ae81ff">2143&lt;/span> &lt;span style="color:#ae81ff">294&lt;/span> &lt;span style="color:#ae81ff">329&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Makefile &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">605&lt;/span> &lt;span style="color:#ae81ff">449&lt;/span> &lt;span style="color:#ae81ff">59&lt;/span> &lt;span style="color:#ae81ff">97&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Shell &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">40&lt;/span> &lt;span style="color:#ae81ff">22&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Total &lt;span style="color:#ae81ff">102&lt;/span> &lt;span style="color:#ae81ff">13807&lt;/span> &lt;span style="color:#ae81ff">11039&lt;/span> &lt;span style="color:#ae81ff">1400&lt;/span> &lt;span style="color:#ae81ff">1368&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ tokei --sort Code .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Language Files Lines Code Comments Blanks
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">8444&lt;/span> &lt;span style="color:#ae81ff">6637&lt;/span> &lt;span style="color:#ae81ff">1037&lt;/span> &lt;span style="color:#ae81ff">770&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C Header &lt;span style="color:#ae81ff">33&lt;/span> &lt;span style="color:#ae81ff">2766&lt;/span> &lt;span style="color:#ae81ff">2143&lt;/span> &lt;span style="color:#ae81ff">294&lt;/span> &lt;span style="color:#ae81ff">329&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Assembly &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">1952&lt;/span> &lt;span style="color:#ae81ff">1788&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">164&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Makefile &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">605&lt;/span> &lt;span style="color:#ae81ff">449&lt;/span> &lt;span style="color:#ae81ff">59&lt;/span> &lt;span style="color:#ae81ff">97&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Shell &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">40&lt;/span> &lt;span style="color:#ae81ff">22&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Total &lt;span style="color:#ae81ff">102&lt;/span> &lt;span style="color:#ae81ff">13807&lt;/span> &lt;span style="color:#ae81ff">11039&lt;/span> &lt;span style="color:#ae81ff">1400&lt;/span> &lt;span style="color:#ae81ff">1368&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ tokei -e tools
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Language Files Lines Code Comments Blanks
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Assembly &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">1952&lt;/span> &lt;span style="color:#ae81ff">1788&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">164&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">8444&lt;/span> &lt;span style="color:#ae81ff">6637&lt;/span> &lt;span style="color:#ae81ff">1037&lt;/span> &lt;span style="color:#ae81ff">770&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> C Header &lt;span style="color:#ae81ff">33&lt;/span> &lt;span style="color:#ae81ff">2766&lt;/span> &lt;span style="color:#ae81ff">2143&lt;/span> &lt;span style="color:#ae81ff">294&lt;/span> &lt;span style="color:#ae81ff">329&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Makefile &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">605&lt;/span> &lt;span style="color:#ae81ff">449&lt;/span> &lt;span style="color:#ae81ff">59&lt;/span> &lt;span style="color:#ae81ff">97&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Total &lt;span style="color:#ae81ff">101&lt;/span> &lt;span style="color:#ae81ff">13767&lt;/span> &lt;span style="color:#ae81ff">11017&lt;/span> &lt;span style="color:#ae81ff">1390&lt;/span> &lt;span style="color:#ae81ff">1360&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>两者在速度上的提升相当明显，几乎都是秒出结果。不过两者的统计数据也有差异，在主体语言 C 上的统计都还算精准。&lt;/p>
+&lt;p>&lt;code>tokei&lt;/code> 官网宣称其准确度比 &lt;code>loc&lt;/code> 要高，感兴趣的可以看看这里的
+&lt;a
+class="link"
+href="https://github.com/XAMPPRocky/tokei/blob/master/COMPARISON.md"
+target="_blank"
+rel="noopener"
+>对比测试结果&lt;/a>
+。&lt;/p>
+&lt;p>他们都提供了排序（sort）和排除（exclude）功能，exclude 功能可用于排除第三方 SDK 等非本项目原生的代码，这个对于重度使用了第三方库的项目来说非常重要，它能够更真实地呈现项目的本来面貌，也有助于更准确的计算一些启发式的数据，比如后面将要介绍到的 Complexity（软件复杂度）和前面介绍到的 COCOMO（项目成本）。&lt;/p>
+&lt;p>另外，有趣的是 &lt;code>tokei&lt;/code> 还提供了 &lt;code>Badge&lt;/code> 服务，可以类似这样在 &lt;code>Markdown&lt;/code> 中引用：&lt;code>[![](https://tokei.rs/b1/github/tinyclub/linux-0.11-lab)](https://github.com/tinyclub/linux-0.11-lab).&lt;/code>&lt;/p>
+&lt;p>效果为：
+&lt;a
+class="link"
+href="https://github.com/tinyclub/linux-0.11-lab"
+target="_blank"
+rel="noopener"
+>&lt;img src="https://tokei.rs/b1/github/tinyclub/linux-0.11-lab"
+loading="lazy"
+>&lt;/a>
+.&lt;/p>
+&lt;h2 id="5-scc">5 scc
+&lt;/h2>&lt;p>
+&lt;a
+class="link"
+href="https://github.com/boyter/scc"
+target="_blank"
+rel="noopener"
+>scc&lt;/a>
+用 &lt;code>go&lt;/code> 语言撰写，在效率上与 &lt;code>loc&lt;/code> 和 &lt;code>tokei&lt;/code> 相当，但是引入了一个很有意义的 &lt;code>Complexity&lt;/code> 数据，即
+&lt;a
+class="link"
+href="https://en.wikipedia.org/wiki/Cyclomatic_complexity"
+target="_blank"
+rel="noopener"
+>Cyclomatic Complexity&lt;/a>
+，中文翻译为圈复杂度或者环路复杂度，它反应了程序分支数或者环路个数，用于评估
+&lt;a
+class="link"
+href="https://blog.csdn.net/t_1007/article/details/53034408"
+target="_blank"
+rel="noopener"
+>软件复杂度&lt;/a>
+。&lt;/p>
+&lt;p>在
+&lt;a
+class="link"
+href="https://github.com/boyter/scc/releases"
+target="_blank"
+rel="noopener"
+>scc Releases&lt;/a>
+下载一个编译好的版本，试运行如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ scc .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>───────────────────────────────────────────────────────────────────────────────
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Language Files Lines Code Comments Blanks Complexity
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>───────────────────────────────────────────────────────────────────────────────
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>C &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">8444&lt;/span> &lt;span style="color:#ae81ff">6640&lt;/span> &lt;span style="color:#ae81ff">1039&lt;/span> &lt;span style="color:#ae81ff">765&lt;/span> &lt;span style="color:#ae81ff">1452&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>C Header &lt;span style="color:#ae81ff">33&lt;/span> &lt;span style="color:#ae81ff">2766&lt;/span> &lt;span style="color:#ae81ff">2154&lt;/span> &lt;span style="color:#ae81ff">288&lt;/span> &lt;span style="color:#ae81ff">324&lt;/span> &lt;span style="color:#ae81ff">44&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Makefile &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">605&lt;/span> &lt;span style="color:#ae81ff">449&lt;/span> &lt;span style="color:#ae81ff">59&lt;/span> &lt;span style="color:#ae81ff">97&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Assembly &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">1952&lt;/span> &lt;span style="color:#ae81ff">1851&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">101&lt;/span> &lt;span style="color:#ae81ff">26&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>gitignore &lt;span style="color:#ae81ff">3&lt;/span> &lt;span style="color:#ae81ff">11&lt;/span> &lt;span style="color:#ae81ff">11&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Shell &lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">40&lt;/span> &lt;span style="color:#ae81ff">22&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span> &lt;span style="color:#ae81ff">7&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>───────────────────────────────────────────────────────────────────────────────
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Total &lt;span style="color:#ae81ff">105&lt;/span> &lt;span style="color:#ae81ff">13818&lt;/span> &lt;span style="color:#ae81ff">11127&lt;/span> &lt;span style="color:#ae81ff">1396&lt;/span> &lt;span style="color:#ae81ff">1295&lt;/span> &lt;span style="color:#ae81ff">1529&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>───────────────────────────────────────────────────────────────────────────────
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Estimated Cost to Develop $339,072
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Estimated Schedule Effort 10.171895 months
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Estimated People Required 3.948618
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>───────────────────────────────────────────────────────────────────────────────
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>scc&lt;/code> 对 COCOMO 的评估结果跟 &lt;code>sloccount&lt;/code> 接近，同样地，它也有类似排序（&lt;code>--sort&lt;/code>）和排除目录（&lt;code>--exclude-dir&lt;/code>）的功能。&lt;/p>
+&lt;h2 id="6-gocloc">6 gocloc
+&lt;/h2>&lt;p>
+&lt;a
+class="link"
+href="https://github.com/hhatto/gocloc"
+target="_blank"
+rel="noopener"
+>gocloc&lt;/a>
+是用 &lt;code>go&lt;/code> 写的另外一个类 &lt;code>cloc&lt;/code> 工具，速度与 &lt;code>loc&lt;/code> 和 &lt;code>tokei&lt;/code> 相当，这里不做介绍。&lt;/p>
+&lt;h2 id="7-小结">7 小结
+&lt;/h2>&lt;p>综上，以上工具都提供了几个基础数据：&lt;/p>
+&lt;ul>
+&lt;li>Files&lt;/li>
+&lt;li>Lines = Code + Comments + Blanks&lt;/li>
+&lt;li>Code&lt;/li>
+&lt;li>Comments&lt;/li>
+&lt;li>Blanks&lt;/li>
+&lt;/ul>
+&lt;p>但是它们各有各的优势：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>cloc&lt;/code> 和 &lt;code>sloccount&lt;/code> 由系统软件仓库默认集成，可轻松安装，但是效率不行，不适合大型项目。&lt;/li>
+&lt;li>而综合速度和准确度来看，&lt;code>tokei&lt;/code> 优势明显，&lt;code>scc&lt;/code> 和 &lt;code>loc&lt;/code> 其次。&lt;/li>
+&lt;li>就附加功能而言，scc 提供了 Complexity （软件复杂度）这样的特殊功能，而 &lt;code>sloccount&lt;/code> 同 &lt;code>scc&lt;/code> 一样提供了 COCOMO （项目成本）评估。&lt;/li>
+&lt;/ul>
+&lt;p>请大家根据需要进行选择。更多代码计数器的功效请参考其他用户的经验：
+&lt;a
+class="link"
+href="https://boyter.org/posts/why-count-lines-of-code/"
+target="_blank"
+rel="noopener"
+>Why count lines of code?&lt;/a>
+。&lt;/p>
+&lt;p>在 Complexity 和 COCOMO 之外，上述基础数据其实还可以进一步挖掘，比如：&lt;/p>
+&lt;ul>
+&lt;li>Comments of Codes 可以反应代码的注释程度&lt;/li>
+&lt;li>Blanks of Codes 可以反应代码的可阅读性&lt;/li>
+&lt;li>Codes of Files 可以反应代码文件大小的适中程度&lt;/li>
+&lt;/ul>
+&lt;p>做相关研究的同学可以考虑进一步挖掘这块的数据，甚至在现有开源工具的基础上做进一步的改造。&lt;/p>
+&lt;p>其实，除了用法比较，这篇文章抛出了一个非常有趣的问题，那就是为什么用 Rust 和 Go 写出来的 &lt;code>loc&lt;/code>, &lt;code>tokei&lt;/code>, &lt;code>scc&lt;/code> 和 &lt;code>gocloc&lt;/code> 的速度提升这么明显？非常值得进一步探索，可参考
+&lt;a
+class="link"
+href="https://boyter.org/posts/sloc-cloc-code/"
+target="_blank"
+rel="noopener"
+>Sloc Cloc and Code - What happened on the way to faster Cloc&lt;/a>
+&lt;/p></description></item><item><title>重定向已启动程序的输出</title><link>/posts/2021/09/redirect-output-of-running-process/</link><pubDate>Mon, 06 Sep 2021 12:22:01 +0800</pubDate><guid>/posts/2021/09/redirect-output-of-running-process/</guid><description>&lt;p>在使用
+&lt;a
+class="link"
+href="https://github.com/Dreamacro/clash"
+target="_blank"
+rel="noopener"
+>clash&lt;/a>
+时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。&lt;/p>
+&lt;p>如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>下面是典型的clash的启动输出：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ clash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider HK&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider IEPL&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider SGP&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider US&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider NeteaseMusic&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider TW&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider GoogleCN&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Proxy&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Epic&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Apple&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider SSH22&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Icloud&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Final-Match&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Telegram&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider direct&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider telegramcidr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider reject&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider gfw&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider tld-not-cn&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider cncidr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider proxy&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider lancidr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider icloud&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider netease-music&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider greatfire&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider apple&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider private&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider google&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;RESTful API listening at: 0.0.0.0:9090&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;DNS server listening at: 0.0.0.0:5353&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>通常可以在启动程序时重定向如&lt;code>clash &amp;amp;&amp;gt; temp.log&lt;/code>，有没有一种可能，复制或重定向已启动程序的输出，这样可以不用局限于启动clash，只要clash进程存在就行&lt;/p>
+&lt;p>&lt;em>&lt;strong>更新：如果要检查clash是否成功启动，可以简单的判断clash的端口是否被使用&lt;/strong>&lt;/em>&lt;/p>
+&lt;h3 id="strace">strace
+&lt;/h3>&lt;p>过滤strace的输出&lt;/p>
+&lt;ul>
+&lt;li>过滤write指定的文件描述符fd&lt;/li>
+&lt;/ul>
+&lt;p>使用&lt;code>-e write=1,2&lt;/code>表示仅列出fd 1与2即stdout,stderr。但是在docker的进程中与宿主机存在区别，无法生效。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ strace -p &lt;span style="color:#66d9ef">$(&lt;/span>pgrep clash&lt;span style="color:#66d9ef">)&lt;/span> -e write&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> -e signal&lt;span style="color:#f92672">=&lt;/span>none -e trace&lt;span style="color:#f92672">=&lt;/span>write
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>strace: Process &lt;span style="color:#ae81ff">220553&lt;/span> attached
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>14, &lt;span style="color:#e6db74">&amp;#34;E\0\0\220\304\206@\0?\21\352\250\306\22\0\10\306\22\0\1&amp;#39;\34\36a\0|\204\334\0\1\0`&amp;#34;&lt;/span>..., 144&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">144&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>14, &lt;span style="color:#e6db74">&amp;#34;E\0\4\351\17\36@\0@\21&amp;amp;\\\337J\2\335\300\250]\272\\@\312J\4\325\302m\27\376\375\0&amp;#34;&lt;/span>..., 1257&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1257&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>strace使用&lt;code>-y&lt;/code>显示对应的fd&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo strace -p &lt;span style="color:#66d9ef">$(&lt;/span>pgrep clash&lt;span style="color:#66d9ef">)&lt;/span> -e trace&lt;span style="color:#f92672">=&lt;/span>write -y
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>strace: Process &lt;span style="color:#ae81ff">220553&lt;/span> attached
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>14&amp;lt;/dev/net/tun&amp;gt;, &lt;span style="color:#e6db74">&amp;#34;E\0\0004\237D@\0?\6\20S\306\22\0\7\306\22\0\1\221 \36a&amp;gt;[\376\316\234k\271\274&amp;#34;&lt;/span>..., 52&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">52&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>35&amp;lt;socket:&lt;span style="color:#f92672">[&lt;/span>1897396&lt;span style="color:#f92672">]&lt;/span>&amp;gt;, &lt;span style="color:#e6db74">&amp;#34;\202\301!\16F\234\256\3733\270\307H\203\265!\223H\344_#\337)d\223\310~]%m\362\250\202&amp;#34;&lt;/span>..., 71&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">71&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>1&amp;lt;pipe:&lt;span style="color:#f92672">[&lt;/span>1652130&lt;span style="color:#f92672">]&lt;/span>&amp;gt;, &lt;span style="color:#e6db74">&amp;#34;...&amp;#34;&lt;/span>, 40&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">40&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>查看对应进程的fd&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>在docker中&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ docker exec -it clash bash -c &lt;span style="color:#e6db74">&amp;#39;ls -al /proc/$(pgrep clash)/fd&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> root root &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> nobody nobody &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l-wx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; pipe:&lt;span style="color:#f92672">[&lt;/span>1652130&lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 &lt;span style="color:#ae81ff">10&lt;/span> -&amp;gt; socket:&lt;span style="color:#f92672">[&lt;/span>1645489&lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># docker clash进程在主机上的fd&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo ls -al /proc/&lt;span style="color:#66d9ef">$(&lt;/span>pgrep clash&lt;span style="color:#66d9ef">)&lt;/span>/fd
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> root root &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:24 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> nobody nogroup &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:09 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:29 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l-wx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:29 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; &lt;span style="color:#e6db74">&amp;#39;pipe:[1652130]&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:29 &lt;span style="color:#ae81ff">10&lt;/span> -&amp;gt; &lt;span style="color:#e6db74">&amp;#39;socket:[1645489]&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>在host中&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># no redirection&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bash -c &lt;span style="color:#e6db74">&amp;#39;while true; do echo &amp;#39;&lt;/span>1&lt;span style="color:#e6db74">&amp;#39;; sleep 1; done &amp;amp; ls -al /proc/$!/fd &amp;amp;&amp;amp; kill -9 $!&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lr-x &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 &lt;span style="color:#ae81ff">2&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># redirect to /dev/null&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#66d9ef">while&lt;/span> true; &lt;span style="color:#66d9ef">do&lt;/span> echo &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>; sleep 1; &lt;span style="color:#66d9ef">done&lt;/span> &amp;gt;/dev/null &amp;amp; ls -al /proc/$!/fd &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> kill -9 $!
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l-wx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">10&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lr-x &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">11&lt;/span> -&amp;gt; /home/navy
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;p>可以明显的看到docker中的stdout被链接到了&lt;code>pipe:[1652130]&lt;/code>，而host中是一个本地路径链接，strace可能无法正确访问docker的stdout，可以使用readlink读取链接给strace过滤：&lt;code>-P &amp;quot;$(readlink /proc/&amp;quot;$CLASH_PID&amp;quot;/fd/1)&amp;quot;&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>start_clash&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sudo -u &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$RUN_USER&lt;span style="color:#e6db74">&amp;#34;&lt;/span> clash -d &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_DIR&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strace -P &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>readlink /proc/&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_PID&lt;span style="color:#e6db74">&amp;#34;&lt;/span>/fd/1&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> -e trace&lt;span style="color:#f92672">=&lt;/span>write -e signal&lt;span style="color:#f92672">=&lt;/span>none -s &lt;span style="color:#ae81ff">1000&lt;/span> -X raw -p &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_PID&lt;span style="color:#e6db74">&amp;#34;&lt;/span> 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> | &lt;span style="color:#66d9ef">while&lt;/span> read -r line; &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># 修改&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> line&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>sed -n -r &lt;span style="color:#e6db74">&amp;#39;s/^write\([0-9]+,\s*&amp;#34;(.+)&amp;#34;,\s*[0-9]+\)\s*=\s*[[:digit:]]+$/\1/p&amp;#39;&lt;/span> &lt;span style="color:#f92672">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># echo &amp;#34;dumping line: $line&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> $line &lt;span style="color:#f92672">==&lt;/span> *&lt;span style="color:#e6db74">&amp;#34;listening at&amp;#34;&lt;/span>* &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;clash has started at line: &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> break
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意：&lt;/p>
+&lt;ul>
+&lt;li>strace默认输出到stderr重定向到标准输出&lt;code>2&amp;gt;&amp;amp;1&lt;/code>&lt;/li>
+&lt;li>&lt;code>-X raw&lt;/code>使用原始的输出防止乱码&lt;/li>
+&lt;li>&lt;code>-s 1000&lt;/code>指定最大的打印字符串避免默认32过小截断输出&lt;/li>
+&lt;li>&lt;code>-e trace=write -e signal=none&lt;/code>过滤非write输出&lt;/li>
+&lt;/ul>
+&lt;p>&lt;em>&lt;strong>但是上面存在一个问题，strace是对sys call作用，clash输出log时没有&lt;code>Start initial rule provider&lt;/code>与后面的&lt;code>listening at&lt;/code>，同时使用sync命令没用，可能是缓存没有刷新。这里不清楚 TODO&lt;/strong>&lt;/em>&lt;/p>
+&lt;!-- TODO -->
+&lt;p>另外还有gdb,screen两种方式可以重定向，但是无法简单编程使用&lt;/p>
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;h3 id="重定向">重定向
+&lt;/h3>&lt;p>最简单的方法就是在后台重定向clash的输出到文件，再读取文件确认启动&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># start clash and confirm and return pid&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>start_clash&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sudo -u &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$RUN_USER&lt;span style="color:#e6db74">&amp;#34;&lt;/span> clash -d &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_DIR&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &amp;amp;&amp;gt; temp.log
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> local pid&lt;span style="color:#f92672">=&lt;/span>$!
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> tail -f temp.log | &lt;span style="color:#66d9ef">while&lt;/span> read -r line
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> $line &lt;span style="color:#f92672">==&lt;/span> *&lt;span style="color:#e6db74">&amp;#34;listening at&amp;#34;&lt;/span>* &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;clash has started at line: &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> pid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意不能使用&lt;code>sudo -u &amp;quot;$RUN_USER&amp;quot; clash -d &amp;quot;$CLASH_DIR&amp;quot; | while read -r line; do ... done&lt;/code>，在while退出break后将会使clash直接退出。下面使用bash一行命令测试：无限循环while退出后整个管道命令终止&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>local count&lt;span style="color:#f92672">=&lt;/span>0; &lt;span style="color:#66d9ef">while&lt;/span> true; &lt;span style="color:#66d9ef">do&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;sleeping &lt;/span>&lt;span style="color:#66d9ef">$((&lt;/span>count&lt;span style="color:#f92672">+=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#66d9ef">))&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>; sleep 1; &lt;span style="color:#66d9ef">done&lt;/span> | &lt;span style="color:#66d9ef">while&lt;/span> read line; &lt;span style="color:#66d9ef">do&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;read &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>; &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> $line &lt;span style="color:#f92672">==&lt;/span> *&lt;span style="color:#e6db74">&amp;#34;9&amp;#34;&lt;/span>* &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;end &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>; break; &lt;span style="color:#66d9ef">fi&lt;/span>; &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外，可以使用python等方式完全重写更好维护，算上iptables相关的配置都200多行了&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/593724/redirect-stderr-stdout-of-a-process-after-its-been-started-using-command-lin"
+target="_blank"
+rel="noopener"
+>Redirect STDERR / STDOUT of a process AFTER it&amp;rsquo;s been started, using command line?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.baeldung.com/linux/redirect-output-of-running-process"
+target="_blank"
+rel="noopener"
+>Redirecting the Output of an Already Running Process&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://askubuntu.com/a/731237"
+target="_blank"
+rel="noopener"
+>How do I save terminal output to a file?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://jvns.ca/blog/2020/04/29/why-strace-doesnt-work-in-docker/"
+target="_blank"
+rel="noopener"
+>Why strace doesn&amp;rsquo;t work in Docker&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/229606/8566831"
+target="_blank"
+rel="noopener"
+>How to check if a string contains a substring in Bash&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/questions/30370/how-to-get-the-pid-of-the-last-executed-command-in-shell-script"
+target="_blank"
+rel="noopener"
+>How to get the pid of the last executed command in shell script?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/163814"
+target="_blank"
+rel="noopener"
+>grep on a variable&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Merge Two Git Repos</title><link>/posts/2021/08/merge-two-git-repos/</link><pubDate>Sun, 08 Aug 2021 01:49:33 +0800</pubDate><guid>/posts/2021/08/merge-two-git-repos/</guid><description>&lt;img src="/posts/2021/08/merge-two-git-repos/2021-08-08-01-49-49.png" alt="Featured image of post Merge Two Git Repos" />&lt;h2 id="问题">问题
+&lt;/h2>&lt;p>从原始博客仓库&lt;code>blog-resources&lt;/code>中迁移所有记录到新的hugo博客仓库&lt;code>navyd.github.io&lt;/code>新文件夹下&lt;code>content/res&lt;/code>中，以后慢慢修改为hugo博客形式。下面是两个仓库的目录结构&lt;/p>
+&lt;pre tabindex="0">&lt;code>../
+- blog-resources/
+- .git/
+- blog.md
+- ...
+- navyd.github.io/
+- .git/
+- content/
+- post/
+- ...
+&lt;/code>&lt;/pre>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/10548919/8566831"
+target="_blank"
+rel="noopener"
+>git merge&lt;/a>
+&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>cd navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git checkout -b blog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git remote add blog-res ../blog-resources
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git fetch blog-res --tags
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git merge --allow-unrelated-histories blog-res/master &lt;span style="color:#75715e"># or whichever branch you want to merge&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git remote remove blog-res
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mv test.md content/res &lt;span style="color:#75715e"># 移动之前仓库的文件到res中&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git commit -m &lt;span style="color:#e6db74">&amp;#39;mv to res folder&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这个方法有个很大的缺点，在merge时会合并到根目录，可能出现冲突，无法自定义合并到子文件夹中，虽然可以提前使用
+&lt;a
+class="link"
+href="https://github.com/newren/git-filter-repo"
+target="_blank"
+rel="noopener"
+>git-filter-repo&lt;/a>
+命令：&lt;code>git filter-repo --to-subdirectory-filter blog-res&lt;/code>，但是&lt;code>ubuntu 20.04&lt;/code>无法安装，放弃使用merge的方法&lt;/p>
+&lt;p>&lt;img src="/posts/2021/08/merge-two-git-repos/2021-08-08-01-49-49.png"
+width="1151"
+height="976"
+srcset="/posts/2021/08/merge-two-git-repos/2021-08-08-01-49-49_hu_78c16fe54202030a.png 480w, /posts/2021/08/merge-two-git-repos/2021-08-08-01-49-49_hu_e84ae8aea62cdedc.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="117"
+data-flex-basis="283px"
+>&lt;/p>
+&lt;h3 id="注意">注意
+&lt;/h3>&lt;p>如果仓库中存在未被git管理的文件，一定要备份好，&lt;code>git reset --hard&lt;/code>将会完全覆盖这样的文件，无法找回&lt;/p>
+&lt;p>使用&lt;code>git reset --hard &amp;lt;commit_id&amp;gt;&lt;/code>回到合并前的状态。如果操作失误出现大量的&lt;code>untracked files&lt;/code>，可以使用&lt;code>git clean&lt;/code>删除&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 查看可被清除的文件&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git clean -n
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 删除文件目录&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git clean -f -d
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果在merge后想要撤消，但是使用&lt;code>git log&lt;/code>找不能合并的记录日志对应的commit id，可以使用&lt;code>git reflog&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ git log
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>commit 0504c8037617b01b6c90183a7b8fcdaf71216411 &lt;span style="color:#f92672">(&lt;/span>HEAD -&amp;gt; main, blog&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Merge: a30ea67 34cef1f
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Author: navyd &amp;lt;dhjnavyd@gmail.com&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Date: Sun Aug &lt;span style="color:#ae81ff">8&lt;/span> 01:39:45 &lt;span style="color:#ae81ff">2021&lt;/span> +0800
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Add &lt;span style="color:#e6db74">&amp;#39;content/res/&amp;#39;&lt;/span> from commit &lt;span style="color:#e6db74">&amp;#39;34cef1f6fe6477181818e55ff468e9a62c7fccbf&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git-subtree-dir: content/res
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git-subtree-mainline: a30ea67efb72183d0d696dc74d9677a98b784035
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git-subtree-split: 34cef1f6fe6477181818e55ff468e9a62c7fccbf
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>commit a30ea67efb72183d0d696dc74d9677a98b784035 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Author: navyd &amp;lt;dhjnavyd@gmail.com&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Date: Sat Aug &lt;span style="color:#ae81ff">7&lt;/span> 00:26:58 &lt;span style="color:#ae81ff">2021&lt;/span> +0800
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> even主题问题
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ git reflog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>0504c80 &lt;span style="color:#f92672">(&lt;/span>HEAD -&amp;gt; main, blog&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>0&lt;span style="color:#f92672">}&lt;/span>: merge blog: Fast-forward
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>1&lt;span style="color:#f92672">}&lt;/span>: reset: moving to a30ea67
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>c9dc62b HEAD@&lt;span style="color:#f92672">{&lt;/span>2&lt;span style="color:#f92672">}&lt;/span>: reset: moving to HEAD~1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>e341955 HEAD@&lt;span style="color:#f92672">{&lt;/span>3&lt;span style="color:#f92672">}&lt;/span>: checkout: moving from blog to main
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>0504c80 &lt;span style="color:#f92672">(&lt;/span>HEAD -&amp;gt; main, blog&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>4&lt;span style="color:#f92672">}&lt;/span>: reset: moving to 0504c80
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>94302ef HEAD@&lt;span style="color:#f92672">{&lt;/span>5&lt;span style="color:#f92672">}&lt;/span>: commit: test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>0504c80 &lt;span style="color:#f92672">(&lt;/span>HEAD -&amp;gt; main, blog&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>6&lt;span style="color:#f92672">}&lt;/span>: reset: moving to 0504c8037617b01b6c90183a7b8fcdaf71216411
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>7&lt;span style="color:#f92672">}&lt;/span>: reset: moving to a30ea67
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>00dc6b8 HEAD@&lt;span style="color:#f92672">{&lt;/span>8&lt;span style="color:#f92672">}&lt;/span>: commit: mv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>1f736a4 HEAD@&lt;span style="color:#f92672">{&lt;/span>9&lt;span style="color:#f92672">}&lt;/span>: reset: moving to 1f736a4272dbd8306d8451bcb9fe5d35ce81878e
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>10&lt;span style="color:#f92672">}&lt;/span>: checkout: moving from main to blog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>e341955 HEAD@&lt;span style="color:#f92672">{&lt;/span>11&lt;span style="color:#f92672">}&lt;/span>: merge blog: Fast-forward
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>12&lt;span style="color:#f92672">}&lt;/span>: checkout: moving from blog to main
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>e341955 HEAD@&lt;span style="color:#f92672">{&lt;/span>13&lt;span style="color:#f92672">}&lt;/span>: commit: remove index.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>c9dc62b HEAD@&lt;span style="color:#f92672">{&lt;/span>14&lt;span style="color:#f92672">}&lt;/span>: commit: mv to old folder
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>e965a30 HEAD@&lt;span style="color:#f92672">{&lt;/span>15&lt;span style="color:#f92672">}&lt;/span>: merge blog-res/master: Merge made by the &lt;span style="color:#e6db74">&amp;#39;recursive&amp;#39;&lt;/span> strategy.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>16&lt;span style="color:#f92672">}&lt;/span>: reset: moving to a30ea67
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>17&lt;span style="color:#f92672">}&lt;/span>: reset: moving to HEAD~
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>e440e06 HEAD@&lt;span style="color:#f92672">{&lt;/span>18&lt;span style="color:#f92672">}&lt;/span>: merge blog-res/master: Merge made by the &lt;span style="color:#e6db74">&amp;#39;recursive&amp;#39;&lt;/span> strategy.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>a30ea67 &lt;span style="color:#f92672">(&lt;/span>origin/main, origin/HEAD&lt;span style="color:#f92672">)&lt;/span> HEAD@&lt;span style="color:#f92672">{&lt;/span>19&lt;span style="color:#f92672">}&lt;/span>: checkout: moving from main to blog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ git reset --hard id
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>在这里提到
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/14992078/8566831"
+target="_blank"
+rel="noopener"
+>使用git subtree&lt;/a>
+&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>cd navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git checkout -b blog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 添加blog-resources@master&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git subtree add --prefix&lt;span style="color:#f92672">=&lt;/span>content/res ../blog-resources master
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 合并blog到main分支&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git checkout main
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git merge blog
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>完成合并log&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ git log
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>commit 0504c8037617b01b6c90183a7b8fcdaf71216411 &lt;span style="color:#f92672">(&lt;/span>HEAD -&amp;gt; main, blog&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Merge: a30ea67 34cef1f
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Author: navyd &amp;lt;dhjnavyd@gmail.com&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Date: Sun Aug &lt;span style="color:#ae81ff">8&lt;/span> 01:39:45 &lt;span style="color:#ae81ff">2021&lt;/span> +0800
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Add &lt;span style="color:#e6db74">&amp;#39;content/res/&amp;#39;&lt;/span> from commit &lt;span style="color:#e6db74">&amp;#39;34cef1f6fe6477181818e55ff468e9a62c7fccbf&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git-subtree-dir: content/res
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git-subtree-mainline: a30ea67efb72183d0d696dc74d9677a98b784035
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> git-subtree-split: 34cef1f6fe6477181818e55ff468e9a62c7fccbf
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/1425892/how-do-you-merge-two-git-repositories"
+target="_blank"
+rel="noopener"
+>How do you merge two Git repositories?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/64966/8566831"
+target="_blank"
+rel="noopener"
+>How to remove local (untracked) files from the current Git working tree&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/2389423/8566831"
+target="_blank"
+rel="noopener"
+>Undo a Git merge that hasn&amp;rsquo;t been pushed yet&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/newren/git-filter-repo"
+target="_blank"
+rel="noopener"
+>newren/git-filter-repo&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://segmentfault.com/a/1190000012002151"
+target="_blank"
+rel="noopener"
+>git subtree教程&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

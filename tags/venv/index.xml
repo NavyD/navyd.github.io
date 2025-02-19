@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Venv on NavyD的个人博客</title><link>/tags/venv/</link><description>Recent content in Venv on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 08 Feb 2025 13:19:42 +0800</lastBuildDate><atom:link href="/tags/venv/index.xml" rel="self" type="application/rss+xml"/><item><title>UV: Could not find a suitable Python executable for the virtual environment based on the interpreter</title><link>/posts/2025/02/uv-not-find-a-suitable-python-executable-for-the-virtual-environment-based-on-the-interpreter/</link><pubDate>Sat, 08 Feb 2025 11:03:25 +0800</pubDate><guid>/posts/2025/02/uv-not-find-a-suitable-python-executable-for-the-virtual-environment-based-on-the-interpreter/</guid><description>&lt;h1 id="uv-could-not-find-a-suitable-python-executable-for-the-virtual-environment-based-on-the-interpreter">UV: Could not find a suitable Python executable for the virtual environment based on the interpreter
+&lt;/h1>&lt;p>在使用mise更新python版本后出现错误，即使重建venv也无效&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$ uv add --dev types-beautifulsoup4 types-PyYAML
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Resolved &lt;span style="color:#ae81ff">23&lt;/span> packages &lt;span style="color:#66d9ef">in&lt;/span> 45ms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">×&lt;/span> Failed to build `hugodynctx @ file&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>///C:/Users/navyd/workspaces/projects/navyd.github.io`
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">├─▶&lt;/span> Failed to create temporary virtualenv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">╰─▶&lt;/span> Could not find a suitable Python executable &lt;span style="color:#66d9ef">for&lt;/span> the virtual environment based on the interpreter&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> C:\Users\navyd\AppData\Local\mise\installs\python\&lt;span style="color:#ae81ff">3.13&lt;/span>.&lt;span style="color:#ae81ff">1&lt;/span>\python.exe
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ rm -Recurse -Force .\.venv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># mise 自动创建venv&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ uv sync
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Resolved &lt;span style="color:#ae81ff">20&lt;/span> packages &lt;span style="color:#66d9ef">in&lt;/span> 1ms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">×&lt;/span> Failed to build `hugodynctx @ file&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>///C:/Users/navyd/workspaces/projects/navyd.github.io`
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">├─▶&lt;/span> Failed to create temporary virtualenv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">╰─▶&lt;/span> Could not find a suitable Python executable &lt;span style="color:#66d9ef">for&lt;/span> the virtual environment based on the interpreter&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> C:\Users\navyd\AppData\Local\mise\installs\python\&lt;span style="color:#ae81ff">3.13&lt;/span>.&lt;span style="color:#ae81ff">1&lt;/span>\python.exe
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ uv --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>uv 0.5.29 (ca73c4754 2025-02-05)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>尝试移除mise环境，并使用scoop安装uv后发现仍然出现同样的问题。也尝试去检查uv相关源码
+&lt;a
+class="link"
+href="https://github.com/astral-sh/uv/blob/main/crates/uv-virtualenv/src/virtualenv.rs"
+target="_blank"
+rel="noopener"
+>crates/uv-virtualenv/src/virtualenv.rs&lt;/a>
+，但debug检查数据过于麻烦，也就仅此而已。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$ uv python list
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cpython-&lt;span style="color:#ae81ff">3.14&lt;/span>.0a4+freethreaded-windows-x86_64-none &amp;lt;download available&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cpython-&lt;span style="color:#ae81ff">3.14&lt;/span>.0a4-windows-x86_64-none &amp;lt;download available&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cpython-&lt;span style="color:#ae81ff">3.13&lt;/span>.&lt;span style="color:#ae81ff">2&lt;/span>+freethreaded-windows-x86_64-none &amp;lt;download available&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cpython-&lt;span style="color:#ae81ff">3.13&lt;/span>.&lt;span style="color:#ae81ff">2&lt;/span>-windows-x86_64-none C:\Users\navyd\AppData\Local\mise\installs\python\&lt;span style="color:#ae81ff">3.13&lt;/span>.&lt;span style="color:#ae81ff">2&lt;/span>\python.exe
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cpython-&lt;span style="color:#ae81ff">3.13&lt;/span>.&lt;span style="color:#ae81ff">2&lt;/span>-windows-x86_64-none &amp;lt;download available&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cpython-&lt;span style="color:#ae81ff">3.12&lt;/span>.&lt;span style="color:#ae81ff">9&lt;/span>-windows-x86_64-none &amp;lt;download available&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cpython-&lt;span style="color:#ae81ff">3.12&lt;/span>.&lt;span style="color:#ae81ff">8&lt;/span>-windows-x86_64-none C:\Users\navyd\AppData\Local\Programs\Python\Python312\python.exe
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cpython-&lt;span style="color:#ae81ff">3.11&lt;/span>.&lt;span style="color:#ae81ff">11&lt;/span>-windows-x86_64-none C:\Users\navyd\AppData\Roaming\uv\python\cpython-&lt;span style="color:#ae81ff">3.11&lt;/span>.&lt;span style="color:#ae81ff">11&lt;/span>-windows-x86_64-none\python.exe
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cpython-&lt;span style="color:#ae81ff">3.10&lt;/span>.&lt;span style="color:#ae81ff">16&lt;/span>-windows-x86_64-none &amp;lt;download available&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cpython-&lt;span style="color:#ae81ff">3.9&lt;/span>.&lt;span style="color:#ae81ff">21&lt;/span>-windows-x86_64-none &amp;lt;download available&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cpython-&lt;span style="color:#ae81ff">3.8&lt;/span>.&lt;span style="color:#ae81ff">20&lt;/span>-windows-x86_64-none &amp;lt;download available&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cpython-&lt;span style="color:#ae81ff">3.7&lt;/span>.&lt;span style="color:#ae81ff">9&lt;/span>-windows-x86_64-none &amp;lt;download available&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>pypy-&lt;span style="color:#ae81ff">3.10&lt;/span>.&lt;span style="color:#ae81ff">14&lt;/span>-windows-x86_64-none &amp;lt;download available&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>pypy-&lt;span style="color:#ae81ff">3.9&lt;/span>.&lt;span style="color:#ae81ff">19&lt;/span>-windows-x86_64-none &amp;lt;download available&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>pypy-&lt;span style="color:#ae81ff">3.8&lt;/span>.&lt;span style="color:#ae81ff">16&lt;/span>-windows-x86_64-none &amp;lt;download available&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>pypy-&lt;span style="color:#ae81ff">3.7&lt;/span>.&lt;span style="color:#ae81ff">13&lt;/span>-windows-x86_64-none &amp;lt;download available
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ $env:UV_PYTHON=&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$(pwd)&lt;span style="color:#e6db74">\.venv\Scripts\python.exe&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ $env:UV_PYTHON
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>C:\Users\navyd\workspaces\projects\navyd.github.io\.venv\Scripts\python.exe
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ uv sync
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Resolved &lt;span style="color:#ae81ff">20&lt;/span> packages &lt;span style="color:#66d9ef">in&lt;/span> 2ms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">×&lt;/span> Failed to build `hugodynctx @ file&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>///C:/Users/navyd/workspaces/projects/navyd.github.io`
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">├─▶&lt;/span> Failed to create temporary virtualenv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">╰─▶&lt;/span> Could not find a suitable Python executable &lt;span style="color:#66d9ef">for&lt;/span> the virtual environment based on the interpreter&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> C:\Users\navyd\AppData\Local\mise\installs\python\&lt;span style="color:#ae81ff">3.13&lt;/span>.&lt;span style="color:#ae81ff">1&lt;/span>\python.exe
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>突然发现可能是uv本地数据缓存（非pip包缓存），参考
+&lt;a
+class="link"
+href="https://docs.astral.sh/uv/concepts/cache/#cache-directory"
+target="_blank"
+rel="noopener"
+>Cache directory&lt;/a>
+移除&lt;code>%LOCALAPPDATA%\uv\cache&lt;/code>后正常工作&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ mv C:&lt;span style="color:#ae81ff">\U&lt;/span>sers&lt;span style="color:#ae81ff">\n&lt;/span>avyd&lt;span style="color:#ae81ff">\A&lt;/span>ppData&lt;span style="color:#ae81ff">\L&lt;/span>ocal&lt;span style="color:#ae81ff">\u&lt;/span>v C:&lt;span style="color:#ae81ff">\U&lt;/span>sers&lt;span style="color:#ae81ff">\n&lt;/span>avyd&lt;span style="color:#ae81ff">\A&lt;/span>ppData&lt;span style="color:#ae81ff">\L&lt;/span>ocal&lt;span style="color:#ae81ff">\u&lt;/span>v.bak
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ uv sync -vvv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span># ...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Building hugodynctx @ file:///C:/Users/navyd/workspaces/projects/navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> uv_distribution::source::build_distribution dist=hugodynctx @ file:///C:/Users/navyd/workspaces/projects/navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.410671s 0ms DEBUG uv_distribution::source Building: hugodynctx @ file:///C:/Users/navyd/workspaces/projects/navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> uv_dispatch::setup_build version_id=&amp;#34;hugodynctx @ file:///C:/Users/navyd/workspaces/projects/navyd.github.io&amp;#34;, subdirectory=None
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.415781s 2ms DEBUG uv_workspace::workspace No workspace root found, using project root
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.416230s 2ms DEBUG uv_virtualenv::virtualenv Using base executable for virtual environment: C:\Users\navyd\AppData\Local\mise\installs\python\3.13.2\python.exe
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.416777s 3ms DEBUG uv_virtualenv::virtualenv Ignoring empty directory
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.436989s 23ms DEBUG uv_build_frontend Resolving build requirements
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span># ...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ uv run python -V
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Python 3.13.2
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在缓存目录中未找到mise相关python3.13.1目录，可能是不直接使用文本保存数据&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ rg --hidden --no-ignore &lt;span style="color:#e6db74">&amp;#39;\bmise\b&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cache\builds-v0\.tmpk1tLSb\pyvenv.cfg
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>1:home = C:\Users\navyd\AppData\Local\mise\installs\python\3.11.10
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>cache\archive-v0\1ckjgyPNIlVA5hCtvFzua\pyvenv.cfg
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>1:home = C:\Users\navyd\AppData\Local\mise\installs\python\3.11.10
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>cache\archive-v0\NF0VHsWdceAOZbGh-rKPD\pyvenv.cfg
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>1:home = C:\Users\navyd\AppData\Local\mise\installs\python\3.11.10
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>cache\archive-v0\nOmLVxlGvvmTm1jhx7Noh\pyvenv.cfg
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>1:home = C:\Users\navyd\AppData\Local\mise\installs\python\3.11.10
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>cache\archive-v0\QJF7lnIHqd6DhEiWozLU9\pyvenv.cfg
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>1:home = C:\Users\navyd\AppData\Local\mise\installs\python\3.11.10
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>但在uv/cache目录中是存在venv关联的，有venv相关问题可以先禁用缓存再试试&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ l uv&lt;span style="color:#ae81ff">\c&lt;/span>ache
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Mode Size Date Modified Name
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d- - 2025-02-08 12:07 ./
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d- - 2024-12-19 15:22 ../
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d- - 2025-02-08 12:07 archive-v0/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d- - 2025-02-08 12:07 builds-v0/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d- - 2024-12-19 18:41 environments-v1/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d- - 2024-12-19 15:22 interpreter-v4/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d- - 2024-12-29 15:07 sdists-v6/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d- - 2025-02-07 00:37 sdists-v7/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d- - 2024-12-19 16:48 simple-v14/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d- - 2025-01-23 12:26 simple-v15/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>d- - 2025-01-05 00:00 wheels-v3/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-a 1 2024-12-19 15:22 .gitignore
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-a 43 2024-12-19 15:22 CACHEDIR.TAG
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意：&lt;em>即使可以使用&lt;code>uv sync --no-cache&lt;/code>正常工作，但后续未指定&lt;code>--no-cache&lt;/code>时的命令仍然会失败&lt;/em>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ uv sync --no-cache
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Resolved 20 packages in 2ms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Built hugodynctx @ file:///C:/Users/navyd/workspaces/projects/navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Prepared 1 package in 2.14s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Uninstalled 1 package in 6ms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Installed 1 package in 17ms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ~ hugodynctx==0.1.0 (from file:///C:/Users/navyd/workspaces/projects/navyd.github.io)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>$ uv add --dev types-beautifulsoup4 types-PyYAML -vvv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span># ...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Building hugodynctx @ file:///C:/Users/navyd/workspaces/projects/navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> uv_distribution::source::build_distribution dist=hugodynctx @ file:///C:/Users/navyd/workspaces/projects/navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.215427s 0ms DEBUG uv_distribution::source Building: hugodynctx @ file:///C:/Users/navyd/workspaces/projects/navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> uv_dispatch::setup_build version_id=&amp;#34;hugodynctx @ file:///C:/Users/navyd/workspaces/projects/navyd.github.io&amp;#34;, subdirectory=None
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.218969s 1ms DEBUG uv_workspace::workspace No workspace root found, using project root
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.219232s 2ms DEBUG uv_virtualenv::virtualenv Using base executable for virtual environment: C:\Users\navyd\AppData\Local\mise\installs\python\3.13.1\python.exe
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.219747s 2ms DEBUG uv_virtualenv::virtualenv Ignoring empty directory
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.224332s 19ms DEBUG uv_fs Released lock at `C:\Users\navyd\AppData\Local\uv\cache\sdists-v7\editable\09b11b31b7612a34\.lock`
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.224834s 16ms DEBUG uv_fs Released lock at `C:\Users\navyd\AppData\Local\uv\cache\wheels-v3\index\a3dff561ea463217\types-html5lib\types_html5lib-1.1.11.20241018-py3-none-any.lock`
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.225186s 18ms DEBUG uv_fs Released lock at `C:\Users\navyd\AppData\Local\uv\cache\wheels-v3\index\a3dff561ea463217\types-pyyaml\types_pyyaml-6.0.12.20241230-py3-none-any.lock`
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.225566s 19ms DEBUG uv_fs Released lock at `C:\Users\navyd\AppData\Local\uv\cache\wheels-v3\index\a3dff561ea463217\types-beautifulsoup4\types_beautifulsoup4-4.12.0.20250204-py3-none-any.lock`
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.226420s DEBUG uv::commands::project::add Reverting changes to `pyproject.toml`
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0.228047s DEBUG uv::commands::project::add Reverting changes to `uv.lock`
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> × Failed to build `hugodynctx @ file:///C:/Users/navyd/workspaces/projects/navyd.github.io`
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ├─▶ Failed to create temporary virtualenv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ╰─▶ Could not find a suitable Python executable for the virtual environment based on the interpreter: C:\Users\navyd\AppData\Local\mise\installs\python\3.13.1\python.exe
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>$ uv add --dev types-beautifulsoup4 types-PyYAML
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Installed 4 packages in 34ms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ~ hugodynctx==0.1.0 (from file:///C:/Users/navyd/workspaces/projects/navyd.github.io)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> + types-beautifulsoup4==4.12.0.20250204
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> + types-html5lib==1.1.11.20241018
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> + types-pyyaml==6.0.12.20241230
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>手动删除&lt;code>%LOCALAPPDATA%\uv\cache&lt;/code>重建venv&lt;/p></description></item></channel></rss>

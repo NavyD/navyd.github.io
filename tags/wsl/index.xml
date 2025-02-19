@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Wsl on NavyD的个人博客</title><link>/tags/wsl/</link><description>Recent content in Wsl on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/wsl/index.xml" rel="self" type="application/rss+xml"/><item><title>Cargo Doc Open Does Not Work in Wsl</title><link>/posts/archives/rust/cargo-doc-open-does-not-work-in-wsl/</link><pubDate>Thu, 26 Aug 2021 16:26:40 +0800</pubDate><guid>/posts/archives/rust/cargo-doc-open-does-not-work-in-wsl/</guid><description>&lt;p>在wsl命令行中使用&lt;code>cargo doc --open&lt;/code>无法在windows端打开&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>在wsl命令行中是可以直接执行windows exe文件的，ubuntu中预置了
+&lt;a
+class="link"
+href="https://github.com/wslutilities/wslu"
+target="_blank"
+rel="noopener"
+>wslu&lt;/a>
+工具，其中的&lt;code>wslview&lt;/code>可以满足要求&lt;/p>
+&lt;blockquote>
+&lt;p>A fake WSL browser that can help you open link in default Windows browser or open files on Windows.&lt;/p>&lt;/blockquote>
+&lt;p>在wsl命令行中使用wslview可以用windows的默认程序打开文件&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 使用默认文本处理程序打开&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wslview test.txt
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>尝试更新wslview为默认浏览器&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ wslview --help
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wslview - Part of wslu, a collection of utilities &lt;span style="color:#66d9ef">for&lt;/span> Windows &lt;span style="color:#ae81ff">10&lt;/span> Windows Subsystem &lt;span style="color:#66d9ef">for&lt;/span> Linux
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Usage: wslview &lt;span style="color:#f92672">(&lt;/span>--register|--unregister|--help|--version&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">[&lt;/span>LINK&lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>For more help &lt;span style="color:#66d9ef">for&lt;/span> wslview, visit the following site: https://github.com/wslutilities/wslu/wiki/wslview
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wslview --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wslu v2.3.6; wslview v06
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wslview --register
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>sudo&lt;span style="color:#f92672">]&lt;/span> password &lt;span style="color:#66d9ef">for&lt;/span> navyd:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ update-alternatives --list x-www-browser
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/usr/bin/wslview
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># empty&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ echo $BROWSER
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ file &lt;span style="color:#66d9ef">$(&lt;/span>which x-www-browser&lt;span style="color:#66d9ef">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/usr/bin/x-www-browser: symbolic link to /etc/alternatives/x-www-browser
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ file /etc/alternatives/x-www-browser
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/etc/alternatives/x-www-browser: symbolic link to /usr/bin/wslview
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ file /usr/bin/wslview
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/usr/bin/wslview: Bourne-Again shell script, ASCII text executable
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ head -n &lt;span style="color:#ae81ff">2&lt;/span> /usr/bin/wslview
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/bin/bash&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># wslu - Windows 10 linux Subsystem Utility&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>可以看到wslview脚本确实成为了wsl中的浏览器，但是cargo依然无法打开，应该是cargo依赖的是环境变量而不是xserver环境。&lt;/p>
+&lt;p>&lt;strong>注意：当前版本&lt;code>wslu v2.3.6; wslview v06&lt;/code>存在无法打开绝对路径bug：
+&lt;a
+class="link"
+href="https://github.com/wslutilities/wslu/issues/118"
+target="_blank"
+rel="noopener"
+>wslview open file by absolute path failed #118&lt;/a>
+&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ wslview /home/panjie/temp/aaa.docx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start : 由于出现以下错误，无法运行此命令: 系统找不到指定的文件。。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>所在位置 行:1 字符: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>+ Start &lt;span style="color:#e6db74">&amp;#34;/home/panjie/temp/aaa.docx&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> + CategoryInfo : InvalidOperation: &lt;span style="color:#f92672">(&lt;/span>:&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">[&lt;/span>Start-Process&lt;span style="color:#f92672">]&lt;/span>，InvalidOperationException
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> + FullyQualifiedErrorId : InvalidOperationException,Microsoft.PowerShell.Commands.StartProcessCommand
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决方案">解决方案
+&lt;/h2>&lt;h3 id="file-protocol">file protocol
+&lt;/h3>&lt;p>以ubuntu为例，创建文件&lt;code>~/open_browser.sh&lt;/code>并添加执行权限，在&lt;code>.bashrc&lt;/code>或&lt;code>.zshrc&lt;/code>中添加下面代码，注意&lt;code>file://///wsl$&lt;/code>不能改为&lt;code>file:///wsl$&lt;/code>。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ~/open_browser.sh&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># chrome&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>browser&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;/mnt/c/Program Files/Google/Chrome/Application/chrome.exe&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 如果不是ubuntu则需要修改对应目录 如果输入$1为相对路径则转为绝对路径&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>file_path&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;file://///wsl&lt;/span>$&lt;span style="color:#e6db74">//Ubuntu&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>&lt;span style="color:#f92672">[[&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$1&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">=&lt;/span> /* &lt;span style="color:#f92672">]]&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$1&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &lt;span style="color:#f92672">||&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>pwd&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>$1&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$browser &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$file_path&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 执行权限&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>chmod +x ~/open_browser.sh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># .zshrc&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export BROWSER&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$HOME&lt;span style="color:#e6db74">/open_browser.sh&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>cargo还允许配置
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/stable/cargo/reference/config.html#docbrowser"
+target="_blank"
+rel="noopener"
+>&lt;code>doc.browser&lt;/code>&lt;/a>
+覆盖环境变量BROWSER，如在&lt;code>/.cargo/config.toml&lt;/code>或当前项目的config.toml中指定&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">doc&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">browser&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;$HOME/open_browser.sh&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="wslu-wslview">wslu-wslview
+&lt;/h3>&lt;p>从
+&lt;a
+class="link"
+href="https://github.com/wslutilities/wslu/blob/master/src/wslview.sh"
+target="_blank"
+rel="noopener"
+>wslview sh源码&lt;/a>
+上看还是使用了&lt;code>file&lt;/code>协议，功能更强大，但是需要更新默认版本&lt;code>wslu v2.3.6&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>wslview --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># wslu v2.3.6; wslview v06&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 更新wslu&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo add-apt-repository ppa:wslutilities/wslu
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get update &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> sudo apt-get upgrade
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wslview --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># wslu v3.2.2-1; wslview v10&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 在`~/.zshrc`中添加&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export BROWSER&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;wslview&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="http-server">http server
+&lt;/h3>&lt;p>python3自带一个http server，在workspace中运行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># --directory DIRECTORY port&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>python3 -m http.server --directory target/doc/$crate_name &lt;span style="color:#ae81ff">8000&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>--directory&lt;/code>在python3.7可用&lt;/li>
+&lt;li>&lt;code>$crate_name&lt;/code>通常是当前目录名 &lt;code>-&lt;/code> to &lt;code>_&lt;/code>如：a-b -&amp;gt; &lt;code>target/doc/a_b&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/rust-lang/cargo/issues/7557#issuecomment-791320960"
+target="_blank"
+rel="noopener"
+>cargo doc &amp;ndash;open doesn&amp;rsquo;t work in WSL #7557&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/rust-lang/cargo/issues/4966#issuecomment-406584885"
+target="_blank"
+rel="noopener"
+>cargo doc &amp;ndash;open should start a web server to enable keyboard accessibility #4966&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/stable/cargo/commands/cargo-doc.html#documentation-options"
+target="_blank"
+rel="noopener"
+>The Cargo Book cargo-doc(1)&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.python.org/3/library/http.server.html"
+target="_blank"
+rel="noopener"
+>http.server — HTTP servers&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/20204890/8566831"
+target="_blank"
+rel="noopener"
+>Check If Shell Script $1 Is Absolute Or Relative Path [duplicate]&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://en.wikipedia.org/wiki/File_URI_scheme#How_many_slashes?"
+target="_blank"
+rel="noopener"
+>file URI scheme How many slashes?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://superuser.com/a/1600972"
+target="_blank"
+rel="noopener"
+>How can I “open” a file from WSL with the default application?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://askubuntu.com/a/232430"
+target="_blank"
+rel="noopener"
+>What&amp;rsquo;s the difference between x-www-browser and gnome-www-browser?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/wslutilities/wslu"
+target="_blank"
+rel="noopener"
+>wslu&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

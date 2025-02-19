@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Doc on NavyD的个人博客</title><link>/tags/doc/</link><description>Recent content in Doc on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/doc/index.xml" rel="self" type="application/rss+xml"/><item><title>How to Embed a Static Variable Into Documentation</title><link>/posts/archives/rust/how-to-embed-a-static-variable-into-documentation/</link><pubDate>Sat, 13 Nov 2021 00:54:17 +0800</pubDate><guid>/posts/archives/rust/how-to-embed-a-static-variable-into-documentation/</guid><description>&lt;p>在编写rust文档时可能需要用到编译时静态变量的值，如环境变量&lt;code>env!(&amp;quot;CARGO_PKG_NAME&amp;quot;)&lt;/code>等&lt;/p>
+&lt;h2 id="declarative-macros">Declarative Macros
+&lt;/h2>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>macro_rules&lt;span style="color:#f92672">!&lt;/span> impl_foo {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#75715e">$name&lt;/span>:&lt;span style="color:#a6e22e">ident&lt;/span>, &lt;span style="color:#75715e">$sname&lt;/span>:&lt;span style="color:#a6e22e">expr&lt;/span>) &lt;span style="color:#f92672">=&amp;gt;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#[doc = &lt;/span>&lt;span style="color:#e6db74">&amp;#34;Returns a new `&amp;#34;&lt;/span>&lt;span style="color:#75715e">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#[doc = $sname]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#[doc = &lt;/span>&lt;span style="color:#e6db74">&amp;#34;`.&amp;#34;&lt;/span>&lt;span style="color:#75715e">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">pub&lt;/span> &lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">myfoo&lt;/span>() -&amp;gt; &lt;span style="color:#75715e">$name&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">42&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> };
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> (&lt;span style="color:#75715e">$name&lt;/span>:&lt;span style="color:#a6e22e">tt&lt;/span>) &lt;span style="color:#f92672">=&amp;gt;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> impl_foo!(&lt;span style="color:#75715e">$name&lt;/span>, stringify!(&lt;span style="color:#75715e">$name&lt;/span>));
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> };
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>impl_foo!(&lt;span style="color:#66d9ef">u32&lt;/span>);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/43353854/8566831"
+target="_blank"
+rel="noopener"
+>How to embed a Rust macro variable into documentation?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/32956193/8566831"
+target="_blank"
+rel="noopener"
+>How to create a static string at compile time&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/rustdoc/the-doc-attribute.html"
+target="_blank"
+rel="noopener"
+>The rustdoc book: The #[doc] attribute&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.rs/embed-doc-image/0.1.4/src/embed_doc_image/lib.rs.html#297-340"
+target="_blank"
+rel="noopener"
+>impl: Attribute Macro embed_doc_image::embed_doc_image&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

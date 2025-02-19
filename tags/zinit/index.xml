@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Zinit on </title>
+        <link>/tags/zinit/</link>
+        <description>Recent content in Zinit on </description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en</language>
+        <lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/zinit/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Zinit</title>
+        <link>/posts/archives/linux/zinit/</link>
+        <pubDate>Wed, 20 Oct 2021 15:10:20 +0800</pubDate>
+        
+        <guid>/posts/archives/linux/zinit/</guid>
+        <description>&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/ohmyzsh/ohmyzsh/wiki/Customization#adding-a-new-plugin&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;ohmyzsh Customization&lt;/a&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/crivotz/dot_files/blob/master/linux/zplugin/zshrc&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;zshrc&lt;/a&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/yutkat/dotfiles/blob/ab1cf22ec88015d2f4f533e24aee84b71ac13b64/.zsh/rc/pluginlist.zsh#L227-L231&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;pluginlist.zsh&lt;/a&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/zinit-zsh/z-a-bin-gem-node#introduction&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;z-a-bin-gem-node Introduction&lt;/a&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;从任意的url安装&#34;&gt;从任意的url安装
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/zinit-zsh/z-a-readurl&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;z-a-readurl that allows to automatically download newest tarballs from download pages&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/zdharma/zinit/issues/177#issuecomment-538844713&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;.tar.bz2 snippet download with extra parent folder? #177&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+        </item>
+        <item>
+        <title>Compinit 503 No Such File or Directory in Zinit</title>
+        <link>/posts/archives/linux/compinit-503-no-such-file-or-directory-in-zinit/</link>
+        <pubDate>Wed, 20 Oct 2021 14:59:00 +0800</pubDate>
+        
+        <guid>/posts/archives/linux/compinit-503-no-such-file-or-directory-in-zinit/</guid>
+        <description>&lt;p&gt;在使用zinit安装插件时反复调试时可能出现&lt;code&gt;compinit:503: no such file or directory: ~/.zinit/completions/_xxx&lt;/code&gt;问题，但是并不影响正常使用，只是在首次进入后提示两次&lt;/p&gt;
+&lt;h2 id=&#34;解决&#34;&gt;解决
+&lt;/h2&gt;&lt;p&gt;运行&lt;code&gt;zinit cclear&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/zdharma/zinit/issues/376#issuecomment-653731705&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Enhancd load error! #376&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+
+&lt;a  
+    class=&#34;link&#34;
+ 
+    href=&#34;https://github.com/zdharma/zinit/issues/333#issuecomment-626313212&#34;
+    
+    target=&#34;_blank&#34;
+    rel=&#34;noopener&#34;
+
+
+&gt;Issue with removing z-a-man #333&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+        </item>
+        
+    </channel>
+</rss>

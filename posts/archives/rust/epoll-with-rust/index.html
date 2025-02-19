@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content=" 原文链接: https://www.zupzup.org/epoll-with-rust/index.html 翻译： BK0717 选题： trdthg 本文由 Rustt 翻译， StudyRust 荣誉推出\n我已经在许多语言中（比如 JavaScript (Node.js)、Java/Kotlin 和 Rust）使用异步或非阻塞 IO 许多年了。\n">
+<title>Epoll With Rust</title>
+
+<link rel='canonical' href='/posts/archives/rust/epoll-with-rust/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="Epoll With Rust">
+<meta property='og:description' content=" 原文链接: https://www.zupzup.org/epoll-with-rust/index.html 翻译： BK0717 选题： trdthg 本文由 Rustt 翻译， StudyRust 荣誉推出\n我已经在许多语言中（比如 JavaScript (Node.js)、Java/Kotlin 和 Rust）使用异步或非阻塞 IO 许多年了。\n">
+<meta property='og:url' content='/posts/archives/rust/epoll-with-rust/'>
+<meta property='og:site_name' content=''>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2022-04-11T23:39:05&#43;08:00'/><meta property='article:modified_time' content='2025-02-04T19:35:42&#43;08:00'/>
+<meta name="twitter:title" content="Epoll With Rust">
+<meta name="twitter:description" content=" 原文链接: https://www.zupzup.org/epoll-with-rust/index.html 翻译： BK0717 选题： trdthg 本文由 Rustt 翻译， StudyRust 荣誉推出\n我已经在许多语言中（比如 JavaScript (Node.js)、Java/Kotlin 和 Rust）使用异步或非阻塞 IO 许多年了。\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    <img src="https://avatars.githubusercontent.com/u/22490764" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/"></a></h1>
+            <h2 class="site-description">Hello World!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/47808239'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/NavyD'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://x.com/NavyD_hello'
+                        target="_blank"
+                        title="Twitter"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c-.002 -.249 1.51 -2.772 1.818 -4.013z" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="/" selected>English</option>
+                                
+                                    <option value="/zh-cn/" >中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#初步设置">初步设置</a></li>
+    <li><a href="#处理请求">处理请求</a></li>
+    <li><a href="#测试">测试</a></li>
+    <li><a href="#总结">总结</a></li>
+    <li><a href="#参考资料">参考资料</a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/posts/archives/rust/epoll-with-rust/">Epoll With Rust</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2022-04-11T23:39:05&#43;08:00</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    10 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <blockquote>
+<p>原文链接: 
+
+<a  
+    class="link"
+ 
+    href="https://www.zupzup.org/epoll-with-rust/index.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>https://www.zupzup.org/epoll-with-rust/index.html</a>
+
+<strong>翻译：
+
+<a  
+    class="link"
+ 
+    href="https://github.com/hyuuko"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>BK0717</a>
+</strong>
+选题：
+
+<a  
+    class="link"
+ 
+    href="https://github.com/trdthg"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>trdthg</a>
+
+本文由 
+
+<a  
+    class="link"
+ 
+    href="https://rustt.org/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Rustt</a>
+ 翻译，
+
+<a  
+    class="link"
+ 
+    href="https://studyrust.org/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>StudyRust</a>
+ 荣誉推出</p></blockquote>
+<p>我已经在许多语言中（比如 JavaScript (Node.js)、Java/Kotlin 和 Rust）使用异步或非阻塞 IO 许多年了。</p>
+<p>然而，我无法很好地解释 <code>poll</code>、<code>select</code>、<code>epoll</code>、<code>kqueue</code> 的工作原理，不是很有信心解释清楚非阻塞 IO 实际上是如何工作的。</p>
+<p>在这篇文章里我们会用 Rust 实现一个非常简单的非阻塞 HTTP 服务器，它会仅使用一个线程来同时为多个请求提供服务。</p>
+<p>这个例子会在 Linux 上运行，因此我们会使用 <code>epoll</code> 系列系统调用来达成非阻塞 IO 的目标。</p>
+<p>在本文末尾的参考资料部分中，你将找到用于编写此内容的一些教程和库的链接。这些参考资料对 Linux，Windows 和 MacOS 都有用，如果您对其他平台感兴趣或者在更深入地理解主题，我强烈建议您看一下。</p>
+<h2 id="初步设置">初步设置
+</h2><p>我们唯一要使用的依赖是 libc，并且实际上我们不会处理错误。我们将会把所有的错误传播到顶部以保持简单，如果有任何问题，程序将 panic 并且停止。</p>
+<p>首先，让我们定义一个从 mio 复制过来的辅助用的宏，用来调用 libc 的系统调用并且用 <code>Result</code> 包装结果。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">#[allow(unused_macros)]</span>
+</span></span><span style="display:flex;"><span>macro_rules<span style="color:#f92672">!</span> syscall {
+</span></span><span style="display:flex;"><span>    (<span style="color:#75715e">$fn</span>: <span style="color:#a6e22e">ident</span> ( <span style="color:#75715e">$($arg</span>: <span style="color:#a6e22e">expr</span>),<span style="color:#f92672">*</span> <span style="color:#75715e">$(,</span>)<span style="color:#f92672">*</span> ) ) <span style="color:#f92672">=&gt;</span> {{
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> res <span style="color:#f92672">=</span> <span style="color:#66d9ef">unsafe</span> { libc::<span style="color:#75715e">$fn</span>(<span style="color:#75715e">$($arg</span>, )<span style="color:#f92672">*</span>) };
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> res <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> {
+</span></span><span style="display:flex;"><span>            Err(std::io::Error::last_os_error())
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            Ok(res)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }};
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这个宏没什么好讲的，只是在一个 unsafe 块中调用给定的 libc 系统调用，如果它返回一个错误 (-1)，错误被包装在 <code>Result</code> 中，反之返回一个用 Ok 包装的值。</p>
+<p>接下来，我们需要在 <code>127.0.0.1:8000</code> 启动一个 TCP 服务器，我们可以稍候进行测试：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::os::unix::io::{AsRawFd, RawFd};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::io;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::io::prelude::<span style="color:#f92672">*</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::net::{TcpListener, TcpStream};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">HTTP_RESP</span>: <span style="color:#66d9ef">&amp;</span>[<span style="color:#66d9ef">u8</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;HTTP/1.1 200 OK
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">content-type: text/html
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">content-length: 5
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Hello&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> listener <span style="color:#f92672">=</span> TcpListener::bind(<span style="color:#e6db74">&#34;127.0.0.1:8000&#34;</span>)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>    listener.set_nonblocking(<span style="color:#66d9ef">true</span>)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> listener_fd <span style="color:#f92672">=</span> listener.as_raw_fd();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Ok(())
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这段代码在给定的套接字地址上创建了一个 <code>TcpListener</code>。我们将它设置成了非阻塞模式，这意味着使我们能够接受新的连接的 <code>accept</code> 操作变成了非阻塞的。如果此时 socket 还没准备好而我们立即 <code>accept</code>，<code>accept</code> 将不会阻塞，而是直接返回一个 <code>io::ErrorKind::WouldBlock</code> 错误告诉我们稍后再重新尝试。</p>
+<p>最后，记住这个文件描述符（在 Linux 上只是一个整数），我们稍后会用到它。我们还定义了一个常量 <code>HTTP_RESP</code>，这是我们对所有传入 HTTP 请求的响应。</p>
+<p>接下来，让我们设置我们的 epoll 事件队列。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> epoll_fd <span style="color:#f92672">=</span> epoll_create().expect(<span style="color:#e6db74">&#34;can create epoll queue&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">epoll_create</span>() -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>RawFd<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> fd <span style="color:#f92672">=</span> syscall!(epoll_create1(<span style="color:#ae81ff">0</span>))<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Ok(flags) <span style="color:#f92672">=</span> syscall!(fcntl(fd, libc::<span style="color:#66d9ef">F_GETFD</span>)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> _ <span style="color:#f92672">=</span> syscall!(fcntl(fd, libc::<span style="color:#66d9ef">F_SETFD</span>, flags <span style="color:#f92672">|</span> libc::<span style="color:#66d9ef">FD_CLOEXEC</span>));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Ok(fd)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>epoll_create</code> 简单地调用了 
+
+<a  
+    class="link"
+ 
+    href="https://man7.org/linux/man-pages/man2/epoll_create1.2.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>epoll_create</a>
+ 系统调用，并返回用于 epoll 事件通知的文件描述符。</p>
+<p>通过这个文件描述符，我们可以添加、修改和移除对特定文件描述符上的特定事件的兴趣，当我们稍后调用 
+
+<a  
+    class="link"
+ 
+    href="https://man7.org/linux/man-pages/man2/epoll_wait.2.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>epoll_wait</a>
+ 时，它将阻塞直到相应事件发生然后通知我们，我们就可以在给定的文件描述符上进行读取（比如一个传入的连接）。</p>
+<p>一步一步来，现在我们已经有了 epoll，我们想要添加一个对传入的连接的兴趣。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">READ_FLAGS</span>: <span style="color:#66d9ef">i32</span> <span style="color:#f92672">=</span> libc::<span style="color:#66d9ef">EPOLLONESHOT</span> <span style="color:#f92672">|</span> libc::<span style="color:#66d9ef">EPOLLIN</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">WRITE_FLAGS</span>: <span style="color:#66d9ef">i32</span> <span style="color:#f92672">=</span> libc::<span style="color:#66d9ef">EPOLLONESHOT</span> <span style="color:#f92672">|</span> libc::<span style="color:#66d9ef">EPOLLOUT</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> key <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>;
+</span></span><span style="display:flex;"><span>    add_interest(epoll_fd, listener_fd, listener_read_event(key))<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">add_interest</span>(epoll_fd: <span style="color:#a6e22e">RawFd</span>, fd: <span style="color:#a6e22e">RawFd</span>, <span style="color:#66d9ef">mut</span> event: <span style="color:#a6e22e">libc</span>::epoll_event) -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    syscall!(epoll_ctl(epoll_fd, libc::<span style="color:#66d9ef">EPOLL_CTL_ADD</span>, fd, <span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> event))<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>    Ok(())
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">listener_read_event</span>(key: <span style="color:#66d9ef">u64</span>) -&gt; <span style="color:#a6e22e">libc</span>::epoll_event {
+</span></span><span style="display:flex;"><span>    libc::epoll_event {
+</span></span><span style="display:flex;"><span>        events: <span style="color:#a6e22e">READ_FLAGS</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">u32</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">u64</span>: <span style="color:#a6e22e">key</span>,
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>add_interest</code> 函数的参数有：<code>epoll</code> 实例的文件描述符、我们想要添加兴趣的文件描述符，以及一个定义了我们想要被通知的事件类型的 <code>epoll_event</code>。</p>
+<p>这个事件有两个元素，<code>events</code> 和 <code>u64</code>。<code>events</code> 是一组标志，根据我们感兴趣的事件而设置。在此例中，我们只对读就绪事件感兴趣，因此用 <code>EPOLLIN</code>。然而，在读写的情况下，我们额外设置了 <code>EPOLLONESHOT</code> 标志，这意味着当我们根据此兴趣得到通知时，该兴趣将被移除。</p>
+<p>因此，如果我们想要保持读取（因为我们期待这里有更多的数据），我们需要再次注册该兴趣。</p>
+<p>这些参数通过使用 <code>EPOLL_CTL_ADD</code> 标志的 
+
+<a  
+    class="link"
+ 
+    href="https://man7.org/linux/man-pages/man2/epoll_ctl.2.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>epoll_ctl</a>
+ 被传递，表明我们正在添加一个兴趣。</p>
+<p>我们的服务器已经建立起来了，epoll 队列和对新的连接的兴趣也有了，下一步就是我们的事件循环！</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> events: Vec<span style="color:#f92672">&lt;</span>libc::epoll_event<span style="color:#f92672">&gt;</span> <span style="color:#f92672">=</span> Vec::with_capacity(<span style="color:#ae81ff">1024</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">loop</span> {
+</span></span><span style="display:flex;"><span>        events.clear();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> res <span style="color:#f92672">=</span> <span style="color:#66d9ef">match</span> syscall!(epoll_wait(
+</span></span><span style="display:flex;"><span>            epoll_fd,
+</span></span><span style="display:flex;"><span>            events.as_mut_ptr() <span style="color:#66d9ef">as</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">mut</span> libc::epoll_event,
+</span></span><span style="display:flex;"><span>            <span style="color:#ae81ff">1024</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#ae81ff">1000</span> <span style="color:#66d9ef">as</span> libc::c_int,
+</span></span><span style="display:flex;"><span>        )) {
+</span></span><span style="display:flex;"><span>            Ok(v) <span style="color:#f92672">=&gt;</span> v,
+</span></span><span style="display:flex;"><span>            Err(e) <span style="color:#f92672">=&gt;</span> panic!(<span style="color:#e6db74">&#34;error during epoll wait: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, e),
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// safe  as long as the kernel does nothing wrong - copied from mio
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">unsafe</span> { events.set_len(res <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>) };
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>我们启动了一个无限循环。在这个循环里，我们做的第一件事就是清除我们的 event vector。这个 <code>events</code> vector 大小为 1024，我们将会把它传递给 <code>epoll_wait</code>，也就是设置新的事件的地方。</p>
+<p>这也是为什么我们清除它，因为我们不想要任何的旧事件存在。</p>
+<p>然后我们用前面提到的 <code>epoll_fd</code> 调用 <code>epoll_wait</code>，事件数量的最大值应在以毫秒为单位的 timeout 内被返回。如果没有事件发生，将会到达此 timeout。</p>
+<p>一旦调用了，<code>epoll_wait</code> 将会阻塞直到以下三件事情发生：</p>
+<ul>
+<li>我们注册了兴趣的文件描述符有一个事件</li>
+<li>一个信号处理函数打断了该系统调用</li>
+<li>timeout 过期</li>
+</ul>
+<p>我们可以将 timeout 设置成 -1，这会让 <code>epoll_wait</code> 一直阻塞，直到任意其他两件事情之一发生。</p>
+<p>待 <code>epoll_wait</code> 返回后，我们就得到了一个表示事件数量的 <code>res</code> 变量。然后我们设置 <code>events</code> 的长度。这里我们要使用 <code>unsafe</code>，因为 <code>set_len</code> 不会为我们做任何安全检查。</p>
+<p>通常我们需要确保 <code>res</code> 小于等于 <code>events</code> 的容量，并且在旧长度内的值（在该例中为 0）在新长度的情况下不会变化。这里是安全的，因为它返回的值实际上是系统调用设置的。这段代码是我从 mio 复制过来的，在其他教程中也见过，所以应该没问题。</p>
+<p>接下来，让我们看看我们取到的事件并开始接受和处理请求！</p>
+<h2 id="处理请求">处理请求
+</h2><p>首先，我们简单的迭代 <code>events</code> 并匹配 <code>events</code> 里的 u64 值，这是我们对感兴趣的每个文件描述符提供的唯一的 key。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#75715e">#[derive(Debug)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">RequestContext</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> stream: <span style="color:#a6e22e">TcpStream</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> content_length: <span style="color:#66d9ef">usize</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pub</span> buf: Vec<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u8</span><span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> RequestContext {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">new</span>(stream: <span style="color:#a6e22e">TcpStream</span>) -&gt; <span style="color:#a6e22e">Self</span> {
+</span></span><span style="display:flex;"><span>        Self {
+</span></span><span style="display:flex;"><span>            stream,
+</span></span><span style="display:flex;"><span>            buf: Vec::new(),
+</span></span><span style="display:flex;"><span>            content_length: <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> request_contexts: <span style="color:#a6e22e">HashMap</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">u64</span>, RequestContext<span style="color:#f92672">&gt;</span> <span style="color:#f92672">=</span> HashMap::new();
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>        println!(<span style="color:#e6db74">&#34;requests in flight: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, request_contexts.len());
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> ev <span style="color:#66d9ef">in</span> <span style="color:#f92672">&amp;</span>events {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">match</span> ev.<span style="color:#66d9ef">u64</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#ae81ff">100</span> <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">match</span> listener.accept() {
+</span></span><span style="display:flex;"><span>                        Ok((stream, addr)) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                            stream.set_nonblocking(<span style="color:#66d9ef">true</span>)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>                            println!(<span style="color:#e6db74">&#34;new client: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, addr);
+</span></span><span style="display:flex;"><span>                            key <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>                            add_interest(epoll_fd, stream.as_raw_fd(), listener_read_event(key))<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>                            request_contexts.insert(key, RequestContext::new(stream));
+</span></span><span style="display:flex;"><span>                        }
+</span></span><span style="display:flex;"><span>                        Err(e) <span style="color:#f92672">=&gt;</span> eprintln!(<span style="color:#e6db74">&#34;couldn&#39;t accept: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, e),
+</span></span><span style="display:flex;"><span>                    };
+</span></span><span style="display:flex;"><span>                    modify_interest(epoll_fd, listener_fd, listener_read_event(<span style="color:#ae81ff">100</span>))<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">modify_interest</span>(epoll_fd: <span style="color:#a6e22e">RawFd</span>, fd: <span style="color:#a6e22e">RawFd</span>, <span style="color:#66d9ef">mut</span> event: <span style="color:#a6e22e">libc</span>::epoll_event) -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    syscall!(epoll_ctl(epoll_fd, libc::<span style="color:#66d9ef">EPOLL_CTL_MOD</span>, fd, <span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> event))<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>    Ok(())
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>如果我们遇到了 100，我们就知道这是我们的 server，因为这是我们之前为它设置的硬编码的 key。因为我们只注册了对读就绪事件的兴趣，这意味着我们现在能 <code>accept</code> 一个传入的连接，而且不会阻塞。</p>
+<p>如果我们没有得到通知就调用 <code>listener.accept()</code>，那这个调用将会阻塞直到连接到来。在此例中，我们被通知这里已经存在一个连接，我们对 <code>accept()</code> 的调用将会直接返回。</p>
+<p>一旦我们接受了该连接，我们把连接到客户端的 <code>TCPStream</code> 也设置成非阻塞的。我们将 <code>key</code> 递增，以获得另一个独一无二的值并注册对该 <code>TCPStream</code> 的读就绪事件的兴趣。</p>
+<p>因为我们是一个 HTTP 服务器，接受连接的下一步就是读取传入的请求。</p>
+<p>最后，我们添加了一个条目到 <code>request_contexts</code> 哈希表里。这是一个非常原始的存储方式，用于保存所有活动连接的状态，稍后我们读取请求并写入响应时会用到它。</p>
+<p><code>RequestContext</code> 结构体有传入的连接的 <code>TCPStream</code> 和稍后我们读取请求要处理的两个字段。我们用 <code>key</code> 作为唯一键，将该 <code>RequestContext</code> 结构体放入哈希表中。</p>
+<p>如前所述，因为我们使用 oneshot 事件（<code>EPOLLONESHOT</code>），我们需要重新注册我们对读就绪事件的兴趣，以得到后续的连接的通知。为此我们使用 <code>modify_interest</code> ，和 <code>add_interest</code> 做的一样，只是它使用 <code>EPOLL_CTL_MOD</code> 标志，因为该文件描述符之前就已被添加到了 epoll 实例。</p>
+<p>好的，这就是接受连接的部分。下一步是将传入的 HTTP 请求读入一个缓冲区，然后写回一个请求 —— 全部以非阻塞方式。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>                key <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> to_delete <span style="color:#f92672">=</span> None;
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(context) <span style="color:#f92672">=</span> request_contexts.get_mut(<span style="color:#f92672">&amp;</span>key) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">let</span> events: <span style="color:#66d9ef">u32</span> <span style="color:#f92672">=</span> ev.events;
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">match</span> events {
+</span></span><span style="display:flex;"><span>                            v <span style="color:#66d9ef">if</span> v <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span> <span style="color:#f92672">&amp;</span> libc::<span style="color:#66d9ef">EPOLLIN</span> <span style="color:#f92672">==</span> libc::<span style="color:#66d9ef">EPOLLIN</span> <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                                context.read_cb(key, epoll_fd)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>                            }
+</span></span><span style="display:flex;"><span>                            v <span style="color:#66d9ef">if</span> v <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span> <span style="color:#f92672">&amp;</span> libc::<span style="color:#66d9ef">EPOLLOUT</span> <span style="color:#f92672">==</span> libc::<span style="color:#66d9ef">EPOLLOUT</span> <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                                context.write_cb(key, epoll_fd)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>                                to_delete <span style="color:#f92672">=</span> Some(key);
+</span></span><span style="display:flex;"><span>                            }
+</span></span><span style="display:flex;"><span>                            v <span style="color:#f92672">=&gt;</span> println!(<span style="color:#e6db74">&#34;unexpected events: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, v),
+</span></span><span style="display:flex;"><span>                        };
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(key) <span style="color:#f92672">=</span> to_delete {
+</span></span><span style="display:flex;"><span>                        request_contexts.remove(<span style="color:#f92672">&amp;</span>key);
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>如果我们得到了一个事件，但 <code>key</code> 不是 100，我们就知道该事件一定是被一个传入的连接所触发，因为这是我们唯一注册过兴趣的文件描述符。</p>
+<p>我们定义了一个 <code>to_delete</code> 变量，如果请求完成，就将该 <code>RequestContext</code> 从哈希表中移除。这部分我们稍后讲。</p>
+<p>我们在 <code>HashMap&lt;u64, RequestContext&gt;</code> 哈希表中检查是否存在给定的 <code>key</code> 的映射，如果有，我们就匹配 <code>events</code>，这是个位图，标识了哪些事件被触发了。</p>
+<p>我们先处理 <code>read</code> 的情况，也就是 <code>EPOLLIN</code>。在此例中，我们在这个 <code>RequestContext</code> 上调用 <code>read_cb</code> 方法：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> RequestContext {
+</span></span><span style="display:flex;"><span><span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">read_cb</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self, key: <span style="color:#66d9ef">u64</span>, epoll_fd: <span style="color:#a6e22e">RawFd</span>) -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> buf <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span><span style="color:#66d9ef">u8</span>; <span style="color:#ae81ff">4096</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">match</span> self.stream.read(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> buf) {
+</span></span><span style="display:flex;"><span>            Ok(_) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Ok(data) <span style="color:#f92672">=</span> std::<span style="color:#66d9ef">str</span>::from_utf8(<span style="color:#f92672">&amp;</span>buf) {
+</span></span><span style="display:flex;"><span>                    self.parse_and_set_content_length(data);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            Err(e) <span style="color:#66d9ef">if</span> e.kind() <span style="color:#f92672">==</span> io::ErrorKind::WouldBlock <span style="color:#f92672">=&gt;</span> {}
+</span></span><span style="display:flex;"><span>            Err(e) <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> Err(e);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>        self.buf.extend_from_slice(<span style="color:#f92672">&amp;</span>buf);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self.buf.len() <span style="color:#f92672">&gt;=</span> self.content_length {
+</span></span><span style="display:flex;"><span>            println!(<span style="color:#e6db74">&#34;got all data: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> bytes&#34;</span>, self.buf.len());
+</span></span><span style="display:flex;"><span>            modify_interest(epoll_fd, self.stream.as_raw_fd(), listener_write_event(key))<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            modify_interest(epoll_fd, self.stream.as_raw_fd(), listener_read_event(key))<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        Ok(())
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">parse_and_set_content_length</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self, data: <span style="color:#66d9ef">&amp;</span><span style="color:#66d9ef">str</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> data.contains(<span style="color:#e6db74">&#34;HTTP&#34;</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(content_length) <span style="color:#f92672">=</span> data
+</span></span><span style="display:flex;"><span>                .lines()
+</span></span><span style="display:flex;"><span>                .find(<span style="color:#f92672">|</span>l<span style="color:#f92672">|</span> l.to_lowercase().starts_with(<span style="color:#e6db74">&#34;content-length: &#34;</span>))
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(len) <span style="color:#f92672">=</span> content_length
+</span></span><span style="display:flex;"><span>                    .to_lowercase()
+</span></span><span style="display:flex;"><span>                    .strip_prefix(<span style="color:#e6db74">&#34;content-length: &#34;</span>)
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                    self.content_length <span style="color:#f92672">=</span> len.parse::<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">usize</span><span style="color:#f92672">&gt;</span>().expect(<span style="color:#e6db74">&#34;content-length is valid&#34;</span>);
+</span></span><span style="display:flex;"><span>                    println!(<span style="color:#e6db74">&#34;set content length: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> bytes&#34;</span>, self.content_length);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>首先，我们定义了一个临时的缓冲区用于读入数据，并且在我们保存的 <code>TcpStream</code> 上调用 <code>read()</code>。这里不会阻塞，因为我们已经被通知该文件描述符实际上可读了。</p>
+<p>然后我们尝试将数据转为 utf8，查找 <code>content-length</code> 首部，并解析它的值。</p>
+<p>注意：这只是一些非常愚蠢和最小的伪 HTTP 解析，这样做这非常不安全，这里只是为了方便实现和测试。</p>
+<p>我们只对可以读取的数据量感兴趣，这样我们就能知道什么时候可以停止读取。一旦我们得到了内容长度，我们就把它放在 <code>RequestContext</code> 里。</p>
+<p>然后我们将数据从临时缓冲区移动到 <code>RequestContext</code> 内部的缓冲区里。</p>
+<p>之后我们检查是否读完了我们预期读取的所有数据，如果读完了，就再次调用 <code>modify_interest</code>，注册对写就绪事件的兴趣。这是因为一旦我们完成了对传入的连接的读取，下一步就是处理有效载荷，并对客户端做出响应。</p>
+<p>如果我们仍有数据要读，就重新注册对读就绪事件的兴趣。</p>
+<p>在注册了对写就绪事件的兴趣后，我们期待 <code>EPOLLOUT</code> 标志会被设置：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>                            v <span style="color:#66d9ef">if</span> v <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span> <span style="color:#f92672">&amp;</span> libc::<span style="color:#66d9ef">EPOLLOUT</span> <span style="color:#f92672">==</span> libc::<span style="color:#66d9ef">EPOLLOUT</span> <span style="color:#f92672">=&gt;</span> {
+</span></span><span style="display:flex;"><span>                                context.write_cb(key, epoll_fd)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>                                to_delete <span style="color:#f92672">=</span> Some(key);
+</span></span><span style="display:flex;"><span>                            }
+</span></span><span style="display:flex;"><span>                            v <span style="color:#f92672">=&gt;</span> println!(<span style="color:#e6db74">&#34;unexpected events: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, v),
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>如果 <code>EPOLLOUT</code> 标志被设置了，我们就调用 <code>write_cb</code>，并将该 <code>RequestContext</code> 标记为待删除，这是因为我们完成数据写入后，我们的工作就做完了，该进行清理工作了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">impl</span> RequestContext {
+</span></span><span style="display:flex;"><span><span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">write_cb</span>(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> self, key: <span style="color:#66d9ef">u64</span>, epoll_fd: <span style="color:#a6e22e">RawFd</span>) -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">match</span> self.stream.write(<span style="color:#66d9ef">HTTP_RESP</span>) {
+</span></span><span style="display:flex;"><span>            Ok(_) <span style="color:#f92672">=&gt;</span> println!(<span style="color:#e6db74">&#34;answered from request </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, key),
+</span></span><span style="display:flex;"><span>            Err(e) <span style="color:#f92672">=&gt;</span> eprintln!(<span style="color:#e6db74">&#34;could not answer to request </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">, </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, key, e),
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>        self.stream.shutdown(std::net::Shutdown::Both)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> fd <span style="color:#f92672">=</span> self.stream.as_raw_fd();
+</span></span><span style="display:flex;"><span>        remove_interest(epoll_fd, fd)<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>        close(fd);
+</span></span><span style="display:flex;"><span>        Ok(())
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#f92672">..</span>.
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">close</span>(fd: <span style="color:#a6e22e">RawFd</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> _ <span style="color:#f92672">=</span> syscall!(close(fd));
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">remove_interest</span>(epoll_fd: <span style="color:#a6e22e">RawFd</span>, fd: <span style="color:#a6e22e">RawFd</span>) -&gt; <span style="color:#a6e22e">io</span>::Result<span style="color:#f92672">&lt;</span>()<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    syscall!(epoll_ctl(
+</span></span><span style="display:flex;"><span>        epoll_fd,
+</span></span><span style="display:flex;"><span>        libc::<span style="color:#66d9ef">EPOLL_CTL_DEL</span>,
+</span></span><span style="display:flex;"><span>        fd,
+</span></span><span style="display:flex;"><span>        std::ptr::null_mut()
+</span></span><span style="display:flex;"><span>    ))<span style="color:#f92672">?</span>;
+</span></span><span style="display:flex;"><span>    Ok(())
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这个 <code>write_cb</code> 比 <code>read_cb</code> 更简单。因为我们收到了套接字可写的通知，所以我们可以调用 <code>stream.write()</code> 用硬编码的 HTTP 响应和客户端友好地打个招呼。</p>
+<p>在此之后，我们需要清理该连接。首先，我们在 <code>TcpStream</code> 上调用 <code>shutdown</code> 以关闭连接。然后移除对文件描述符的兴趣，关闭文件描述符，到这里我们就做完了。</p>
+<p>由于我们设置了 <code>to_delete</code>，这个 <code>RequestContext</code> 也会被移出哈希表。</p>
+<p>让我们看看能否有效工作。</p>
+<h2 id="测试">测试
+</h2><p>我们想要确保服务器可以同时接受并处理多个请求，即使有很多个也不会变慢。</p>
+<p>有一件事要注意，因为我们完全没有做错误处理，所以如果发生任何 IO 错误发生（例如，在我们读取的时候取消传入的请求），程序将会 panic。</p>
+<p>因此，让我们向服务器发送一些运行的更长的请求：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#66d9ef">while</span> true; <span style="color:#66d9ef">do</span> curl --location --request <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>POST <span style="color:#e6db74">&#39;http://localhost:8000/upload&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>--form <span style="color:#e6db74">&#39;file=@/home/somewhere/some_image.png&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>-w <span style="color:#e6db74">&#39; Total: %{time_total}&#39;</span> <span style="color:#f92672">&amp;&amp;</span> echo <span style="color:#e6db74">&#39;\n&#39;</span>; <span style="color:#66d9ef">done</span>;
+</span></span></code></pre></div><p>这个命令在一个无限循环中不停地发送一个文件（最好是比较大的，例如几个 MB）。我们可以在多个终端中运行该脚本，这样我们就有了一个高负载的 IO。</p>
+<p>此外，通过 <code>-w %{time_total}</code> 选项，我们给这个请求计时，每个成功的请求会打印这样的内容：</p>
+<pre tabindex="0"><code>Hello Total: 1,010951
+</code></pre><p>“Hello” 是响应，然后是请求所花费的总时间，在该例中大约是 1 秒钟。</p>
+<p>有一点需要注意的是，我们的服务器确实在正常地服务请求并且不会变慢。此外，如果我们检查服务器日志，我们会看到一些像这样的：</p>
+<pre tabindex="0"><code>...
+requests in flight: 6
+...
+</code></pre><p>这告诉我们，我们确实用单个线程同时处理了几个请求。此外，如果你检查你的 <code>while curl</code> 脚本，你会发现请求仍然花费着相同的时间。</p>
+<p>这证明了我们的解决方案有效，并且我们确实用非阻塞 IO 非常快地并发处理了许多高负载 IO 请求。棒极了！</p>
+<p>完整示例代码在
+
+<a  
+    class="link"
+ 
+    href="https://github.com/zupzup/rust-epoll-example"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>这里</a>
+。</p>
+<h2 id="总结">总结
+</h2><p>我在一个较高的层级上对非阻塞 IO（或者说异步编程）的使用已经有一段时间了，并且是以各种形式的，比如 futures、promises 和基于回调的 APIs。</p>
+<p>然而，我从来没有理解底层到底发生了什么，以及这个模型为什么有效。我仍不觉得自己了解所有的细节，但是研究并编写这个例子让我有了更好的理解。</p>
+<p>我必须对那些写出易学的教程和代码的人说声感谢，这些教程和代码可以在下文的参考资料一节被找到。</p>
+<p>我希望我能够为你提供一些新的理解，给你启迪，让你感到有趣。:)</p>
+<p>我的计划是继续深入探索 Rust 异步编程。</p>
+<h2 id="参考资料">参考资料
+</h2><ul>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/zupzup/rust-epoll-example"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Code Example</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://unixism.net/loti/async_intro.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Asynchronous Programming Under Linux</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://unixism.net/2019/04/linux-applications-performance-part-vii-epoll-servers/"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Linux Applications Performance: Part VII: epoll Servers</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://cfsamson.github.io/book-exploring-async-basics/introduction.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Exploring Async Basics</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://cfsamson.github.io/book-exploring-async-basics/6_epoll_kqueue_iocp.html"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Epoll, Kqueue and IOCP</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/stjepang/polling"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Polling Rust Library</a>
+</li>
+<li>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/tokio-rs/mio"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>Mio</a>
+</li>
+</ul>
+<p>
+
+<a  
+    class="link"
+ 
+    href="https://github.com/hyuuko"
+    
+    target="_blank"
+    rel="noopener"
+
+
+>hyuuko - Overview</a>
+</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    <section class="article-lastmod">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+        <span>
+            Last updated on 2025-02-04T19:35:42&#43;08:00
+        </span>
+    </section></footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.2760efe2b07bc1f771820787a816b980000936e884b19441806bce1518d37d8c.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

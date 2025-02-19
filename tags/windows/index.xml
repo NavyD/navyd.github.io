@@ -1,0 +1,933 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Windows on NavyD的个人博客</title><link>/tags/windows/</link><description>Recent content in Windows on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 19 Feb 2025 23:55:08 +0800</lastBuildDate><atom:link href="/tags/windows/index.xml" rel="self" type="application/rss+xml"/><item><title>Wsl Install Error ERROR_INSTALL_FAILURE</title><link>/posts/2025/02/wsl-install-error-error_install_failure/</link><pubDate>Sun, 16 Feb 2025 13:03:21 +0800</pubDate><guid>/posts/2025/02/wsl-install-error-error_install_failure/</guid><description>&lt;p>之前在
+&lt;a
+class="link"
+href="/posts/2025/02/wsl-update-error-regdb_e_classnotreg/"
+>wsl-update-error-REGDB_E_CLASSNOTREG&lt;/a>
+中解决了更新错误后，莫名其妙开机给我自动更新了 WSL，然后又挂了！&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ wsl
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WSL 正在完成升级...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Warning 1946.Property &amp;#39;System.AppUserModel.ToastActivatorCLSID&amp;#39; for shortcut &amp;#39;WSL.lnk&amp;#39; could not be set.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Warning 1946.Property &amp;#39;System.AppUserModel.IsSystemComponent&amp;#39; for shortcut &amp;#39;WSL Settings.lnk&amp;#39; could not be set.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Could not write value to key \SOFTWARE\Classes\Directory\Background\shell\WSL. Verify that you have sufficient access to that key, or contact your support personnel.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wsl: WSL 安装似乎已损坏 (错误代码： Wsl/CallMsi/Install/ERROR_INSTALL_FAILURE)。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>按任意键修复 WSL，或 CTRL-C 取消。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>此提示将在 60 秒后超时。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>正在将适用于 Linux 的 Windows 子系统更新到版本： 2.4.11。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>$ wsl
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wsl: WSL 安装似乎已损坏 (错误代码： Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG)。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>按任意键修复 WSL，或 CTRL-C 取消。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>此提示将在 60 秒后超时。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>正在将适用于 Linux 的 Windows 子系统更新到版本： 2.4.11。
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>参考
+&lt;a
+class="link"
+href="https://github.com/Microsoft/wsl/issues/12282"
+target="_blank"
+rel="noopener"
+>错误代码：Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG #12282&lt;/a>
+中提到
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/blob/8c61f09e4d28995a3827f71e03332b5257e16418/triage/install-latest-wsl.ps1#L35-L42"
+target="_blank"
+rel="noopener"
+>triage/install-latest-wsl.ps1&lt;/a>
+&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>下载最新的
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/releases"
+target="_blank"
+rel="noopener"
+>WSL/releases&lt;/a>
+&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>以管理员权限打开 powershell&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>修改&lt;code>$target=&amp;quot;your wsl.msi path&amp;quot;&lt;/code>后运行下面的代码&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$target = &lt;span style="color:#e6db74">&amp;#34;C:\Users\xxxx\Downloads\wsl.2.4.11.0.x64.msi&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$MSIArguments = @(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;/i&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> $target
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;/qn&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;/norestart&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start-Process -Wait &lt;span style="color:#e6db74">&amp;#34;msiexec.exe&amp;#34;&lt;/span> -ArgumentList $MSIArguments -NoNewWindow -PassThru
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>安装完成后即可正常打开 WSL，但是否像之前一样下次更新又挂了，就看微软给不给力了，到时候别再加更几期大家一起看连续剧！&lt;/p></description></item><item><title>Failed to Run Mise Watch Command on Windows</title><link>/posts/2025/02/failed-to-run-mise-watch-command-on-windows/</link><pubDate>Sat, 15 Feb 2025 16:11:25 +0800</pubDate><guid>/posts/2025/02/failed-to-run-mise-watch-command-on-windows/</guid><description>&lt;p>在使用
+&lt;a
+class="link"
+href="https://github.com/jdx/mise"
+target="_blank"
+rel="noopener"
+>mise&lt;/a>
+运行监控任务&lt;code>mise watch build&lt;/code>时出错：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ mise watch build
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Running: mise run build]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The application panicked (crashed).
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Message: called `Option::unwrap()` on a `None` value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Location: C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\xx-2.0.4\src\file.rs:222
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>Backtrace omitted. Run with RUST_BACKTRACE=1 environment variable to display it.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Run with RUST_BACKTRACE=full to include source snippets.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The application panicked (crashed).
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Message: called `Option::unwrap()` on a `None` value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Location: C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\xx-2.0.4\src\file.rs:222
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>Backtrace omitted. Run with RUST_BACKTRACE=1 environment variable to display it.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Run with RUST_BACKTRACE=full to include source snippets.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The application panicked (crashed).
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Message: called `Option::unwrap()` on a `None` value
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Location: C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\xx-2.0.4\src\file.rs:222
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>Backtrace omitted. Run with RUST_BACKTRACE=1 environment variable to display it.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Run with RUST_BACKTRACE=full to include source snippets.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Waiting 10s for processes to exit before stopping...]
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>下面是一些简单的配置信息&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">env&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">_&lt;/span>.&lt;span style="color:#a6e22e">python&lt;/span>.&lt;span style="color:#a6e22e">venv&lt;/span> = { &lt;span style="color:#a6e22e">path&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;.venv&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">create&lt;/span> = &lt;span style="color:#66d9ef">true&lt;/span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">_&lt;/span>.&lt;span style="color:#a6e22e">file&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;.env&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">settings&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">windows_default_inline_shell_args&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;powershell -NoProfile -NonInteractive -Command&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">tasks&lt;/span>.&lt;span style="color:#a6e22e">build&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">run_windows&lt;/span> = &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&amp;amp;{ echo first; echo second; }
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">sources&lt;/span> = [&lt;span style="color:#e6db74">&amp;#34;content/posts/**/*.md&amp;#34;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">outputs&lt;/span> = [&lt;span style="color:#e6db74">&amp;#34;data/posts/posts.json&amp;#34;&lt;/span>]
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ mise -V
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>2025.2.3 windows-x64 (2025-02-09)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ watchexec -V
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>watchexec 2.1.2
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>我在
+&lt;a
+class="link"
+href="https://github.com/jdx/xx/blob/5a43124c6f39246ada155d6b46edd3aec787ddcf/src/file.rs#L221"
+target="_blank"
+rel="noopener"
+>xx::file::glob&lt;/a>
+中找到&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> root &lt;span style="color:#f92672">=&lt;/span> input
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .ancestors()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .skip(&lt;span style="color:#ae81ff">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .find(&lt;span style="color:#f92672">|&lt;/span>a&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#f92672">!&lt;/span>&lt;span style="color:#e6db74">&amp;#34;*[{?&amp;#34;&lt;/span>.chars().any(&lt;span style="color:#f92672">|&lt;/span>c&lt;span style="color:#f92672">|&lt;/span> a.to_str().unwrap().contains(c)))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .unwrap()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .to_path_buf();
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>发现是由于&lt;code>input&lt;/code>路径中的最顶级路径中存在任意的&lt;code>*[{?&lt;/code>字符导致的 unwrap 异常，如 &lt;code>\\\\?\\C:\\Users\\xxxx&lt;/code> 。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>assert_eq!(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> std::path::Path::new(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\\\\&lt;/span>&lt;span style="color:#e6db74">?&lt;/span>&lt;span style="color:#ae81ff">\\&lt;/span>&lt;span style="color:#e6db74">C:&lt;/span>&lt;span style="color:#ae81ff">\\&lt;/span>&lt;span style="color:#e6db74">Users&lt;/span>&lt;span style="color:#ae81ff">\\&lt;/span>&lt;span style="color:#e6db74">xxxx&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .ancestors()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .skip(&lt;span style="color:#ae81ff">1&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .find(&lt;span style="color:#f92672">|&lt;/span>a&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#f92672">!&lt;/span>&lt;span style="color:#e6db74">&amp;#34;*[{?&amp;#34;&lt;/span>.chars().any(&lt;span style="color:#f92672">|&lt;/span>c&lt;span style="color:#f92672">|&lt;/span> a.to_str().unwrap().contains(c))),
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> None
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这里吐槽一句，但凡将&lt;code>Option::ok()&lt;/code>转为 &lt;code>Result::Err&lt;/code> 返回错误或使用 &lt;code>Option::unwrap_or_else&lt;/code> 处理错误信息，也不至于浪费许多时间检查问题所在！害得我在源码中打 debug 日志查看是什么 &lt;code>input&lt;/code> 导致的问题。&lt;/p>
+&lt;p>在 mise 源码中只能使用 debug 日志输出大法，没法用 debug 调试，首先当前的 rust debug 体验极差，只有少数基础类型有能被可视化，一个变量稍微包装一下如 &lt;code>AsRef&amp;lt;Path&amp;gt;&lt;/code> 这种类型都无法直观查看值，只有指针地址&amp;hellip;，更别说使用对静态语言在 watch 调用类型函数这种是不可能的（静态分发编译完成后不必要的函数不会被编译，且还有 inline 这种存在），还是 python 好！另外，对于 &lt;code>mise watch build&lt;/code> 这种 mise 调用 &lt;code>watchexec -- mise run build&lt;/code> 再被 watchexec 调用 &lt;code>mise run build&lt;/code> 调用链比较复杂，debug 体验可能不会好，但应该能正常使用，应该，没试过。。。&lt;/p>
+&lt;p>通过日志输出
+&lt;a
+class="link"
+href="/posts/2025/02/failed-to-run-mise-watch-command-on-windows/mise%20watch%20build%20--log-level%20trace%20--%20--log-level%20trace.log"
+>mise log&lt;/a>
+中有&lt;/p>
+&lt;pre tabindex="0">&lt;code class="language-log" data-lang="log">DEBUG 1 [src\config\mod.rs:106] Loaded config paths [&amp;#34;\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\mise.toml&amp;#34;, &amp;#34;\\\\?\\C:\\Users\\navyd\\.config\\mise\\config.toml&amp;#34;] from config filenames: [&amp;#34;.bun-version&amp;#34;, &amp;#34;.deno-version&amp;#34;, &amp;#34;.go-version&amp;#34;, &amp;#34;.java-version&amp;#34;, &amp;#34;.node-version&amp;#34;, &amp;#34;.nvmrc&amp;#34;, &amp;#34;.python-version&amp;#34;, &amp;#34;.python-versions&amp;#34;, &amp;#34;.ruby-version&amp;#34;, &amp;#34;.sdkmanrc&amp;#34;, &amp;#34;.swift-version&amp;#34;, &amp;#34;.terraform-version&amp;#34;, &amp;#34;.zig-version&amp;#34;, &amp;#34;Gemfile&amp;#34;, &amp;#34;rust-toolchain.toml&amp;#34;, &amp;#34;.tool-versions&amp;#34;, &amp;#34;.config/mise/conf.d/*.toml&amp;#34;, &amp;#34;.config/mise/config.toml&amp;#34;, &amp;#34;.config/mise.toml&amp;#34;, &amp;#34;.mise/config.toml&amp;#34;, &amp;#34;mise/config.toml&amp;#34;, &amp;#34;.rtx.toml&amp;#34;, &amp;#34;mise.toml&amp;#34;, &amp;#34;.mise.toml&amp;#34;, &amp;#34;.config/mise/config.local.toml&amp;#34;, &amp;#34;.config/mise.local.toml&amp;#34;, &amp;#34;.mise/config.local.toml&amp;#34;, &amp;#34;.rtx.local.toml&amp;#34;, &amp;#34;mise.local.toml&amp;#34;, &amp;#34;.mise.local.toml&amp;#34;]
+&lt;/code>&lt;/pre>&lt;p>发现是
+&lt;a
+class="link"
+href="https://github.com/jdx/mise/blob/0a1b4f58e3a975be40f9bc37299b517972830ae3/src/dirs.rs#L8"
+target="_blank"
+rel="noopener"
+>mise::dir::CWD&lt;/a>
+使用
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/std/env/fn.current_dir.html"
+target="_blank"
+rel="noopener"
+>std::env::current_dir&lt;/a>
+返回了 &lt;code>\\\\?\\C:\\Users\\xxxx&lt;/code> 导致后续的异常，根据文档指出在 windows 上使用
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getcurrentdirectory"
+target="_blank"
+rel="noopener"
+>GetCurrentDirectory function (winbase.h)&lt;/a>
+，虽然其中有提到 &lt;code>\\servername\sharename&lt;/code> 存在这样的形式目录，但我从未见过，且与 &lt;code>\\\\?\\C:\\Users\\xxxx&lt;/code> 不怎么像就未在意，错失先机！&lt;/p>
+&lt;p>我怀疑可能是 mise 的问题，尝试在 mise 源码目录中参考
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/cargo/guide/project-layout.html"
+target="_blank"
+rel="noopener"
+>cargo Package Layout&lt;/a>
+添加一个 bin 可执行命令 &lt;code>src\bin\printenv.rs&lt;/code>，用于打印 cwd 和环境变量&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">main&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> println!(&lt;span style="color:#e6db74">&amp;#34;current env dir: &lt;/span>&lt;span style="color:#e6db74">{:?}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>, std::env::current_dir());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> envs &lt;span style="color:#f92672">=&lt;/span> std::env::vars()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .map(&lt;span style="color:#f92672">|&lt;/span>(k, v)&lt;span style="color:#f92672">|&lt;/span> format!(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">{k}&lt;/span>&lt;span style="color:#e6db74">=&lt;/span>&lt;span style="color:#e6db74">{v}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .collect::&lt;span style="color:#f92672">&amp;lt;&lt;/span>Vec&lt;span style="color:#f92672">&amp;lt;&lt;/span>_&lt;span style="color:#f92672">&amp;gt;&amp;gt;&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> .join(&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> println!(&lt;span style="color:#e6db74">&amp;#34;all env: &lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">{envs}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后修改部分代码让 &lt;code>mise watch build&lt;/code> 实际改为 &lt;code>watchexec -- target/debug/printenv.exe&lt;/code> 运行，查看
+&lt;a
+class="link"
+href="/posts/2025/02/failed-to-run-mise-watch-command-on-windows/mise%20watch%20build%20printenv.log"
+>printenv.log&lt;/a>
+结果发现 &lt;code>current_dir()&lt;/code> 依然是 &lt;code>\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\mise&lt;/code>。&lt;/p>
+&lt;p>尝试改为运行 python 中的 &lt;code>os.getcwd()&lt;/code> 试试&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> args &lt;span style="color:#f92672">=&lt;/span> vec![&lt;span style="color:#e6db74">&amp;#34;python&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;-c&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">r&lt;/span>&lt;span style="color:#e6db74">#&amp;#34;&amp;#39;import os; print(os.getcwd()); import subprocess; subprocess.check_call([&amp;#34;&amp;#34;&amp;#34;C:/Users/navyd/workspaces/projects/mise/target/debug/printenv.exe&amp;#34;&amp;#34;&amp;#34;], env={})&amp;#39;&amp;#34;#&lt;/span>];
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ .&lt;span style="color:#ae81ff">\t&lt;/span>arget&lt;span style="color:#ae81ff">\d&lt;/span>ebug&lt;span style="color:#ae81ff">\m&lt;/span>ise.exe watch build
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Running: python -c &amp;#39;import os; print(os.getcwd()); import subprocess; subprocess.check_call([&amp;#34;&amp;#34;&amp;#34;C:/Users/navyd/workspaces/projects/mise/target/debug/printenv.exe&amp;#34;&amp;#34;&amp;#34;], env={})&amp;#39;]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mise WARN missing: bun@1.2.2 cargo:cargo-edit@0.13.1 cargo:cargo-insta@1.42.1 cargo:git-cliff@2.8.0 npm:markdownlint-cli@0.44.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>\\?\C:\Users\navyd\workspaces\projects\mise
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>current env dir: Ok(&amp;#34;\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\mise&amp;#34;)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>all env:
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>结果依然是 &lt;code>\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\mise&lt;/code> ，即使我尝试清空所有环境变量运行 printenv 也没用！&lt;/p>
+&lt;h3 id="deepseek">deepseek
+&lt;/h3>&lt;p>我尝试询问 deepseek 有什么建议：&lt;/p>
+&lt;h4 id="human">Human
+&lt;/h4>&lt;p>在 windows 上使用 powershell 运行下面的 python 命令 &lt;code>python -c 'import os; print(os.getcwd())'&lt;/code> ，其输出为 &lt;code>\\?\C:\Users\usernamexxx\workspaces&lt;/code>，为什么会出现 &lt;code>\\?\&lt;/code> 前缀字符，而不是 &lt;code>C:\Users\usernamexxx\workspaces&lt;/code> 呢？&lt;/p>
+&lt;h4 id="assistant">Assistant
+&lt;/h4>&lt;details>
+&lt;summary>Thinking Process (35s):&lt;/summary>
+嗯，用户问在 Windows 的 PowerShell 里运行那个 Python 命令，结果输出有\\?\前缀，而不是直接显示路径。这个问题我需要仔细想想。首先，得回忆一下 Windows 的路径处理机制。
+&lt;p>我记得在 Windows 中，普通的路径长度是有限制的，通常是 260 个字符左右。而如果路径前面加上\?\的话，应该是启用了扩展长度路径，可以支持更长的路径。这种情况下，Python 可能返回的是这种扩展格式的路径，所以才会出现那个前缀。&lt;/p>
+&lt;p>那用户的情况里，为什么会触发这个呢？可能用户当前的工作目录路径本身比较长，或者 Python 在某些情况下自动使用扩展路径。例如，当 Python 检测到路径可能超过限制时，或者当在 PowerShell 中某些配置导致工作目录以扩展形式返回。&lt;/p>
+&lt;p>接下来，我需要确认一下 os.getcwd() 在 Windows 下的行为。查阅 Python 文档的话，可能会发现当路径超过 260 字符时，或者使用某些 API 获取路径时，可能会返回带有\?\的 UNC 路径形式。这可能是因为 Python 内部使用了 GetFinalPathNameByHandle 或类似的函数，返回了这种格式的路径。&lt;/p>
+&lt;p>另外，PowerShell 的环境可能和普通的 cmd 不同。比如，PowerShell 可能默认启用了某些长路径支持，或者执行策略导致 Python 以不同的方式处理路径。也有可能用户的工作目录本身是通过某种方式创建的，比如符号链接或 Junction 点，导致路径被解析为扩展形式。&lt;/p>
+&lt;p>或者，用户可能在使用 Python 时以某种方式激活了长路径支持，比如在注册表中启用了长路径，或者 Python 脚本本身调用了 API 来允许长路径，导致返回的路径带有这个前缀。&lt;/p>
+&lt;p>那解决方案的话，可能需要告诉用户如何避免这种情况。例如，使用 os.path.abspath(&amp;rsquo;.&amp;rsquo;) 代替 os.getcwd()，因为前者可能不会返回扩展路径。或者，检查 Python 的版本，某些版本的 Python 可能在处理路径时有不同的行为。另外，用户如果想去除这个前缀，可以在获取路径后进行处理，替换掉\?\部分。&lt;/p>
+&lt;p>不过，我需要验证这些猜测。比如，在 Python 中，当调用 os.getcwd() 时，是否在某些情况下返回扩展路径。比如，如果当前目录是使用扩展路径打开的，那么返回的路径就会带有这个前缀。或者，如果 PowerShell 启动时的工作目录本身已经是扩展路径，那么 Python 继承了这个路径，导致输出带有前缀。&lt;/p>
+&lt;p>另一个可能性是，PowerShell 本身在某个配置下改变了当前目录的表示方式。比如，当使用 cd 命令进入一个路径时，如果路径很长，PowerShell 可能会自动使用扩展路径。这时候 Python 在获取当前目录时会得到这个格式。&lt;/p>
+&lt;p>为了验证，用户可以在 PowerShell 中运行其他命令，比如 pwd，看看显示的路径是否也有这个前缀。如果 PowerShell 本身的输出没有，那可能是 Python 的问题；如果 PowerShell 也显示同样的前缀，那就是系统环境的问题。&lt;/p>
+&lt;p>此外，检查 Python 的版本也很重要。较新的 Python 版本可能在处理 Windows 路径时更倾向于使用扩展路径，特别是如果系统启用了长路径支持的话。Windows 10 之后版本可以通过组策略启用长路径支持，这可能影响应用程序的行为。&lt;/p>
+&lt;p>总结一下，可能的原因是 Python 在获取当前工作目录时使用了扩展长度的路径格式，导致输出带有\?\前缀。用户可以通过字符串处理去掉这个前缀，或者检查系统设置和 Python 版本，确认是否启用了长路径支持。另外，使用不同的方法获取路径，比如 os.path.abspath(&amp;rsquo;.&amp;rsquo;)，可能得到不同的结果。&lt;/p>
+&lt;/details>
+&lt;p>在 Windows 系统中，当路径长度超过传统限制（260 字符）或某些特定条件触发时，Python 可能返回带有 &lt;code>\\?\&lt;/code> 前缀的&lt;strong>扩展长度路径&lt;/strong>（Extended-Length Path）。以下是详细解释及解决方法：&lt;/p>
+&lt;h4 id="原因分析">&lt;strong>原因分析&lt;/strong>
+&lt;/h4>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>扩展路径前缀 &lt;code>\\?\&lt;/code> 的作用&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>Windows 默认路径长度限制为 &lt;code>MAX_PATH&lt;/code>（约 260 字符）。添加 &lt;code>\\?\&lt;/code> 前缀后，系统允许路径长度扩展至约 &lt;strong>32767 字符&lt;/strong>。&lt;/li>
+&lt;li>该前缀直接告知系统禁用路径规范化（如自动解析符号链接），并绕过长度检查。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Python 的路径获取机制&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>当通过 &lt;code>os.getcwd()&lt;/code> 获取当前目录时，若目录本身是通过扩展路径打开的，或系统/环境启用了长路径支持，Python 可能返回带有 &lt;code>\\?\&lt;/code> 的格式。&lt;/li>
+&lt;li>某些 Python 版本（如 3.6+）在支持长路径的 Windows 系统（如 Win10 1607+）中可能自动使用此格式。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>PowerShell 环境的影响&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>若在 PowerShell 中通过特殊方式（如 &lt;code>cd&lt;/code> 到超长路径或符号链接），可能导致工作目录以扩展路径形式传递到子进程（如 Python）。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h4 id="解决方案">&lt;strong>解决方案&lt;/strong>
+&lt;/h4>&lt;h5 id="1-直接去除前缀适用于路径未超长">1. 直接去除前缀（适用于路径未超长）
+&lt;/h5>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cwd &lt;span style="color:#f92672">=&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>getcwd()&lt;span style="color:#f92672">.&lt;/span>replace(&lt;span style="color:#e6db74">r&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>&lt;span style="color:#ae81ff">\\&lt;/span>&lt;span style="color:#e6db74">?&lt;/span>&lt;span style="color:#ae81ff">\\&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>) &lt;span style="color:#75715e"># 移除前缀&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>print(cwd)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h5 id="2-使用-ospathabspath-替代">2. 使用 &lt;code>os.path.abspath('.')&lt;/code> 替代
+&lt;/h5>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>print(os&lt;span style="color:#f92672">.&lt;/span>path&lt;span style="color:#f92672">.&lt;/span>abspath(&lt;span style="color:#e6db74">&amp;#39;.&amp;#39;&lt;/span>)) &lt;span style="color:#75715e"># 通常返回不带前缀的标准路径&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h5 id="3-检查系统长路径支持设置">3. 检查系统长路径支持设置
+&lt;/h5>&lt;ul>
+&lt;li>&lt;strong>启用/禁用长路径支持&lt;/strong>：
+&lt;ol>
+&lt;li>按 &lt;code>Win+R&lt;/code> 输入 &lt;code>gpedit.msc&lt;/code>。&lt;/li>
+&lt;li>导航至：&lt;code>计算机配置 → 管理模板 → 系统 → 文件系统&lt;/code>。&lt;/li>
+&lt;li>检查 &lt;strong>“启用 Win32 长路径”&lt;/strong> 是否启用。若启用，Python 可能更频繁返回扩展路径。&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ul>
+&lt;h5 id="4-在代码中主动规范化路径">4. 在代码中主动规范化路径
+&lt;/h5>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">from&lt;/span> pathlib &lt;span style="color:#f92672">import&lt;/span> Path
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cwd &lt;span style="color:#f92672">=&lt;/span> Path(os&lt;span style="color:#f92672">.&lt;/span>getcwd())&lt;span style="color:#f92672">.&lt;/span>resolve() &lt;span style="color:#75715e"># 解析符号链接并规范化路径&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>print(cwd)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="验证与调试">&lt;strong>验证与调试&lt;/strong>
+&lt;/h4>&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>在 PowerShell 中检查原始路径&lt;/strong>：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 直接打印当前目录（PowerShell 原生命令）&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>pwd
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>若此处也显示 &lt;code>\\?\&lt;/code> 前缀，说明问题源于 PowerShell 环境或系统设置。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>检查 Python 版本和系统更新&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>更新到最新 Python 版本（某些旧版本存在路径处理差异）。&lt;/li>
+&lt;li>确保 Windows 已安装最新更新（长路径支持可能依赖系统版本）。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="总结">&lt;strong>总结&lt;/strong>
+&lt;/h4>&lt;p>&lt;code>\\?\&lt;/code> 前缀是 Windows 对超长路径的兼容性设计。虽然不影响路径有效性，但若需标准格式，可通过代码去除或调整系统设置。建议优先使用 &lt;code>os.path.abspath('.')&lt;/code> 或 &lt;code>pathlib&lt;/code> 库处理路径，以规避此类问题。&lt;/p>
+&lt;h3 id="求证-deepseek">求证 deepseek
+&lt;/h3>&lt;p>显然，这没有什么用，找了 2 个小时还没进展，很烦。&lt;/p>
+&lt;p>但我发现都是使用 watchexec 运行下出现的问题，尝试单独运行：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ watchexec -n python -c &lt;span style="color:#e6db74">&amp;#39;import os; print(os.getcwd()); import subprocess; subprocess.check_call([&amp;#34;&amp;#34;&amp;#34;C:/Users/navyd/workspaces/projects/mise/target/debug/printenv.exe&amp;#34;&amp;#34;&amp;#34;], env={})&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Running: python -c import os; print(os.getcwd()); import subprocess; subprocess.check_call([&amp;#34;&amp;#34;&amp;#34;C:/Users/navyd/workspaces/projects/mise/target/debug/printenv.exe&amp;#34;&amp;#34;&amp;#34;], env={})]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>\\?\C:\Users\navyd\workspaces\projects\navyd.github.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>current env dir: Ok(&amp;#34;\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io&amp;#34;)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>all env:
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>没想到是 watchexec 出现的问题，参考
+&lt;a
+class="link"
+href="https://github.com/watchexec/watchexec/issues/830"
+target="_blank"
+rel="noopener"
+>UNC paths break CMD commands #830&lt;/a>
+在
+&lt;a
+class="link"
+href="https://github.com/watchexec/watchexec/releases/tag/v2.2.0"
+target="_blank"
+rel="noopener"
+>watchexec CLI v2.2.0&lt;/a>
+被修复。&lt;/p>
+&lt;p>而我目前所用 watchexec 的版本是 &lt;code>2.1.2&lt;/code>，相差仅 1 个版本浪费了我多少精力！！！&lt;/p>
+&lt;h3 id="原因">原因
+&lt;/h3>&lt;p>为何 watchexec 存在
+&lt;a
+class="link"
+href="https://learn.microsoft.com/zh-cn/dotnet/standard/io/file-path-formats#unc-paths"
+target="_blank"
+rel="noopener"
+>UNC 路径&lt;/a>
+这样的问题呢？&lt;/p>
+&lt;p>在
+&lt;a
+class="link"
+href="https://github.com/watchexec/watchexec/pull/858"
+target="_blank"
+rel="noopener"
+>Replace std::fs::canonicalize with dunce::canonicalize #858&lt;/a>
+中使用
+&lt;a
+class="link"
+href="https://crates.io/crates/dunce"
+target="_blank"
+rel="noopener"
+>dunce&lt;/a>
+库中的
+&lt;a
+class="link"
+href="https://docs.rs/dunce/1.0.5/dunce/fn.canonicalize.html"
+target="_blank"
+rel="noopener"
+>dunce::canonicalize&lt;/a>
+代替了
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/std/fs/fn.canonicalize.html"
+target="_blank"
+rel="noopener"
+>std::fs::canonicalize&lt;/a>
+。&lt;/p>
+&lt;p>这是由于 dunce 会尽可能将 Windows UNC 路径转换为 MS-DOS 兼容格式，而 rust 中的 &lt;code>std::fs::canonicalize&lt;/code> 返回的
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file"
+target="_blank"
+rel="noopener"
+>extended length path&lt;/a>
+是 UNC 路径，而非常规 MS-DOS 兼容格式的路径，这才导致在 watchexec 下运行的程序也使用了 UNC 路径，而 mise 中的 &lt;code>xx::file::glob&lt;/code> 显然是不支持 UNC 路径的，所以最后导致 &lt;code>mise watch build&lt;/code> 运行失败。&lt;/p>
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>简单升级一下 watchexec 版本即可正常工作！&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ watchexec -V
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>watchexec 2.3.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ watchexec -n python -c &lt;span style="color:#e6db74">&amp;#39;import os; print(os.getcwd()); import subprocess; subprocess.check_call([&amp;#34;&amp;#34;&amp;#34;C:/Users/navyd/workspaces/projects/mise/target/debug/printenv.exe&amp;#34;&amp;#34;&amp;#34;], env={})&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Running: python -c import os; print(os.getcwd()); import subprocess; subprocess.check_call([&amp;#34;&amp;#34;&amp;#34;C:/Users/navyd/workspaces/projects/mise/target/debug/printenv.exe&amp;#34;&amp;#34;&amp;#34;], env={})]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>C:\Users\navyd\Downloads\watchexec-2.3.0-x86_64-pc-windows-msvc
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>current env dir: Ok(&amp;#34;C:\\Users\\navyd\\Downloads\\watchexec-2.3.0-x86_64-pc-windows-msvc&amp;#34;)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>all env:
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Daemon Process in Windows</title><link>/posts/2025/02/daemon-process-in-windows/</link><pubDate>Fri, 14 Feb 2025 22:20:57 +0800</pubDate><guid>/posts/2025/02/daemon-process-in-windows/</guid><description>&lt;p>在 windows 上进入一个目录后启动一个守护进程如&lt;code>hugo server&lt;/code>服务，方便在浏览器中实时查看内容更新。虽然 daemon 进程在 unix 系统中很常见，但在 windows 中并没有这样的概念，在 powershell 中存在一个
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/start-process?view=powershell-7.4"
+target="_blank"
+rel="noopener"
+>Start-Process&lt;/a>
+命令可以启动一个后台进程，即使关闭终端也可以保持在后台运行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>Start-Process java -ArgumentList &lt;span style="color:#e6db74">&amp;#39;-jar&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;MyProgram.jar&amp;#39;&lt;/span> -RedirectStandardOutput &lt;span style="color:#e6db74">&amp;#39;.\console.out&amp;#39;&lt;/span> -RedirectStandardError &lt;span style="color:#e6db74">&amp;#39;.\console.err&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>如何使用 python 实际类似的功能呢？&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;h3 id="deepseek">deepseek
+&lt;/h3>&lt;p>在 python 中如何启动一个进程 A 并将其附加到当前 python 进程 B 的父进程 C 中，以避免当前 python 进程 B 退出后进程 A 也被终止。我知道在 unix 系统上用 daemon 进程和在 windows 系统上用 detached 进程可以将子进程 A 转为后台进程以避免当前 Python 进程 B 退出后被终止，但我想要的启动当前 python 进程 B 的父进程 C 在 python 进程 B 退出后接管子进程 A，此时子进程 A 仍然存活，而当进程 C 退出时终止子进程 A。注意：要求兼容 windows 与 unix 系统&lt;/p>
+&lt;details>
+&lt;summary>Thinking Process (101s):&lt;/summary>
+嗯，用户的问题是关于如何在 Python 中启动一个进程 A，并将其附加到当前进程 B 的父进程 C 中，这样当进程 B 退出时，进程 A 不会被终止，而是由父进程 C 接管，当 C 退出时，进程 A 才会终止。用户希望这个方案同时兼容 Windows 和 Unix 系统。
+&lt;p>首先，我需要理解进程的父子关系。通常，子进程的父进程是启动它的那个进程。当父进程终止时，子进程会成为孤儿进程，由 init（在 Unix）或系统进程（Windows）接管，这样它们就不会被终止。但用户的情况不同，他希望进程 A 在进程 B 退出后，被进程 C 接管，也就是进程 B 的父进程，而不是系统的 init 或类似进程。&lt;/p>
+&lt;p>用户提到，使用 daemon 进程或在 Windows 上使用 detached 进程可以让子进程在后台运行，避免被父进程终止。但这里的需求是让父进程的父进程（即祖先进程）来接管子进程 A，这可能涉及到修改进程的父进程 ID，这在常规的操作系统中可能不容易实现，因为进程的父进程 ID 通常由操作系统管理，不能随意更改。&lt;/p>
+&lt;p>接下来，我需要考虑如何在 Python 中实现这一点。可能需要使用平台特定的方法，因为 Windows 和 Unix 系统的进程管理机制不同。例如，在 Unix 系统中，可能可以使用双重分叉（double fork）的技术来使子进程成为 init 的子进程，这样原来的父进程退出后，子进程由 init 接管。而在 Windows 系统中，可能需要设置 CREATE_NEW_PROCESS_GROUP 或者使用 detached 标志来创建独立的进程。&lt;/p>
+&lt;p>但用户的需求并不是让子进程成为 init 的子进程，而是成为当前进程的父进程（进程 C）的子进程。这可能涉及到在启动子进程 A 时，直接让进程 C 成为其父进程。但如何在 Python 中实现这一点呢？&lt;/p>
+&lt;p>可能需要先获取当前进程 B 的父进程 ID（进程 C 的 PID），然后在启动进程 A 时，以某种方式将其父进程设置为进程 C 的 PID。不过，修改子进程的父进程通常需要操作系统级别的调用，比如在 Unix 中使用 os.setppid()，但 Python 的标准库中可能没有这样的函数。因此，可能需要使用平台特定的方法，如 Unix 中的 fork 和 setsid，或者 Windows 中的 Job 对象或其他机制。&lt;/p>
+&lt;p>在 Unix 系统中，当父进程退出后，子进程会被 init 接管，但用户希望的是被进程 C 接管。这可能意味着进程 B 需要以某种方式将子进程 A 的父进程更改为进程 C。但进程 B 无法直接修改其他进程的父进程，除非有权限使用像 prctl 这样的系统调用，或者通过某种中间步骤，如让进程 C 主动收养进程 A。&lt;/p>
+&lt;p>或许，可以通过让进程 C 在启动进程 B 时，预先设置某种信号处理，当进程 B 退出时，进程 C 接管进程 A。但这需要进程 C 的配合，而用户的问题中并没有提到可以修改进程 C 的行为，因此这可能不可行。&lt;/p>
+&lt;p>另一个思路是，当进程 B 启动进程 A 时，让进程 A 脱离进程 B，成为进程 C 的子进程。这可能需要进程 A 在启动后立即将其父进程更改为进程 C。例如，在 Unix 系统中，可以通过双重分叉，使得进程 A 成为孤儿进程，被 init 接管，但这里需要被进程 C 接管，这可能不可行，除非进程 C 主动调用 wait 或类似的函数来收养子进程，但这似乎不太可能。&lt;/p>
+&lt;p>或许，正确的做法是让进程 A 在启动时直接由进程 C 启动，而不是由进程 B 启动。但这样的话，进程 B 就无法控制进程 A 的启动。但用户的需求是进程 B 启动进程 A，然后将其父进程设置为进程 C。&lt;/p>
+&lt;p>可能需要跨平台的解决方案，结合 Unix 和 Windows 的不同方法。例如，在 Unix 中使用双重分叉使子进程成为孤儿，由 init 接管，但用户希望由进程 C 接管，这可能无法实现。或者，是否可能让进程 B 启动进程 A，然后进程 A 将自己重新父级到进程 C？这可能需要特定的系统调用，如 Linux 中的 prctl(PR_SET_CHILD_SUBREAPER) 或者类似的功能，但不确定是否跨平台。&lt;/p>
+&lt;p>另外，Windows 中的作业对象可能可以用来管理进程的生命周期，但同样需要特定的处理。可能需要使用 CreateProcess 函数中的某些标志，如 CREATE_BREAKAWAY_FROM_JOB，让进程 A 脱离进程 B 的作业，从而在进程 B 退出后继续运行。但这需要特定的 Windows API 调用，而 Python 可能通过 ctypes 或 win32api 模块来实现。&lt;/p>
+&lt;p>总结来说，可能的解决方案是：&lt;/p>
+&lt;ol>
+&lt;li>在 Unix 系统中，使用双重分叉来使进程 A 成为 init 的子进程，这样进程 B 退出后，进程 A 仍然存活，由 init 接管。但这不符合用户希望由进程 C 接管的要求，因为 init 是进程 C 的父进程吗？可能用户的问题中存在误解，可能用户认为进程 B 的父进程 C 在进程 B 退出后接管进程 A，而实际上在 Unix 中，孤儿进程会被 init 接管，而不是原来的父进程。&lt;/li>
+&lt;/ol>
+&lt;p>因此，可能用户的需求实际上无法直接实现，因为进程的父进程关系在创建时确定，之后不能更改，除非特定系统支持。因此，可能的解决方案是让进程 A 在启动时脱离进程 B，使其成为后台进程，这样当进程 B 退出时，进程 A 继续运行，由系统的 init 或相应进程接管，而不是由进程 C 接管。但用户明确希望由进程 C 接管，这可能不可行。&lt;/p>
+&lt;p>或者，用户可能误解了进程的父子关系。例如，如果进程 B 的父进程是 C，当 B 启动进程 A，正常情况下 A 的父进程是 B。当 B 退出，A 的父进程变为 init（或类似进程），而不是 C。所以用户希望的是，当 B 退出后，A 的父进程变为 C，而不是 init。这需要操作系统支持重新设置父进程，这在常规情况下是不可能的，除非使用某些特定的方法，如 prctl 设置 subreaper，但这可能仅限于 Linux，并且需要权限。&lt;/p>
+&lt;p>因此，可能正确的结论是，无法跨平台实现用户的需求，即让进程 A 在进程 B 退出后被进程 C 接管。替代方案是让进程 A 成为守护进程或独立进程，这样当进程 B 退出时，进程 A 继续运行，但其父进程变为 init 或系统进程，而不是进程 C。这可能接近用户的需求，但不完全符合。&lt;/p>
+&lt;p>因此，可能的解决方案是：在启动进程 A 时，使其成为独立进程，脱离进程 B，这样当进程 B 退出时，进程 A 继续运行，由系统接管。虽然父进程不是 C，但至少不会被 B 的退出而终止。而进程 C 退出时，系统会终止所有子进程，所以如果进程 A 的父进程是系统进程（如 init），那么当 C 退出时，进程 A 不会被终止，这可能与用户的需求不符，因为用户希望当 C 退出时，进程 A 也被终止。&lt;/p>
+&lt;p>这里可能存在用户的需求矛盾。如果希望当 C 退出时，进程 A 也被终止，那么进程 A 必须作为 C 的子进程。但用户希望进程 A 由 B 启动，同时成为 C 的子进程，这样当 B 退出后，进程 A 仍然作为 C 的子进程存在，当 C 退出时，进程 A 被终止。这需要进程 A 在启动时，父进程直接设置为 C，而不是 B。但如何做到这一点？&lt;/p>
+&lt;p>在 Unix 系统中，进程的父进程是在 fork 时确定的，无法在之后更改。因此，如果进程 B 要启动进程 A 并让 C 成为其父进程，这可能需要进程 C 主动调用 fork 或者类似的方法，但这需要进程 B 和 C 之间有某种通信机制，例如进程 B 通知进程 C 去启动进程 A，但这超出了进程 B 自身启动进程 A 的情况。&lt;/p>
+&lt;p>或者，使用某种中间进程，例如进程 B 创建一个脚本或执行命令，让进程 C 来启动进程 A，但这需要进程 C 的主动参与，可能不现实。&lt;/p>
+&lt;p>综上，可能用户的需求在常规的操作系统进程管理机制下无法实现，因为子进程的父进程一旦创建就无法更改，除非使用特定于平台的复杂方法，而这样的方法可能无法跨平台兼容。因此，可能的结论是，无法在 Python 中跨平台实现用户的需求，即启动一个进程 A，其父进程是当前进程 B 的父进程 C，这样当 B 退出后，A 仍然由 C 管理，并在 C 退出时终止。&lt;/p>
+&lt;p>不过，用户可能实际的需求是让进程 A 独立于进程 B，不被 B 的退出所终止，同时在进程 C（B 的父进程）退出时，进程 A 也被终止。这种情况下，进程 A 需要成为进程 C 的子进程。但如何让进程 B 启动一个子进程 A，而 A 的父进程是 C？&lt;/p>
+&lt;p>可能的解决方案是，进程 B 通过某种方式让进程 C 来启动进程 A。例如，进程 B 可以发送信号或请求给进程 C，让进程 C 执行启动进程 A 的操作。这需要进程 C 有监听和处理这样的请求的能力，比如通过进程间通信（IPC）机制。这可能超出了仅用 Python 代码在进程 B 内部解决问题的范围。&lt;/p>
+&lt;p>因此，可能正确的答案是，无法直接通过 Python 的标准库或常见跨平台方法实现用户的需求。替代方案是让进程 A 成为守护进程或独立进程，从而在进程 B 退出后继续运行，但其父进程变为系统的 init 进程，而不是进程 C。此时，当进程 C 退出时，不会影响进程 A，这与用户的要求不符。因此，用户的需求可能无法满足。&lt;/p>
+&lt;p>但用户提到知道 daemon 和 detached 进程的方法，但希望进程 A 被进程 C 接管。可能用户存在误解，认为进程 C 会自然接管进程 A，但实际上当 B 退出后，A 的父进程是 init，而不是 C。所以，可能用户需要的是让进程 A 成为进程 C 的子进程，这只能在进程 C 主动创建进程 A 的情况下实现，而不是由进程 B 创建。因此，可能需要重新设计进程的启动流程，让进程 C 直接创建进程 A，而不是通过进程 B。或者，如果进程 B 必须创建进程 A，则可能无法满足父进程为 C 的条件。&lt;/p>
+&lt;p>因此，可能的最终结论是，无法在跨平台的情况下实现用户的需求。建议用户重新考虑设计，或者接受进程 A 由系统接管，而不是进程 C。&lt;/p>
+&lt;/details>
+&lt;h4 id="assistant">Assistant
+&lt;/h4>&lt;p>在操作系统中，进程的父子关系一旦建立就无法直接更改，因此无法直接将子进程 A 的父进程动态修改为当前进程 B 的父进程 C。但可以通过以下跨平台方案让子进程 A 在进程 B 退出后继续运行，并确保其生命周期与进程 C 一致：&lt;/p>
+&lt;h4 id="跨平台解决方案">跨平台解决方案
+&lt;/h4>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> sys
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> subprocess
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">start_detached_process&lt;/span>(command):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> sys&lt;span style="color:#f92672">.&lt;/span>platform &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#39;win32&amp;#39;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Windows 使用 DETACHED_PROCESS 和 CREATE_NEW_PROCESS_GROUP&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> subprocess&lt;span style="color:#f92672">.&lt;/span>Popen(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> command,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> creationflags&lt;span style="color:#f92672">=&lt;/span>subprocess&lt;span style="color:#f92672">.&lt;/span>DETACHED_PROCESS &lt;span style="color:#f92672">|&lt;/span> subprocess&lt;span style="color:#f92672">.&lt;/span>CREATE_NEW_PROCESS_GROUP,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> close_fds&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">else&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># Unix 使用双 fork 脱离进程组&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>fork() &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>setsid()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>fork() &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> subprocess&lt;span style="color:#f92672">.&lt;/span>Popen(command, start_new_session&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">True&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>_exit(&lt;span style="color:#ae81ff">0&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> os&lt;span style="color:#f92672">.&lt;/span>wait()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 示例用法&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>start_detached_process([&lt;span style="color:#e6db74">&amp;#34;python&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;child_process.py&amp;#34;&lt;/span>])
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="方案说明">方案说明
+&lt;/h4>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>Windows&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>使用 &lt;code>DETACHED_PROCESS&lt;/code> 和 &lt;code>CREATE_NEW_PROCESS_GROUP&lt;/code> 标志创建独立进程。&lt;/li>
+&lt;li>新进程会脱离当前进程 B 的控制，在进程 B 退出后继续运行。&lt;/li>
+&lt;li>进程 A 的生命周期不再依赖进程 B，但也不会自动关联进程 C。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Unix&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>通过双重分叉 (&lt;code>double fork&lt;/code>) 创建守护进程。&lt;/li>
+&lt;li>使用 &lt;code>os.setsid()&lt;/code> 创建新会话，彻底脱离进程 B 的控制。&lt;/li>
+&lt;li>子进程 A 将成为系统级后台进程（父进程为 init/systemd）。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h4 id="生命周期控制">生命周期控制
+&lt;/h4>&lt;ul>
+&lt;li>&lt;strong>进程 B 退出时&lt;/strong>：子进程 A 继续存活，但父进程变为系统进程（而非进程 C）。&lt;/li>
+&lt;li>&lt;strong>进程 C 退出时&lt;/strong>：若希望进程 A 随之终止，需通过进程间通信（如信号、套接字）实现。例如：
+&lt;ul>
+&lt;li>进程 C 启动时监听特定信号。&lt;/li>
+&lt;li>进程 A 定期检查进程 C 是否存在（通过 PID 或心跳机制）。&lt;/li>
+&lt;li>进程 C 退出时主动通知进程 A 终止。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h4 id="关键点">关键点
+&lt;/h4>&lt;ul>
+&lt;li>&lt;strong>无法直接修改父进程&lt;/strong>：操作系统不允许动态修改进程父子关系。&lt;/li>
+&lt;li>&lt;strong>依赖系统托管&lt;/strong>：脱离后的进程由系统托管，与进程 C 无直接关联。&lt;/li>
+&lt;li>&lt;strong>需额外逻辑关联 C 的生命周期&lt;/strong>：需通过 PID 检查或 IPC 机制实现进程 A 与 C 的生命周期绑定。&lt;/li>
+&lt;/ul>
+&lt;p>建议通过进程间通信实现逻辑上的生命周期绑定，而不是依赖操作系统的进程树机制。&lt;/p>
+&lt;h3 id="求证">求证
+&lt;/h3>&lt;p>在 windows 中使用 win32
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags"
+target="_blank"
+rel="noopener"
+>Process Creation Flags&lt;/a>
+创建即可&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> subprocess
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 配置启动信息以隐藏窗口&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>stdout_path &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;.hugo-server.log&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">with&lt;/span> open(stdout_path, &lt;span style="color:#e6db74">&amp;#34;wb&amp;#34;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> stdout:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> stderr &lt;span style="color:#f92672">=&lt;/span> stdout
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> proc &lt;span style="color:#f92672">=&lt;/span> subprocess&lt;span style="color:#f92672">.&lt;/span>Popen(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> command,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> stdin&lt;span style="color:#f92672">=&lt;/span>subprocess&lt;span style="color:#f92672">.&lt;/span>DEVNULL,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> stdout&lt;span style="color:#f92672">=&lt;/span>stdout,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> stderr&lt;span style="color:#f92672">=&lt;/span>stderr,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> creationflags&lt;span style="color:#f92672">=&lt;/span>subprocess&lt;span style="color:#f92672">.&lt;/span>CREATE_NEW_PROCESS_GROUP,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/25035181/8566831"
+target="_blank"
+rel="noopener"
+>Start a detached background process in PowerShell&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/8947742/8566831"
+target="_blank"
+rel="noopener"
+>Call a python subprocess as daemon and exit&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/52450172/8566831"
+target="_blank"
+rel="noopener"
+>How to detach Python child process on Windows (without setsid)?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/12854376/8566831"
+target="_blank"
+rel="noopener"
+>How to start daemon process from python on windows?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/67940259/8566831"
+target="_blank"
+rel="noopener"
+>Python - Launch detached process, wait for specific output in stdout, then continue&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>WSL更新出错：Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG</title><link>/posts/2025/02/wsl-update-error-regdb_e_classnotreg/</link><pubDate>Fri, 07 Feb 2025 18:04:54 +0800</pubDate><guid>/posts/2025/02/wsl-update-error-regdb_e_classnotreg/</guid><description>&lt;img src="/posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207180548.png" alt="Featured image of post WSL更新出错：Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG" />&lt;h1 id="wsl更新出错wslcallmsiinstallregdb_e_classnotreg">WSL更新出错：Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG
+&lt;/h1>&lt;p>今天手贱尝试更新&lt;code>wsl --update&lt;/code>，结果更新失败出错&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ wsl --update &lt;span style="color:#75715e"># 或 `wsl --help`,`wsl --status`等&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span># ...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WSL 正在完成升级...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Could not write value to key \SOFTWARE\Classes\Directory\Background\shell\WSL.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Verify that you have sufficient access to that key, or contact your support personnel.wsl:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WSL 安装似乎已损坏 (错误代码： Wsl/CallMsi/Install/ERROR_INSTALL_FAILURE)。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>按任意键修复 WSL，或 CTRL-C 取消。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>此提示将在 60 秒后超时。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>正在将适用于 Linux 的 Windows 子系统更新到版本： 2.3.26。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>没有注册类
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>错误代码: Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>问题参考
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/10882"
+target="_blank"
+rel="noopener"
+># Error code: Wsl/CallMsi/REGDB_E_CLASSNOTREG #10882&lt;/a>
+，无论运行WSL的任何命令和参数，都会出现上述提示。&lt;/p>
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>注意：&lt;em>&lt;strong>一定要事先备份好WSL的磁盘避免数据丢失&lt;/strong>&lt;/em>，参考
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/windows/wsl/disk-space#how-to-locate-the-vhdx-file-and-disk-path-for-your-linux-distribution"
+target="_blank"
+rel="noopener"
+>How to locate the .vhdx file and disk path for your Linux distribution&lt;/a>
+找到&lt;code>.vhdx&lt;/code>文件复制备份好&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 获取wsl distro vhdx文件目录&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>(Get-ChildItem -Path HKCU&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>\Software\Microsoft\Windows\CurrentVersion\Lxss | Where-Object { $_.GetValue(&lt;span style="color:#e6db74">&amp;#34;DistributionName&amp;#34;&lt;/span>) &lt;span style="color:#f92672">-eq&lt;/span> &lt;span style="color:#e6db74">&amp;#39;&amp;lt;distribution-name&amp;gt;&amp;#39;&lt;/span> }).GetValue(&lt;span style="color:#e6db74">&amp;#34;BasePath&amp;#34;&lt;/span>) + &lt;span style="color:#e6db74">&amp;#34;\ext4.vhdx&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/10882#issuecomment-2197198797"
+target="_blank"
+rel="noopener"
+>Error code: Wsl/CallMsi/REGDB_E_CLASSNOTREG #10882&lt;/a>
+，
+&lt;a
+class="link"
+href="https://answers.microsoft.com/zh-hans/windows/forum/all/wsl-install/cd18be19-e2fb-4173-82ad-c5a7600fc18e"
+target="_blank"
+rel="noopener"
+>wsl &amp;ndash;install 报错：灾难性故障&lt;/a>
+&lt;/p>
+&lt;ol>
+&lt;li>关闭wsl功能并重启
+&lt;img src="/posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207182110.png"
+width="415"
+height="312"
+srcset="/posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207182110_hu_2c91a1580d37f6b9.png 480w, /posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207182110_hu_bb2fa3375ec19dcc.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="319px"
+>&lt;/li>
+&lt;li>关闭powertoys避免在安装wsl时出现
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/11276"
+target="_blank"
+rel="noopener"
+>MSI installer &amp;ldquo;Warning: 1946.Property [&amp;hellip;] could not be set.&amp;quot;#11276&lt;/a>
+&lt;/li>
+&lt;li>下载最新或兼容你更新前的版本
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/releases"
+target="_blank"
+rel="noopener"
+>WSL/releases&lt;/a>
+msi文件并安装&lt;/li>
+&lt;li>忽略
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/11697#issuecomment-2168104220"
+target="_blank"
+rel="noopener"
+>Could not write value to key \SOFTWARE\Classes\Drive\shell\WSL #11697&lt;/a>
+问题即可
+&lt;img src="/posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207180548.png"
+width="406"
+height="307"
+srcset="/posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207180548_hu_8134563db0c2dda2.png 480w, /posts/2025/02/wsl-update-error-regdb_e_classnotreg/posts/2025/02/wsl-update-error-REGDB_E_CLASSNOTREG/20250207180548_hu_bbcf2ff0b1714ad2.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="132"
+data-flex-basis="317px"
+>&lt;/li>
+&lt;li>检查是否成功
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-console" data-lang="console">&lt;span style="display:flex;">&lt;span>$ wsl --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WSL 版本： 2.4.10.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>内核版本： 5.15.167.4-1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>WSLg 版本： 1.0.65
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>MSRDC 版本： 1.2.5716
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Direct3D 版本： 1.611.1-81528511
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DXCore 版本： 10.0.26100.1-240331-1435.ge-release
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Windows 版本： 10.0.26100.3037
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wsl -l
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>适用于 Linux 的 Windows 子系统分发:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Debian (默认)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Ubuntu
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://zhuanlan.zhihu.com/p/11217948712"
+target="_blank"
+rel="noopener"
+>解决问题：WSL升级后无法运行：错误代码: wsl/callmsi/install/error_install_failure&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://blog.csdn.net/weixin_44358931/article/details/143952359"
+target="_blank"
+rel="noopener"
+>WSL2 升级更新失败(退出代码: 1603，错误代码: Wsl/CallMsi/Install/ERROR_INSTALL_FAILURE）解决办法&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Python Installed From Mstore Not Found in Terminal</title><link>/posts/2022/07/python-installed-from-mstore-not-found-in-terminal/</link><pubDate>Fri, 01 Jul 2022 14:24:24 +0800</pubDate><guid>/posts/2022/07/python-installed-from-mstore-not-found-in-terminal/</guid><description>&lt;p>在升级win 11后，正常使用之前的python，但是在一次修改了环境变量path后，之前正常使用python无法使用了，无论是正常安装还是商店的都无法使用&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>可能是由于更新的问题，在动了path后出现问题，更新path就好，windows 商店的问题可能也是未加入path的问题&lt;/p>
+&lt;h2 id="解决方式">解决方式
+&lt;/h2>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$env:PATH += &lt;span style="color:#e6db74">&amp;#39;%USERPROFILE%\AppData\Local\Microsoft\WindowsApps&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/58773979/8566831"
+target="_blank"
+rel="noopener"
+>CMD opens Windows Store when I type &amp;lsquo;python&amp;rsquo;&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Port Forwarding in Wsl2</title><link>/posts/2021/11/port-forwarding-in-wsl2/</link><pubDate>Sun, 14 Nov 2021 22:30:49 +0800</pubDate><guid>/posts/2021/11/port-forwarding-in-wsl2/</guid><description>&lt;img src="/posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5.png" alt="Featured image of post Port Forwarding in Wsl2" />&lt;p>在wsl2中使用docker跑一个简单的ngnix时，发现只有宿主机使用&lt;code>localhost:8080&lt;/code>可以用浏览器打开，而内网内其他电脑则没办法使用宿主机内网ip访问ngnix界面&lt;/p>
+&lt;p>再用idea启动一个web服务，还是不能被内网访问&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>wsl2是一个hyper v虚拟机，使用 virtual network adapter进行网络通信，局域网机器访问windows宿主机，windows宿主机转发端口至wsl2&lt;/p>
+&lt;p>&lt;code>netsh interface portproxy add v4tov4 listenport=8080 connectaddress=127.0.0.1 connectport=8080 listenaddress=* protocol=tcp&lt;/code>，但是这段指令还是有个问题我转发的ip是127.0.0.1 这里很明显转发到的是windows宿主机的ip而不是wsl2的ip。&lt;/p>
+&lt;p>但是有个疑问的点是 windows宿主机能够在浏览器直接访问127.0.0.1:8080来访问到wsl2中的http服务。于是事情就变成了 我转发到127.0.0.1是不行的，必须转发到wsl2内部ip也就是172.31.58.132，这里的话问题变成了 wsl2的内部ip是每次重启都会变的。&lt;/p>
+&lt;p>用wsl2虚拟机分配一个ip，使用windows自带的端口转发命令netsh可以实现在获取了虚拟机ip之后转发至wsl2进而进行访问。&lt;/p>
+&lt;h3 id="hyper-v保留端口">hyper-v保留端口
+&lt;/h3>&lt;p>在win10 21H2的wsl2中，已支持端口转发。但使用&lt;code>hugo server -D&lt;/code>启动时在windows端无法访问&lt;code>http://localhost:1313&lt;/code>。在
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/5306#issuecomment-636509302"
+target="_blank"
+rel="noopener"
+>Huge amount of ports are being reserved #5306&lt;/a>
+中提到了hyper-v保留端口的问题：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$ netsh int ipv4 show excludedportrange protocol=tcp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Protocol tcp Port Exclusion Ranges
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start Port &lt;span style="color:#66d9ef">End&lt;/span> Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- --
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1235&lt;/span> &lt;span style="color:#ae81ff">1334&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1435&lt;/span> &lt;span style="color:#ae81ff">1534&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">2096&lt;/span> &lt;span style="color:#ae81ff">2195&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">5357&lt;/span> &lt;span style="color:#ae81ff">5357&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">12278&lt;/span> &lt;span style="color:#ae81ff">12377&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">14512&lt;/span> &lt;span style="color:#ae81ff">14611&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">19455&lt;/span> &lt;span style="color:#ae81ff">19455&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">50000&lt;/span> &lt;span style="color:#ae81ff">50059&lt;/span> *
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* - Administered port exclusions.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>显然hugo监听的端口1313在hyper-v的保留端口范围中&lt;/p>
+&lt;h2 id="解决方案">解决方案
+&lt;/h2>&lt;h3 id="保留端口">保留端口
+&lt;/h3>&lt;p>参考
+&lt;a
+class="link"
+href="https://github.com/docker/for-win/issues/3171#issuecomment-572571882"
+target="_blank"
+rel="noopener"
+>Unable to bind ports: Docker-for-Windows &amp;amp; Hyper-V excluding but not using important port ranges&lt;/a>
+，但一般而言，不需要配置，如果发现无法访问，查看下是否在保留端口中&lt;/p>
+&lt;h3 id="script">script
+&lt;/h3>&lt;p>每次重启来获取wsl2的内部ip并且写入到windows的hosts中&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>获得虚拟机ip&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ ip a | grep eth0 &lt;span style="color:#75715e"># 172.22.58.201&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>5: eth0: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style="color:#ae81ff">1500&lt;/span> qdisc mq state UP group default qlen &lt;span style="color:#ae81ff">1000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> inet 172.22.58.201/20 brd 172.22.63.255 scope global eth0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>设置端口转发（需要管理员权限运行）&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># netsh interface portproxy add v4tov4 listenport=[宿主机windows平台监听端口] listenaddress=[允许进入的地址] connectport=[wsl2平台监听端口] connectaddress=[wsl2平台ip] protocol=tcp&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy add v4tov4 listenport=&lt;span style="color:#ae81ff">8080&lt;/span> connectaddress=&lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 connectport=&lt;span style="color:#ae81ff">8080&lt;/span> listenaddress=* protocol=tcp
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>查看下端口转发状态&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>此时可测试在内网机器上访问成功（先完全关闭win10 defender firewall）&lt;/p>
+&lt;h4 id="删除端口转发">删除端口转发
+&lt;/h4>&lt;p>&lt;code>netsh interface portproxy delete v4tov4 listenport=[port] protocol=tcp&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">9000&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">9000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy delete v4tov4 listenport=&lt;span style="color:#ae81ff">9000&lt;/span> protocol=tcp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="设置windows防火墙">设置Windows防火墙
+&lt;/h3>&lt;p>windows防火墙开启入站规则或者直接关闭防火墙&lt;/p>
+&lt;p>&lt;code>设置--&amp;gt;更新和安全--&amp;gt;Windows安全中心--&amp;gt;防火墙和网络保护--&amp;gt;高级设置--&amp;gt;入站规则--&amp;gt;新建规则--&amp;gt;端口--&amp;gt;TCP,特定本地端口--&amp;gt;允许连接&lt;/code>&lt;/p>
+&lt;p>&lt;img src="/posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5.png"
+width="1047"
+height="757"
+srcset="/posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5_hu_ce1ded6b49e86f55.png 480w, /posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5_hu_15b05e6aa6c5dcae.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="138"
+data-flex-basis="331px"
+>&lt;/p>
+&lt;h3 id="设置powershell-script">设置powershell script
+&lt;/h3>&lt;p>因为每一次重新启动 wsl2的ip都会变动，所以每一次重启都去手动执行端口转发是一件反人类的事情，
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/4150#issuecomment-504209723"
+target="_blank"
+rel="noopener"
+>[WSL 2] NIC Bridge mode 🖧 (Has TCP Workaround🔨) #4150&lt;/a>
+找到一个powershell的脚本能够每一次获取虚拟机ip，并进行指定端口转发&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>使用cmd调用powershell运行脚本，首次执行可能会有报错，因为powershell默认不能直接执行脚本，需要更改一个设置，需在powershell下执行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>Set-ExecutionPolicy RemoteSigned
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>如果没有找到&lt;code>ifconfig&lt;/code>命令，则ubuntu安装&lt;code>sudo apt-get install net-tools&lt;/code>。还有一种方式只用&lt;code>ip&lt;/code>命令：&lt;code>ip a | awk '/^[0-9]+: / {}; /inet.*eth0/ {print gensub(/(.*)\/(.*)/, &amp;quot;\\1&amp;quot;, &amp;quot;g&amp;quot;, $2)}'&lt;/code>，但是ps中不能运行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>bash.exe -c &lt;span style="color:#e6db74">&amp;#34;ip a | awk &amp;#39;/^[0-9]+: / {}; /inet.*eth0/ {print gensub(/(.*)\/(.*)/, &amp;#34;&lt;/span>\\&lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#e6db74">&amp;#34;, &amp;#34;&lt;/span>g&lt;span style="color:#e6db74">&amp;#34;, &lt;/span>$2&lt;span style="color:#e6db74">)}&amp;#39;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>\\&lt;span style="color:#ae81ff">1&lt;/span>, g, )}&lt;span style="color:#e6db74">&amp;#39;: -c: line 0: unexpected EOF while looking for matching `&amp;#39;&amp;#39;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">\\1, g, )}&amp;#39;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> -c: line &lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> syntax error&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> unexpected &lt;span style="color:#66d9ef">end&lt;/span> of file
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>如果提示&lt;code>The requested operation requires elevation (Run as administrator).&lt;/code>，则需要在管理员打开powershell运行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>C:\WINDOWS\system32&amp;gt; C:\Users\navyd\Desktop\wsl2-port-forwarding.ps1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>运行script后，执行netsh interface portproxy show all 查看端口，确认是否有效&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>C:\WINDOWS\system32&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">80&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">443&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">443&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">10000&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">10000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">9000&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">9000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$remoteport = bash.exe -c &lt;span style="color:#e6db74">&amp;#34;ifconfig eth0 | grep &amp;#39;inet &amp;#39;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$found = $remoteport &lt;span style="color:#f92672">-match&lt;/span> &lt;span style="color:#e6db74">&amp;#39;\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span>( $found ){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$remoteport = $matches[&lt;span style="color:#ae81ff">0&lt;/span>];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>} &lt;span style="color:#66d9ef">else&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>echo &lt;span style="color:#e6db74">&amp;#34;The Script Exited, the ip address of WSL 2 cannot be found&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>exit;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[Ports]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#All the ports you want to forward separated by coma&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ports=@(&lt;span style="color:#ae81ff">10000&lt;/span>,&lt;span style="color:#ae81ff">9000&lt;/span>,&lt;span style="color:#ae81ff">8080&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[Static ip]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#You can change the addr to your ip config to listen to a specific address&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$addr=&lt;span style="color:#e6db74">&amp;#39;*&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ports_a = $ports -join &lt;span style="color:#e6db74">&amp;#34;,&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#Remove Firewall Exception Rules&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># iex &amp;#34;Remove-NetFireWallRule -DisplayName &amp;#39;WSL 2 Firewall Unlock&amp;#39; &amp;#34;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#adding Exception Rules for inbound and outbound Rules&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#iex &amp;#34;New-NetFireWallRule -DisplayName &amp;#39;WSL 2 Firewall Unlock&amp;#39; -Direction Outbound -LocalPort $ports_a -Action Allow -Protocol TCP&amp;#34;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#iex &amp;#34;New-NetFireWallRule -DisplayName &amp;#39;WSL 2 Firewall Unlock&amp;#39; -Direction Inbound -LocalPort $ports_a -Action Allow -Protocol TCP&amp;#34;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span>( $i = &lt;span style="color:#ae81ff">0&lt;/span>; $i &lt;span style="color:#f92672">-lt&lt;/span> $ports.length; $i++ ){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$port = $ports[$i];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>iex &lt;span style="color:#e6db74">&amp;#34;netsh interface portproxy delete v4tov4 listenport=&lt;/span>$port&lt;span style="color:#e6db74"> listenaddress=&lt;/span>$addr&lt;span style="color:#e6db74">&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>iex &lt;span style="color:#e6db74">&amp;#34;netsh interface portproxy add v4tov4 listenport=&lt;/span>$port&lt;span style="color:#e6db74"> listenaddress=&lt;/span>$addr&lt;span style="color:#e6db74"> connectport=&lt;/span>$port&lt;span style="color:#e6db74"> connectaddress=&lt;/span>$remoteport&lt;span style="color:#e6db74">&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>注意：尽量不要转发常用端口，如不能转发80端口，可能导致win10 共享等不能工作的异常&lt;/p>
+&lt;h3 id="配置任务计划">配置任务计划
+&lt;/h3>&lt;p>Go to search, search for task scheduler. In the actions menu on the right, click on create task.&lt;/p>
+&lt;p>Enter Name, go to triggers tab. Create a new trigger, with a begin task as you login, set delay to 10s.&lt;/p>
+&lt;p>Go to the actions and add the script. If you are using Laptop, go to settings and enable run on power.&lt;/p>
+&lt;p>
+&lt;a
+class="link"
+href="https://blog.csdn.net/qq_26435977/article/details/106008957"
+target="_blank"
+rel="noopener"
+>WSL2设置内网访问&lt;/a>
+&lt;/p>
+&lt;p>参考&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/4150#issuecomment-504209723"
+target="_blank"
+rel="noopener"
+>[WSL 2] NIC Bridge mode 🖧 (Has TCP Workaround🔨) #4150&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://blog.csdn.net/qq_26435977/article/details/106008957"
+target="_blank"
+rel="noopener"
+>WSL2设置内网访问&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://studygolang.com/articles/29526"
+target="_blank"
+rel="noopener"
+>windows10 2004版使用WSL2并自动转发WSL2中端口&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://zhuanlan.zhihu.com/p/144583887"
+target="_blank"
+rel="noopener"
+>WSL2来了！但是能正常使用并不简单&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.microsoft.com/en-us/windows/wsl/wsl-config#options-for-wslconfig"
+target="_blank"
+rel="noopener"
+>Options for .wslconfig&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/273188/8566831"
+target="_blank"
+rel="noopener"
+>How do I determine if a port is open on a Windows server? [closed]&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/5439"
+target="_blank"
+rel="noopener"
+>WSL2 not forwarding ports #5439&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/5306"
+target="_blank"
+rel="noopener"
+>Huge amount of ports are being reserved #5306&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/docker/for-win/issues/3171"
+target="_blank"
+rel="noopener"
+>Unable to bind ports: Docker-for-Windows &amp;amp; Hyper-V excluding but not using important port ranges #3171&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

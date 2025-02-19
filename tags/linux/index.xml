@@ -1,0 +1,1495 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Linux on NavyD的个人博客</title><link>/tags/linux/</link><description>Recent content in Linux on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/linux/index.xml" rel="self" type="application/rss+xml"/><item><title>Intel Gpu Support for Wsl2</title><link>/posts/2023/03/intel-gpu-support-for-wsl2/</link><pubDate>Wed, 29 Mar 2023 11:50:19 +0800</pubDate><guid>/posts/2023/03/intel-gpu-support-for-wsl2/</guid><description>&lt;img src="https://tomthegreat.com/content/images/size/w960/2022/09/plex_ubuntu_docker.png" alt="Featured image of post Intel Gpu Support for Wsl2" />&lt;p>&lt;img src="https://tomthegreat.com/content/images/size/w960/2022/09/plex_ubuntu_docker.png"
+loading="lazy"
+>&lt;/p>
+&lt;p>在使用docker时应用需要使用gpu加速解码，尝试在wsl2中挂载intel集显设备/dev/dri时无法正常启动，找不到设备文件。&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>在win10 21H2以上开始支持wsl2 gpu，win11肯定是支持的，网上大部分都是NVIDIA的资料，intel集显比较少。&lt;/p>
+&lt;p>在这里
+&lt;a
+class="link"
+href="https://github.com/intel/compute-runtime/blob/master/WSL.md"
+target="_blank"
+rel="noopener"
+>WDDM GPU Paravirtualization support for WSL2&lt;/a>
+提到可能是显卡驱动的问题&lt;/p>
+&lt;blockquote>
+&lt;p>Required driver package (30.0.100.9955) is available here.&lt;/p>&lt;/blockquote>
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>在这里下载新驱动
+&lt;a
+class="link"
+href="https://www.intel.com/content/www/us/en/download/19344/intel-graphics-windows-dch-drivers.html"
+target="_blank"
+rel="noopener"
+>Intel® Graphics – Windows* DCH Drivers&lt;/a>
+，重新安装新的驱动后即可正常挂载设备/dev/dri&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/intel/compute-runtime/blob/master/WSL.md"
+target="_blank"
+rel="noopener"
+>WDDM GPU Paravirtualization support for WSL2&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/windows/ai/directml/gpu-accelerated-training"
+target="_blank"
+rel="noopener"
+>GPU accelerated ML training&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://ubuntu.com/tutorials/enabling-gpu-acceleration-on-ubuntu-on-wsl2-with-the-nvidia-cuda-platform#1-overview"
+target="_blank"
+rel="noopener"
+>Enabling GPU acceleration on Ubuntu on WSL2 with the NVIDIA CUDA Platform&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>How to Extract a Single File From Tar to a Different Directory</title><link>/posts/2022/11/how-to-extract-a-single-file-from-tar-to-a-different-directory/</link><pubDate>Mon, 21 Nov 2022 17:57:04 +0800</pubDate><guid>/posts/2022/11/how-to-extract-a-single-file-from-tar-to-a-different-directory/</guid><description>&lt;p>在使用tar时如何解压其中某个文件到指定的目录&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>通常使用&lt;code>-C&lt;/code>选项放在后面&lt;code>-f&lt;/code>也没问题，但是当结合指定的解压文件时&lt;code>-C&lt;/code>将失效并解压到当前目录，并不会出现提示&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>curl -L &lt;span style="color:#e6db74">&amp;#34;https://github.com/xxx.tar.gz&amp;#34;&lt;/span> | tar -xzf - --strip-components &lt;span style="color:#ae81ff">1&lt;/span> --wildcards &lt;span style="color:#e6db74">&amp;#39;*/rest-server&amp;#39;&lt;/span> -C ./testdir
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 解压到当前目录&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>正确的方式应该将&lt;code>-C&lt;/code>放在&lt;code>-f&lt;/code>之前&lt;/p>
+&lt;h2 id="方案">方案
+&lt;/h2>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>tar --strip-components &lt;span style="color:#ae81ff">1&lt;/span> --wildcards -C ./testdir -xzf - &lt;span style="color:#e6db74">&amp;#39;*/rest-server&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/9249779/8566831"
+target="_blank"
+rel="noopener"
+>How to extract a single file from tar to a different directory? [closed]&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Mounting Practice on Linux</title><link>/posts/archives/linux/mounting-practice-on-linux/</link><pubDate>Mon, 09 May 2022 22:49:19 +0800</pubDate><guid>/posts/archives/linux/mounting-practice-on-linux/</guid><description>&lt;p>有一个需求，由于raspi4 home目录所在的dev空间容量不足达到90%，需要更换更大容量的dev。当前在系统中已挂载了一个4T的USB dev在/mnt/share/中，想在USB dev中直接划分一个目录挂载到/home中即可，mount的bind最合适&lt;/p>
+&lt;p>但是，在挂载后出现问题无法执行bin：&lt;code>mount zsh: permission denied: bin&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ mount --bind /mnt/share/home/navyd /home/navyd
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bin
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mount zsh: permission denied: bin
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>出现问题后首先想到的是回滚，卸掉/home/navyd&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># avoid busy device&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cd /
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo umount -f /home/navyd
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后在&lt;code>/mnt/share/&lt;/code>挂载点测试是否可以执行bin文件，结果也无法执行bin，可能是挂载配置的问题。在
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/51234415/8566831"
+target="_blank"
+rel="noopener"
+>这里&lt;/a>
+了解到可能是mount选项为noexec，查询下当前的mount配置&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ mount -t ext4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/dev/sda1 on /mnt/share type ext4 &lt;span style="color:#f92672">(&lt;/span>rw,nosuid,nodev,noexec,relatime&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>下面是/etc/fstab配置&lt;/p>
+&lt;pre tabindex="0">&lt;code># ...
+UUID=5d0-x-x /mnt/share ext4 defaults,auto,rw,nofail,users,x-systemd.device-timeout=5 0 0
+&lt;/code>&lt;/pre>&lt;p>果然是mount的问题，修改fstab增加选项&lt;code>exec,dev,suid&lt;/code>并重新挂载查询，可以正常执行bin文件。然后试试重新bind /home/navyd看看，也可以正常使用了&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># UUID=5d0-x-x /mnt/share ext4 defaults,auto,rw,nofail,users,exec,dev,suid,x-systemd.device-timeout=5 0 0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo mount -o remount /mnt/share
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ mount -t ext4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/dev/sda1 on /mnt/share type ext4 &lt;span style="color:#f92672">(&lt;/span>rw,relatime&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ cd /mnt/share
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bin
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外提一点，tar确实是最合适linux的备份工具，symlink可以完整的保留，而cp在默认是不会保留link的&lt;/p>
+&lt;h3 id="访问挂载点的原始内容">访问挂载点的原始内容
+&lt;/h3>&lt;p>在挂载后旧目录的内容被覆盖，无法通过原来的目录访问。但linux通过bind挂载仍然可以访问原有目录，如这里我想访问所有占用达到90%磁盘，并删除其中的内容。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>mkdir -p /mnt/home
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mount --bind /home /mnt/home
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 原始目录&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rm -rf /mnt/home/navyd
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>在/etc/fstab中配置&lt;/p>
+&lt;pre tabindex="0">&lt;code>UUID=5d0-x-x /mnt/share ext4 defaults,auto,rw,nofail,users,exec,dev,suid,x-systemd.device-timeout=5 0 0
+/mnt/share/home/navyd /home/navyd ext4 defaults,bind 0 0
+&lt;/code>&lt;/pre>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/19969471/8566831"
+target="_blank"
+rel="noopener"
+>How to unmount a busy device [closed]&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/51234415/8566831"
+target="_blank"
+rel="noopener"
+>Can&amp;rsquo;t execute a .sh script from mounted disk (Ubuntu 18.04): zsh: permission denied&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://superuser.com/a/99637"
+target="_blank"
+rel="noopener"
+>Can&amp;rsquo;t execute a script on a mounted external drive&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://askubuntu.com/a/175742"
+target="_blank"
+rel="noopener"
+>How do I remount a filesystem as read/write?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://serverfault.com/a/613184"
+target="_blank"
+rel="noopener"
+>How do I do &amp;lsquo;mount &amp;ndash;bind&amp;rsquo; in /etc/fstab?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/4428"
+target="_blank"
+rel="noopener"
+>Access to original contents of mount point&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://man7.org/linux/man-pages/man5/fstab.5.html"
+target="_blank"
+rel="noopener"
+>fstab fileds: defaults&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/4428"
+target="_blank"
+rel="noopener"
+>Access to original contents of mount point&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Port Forwarding in Wsl2</title><link>/posts/2021/11/port-forwarding-in-wsl2/</link><pubDate>Sun, 14 Nov 2021 22:30:49 +0800</pubDate><guid>/posts/2021/11/port-forwarding-in-wsl2/</guid><description>&lt;img src="/posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5.png" alt="Featured image of post Port Forwarding in Wsl2" />&lt;p>在wsl2中使用docker跑一个简单的ngnix时，发现只有宿主机使用&lt;code>localhost:8080&lt;/code>可以用浏览器打开，而内网内其他电脑则没办法使用宿主机内网ip访问ngnix界面&lt;/p>
+&lt;p>再用idea启动一个web服务，还是不能被内网访问&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>wsl2是一个hyper v虚拟机，使用 virtual network adapter进行网络通信，局域网机器访问windows宿主机，windows宿主机转发端口至wsl2&lt;/p>
+&lt;p>&lt;code>netsh interface portproxy add v4tov4 listenport=8080 connectaddress=127.0.0.1 connectport=8080 listenaddress=* protocol=tcp&lt;/code>，但是这段指令还是有个问题我转发的ip是127.0.0.1 这里很明显转发到的是windows宿主机的ip而不是wsl2的ip。&lt;/p>
+&lt;p>但是有个疑问的点是 windows宿主机能够在浏览器直接访问127.0.0.1:8080来访问到wsl2中的http服务。于是事情就变成了 我转发到127.0.0.1是不行的，必须转发到wsl2内部ip也就是172.31.58.132，这里的话问题变成了 wsl2的内部ip是每次重启都会变的。&lt;/p>
+&lt;p>用wsl2虚拟机分配一个ip，使用windows自带的端口转发命令netsh可以实现在获取了虚拟机ip之后转发至wsl2进而进行访问。&lt;/p>
+&lt;h3 id="hyper-v保留端口">hyper-v保留端口
+&lt;/h3>&lt;p>在win10 21H2的wsl2中，已支持端口转发。但使用&lt;code>hugo server -D&lt;/code>启动时在windows端无法访问&lt;code>http://localhost:1313&lt;/code>。在
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/5306#issuecomment-636509302"
+target="_blank"
+rel="noopener"
+>Huge amount of ports are being reserved #5306&lt;/a>
+中提到了hyper-v保留端口的问题：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$ netsh int ipv4 show excludedportrange protocol=tcp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Protocol tcp Port Exclusion Ranges
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start Port &lt;span style="color:#66d9ef">End&lt;/span> Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>- --
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1235&lt;/span> &lt;span style="color:#ae81ff">1334&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1435&lt;/span> &lt;span style="color:#ae81ff">1534&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">2096&lt;/span> &lt;span style="color:#ae81ff">2195&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">5357&lt;/span> &lt;span style="color:#ae81ff">5357&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">12278&lt;/span> &lt;span style="color:#ae81ff">12377&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">14512&lt;/span> &lt;span style="color:#ae81ff">14611&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">19455&lt;/span> &lt;span style="color:#ae81ff">19455&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">50000&lt;/span> &lt;span style="color:#ae81ff">50059&lt;/span> *
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* - Administered port exclusions.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>显然hugo监听的端口1313在hyper-v的保留端口范围中&lt;/p>
+&lt;h2 id="解决方案">解决方案
+&lt;/h2>&lt;h3 id="保留端口">保留端口
+&lt;/h3>&lt;p>参考
+&lt;a
+class="link"
+href="https://github.com/docker/for-win/issues/3171#issuecomment-572571882"
+target="_blank"
+rel="noopener"
+>Unable to bind ports: Docker-for-Windows &amp;amp; Hyper-V excluding but not using important port ranges&lt;/a>
+，但一般而言，不需要配置，如果发现无法访问，查看下是否在保留端口中&lt;/p>
+&lt;h3 id="script">script
+&lt;/h3>&lt;p>每次重启来获取wsl2的内部ip并且写入到windows的hosts中&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>获得虚拟机ip&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ ip a | grep eth0 &lt;span style="color:#75715e"># 172.22.58.201&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>5: eth0: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu &lt;span style="color:#ae81ff">1500&lt;/span> qdisc mq state UP group default qlen &lt;span style="color:#ae81ff">1000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> inet 172.22.58.201/20 brd 172.22.63.255 scope global eth0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>设置端口转发（需要管理员权限运行）&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># netsh interface portproxy add v4tov4 listenport=[宿主机windows平台监听端口] listenaddress=[允许进入的地址] connectport=[wsl2平台监听端口] connectaddress=[wsl2平台ip] protocol=tcp&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy add v4tov4 listenport=&lt;span style="color:#ae81ff">8080&lt;/span> connectaddress=&lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 connectport=&lt;span style="color:#ae81ff">8080&lt;/span> listenaddress=* protocol=tcp
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>查看下端口转发状态&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>此时可测试在内网机器上访问成功（先完全关闭win10 defender firewall）&lt;/p>
+&lt;h4 id="删除端口转发">删除端口转发
+&lt;/h4>&lt;p>&lt;code>netsh interface portproxy delete v4tov4 listenport=[port] protocol=tcp&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">9000&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">9000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy delete v4tov4 listenport=&lt;span style="color:#ae81ff">9000&lt;/span> protocol=tcp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="设置windows防火墙">设置Windows防火墙
+&lt;/h3>&lt;p>windows防火墙开启入站规则或者直接关闭防火墙&lt;/p>
+&lt;p>&lt;code>设置--&amp;gt;更新和安全--&amp;gt;Windows安全中心--&amp;gt;防火墙和网络保护--&amp;gt;高级设置--&amp;gt;入站规则--&amp;gt;新建规则--&amp;gt;端口--&amp;gt;TCP,特定本地端口--&amp;gt;允许连接&lt;/code>&lt;/p>
+&lt;p>&lt;img src="/posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5.png"
+width="1047"
+height="757"
+srcset="/posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5_hu_ce1ded6b49e86f55.png 480w, /posts/2021/11/port-forwarding-in-wsl2/258dd81a-6fc2-43f2-aa73-9a57b3ebe8f5_hu_15b05e6aa6c5dcae.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="138"
+data-flex-basis="331px"
+>&lt;/p>
+&lt;h3 id="设置powershell-script">设置powershell script
+&lt;/h3>&lt;p>因为每一次重新启动 wsl2的ip都会变动，所以每一次重启都去手动执行端口转发是一件反人类的事情，
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/4150#issuecomment-504209723"
+target="_blank"
+rel="noopener"
+>[WSL 2] NIC Bridge mode 🖧 (Has TCP Workaround🔨) #4150&lt;/a>
+找到一个powershell的脚本能够每一次获取虚拟机ip，并进行指定端口转发&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>使用cmd调用powershell运行脚本，首次执行可能会有报错，因为powershell默认不能直接执行脚本，需要更改一个设置，需在powershell下执行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>Set-ExecutionPolicy RemoteSigned
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>如果没有找到&lt;code>ifconfig&lt;/code>命令，则ubuntu安装&lt;code>sudo apt-get install net-tools&lt;/code>。还有一种方式只用&lt;code>ip&lt;/code>命令：&lt;code>ip a | awk '/^[0-9]+: / {}; /inet.*eth0/ {print gensub(/(.*)\/(.*)/, &amp;quot;\\1&amp;quot;, &amp;quot;g&amp;quot;, $2)}'&lt;/code>，但是ps中不能运行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>bash.exe -c &lt;span style="color:#e6db74">&amp;#34;ip a | awk &amp;#39;/^[0-9]+: / {}; /inet.*eth0/ {print gensub(/(.*)\/(.*)/, &amp;#34;&lt;/span>\\&lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#e6db74">&amp;#34;, &amp;#34;&lt;/span>g&lt;span style="color:#e6db74">&amp;#34;, &lt;/span>$2&lt;span style="color:#e6db74">)}&amp;#39;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>\\&lt;span style="color:#ae81ff">1&lt;/span>, g, )}&lt;span style="color:#e6db74">&amp;#39;: -c: line 0: unexpected EOF while looking for matching `&amp;#39;&amp;#39;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">\\1, g, )}&amp;#39;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> -c: line &lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> syntax error&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> unexpected &lt;span style="color:#66d9ef">end&lt;/span> of file
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>如果提示&lt;code>The requested operation requires elevation (Run as administrator).&lt;/code>，则需要在管理员打开powershell运行&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>C:\WINDOWS\system32&amp;gt; C:\Users\navyd\Desktop\wsl2-port-forwarding.ps1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>The system cannot find the file specified.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>运行script后，执行netsh interface portproxy show all 查看端口，确认是否有效&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>C:\WINDOWS\system32&amp;gt; netsh interface portproxy show all
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Listen on ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> Connect to ipv4&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Address Port Address Port
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - -
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">80&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">443&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">443&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">10000&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">10000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">9000&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">9000&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* &lt;span style="color:#ae81ff">8080&lt;/span> &lt;span style="color:#ae81ff">172.22&lt;/span>.58.201 &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="display:flex;">&lt;span>$remoteport = bash.exe -c &lt;span style="color:#e6db74">&amp;#34;ifconfig eth0 | grep &amp;#39;inet &amp;#39;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$found = $remoteport &lt;span style="color:#f92672">-match&lt;/span> &lt;span style="color:#e6db74">&amp;#39;\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span>( $found ){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$remoteport = $matches[&lt;span style="color:#ae81ff">0&lt;/span>];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>} &lt;span style="color:#66d9ef">else&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>echo &lt;span style="color:#e6db74">&amp;#34;The Script Exited, the ip address of WSL 2 cannot be found&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>exit;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[Ports]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#All the ports you want to forward separated by coma&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ports=@(&lt;span style="color:#ae81ff">10000&lt;/span>,&lt;span style="color:#ae81ff">9000&lt;/span>,&lt;span style="color:#ae81ff">8080&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#[Static ip]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#You can change the addr to your ip config to listen to a specific address&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$addr=&lt;span style="color:#e6db74">&amp;#39;*&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ports_a = $ports -join &lt;span style="color:#e6db74">&amp;#34;,&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#Remove Firewall Exception Rules&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># iex &amp;#34;Remove-NetFireWallRule -DisplayName &amp;#39;WSL 2 Firewall Unlock&amp;#39; &amp;#34;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#adding Exception Rules for inbound and outbound Rules&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#iex &amp;#34;New-NetFireWallRule -DisplayName &amp;#39;WSL 2 Firewall Unlock&amp;#39; -Direction Outbound -LocalPort $ports_a -Action Allow -Protocol TCP&amp;#34;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#iex &amp;#34;New-NetFireWallRule -DisplayName &amp;#39;WSL 2 Firewall Unlock&amp;#39; -Direction Inbound -LocalPort $ports_a -Action Allow -Protocol TCP&amp;#34;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span>( $i = &lt;span style="color:#ae81ff">0&lt;/span>; $i &lt;span style="color:#f92672">-lt&lt;/span> $ports.length; $i++ ){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$port = $ports[$i];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>iex &lt;span style="color:#e6db74">&amp;#34;netsh interface portproxy delete v4tov4 listenport=&lt;/span>$port&lt;span style="color:#e6db74"> listenaddress=&lt;/span>$addr&lt;span style="color:#e6db74">&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>iex &lt;span style="color:#e6db74">&amp;#34;netsh interface portproxy add v4tov4 listenport=&lt;/span>$port&lt;span style="color:#e6db74"> listenaddress=&lt;/span>$addr&lt;span style="color:#e6db74"> connectport=&lt;/span>$port&lt;span style="color:#e6db74"> connectaddress=&lt;/span>$remoteport&lt;span style="color:#e6db74">&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;p>注意：尽量不要转发常用端口，如不能转发80端口，可能导致win10 共享等不能工作的异常&lt;/p>
+&lt;h3 id="配置任务计划">配置任务计划
+&lt;/h3>&lt;p>Go to search, search for task scheduler. In the actions menu on the right, click on create task.&lt;/p>
+&lt;p>Enter Name, go to triggers tab. Create a new trigger, with a begin task as you login, set delay to 10s.&lt;/p>
+&lt;p>Go to the actions and add the script. If you are using Laptop, go to settings and enable run on power.&lt;/p>
+&lt;p>
+&lt;a
+class="link"
+href="https://blog.csdn.net/qq_26435977/article/details/106008957"
+target="_blank"
+rel="noopener"
+>WSL2设置内网访问&lt;/a>
+&lt;/p>
+&lt;p>参考&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/4150#issuecomment-504209723"
+target="_blank"
+rel="noopener"
+>[WSL 2] NIC Bridge mode 🖧 (Has TCP Workaround🔨) #4150&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://blog.csdn.net/qq_26435977/article/details/106008957"
+target="_blank"
+rel="noopener"
+>WSL2设置内网访问&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://studygolang.com/articles/29526"
+target="_blank"
+rel="noopener"
+>windows10 2004版使用WSL2并自动转发WSL2中端口&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://zhuanlan.zhihu.com/p/144583887"
+target="_blank"
+rel="noopener"
+>WSL2来了！但是能正常使用并不简单&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.microsoft.com/en-us/windows/wsl/wsl-config#options-for-wslconfig"
+target="_blank"
+rel="noopener"
+>Options for .wslconfig&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/273188/8566831"
+target="_blank"
+rel="noopener"
+>How do I determine if a port is open on a Windows server? [closed]&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/5439"
+target="_blank"
+rel="noopener"
+>WSL2 not forwarding ports #5439&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/microsoft/WSL/issues/5306"
+target="_blank"
+rel="noopener"
+>Huge amount of ports are being reserved #5306&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/docker/for-win/issues/3171"
+target="_blank"
+rel="noopener"
+>Unable to bind ports: Docker-for-Windows &amp;amp; Hyper-V excluding but not using important port ranges #3171&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>在shell中访问上次运行的命令</title><link>/posts/archives/linux/access-to-last-command-in-shell/</link><pubDate>Wed, 15 Sep 2021 21:40:47 +0800</pubDate><guid>/posts/archives/linux/access-to-last-command-in-shell/</guid><description>&lt;p>如何在shell中使用快捷键运行上次命令&lt;/p>
+&lt;h2 id="快捷键运行sh脚本命令">快捷键运行sh脚本命令
+&lt;/h2>&lt;p>在绑定key的时候需要找到对应键位的ascii码，对于特殊的键位可能很难找到，linux中提供了&lt;code>showkey -a&lt;/code>可以查询ascii码。下面是键入&lt;code>F10, ctrl+d&lt;/code>两个快捷键的输出：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ showkey -a
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Press any keys - Ctrl-D will terminate this program
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>^&lt;span style="color:#f92672">[[&lt;/span>21~ &lt;span style="color:#ae81ff">27&lt;/span> &lt;span style="color:#ae81ff">0033&lt;/span> 0x1b
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">91&lt;/span> &lt;span style="color:#ae81ff">0133&lt;/span> 0x5b
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">50&lt;/span> &lt;span style="color:#ae81ff">0062&lt;/span> 0x32
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">49&lt;/span> &lt;span style="color:#ae81ff">0061&lt;/span> 0x31
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">126&lt;/span> &lt;span style="color:#ae81ff">0176&lt;/span> 0x7e
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>^D &lt;span style="color:#ae81ff">4&lt;/span> &lt;span style="color:#ae81ff">0004&lt;/span> 0x04
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>zsh中内置了bindkey使用快捷键，在&lt;code>man zshzle&lt;/code>中可以找到。&lt;/p>
+&lt;blockquote>
+&lt;p>bindkey [ options ] -s in-string out-string
+Bind each in-string to each out-string. When in-string is typed, out-string will be pushed back
+and treated as input to the line editor. When -R is also used, interpret the in-strings as ranges.&lt;/p>
+&lt;p>Note that both in-string and out-string are subject to the same form of interpretation, as de‐
+scribed below.&lt;/p>&lt;/blockquote>
+&lt;p>下面是演示绑定命令与脚本文件：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 绑定F10&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bindkey -s &lt;span style="color:#e6db74">&amp;#39;^[[21~&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;echo test\n&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 键入F10 自动输入&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ echo test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># test.sh: echo test&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bindkey -s &lt;span style="color:#e6db74">&amp;#39;^[[21~&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>pwd&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">/test.sh\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ /home/navyd/Workspaces/projects/navyd.github.io/test.sh
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>test
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://superuser.com/a/248568"
+target="_blank"
+rel="noopener"
+>Show keys pressed in Linux [closed]&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://jdhao.github.io/2019/06/13/zsh_bind_keys/"
+target="_blank"
+rel="noopener"
+>Binding Keys in Zsh&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/226062"
+target="_blank"
+rel="noopener"
+>How can I use bindkey to run a script?&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="获取上次命令的参数">获取上次命令的参数
+&lt;/h2>&lt;p>在shell使用时可能需要上次命令中的某些参数，避免重复输入如：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ ls -al ~/.local
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 想要的效果：du -sh ~/.local&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ du -sh !$
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 输入!$后回车不会执行而是替换成&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ du -sh ~/.local
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在shell中&lt;code>!&lt;/code>用法可以直接在&lt;code>man bash&lt;/code>中搜索&lt;code>\!!&lt;/code>如下：&lt;/p>
+&lt;blockquote>
+&lt;p>Word Designators
+Word designators are used to select desired words from the event. A : separates the event specification from the
+word designator. It may be omitted if the word designator begins with a ^, $, *, -, or %. Words are numbered
+from the beginning of the line, with the first word being denoted by 0 (zero). Words are inserted into the cur‐
+rent line separated by single spaces.&lt;/p>
+&lt;pre>&lt;code> 0 (zero)
+The zeroth word. For the shell, this is the command word.
+n The nth word.
+^ The first argument. That is, word 1.
+$ The last word. This is usually the last argument, but will expand to the zeroth word if there is only one
+word in the line.
+% The word matched by the most recent `?string?' search.
+x-y A range of words; `-y' abbreviates `0-y'.
+* All of the words but the zeroth. This is a synonym for `1-$'. It is not an error to use * if there is
+just one word in the event; the empty string is returned in that case.
+x* Abbreviates x-$.
+x- Abbreviates x-$ like x*, but omits the last word
+&lt;/code>&lt;/pre>&lt;/blockquote>
+&lt;p>具体的用法后面慢慢探索&lt;/p>
+&lt;!-- TODO -->
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/25305091/8566831"
+target="_blank"
+rel="noopener"
+>Access to last command in Zsh (not previous command line)&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.gnu.org/software/bash/manual/html_node/Word-Designators.html#Word-Designators"
+target="_blank"
+rel="noopener"
+>bash Word Designators&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/151110"
+target="_blank"
+rel="noopener"
+>Is there a shortcut for repeat the second proximate command in bash?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/38176552/8566831"
+target="_blank"
+rel="noopener"
+>Re run previous command with different arguments&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="快捷键运行上次执行的命令">快捷键运行上次执行的命令
+&lt;/h2>&lt;p>读取上次命令可以使用zsh内置&lt;code>fc -ln -1&lt;/code>，结合上面的&lt;code>bindkey -s&lt;/code>使用，发现无法工作&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>bindkey -s &lt;span style="color:#e6db74">&amp;#39;^[[21~&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;fc -ln -1\n\n&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ echo test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 键入F10&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ fc -ln -1 &lt;span style="color:#75715e">#\n&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>echo test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#75715e">#\n&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在网上找到答案，可以参考
+&lt;a
+class="link"
+href="https://zsh.sourceforge.io/Guide/zshguide04.html"
+target="_blank"
+rel="noopener"
+>zsh zle Chapter 4: The Z-Shell Line Editor&lt;/a>
+&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># define function that retrieves and runs last command&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">function&lt;/span> run-again &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># get previous history item&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> zle up-history
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># confirm command&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> zle accept-line
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># define run-again widget from function of the same name&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>zle -N run-again
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># bind widget to Ctrl+X in viins mode&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># bindkey -M viins &amp;#39;^E&amp;#39; run-again&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># bind widget to Ctrl+X in vicmd mode&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>bindkey &lt;span style="color:#e6db74">&amp;#39;^[[21~&amp;#39;&lt;/span> run-again
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/28938270/8566831"
+target="_blank"
+rel="noopener"
+>In zsh how do I bind a keyboard shortcut to run the last command?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://askubuntu.com/a/530687"
+target="_blank"
+rel="noopener"
+>Rerun previous command under sudo&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>使用root权限运行cargo test</title><link>/posts/archives/rust/cargo-test-with-root-privilege/</link><pubDate>Wed, 15 Sep 2021 13:34:37 +0800</pubDate><guid>/posts/archives/rust/cargo-test-with-root-privilege/</guid><description>&lt;img src="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-24-35.png" alt="Featured image of post 使用root权限运行cargo test" />&lt;p>在一些系统应用中需要访问root权限的资源，直接运行可能出现权限错误：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ cargo test --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>2021-09-15T05:39:57Z INFO cmd_lib::child&lt;span style="color:#f92672">]&lt;/span> Fatal: can&lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span>t open lock file /run/xtables.lock: Permission denied
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>rust源码使用
+&lt;a
+class="link"
+href="https://crates.io/crates/cmd_lib"
+target="_blank"
+rel="noopener"
+>cmd_lib&lt;/a>
+，编译成&lt;code>std::process&lt;/code>api：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-rust" data-lang="rust">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">fn&lt;/span> &lt;span style="color:#a6e22e">run&lt;/span>(table: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">str&lt;/span>, chain: &lt;span style="color:#66d9ef">&amp;amp;&lt;/span>&lt;span style="color:#66d9ef">str&lt;/span>) -&amp;gt; Result&lt;span style="color:#f92672">&amp;lt;&lt;/span>()&lt;span style="color:#f92672">&amp;gt;&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> run_cmd! (iptables &lt;span style="color:#f92672">-&lt;/span>t &lt;span style="color:#e6db74">&amp;#34;$table&amp;#34;&lt;/span> &lt;span style="color:#f92672">-&lt;/span>D &lt;span style="color:#66d9ef">OUTPUT&lt;/span> &lt;span style="color:#f92672">-&lt;/span>j &lt;span style="color:#e6db74">&amp;#34;$chain&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>直接上sudo提权出现命令无法找到的问题&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo cargo test --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo: cargo: command not found
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>要解决可以看我之前的文章：
+&lt;a
+class="link"
+href="/posts/archives/linux/how-to-keep-environment-variables-when-using-sudo/"
+>在sudo时如何保持当前环境变量&lt;/a>
+解决了环境权限问题，正常使用iptables，下面的错误并不是iptables权限的问题 忽略&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo -E PATH&lt;span style="color:#f92672">=&lt;/span>$PATH env cargo test --package docker-clash --lib -- cli::tests::test_clean --exact --nocapture
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>2021-09-15T05:45:16Z INFO cmd_lib::child&lt;span style="color:#f92672">]&lt;/span> iptables v1.8.4 &lt;span style="color:#f92672">(&lt;/span>legacy&lt;span style="color:#f92672">)&lt;/span>: Couldn&lt;span style="color:#e6db74">&amp;#39;t load target `CLASH&amp;#39;&lt;/span>:No such file or directory
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外，cargo会不会有解决方法呢？&lt;/p>
+&lt;p>cargo提供了一个配置参数&lt;code>target.&amp;lt;triple&amp;gt;.runner&lt;/code>&lt;/p>
+&lt;blockquote>
+&lt;p>If a runner is provided, executables for the target &amp;lt;triple&amp;gt; will be executed by invoking the specified runner with the actual executable passed as an argument. This applies to cargo run, cargo test and cargo bench commands. By default, compiled executables are executed directly.&lt;/p>&lt;/blockquote>
+&lt;p>可以在cargo的配置文件中添加sudo命令去运行cargo test，cargo的可配置的文件在这：
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/cargo/reference/config.html#hierarchical-structure"
+target="_blank"
+rel="noopener"
+>Hierarchical structure&lt;/a>
+，这里使用&lt;code>your_project/.cargo/config.toml&lt;/code>添加配置：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-toml" data-lang="toml">&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#a6e22e">target&lt;/span>.&lt;span style="color:#a6e22e">x86_64-unknown-linux-gnu&lt;/span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">runner&lt;/span> = &lt;span style="color:#e6db74">&amp;#39;sudo -E&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意一下，使用sudo要求在ide命令行输入密码，在clion rust运行时将一直被阻塞&lt;code>instantiating tests&lt;/code>，也没有提示输入，可能不支持这种方式。而vscode rust-analyzer是可以正常使用提示输入的&lt;/p>
+&lt;p>&lt;img src="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-24-35.png"
+width="769"
+height="327"
+srcset="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-24-35_hu_8d512fc4c749555b.png 480w, /posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-24-35_hu_8c8465992e10178d.png 1024w"
+loading="lazy"
+alt="clion rust"
+class="gallery-image"
+data-flex-grow="235"
+data-flex-basis="564px"
+>
+&lt;img src="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-28-49.png"
+width="625"
+height="230"
+srcset="/posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-28-49_hu_9ac0fc033d094202.png 480w, /posts/archives/rust/cargo-test-with-root-privilege/2021-09-15-14-28-49_hu_541b79ad3906048f.png 1024w"
+loading="lazy"
+alt="vscode rust-analyzer"
+class="gallery-image"
+data-flex-grow="271"
+data-flex-basis="652px"
+>&lt;/p>
+&lt;p>如果是shell还可以使用&lt;code>-S&lt;/code>选项从stdin中密码&lt;code>sudo -S &amp;lt;&amp;lt;&amp;lt; $YOUR_PASS&lt;/code>，使用了环境变量避免了明文密码，但cargo runner无法解析sh语法运行&lt;code>echo PASS | sudo -E&lt;/code>。&lt;/p>
+&lt;p>退一步，如果要是sudo需要输入密码时直接失败不阻塞&lt;code>-n&lt;/code>选项，但配置了&lt;code>sudo -nE&lt;/code>了实际在clion rust是一直失败的，可能是在wsl中使用ssh，sudo的认证是关联了session的，无法在clion remote ssh中执行&lt;code>sudo -v&lt;/code>刷新认证，在clion自带的终端执行也没用，但这个思路应该是没错的。等待后续方案 &lt;!-- TODO -->&lt;/p>
+&lt;p>这里提一下rust所有内置支持target：
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/nightly/rustc/platform-support.html"
+target="_blank"
+rel="noopener"
+>Platform Support&lt;/a>
+，可以使用&lt;code>rustc --print target-list&lt;/code>查看， &lt;code>rustup target list --installed&lt;/code>查看当前安装的target&lt;/p>
+&lt;h2 id="解决方案">解决方案
+&lt;/h2>&lt;p>这两种方法都是可行的，由于需求的不同选择，如在ide中运行test选择cargo配置较好，不用手动输入命令，但是不是所有test都要root权限的，而且有时会存在sudo环境问题，使用root用户运行可能出错。&lt;/p>
+&lt;p>根据最小特权原则，使用sudo单独运行个别测试用例更好&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># alias sudoe=&amp;#39;sudo -E PATH=$PATH env&amp;#39;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudoe cargo test --package $crate --lib -- $module_path --exact --nocapture
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/nix-rust/nix/issues/963"
+target="_blank"
+rel="noopener"
+>cargo test with root privilege #963&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/rust-lang/cargo/issues/5999#issuecomment-419972497"
+target="_blank"
+rel="noopener"
+>Running tests with elevated privileges #5999&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/cargo/reference/config.html?highlight=runner#targettriplerunner"
+target="_blank"
+rel="noopener"
+>The Cargo Book Configuration target.&amp;lt;triple&amp;gt;.runner&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://doc.rust-lang.org/nightly/rustc/targets/built-in.html"
+target="_blank"
+rel="noopener"
+>rust Built-in Targets&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://superuser.com/questions/67765/sudo-with-password-in-one-command-line"
+target="_blank"
+rel="noopener"
+>sudo with password in one command line?&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>在sudo时如何保持当前环境变量</title><link>/posts/archives/linux/how-to-keep-environment-variables-when-using-sudo/</link><pubDate>Mon, 13 Sep 2021 20:53:59 +0800</pubDate><guid>/posts/archives/linux/how-to-keep-environment-variables-when-using-sudo/</guid><description>&lt;p>在使用sudo时经常出现环境问题，如命令无法找到&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo poetry;sudo sh -c &lt;span style="color:#e6db74">&amp;#39;echo $VISUAL&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo: poetry: command not found
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ which poetry; echo $VISUAL
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/home/navyd/.local/bin/poetry
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>vim
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>sudo存在一个&lt;code>security policy&lt;/code>不会使用当前用户的环境，提供了&lt;code>-E&lt;/code>启用当前存在的环境变量，&lt;code>--preserve-env=[key,key1,..]&lt;/code>从当前用户环境中保存的环境变量，允许覆盖&lt;/p>
+&lt;p>上面的是在&lt;code>~/.bashrc&lt;/code>中定义的变量&lt;code>PATH, VISUAL&lt;/code>本质是没有被sudo设置，可以保存当前环境变量在 sudo 之后以 &lt;code>ENV=VALUE&lt;/code> 的形式传递被后续命令接受。&lt;/p>
+&lt;p>而&lt;code>env&lt;/code> run a program in a modified environment 是一个接受变量执行命令的命令如&lt;code>env a=b sh -c 'echo $a'&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo --preserve-env&lt;span style="color:#f92672">=&lt;/span>PATH env poetry --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Poetry version 1.1.7
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># or&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo PATH&lt;span style="color:#f92672">=&lt;/span>$PATH env poetry --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo --preserve-env&lt;span style="color:#f92672">=&lt;/span>PATH,VISUAL env sh -c &lt;span style="color:#e6db74">&amp;#39;echo $VISUAL&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>vim
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># or&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo -E --preserve-env&lt;span style="color:#f92672">=&lt;/span>PATH env sh -c &lt;span style="color:#e6db74">&amp;#39;echo $VISUAL&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>vim
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意：不能使用&lt;code>sudo PATH=$PATH cmd&lt;/code>这种方式，前导参数本身视为环境变量赋值使cmd使用PATH变量，但不会影响sudo的可执行文件的搜索路径，sudo无法找到在当前PATH中找到cmd&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 变量传递给了sh&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo -E PATH&lt;span style="color:#f92672">=&lt;/span>$PATH sh -c &lt;span style="color:#e6db74">&amp;#39;which poetry; echo $VISUAL&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/home/navyd/.local/bin/poetry
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>vim
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 变量给了poetry，但sudo是无法在root的PATH中找到poetry的&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo -E PATH&lt;span style="color:#f92672">=&lt;/span>$PATH poetry --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo: poetry: command not found
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>最小特权原则，在&lt;code>~/.bashrc&lt;/code>中添加alias，命名最好不要与&lt;code>sudo&lt;/code>一样，可能导致程序行为不一致出bug&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>alias sudoe&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;sudo -E --preserve-env=PATH env&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/8633575/8566831"
+target="_blank"
+rel="noopener"
+>How to keep environment variables when using sudo&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/83194"
+target="_blank"
+rel="noopener"
+>How to make &lt;code>sudo&lt;/code> preserve $PATH?&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>重定向已启动程序的输出</title><link>/posts/2021/09/redirect-output-of-running-process/</link><pubDate>Mon, 06 Sep 2021 12:22:01 +0800</pubDate><guid>/posts/2021/09/redirect-output-of-running-process/</guid><description>&lt;p>在使用
+&lt;a
+class="link"
+href="https://github.com/Dreamacro/clash"
+target="_blank"
+rel="noopener"
+>clash&lt;/a>
+时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。&lt;/p>
+&lt;p>如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动&lt;/p>
+&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>下面是典型的clash的启动输出：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ clash
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider HK&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider IEPL&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider SGP&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider US&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider NeteaseMusic&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial provider TW&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider GoogleCN&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Proxy&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Epic&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Apple&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider SSH22&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Icloud&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Final-Match&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial compatible provider Telegram&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider direct&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider telegramcidr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:40Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider reject&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider gfw&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider tld-not-cn&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider cncidr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider proxy&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider lancidr&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider icloud&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider netease-music&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider greatfire&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider apple&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider private&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Start initial rule provider google&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;RESTful API listening at: 0.0.0.0:9090&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>time&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2021-09-13T02:35:41Z&amp;#34;&lt;/span> level&lt;span style="color:#f92672">=&lt;/span>info msg&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;DNS server listening at: 0.0.0.0:5353&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>通常可以在启动程序时重定向如&lt;code>clash &amp;amp;&amp;gt; temp.log&lt;/code>，有没有一种可能，复制或重定向已启动程序的输出，这样可以不用局限于启动clash，只要clash进程存在就行&lt;/p>
+&lt;p>&lt;em>&lt;strong>更新：如果要检查clash是否成功启动，可以简单的判断clash的端口是否被使用&lt;/strong>&lt;/em>&lt;/p>
+&lt;h3 id="strace">strace
+&lt;/h3>&lt;p>过滤strace的输出&lt;/p>
+&lt;ul>
+&lt;li>过滤write指定的文件描述符fd&lt;/li>
+&lt;/ul>
+&lt;p>使用&lt;code>-e write=1,2&lt;/code>表示仅列出fd 1与2即stdout,stderr。但是在docker的进程中与宿主机存在区别，无法生效。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ strace -p &lt;span style="color:#66d9ef">$(&lt;/span>pgrep clash&lt;span style="color:#66d9ef">)&lt;/span> -e write&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> -e signal&lt;span style="color:#f92672">=&lt;/span>none -e trace&lt;span style="color:#f92672">=&lt;/span>write
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>strace: Process &lt;span style="color:#ae81ff">220553&lt;/span> attached
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>14, &lt;span style="color:#e6db74">&amp;#34;E\0\0\220\304\206@\0?\21\352\250\306\22\0\10\306\22\0\1&amp;#39;\34\36a\0|\204\334\0\1\0`&amp;#34;&lt;/span>..., 144&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">144&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>14, &lt;span style="color:#e6db74">&amp;#34;E\0\4\351\17\36@\0@\21&amp;amp;\\\337J\2\335\300\250]\272\\@\312J\4\325\302m\27\376\375\0&amp;#34;&lt;/span>..., 1257&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">1257&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>strace使用&lt;code>-y&lt;/code>显示对应的fd&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sudo strace -p &lt;span style="color:#66d9ef">$(&lt;/span>pgrep clash&lt;span style="color:#66d9ef">)&lt;/span> -e trace&lt;span style="color:#f92672">=&lt;/span>write -y
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>strace: Process &lt;span style="color:#ae81ff">220553&lt;/span> attached
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>14&amp;lt;/dev/net/tun&amp;gt;, &lt;span style="color:#e6db74">&amp;#34;E\0\0004\237D@\0?\6\20S\306\22\0\7\306\22\0\1\221 \36a&amp;gt;[\376\316\234k\271\274&amp;#34;&lt;/span>..., 52&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">52&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>35&amp;lt;socket:&lt;span style="color:#f92672">[&lt;/span>1897396&lt;span style="color:#f92672">]&lt;/span>&amp;gt;, &lt;span style="color:#e6db74">&amp;#34;\202\301!\16F\234\256\3733\270\307H\203\265!\223H\344_#\337)d\223\310~]%m\362\250\202&amp;#34;&lt;/span>..., 71&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">71&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>write&lt;span style="color:#f92672">(&lt;/span>1&amp;lt;pipe:&lt;span style="color:#f92672">[&lt;/span>1652130&lt;span style="color:#f92672">]&lt;/span>&amp;gt;, &lt;span style="color:#e6db74">&amp;#34;...&amp;#34;&lt;/span>, 40&lt;span style="color:#f92672">)&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">40&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>查看对应进程的fd&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>在docker中&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ docker exec -it clash bash -c &lt;span style="color:#e6db74">&amp;#39;ls -al /proc/$(pgrep clash)/fd&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> root root &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> nobody nobody &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l-wx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; pipe:&lt;span style="color:#f92672">[&lt;/span>1652130&lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 06:10 &lt;span style="color:#ae81ff">10&lt;/span> -&amp;gt; socket:&lt;span style="color:#f92672">[&lt;/span>1645489&lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># docker clash进程在主机上的fd&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo ls -al /proc/&lt;span style="color:#66d9ef">$(&lt;/span>pgrep clash&lt;span style="color:#66d9ef">)&lt;/span>/fd
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> root root &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:24 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> nobody nogroup &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:09 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:29 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l-wx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:29 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; &lt;span style="color:#e6db74">&amp;#39;pipe:[1652130]&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> root root &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:29 &lt;span style="color:#ae81ff">10&lt;/span> -&amp;gt; &lt;span style="color:#e6db74">&amp;#39;socket:[1645489]&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>在host中&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># no redirection&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bash -c &lt;span style="color:#e6db74">&amp;#39;while true; do echo &amp;#39;&lt;/span>1&lt;span style="color:#e6db74">&amp;#39;; sleep 1; done &amp;amp; ls -al /proc/$!/fd &amp;amp;&amp;amp; kill -9 $!&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lr-x &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 14:18 &lt;span style="color:#ae81ff">2&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># redirect to /dev/null&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ &lt;span style="color:#66d9ef">while&lt;/span> true; &lt;span style="color:#66d9ef">do&lt;/span> echo &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>; sleep 1; &lt;span style="color:#66d9ef">done&lt;/span> &amp;gt;/dev/null &amp;amp; ls -al /proc/$!/fd &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> kill -9 $!
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-x &lt;span style="color:#ae81ff">2&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dr-xr-xr-x &lt;span style="color:#ae81ff">9&lt;/span> navyd navyd &lt;span style="color:#ae81ff">0&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">0&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>l-wx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">1&lt;/span> -&amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lrwx &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">10&lt;/span> -&amp;gt; /dev/pts/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>lr-x &lt;span style="color:#ae81ff">1&lt;/span> navyd navyd &lt;span style="color:#ae81ff">64&lt;/span> Sep &lt;span style="color:#ae81ff">13&lt;/span> 12:42 &lt;span style="color:#ae81ff">11&lt;/span> -&amp;gt; /home/navy
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;p>可以明显的看到docker中的stdout被链接到了&lt;code>pipe:[1652130]&lt;/code>，而host中是一个本地路径链接，strace可能无法正确访问docker的stdout，可以使用readlink读取链接给strace过滤：&lt;code>-P &amp;quot;$(readlink /proc/&amp;quot;$CLASH_PID&amp;quot;/fd/1)&amp;quot;&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>start_clash&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sudo -u &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$RUN_USER&lt;span style="color:#e6db74">&amp;#34;&lt;/span> clash -d &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_DIR&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> strace -P &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>readlink /proc/&lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_PID&lt;span style="color:#e6db74">&amp;#34;&lt;/span>/fd/1&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span> -e trace&lt;span style="color:#f92672">=&lt;/span>write -e signal&lt;span style="color:#f92672">=&lt;/span>none -s &lt;span style="color:#ae81ff">1000&lt;/span> -X raw -p &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_PID&lt;span style="color:#e6db74">&amp;#34;&lt;/span> 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> | &lt;span style="color:#66d9ef">while&lt;/span> read -r line; &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># 修改&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> line&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>sed -n -r &lt;span style="color:#e6db74">&amp;#39;s/^write\([0-9]+,\s*&amp;#34;(.+)&amp;#34;,\s*[0-9]+\)\s*=\s*[[:digit:]]+$/\1/p&amp;#39;&lt;/span> &lt;span style="color:#f92672">&amp;lt;&amp;lt;&amp;lt;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># echo &amp;#34;dumping line: $line&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> $line &lt;span style="color:#f92672">==&lt;/span> *&lt;span style="color:#e6db74">&amp;#34;listening at&amp;#34;&lt;/span>* &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;clash has started at line: &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> break
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意：&lt;/p>
+&lt;ul>
+&lt;li>strace默认输出到stderr重定向到标准输出&lt;code>2&amp;gt;&amp;amp;1&lt;/code>&lt;/li>
+&lt;li>&lt;code>-X raw&lt;/code>使用原始的输出防止乱码&lt;/li>
+&lt;li>&lt;code>-s 1000&lt;/code>指定最大的打印字符串避免默认32过小截断输出&lt;/li>
+&lt;li>&lt;code>-e trace=write -e signal=none&lt;/code>过滤非write输出&lt;/li>
+&lt;/ul>
+&lt;p>&lt;em>&lt;strong>但是上面存在一个问题，strace是对sys call作用，clash输出log时没有&lt;code>Start initial rule provider&lt;/code>与后面的&lt;code>listening at&lt;/code>，同时使用sync命令没用，可能是缓存没有刷新。这里不清楚 TODO&lt;/strong>&lt;/em>&lt;/p>
+&lt;!-- TODO -->
+&lt;p>另外还有gdb,screen两种方式可以重定向，但是无法简单编程使用&lt;/p>
+&lt;h2 id="解决">解决
+&lt;/h2>&lt;h3 id="重定向">重定向
+&lt;/h3>&lt;p>最简单的方法就是在后台重定向clash的输出到文件，再读取文件确认启动&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># start clash and confirm and return pid&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>start_clash&lt;span style="color:#f92672">()&lt;/span> &lt;span style="color:#f92672">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> sudo -u &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$RUN_USER&lt;span style="color:#e6db74">&amp;#34;&lt;/span> clash -d &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$CLASH_DIR&lt;span style="color:#e6db74">&amp;#34;&lt;/span> &amp;amp;&amp;gt; temp.log
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> local pid&lt;span style="color:#f92672">=&lt;/span>$!
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> tail -f temp.log | &lt;span style="color:#66d9ef">while&lt;/span> read -r line
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> $line &lt;span style="color:#f92672">==&lt;/span> *&lt;span style="color:#e6db74">&amp;#34;listening at&amp;#34;&lt;/span>* &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> echo &lt;span style="color:#e6db74">&amp;#34;clash has started at line: &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> pid
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>注意不能使用&lt;code>sudo -u &amp;quot;$RUN_USER&amp;quot; clash -d &amp;quot;$CLASH_DIR&amp;quot; | while read -r line; do ... done&lt;/code>，在while退出break后将会使clash直接退出。下面使用bash一行命令测试：无限循环while退出后整个管道命令终止&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>local count&lt;span style="color:#f92672">=&lt;/span>0; &lt;span style="color:#66d9ef">while&lt;/span> true; &lt;span style="color:#66d9ef">do&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;sleeping &lt;/span>&lt;span style="color:#66d9ef">$((&lt;/span>count&lt;span style="color:#f92672">+=&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>&lt;span style="color:#66d9ef">))&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>; sleep 1; &lt;span style="color:#66d9ef">done&lt;/span> | &lt;span style="color:#66d9ef">while&lt;/span> read line; &lt;span style="color:#66d9ef">do&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;read &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>; &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#f92672">[[&lt;/span> $line &lt;span style="color:#f92672">==&lt;/span> *&lt;span style="color:#e6db74">&amp;#34;9&amp;#34;&lt;/span>* &lt;span style="color:#f92672">]]&lt;/span>; &lt;span style="color:#66d9ef">then&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;end &lt;/span>$line&lt;span style="color:#e6db74">&amp;#34;&lt;/span>; break; &lt;span style="color:#66d9ef">fi&lt;/span>; &lt;span style="color:#66d9ef">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外，可以使用python等方式完全重写更好维护，算上iptables相关的配置都200多行了&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/593724/redirect-stderr-stdout-of-a-process-after-its-been-started-using-command-lin"
+target="_blank"
+rel="noopener"
+>Redirect STDERR / STDOUT of a process AFTER it&amp;rsquo;s been started, using command line?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.baeldung.com/linux/redirect-output-of-running-process"
+target="_blank"
+rel="noopener"
+>Redirecting the Output of an Already Running Process&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://askubuntu.com/a/731237"
+target="_blank"
+rel="noopener"
+>How do I save terminal output to a file?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://jvns.ca/blog/2020/04/29/why-strace-doesnt-work-in-docker/"
+target="_blank"
+rel="noopener"
+>Why strace doesn&amp;rsquo;t work in Docker&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/229606/8566831"
+target="_blank"
+rel="noopener"
+>How to check if a string contains a substring in Bash&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/questions/30370/how-to-get-the-pid-of-the-last-executed-command-in-shell-script"
+target="_blank"
+rel="noopener"
+>How to get the pid of the last executed command in shell script?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/163814"
+target="_blank"
+rel="noopener"
+>grep on a variable&lt;/a>
+&lt;/li>
+&lt;/ul></description></item><item><title>Docker Multi Platform Build</title><link>/posts/2021/08/docker-multi-platform-build/</link><pubDate>Sun, 08 Aug 2021 20:07:10 +0800</pubDate><guid>/posts/2021/08/docker-multi-platform-build/</guid><description>&lt;img src="https://cdn2.stereolabs.com/docs/docker/images/emulation_workflow2.png" alt="Featured image of post Docker Multi Platform Build" />&lt;p>Docker多平台构建&lt;/p>
+&lt;p>&lt;img src="https://cdn2.stereolabs.com/docs/docker/images/emulation_workflow2.png"
+loading="lazy"
+>&lt;/p>
+&lt;h2 id="github-actions">github actions
+&lt;/h2>&lt;!-- TODO -->
+&lt;h2 id="docker-compose-build-for-multi-stage">docker-compose build for multi-stage
+&lt;/h2>&lt;p>在使用docker-compose up 首次启动需要multi-stage build的容器时可能会出现问题&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yml" data-lang="yml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">version&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;3.8&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">services&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">nginx&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">build&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">context&lt;/span>: &lt;span style="color:#ae81ff">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">dockerfile&lt;/span>: &lt;span style="color:#ae81ff">./rest-server.Dockerfile&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">container_name&lt;/span>: &lt;span style="color:#ae81ff">nginx&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">restart&lt;/span>: &lt;span style="color:#ae81ff">unless-stopped&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">network_mode&lt;/span>: &lt;span style="color:#ae81ff">host&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">volumes&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ae81ff">nginx-data:/etc/nginx&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> debian:11-slim as base&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> APT_MIRROR&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;http://mirrors.163.com&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;noninteractive&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> set -eu; &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> sed -ri &lt;span style="color:#e6db74">&amp;#34;s@^([^#]*)http[s]?://[^/\.]+(\.[^/\.]+)+@\1&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>APT_MIRROR&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">@g&amp;#34;&lt;/span> /etc/apt/sources.list &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> apt-get update &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> apt-get install -y unzip curl xz-utils &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> rm -rf /var/lib/apt/lists/* &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> mkdir -p &lt;span style="color:#e6db74">&amp;#34;/public&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> base as base-ariang&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> ARIANG_VERSION&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;1.2.5&amp;#39;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> set -eu; &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> curl -o ariang.zip -L &lt;span style="color:#e6db74">&amp;#34;https://github.com/mayswind/AriaNg/releases/download/&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>ARIANG_VERSION&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/AriaNg-&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>ARIANG_VERSION&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">.zip&amp;#34;&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> unzip ariang.zip -d &lt;span style="color:#e6db74">&amp;#34;/public&amp;#34;&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> rm ariang.zip&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> base as base-yacd&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> YACD_VERSION&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;0.3.6&amp;#39;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> set -eu; &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> curl -L &lt;span style="color:#e6db74">&amp;#34;https://github.com/haishanh/yacd/releases/download/v&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>YACD_VERSION&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/yacd.tar.xz&amp;#34;&lt;/span> | &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> tar -xJf - --strip-components &lt;span style="color:#ae81ff">1&lt;/span> -C &lt;span style="color:#e6db74">&amp;#34;/public&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> nginx:1.23-alpine&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>base-ariang &lt;span style="color:#e6db74">&amp;#34;/public&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/var/www/a/public&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>base-yacd &lt;span style="color:#e6db74">&amp;#34;/public&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/var/www/c/public&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ docker-compose up nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Building 0.3s &lt;span style="color:#f92672">(&lt;/span>4/4&lt;span style="color:#f92672">)&lt;/span> FINISHED
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">[&lt;/span>internal&lt;span style="color:#f92672">]&lt;/span> load build definition from nginx.Dockerfile 0.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">=&lt;/span>&amp;gt; transferring dockerfile: 1.15kB 0.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">[&lt;/span>internal&lt;span style="color:#f92672">]&lt;/span> load .dockerignore 0.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">=&lt;/span>&amp;gt; transferring context: 2B 0.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; CANCELED &lt;span style="color:#f92672">[&lt;/span>internal&lt;span style="color:#f92672">]&lt;/span> load metadata &lt;span style="color:#66d9ef">for&lt;/span> docker.io/library/debian:11-slim 0.1s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; ERROR &lt;span style="color:#f92672">[&lt;/span>internal&lt;span style="color:#f92672">]&lt;/span> load metadata &lt;span style="color:#66d9ef">for&lt;/span> docker.io/library/nginx:1.23-alpine 0.1s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;gt; &lt;span style="color:#f92672">[&lt;/span>internal&lt;span style="color:#f92672">]&lt;/span> load metadata &lt;span style="color:#66d9ef">for&lt;/span> docker.io/library/nginx:1.23-alpine:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>failed to solve: rpc error: code &lt;span style="color:#f92672">=&lt;/span> Unknown desc &lt;span style="color:#f92672">=&lt;/span> failed to solve with frontend dockerfile.v0: failed to create LLB definition: unexpected status code &lt;span style="color:#f92672">[&lt;/span>manifests 1.23-alpine&lt;span style="color:#f92672">]&lt;/span>: &lt;span style="color:#ae81ff">403&lt;/span> Forbidden
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在这里
+&lt;a
+class="link"
+href="https://github.com/docker/compose/issues/8649#issuecomment-923816281"
+target="_blank"
+rel="noopener"
+>DOCKER_BUILDKIT=0 is not applied by docker-compose build #8649&lt;/a>
+提到docker-compose v2 build总是使用buildkit构建&lt;/p>
+&lt;blockquote>
+&lt;p>Compose V2 always uses BuildKit by design.
+If Buildkit can&amp;rsquo;t build some Dockerfile, either there&amp;rsquo;s good reasons, otherwise it has to be fixed.&lt;/p>&lt;/blockquote>
+&lt;p>默认的docker build是没有使用buildkit的，可以通过这里
+&lt;a
+class="link"
+href="https://docs.docker.com/develop/develop-images/build_enhancements/"
+target="_blank"
+rel="noopener"
+>Build images with BuildKit&lt;/a>
+配置启用buildkit构建&lt;/p>
+&lt;h2 id="方案">方案
+&lt;/h2>&lt;p>不建议使用docker-compose build镜像，而是build到docker registry即docker hub上再在compose文件中拉取&lt;/p>
+&lt;h3 id="使用buildkit">使用buildkit
+&lt;/h3>&lt;p>TODO&lt;/p>
+&lt;h3 id="禁用buildkit">禁用buildkit
+&lt;/h3>&lt;p>使用环境变量禁止docker-compose build使用buildkit构建&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ DOCKER_BUILDKIT&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span> COMPOSE_DOCKER_CLI_BUILD&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span> docker compose up nginx
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Sending build context to Docker daemon 7.788MB
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Step 1/16 : FROM debian:11-slim as base
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Removing intermediate container 6ac3d0901c6a
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;gt; 351b817b0a40
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Successfully built 351b817b0a40
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Successfully tagged rpi4-nginx:latest
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="注意">注意
+&lt;/h2>&lt;p>有些地方可能会出现各种问题&lt;/p>
+&lt;h3 id="debian镜像源">debian镜像源
+&lt;/h3>&lt;p>在国内debian下载安装软件包时通常会使用国内的代理源替换debian.org，但是在使用docker多平台构建时要注意使用的镜像源是否支持对应的平台，否则就会出现无法找到对应包的问题。&lt;/p>
+&lt;p>如
+&lt;a
+class="link"
+href="https://mirrors.163.com/.help/debian.html"
+target="_blank"
+rel="noopener"
+>网易Debian 镜像使用帮助 mirrors.163.com&lt;/a>
+中是不支持armv7的，导致构建出错&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ docker buildx build --platform linux/arm/v7 -t navyd/nginx --push -f nginx.Dockerfile .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">[&lt;/span>stage-3 1/3&lt;span style="color:#f92672">]&lt;/span> FROM docker.io/library/nginx:1.23-alpine@sha256:b87c350e6c69e0dc7069093dcda226c4430f3836682af4f649f2af9e9b5f1c74 0.2s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">=&lt;/span>&amp;gt; resolve docker.io/library/nginx:1.23-alpine@sha256:b87c350e6c69e0dc7069093dcda226c4430f3836682af4f649f2af9e9b5f1c74 0.1s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; ERROR &lt;span style="color:#f92672">[&lt;/span>base 2/2&lt;span style="color:#f92672">]&lt;/span> RUN set -eu; sed -ri &lt;span style="color:#e6db74">&amp;#34;s@^([^#]*)http[s]?://[^/\.]+(\.[^/\.]+)+@\1http://mirrors.163.com@g&amp;#34;&lt;/span> /etc/apt/sources.list &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y unzip curl xz-utils &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf /v 5.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;gt; &lt;span style="color:#f92672">[&lt;/span>base 2/2&lt;span style="color:#f92672">]&lt;/span> RUN set -eu; sed -ri &lt;span style="color:#e6db74">&amp;#34;s@^([^#]*)http[s]?://[^/\.]+(\.[^/\.]+)+@\1http://mirrors.163.com@g&amp;#34;&lt;/span> /etc/apt/sources.list &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y unzip curl xz-utils &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf /var/lib/apt/lists/* &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> mkdir -p &lt;span style="color:#e6db74">&amp;#34;/public&amp;#34;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#0 0.764 Get:1 http://mirrors.163.com/debian bullseye InRelease [116 kB] &lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#0 4.670 Err:6 http://mirrors.163.com/debian bullseye-updates/main armhf Packages&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#0 4.786 Err:5 http://mirrors.163.com/debian-security bullseye-security/main armhf Packages&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#0 4.786 404 Not Found [IP: 117.147.202.12 80]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#0 4.799 Fetched 208 kB in 4s (49.1 kB/s)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#0 4.799 Reading package lists...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#0 4.833 E: Failed to fetch http://mirrors.163.com/debian/dists/bullseye/main/binary-armhf/Packages 404 Not Found [IP: 117.147.202.12 80]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#0 4.833 E: Failed to fetch http://mirrors.163.com/debian-security/dists/bullseye-security/main/binary-armhf/Packages 404 Not Found [IP: 117.147.202.12 80]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#0 4.834 E: Failed to fetch http://mirrors.163.com/debian/dists/bullseye-updates/main/binary-armhf/Packages 404 Not Found [IP: 117.147.202.12 80]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#0 4.834 E: Some index files failed to download. They have been ignored, or old ones used instead.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>nginx.Dockerfile:7
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">6&lt;/span> | DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;noninteractive&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">7&lt;/span> | &amp;gt;&amp;gt;&amp;gt; RUN set -eu; &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#ae81ff">8&lt;/span> | &amp;gt;&amp;gt;&amp;gt; sed -ri &lt;span style="color:#e6db74">&amp;#34;s@^([^#]*)http[s]?://[^/\.]+(\.[^/\.]+)+@\1&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>APT_MIRROR&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">@g&amp;#34;&lt;/span> /etc/apt/sources.list &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#ae81ff">9&lt;/span> | &amp;gt;&amp;gt;&amp;gt; apt-get update &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> | &amp;gt;&amp;gt;&amp;gt; apt-get install -y unzip curl xz-utils &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#ae81ff">11&lt;/span> | &amp;gt;&amp;gt;&amp;gt; rm -rf /var/lib/apt/lists/* &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#ae81ff">12&lt;/span> | &amp;gt;&amp;gt;&amp;gt; mkdir -p &lt;span style="color:#e6db74">&amp;#34;/public&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">13&lt;/span> |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ERROR: failed to solve: process &lt;span style="color:#e6db74">&amp;#34;/bin/sh -c set -eu; sed -ri \&amp;#34;s@^([^#]*)http[s]?://[^/\\.]+(\\.[^/\\.]+)+@\\1&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>APT_MIRROR&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">@g\&amp;#34; /etc/apt/sources.list &amp;amp;&amp;amp; apt-get update &amp;amp;&amp;amp; apt-get install -y unzip curl xz-utils &amp;amp;&amp;amp; rm -rf /var/lib/apt/lists/* &amp;amp;&amp;amp; mkdir -p \&amp;#34;/public\&amp;#34;&amp;#34;&lt;/span> did not complete successfully: exit code: &lt;span style="color:#ae81ff">100&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>下面是常用的debian/ubuntu常用的镜像源，中科大，清华是支持debian全平台的，但有可能速度不及商用平台&lt;/p>
+&lt;pre tabindex="0">&lt;code># 中国科学技术大学
+http://mirrors.ustc.edu.cn
+# 清华大学开源软件镜像站
+https://mirrors.tuna.tsinghua.edu.cn
+http://mirrors.163.com
+http://mirrors.aliyun.com
+&lt;/code>&lt;/pre>&lt;h3 id="buildkit-多平台构建">buildkit 多平台构建
+&lt;/h3>&lt;p>同样是由于国内的网络问题，在构建时可能需要使用国内的buildkit镜像，在
+&lt;a
+class="link"
+href="https://yeasy.gitbook.io/docker_practice/buildx/multi-arch-images"
+target="_blank"
+rel="noopener"
+>使用 buildx 构建多种系统架构支持的 Docker 镜像&lt;/a>
+推荐使用
+&lt;a
+class="link"
+href="https://hub.docker.com/r/dockerpracticesig/buildkit/tags"
+target="_blank"
+rel="noopener"
+>dockerpracticesig/buildkit:master&lt;/a>
+，但是，如果没有注意看，这个buildkit镜像在arm平台是无法成功运行的，直接在arm64平台运行会出现&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 正常创建 builder&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ docker buildx create --use --name&lt;span style="color:#f92672">=&lt;/span>mybuilder-cn --driver docker-container --bootstrap --use --driver-opt image&lt;span style="color:#f92672">=&lt;/span>dock
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>erpracticesig/buildkit:master
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Building 9.6s &lt;span style="color:#f92672">(&lt;/span>1/1&lt;span style="color:#f92672">)&lt;/span> FINISHED
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ... 6.6s&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mybuilder-cn
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 无法解析buildkit语法&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ docker buildx build --platform linux/amd64,linux/arm64 -t navyd/curl:latest --push - &lt;span style="color:#e6db74">&amp;lt;&amp;lt;EOF
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"># syntax=docker/dockerfile:1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">FROM alpine:3.16
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">RUN apk add curl
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">EOF&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Building 15.6s &lt;span style="color:#f92672">(&lt;/span>4/4&lt;span style="color:#f92672">)&lt;/span> FINISHED
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">=&lt;/span>&amp;gt; extracting sha256:1328b32c40fca9bcf9d70d8eccb72eb873d1124d72dadce04db8badbe7b08546 2.3s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Dockerfile:1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1&lt;/span> | &amp;gt;&amp;gt;&amp;gt; &lt;span style="color:#75715e"># syntax=docker/dockerfile:1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">2&lt;/span> | FROM alpine:3.16
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">3&lt;/span> | RUN apk add curl
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ERROR: failed to solve: frontend grpc server closed unexpectedly
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 移除buildkit语法 出现broken pipe错误&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;gt; docker buildx build --platform linux/amd64,linux/arm64 -t navyd/curl:latest --push - &lt;span style="color:#e6db74">&amp;lt;&amp;lt;EOF
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">FROM alpine:3.16
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">RUN apk add curl
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">EOF&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Building 5.0s &lt;span style="color:#f92672">(&lt;/span>9/9&lt;span style="color:#f92672">)&lt;/span> FINISHED
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; ERROR &lt;span style="color:#f92672">[&lt;/span>linux/arm64 2/2&lt;span style="color:#f92672">]&lt;/span> RUN apk add curl 1.5s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">[&lt;/span>auth&lt;span style="color:#f92672">]&lt;/span> library/alpine:pull token &lt;span style="color:#66d9ef">for&lt;/span> registry-1.docker.io 0.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; ERROR &lt;span style="color:#f92672">[&lt;/span>linux/amd64 2/2&lt;span style="color:#f92672">]&lt;/span> RUN apk add curl 0.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;gt; &lt;span style="color:#f92672">[&lt;/span>linux/arm64 2/2&lt;span style="color:#f92672">]&lt;/span> RUN apk add curl:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#0 1.130 Error while loading init: No such file or directory&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#0 1.275 container_linux.go:380: starting container process caused: process_linux.go:393: copying bootstrap data to pipe caused: write init-p: broken pipe&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;gt; &lt;span style="color:#f92672">[&lt;/span>linux/amd64 2/2&lt;span style="color:#f92672">]&lt;/span> RUN apk add curl:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Dockerfile:2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">1&lt;/span> | FROM alpine:3.16
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">2&lt;/span> | &amp;gt;&amp;gt;&amp;gt; RUN apk add curl
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ae81ff">3&lt;/span> |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>--
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ERROR: failed to solve: process &lt;span style="color:#e6db74">&amp;#34;/bin/sh -c apk add curl&amp;#34;&lt;/span> did not complete successfully: exit code: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这个问题很难直接找到根源，可能是在arm平台使用了国内的buildkit镜像源，可以不具备通用性，网上基本没有什么有用的，在这里
+&lt;a
+class="link"
+href="https://www.v2ex.com/t/839204"
+target="_blank"
+rel="noopener"
+>Docker buildx 报错了，求大神看看&lt;/a>
+了解到可能是平台问题后，并在amd64平台测试后发现确实是这个erpracticesig/buildkit镜像的问题，在amd64正常使用，在arm64上无法使用，直接使用官方的镜像
+&lt;a
+class="link"
+href="https://hub.docker.com/r/moby/buildkit"
+target="_blank"
+rel="noopener"
+>moby/buildkit&lt;/a>
+就可以了。&lt;/p>
+&lt;p>另外，
+&lt;a
+class="link"
+href="https://hub.docker.com/r/dockerpracticesig/buildkit/tags"
+target="_blank"
+rel="noopener"
+>dockerpracticesig/buildkit&lt;/a>
+这个镜像已经很久没有更新，不建议使用了&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&amp;gt; docker buildx create --use --name mybuilder --driver docker-container --bootstrap --use
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Building 8.2s &lt;span style="color:#f92672">(&lt;/span>1/1&lt;span style="color:#f92672">)&lt;/span> FINISHED
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">[&lt;/span>internal&lt;span style="color:#f92672">]&lt;/span> booting buildkit 8.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">=&lt;/span>&amp;gt; pulling image moby/buildkit:buildx-stable-1 2.6s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">=&lt;/span>&amp;gt; creating container buildx_buildkit_mybuilder0 5.4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mybuilder
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ docker buildx build --platform linux/amd64,linux/arm64 -t navyd/curl:latest --push - &lt;span style="color:#e6db74">&amp;lt;&amp;lt;EOF
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">FROM alpine:3.16
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">RUN apk add curl
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">EOF&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="error-while-loading-usrsbindpkg-split-no-such-file-or-directory">Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/h3>&lt;p>重装了系统后，不知道什么原因，在安装了mybuilder后无法正常构建，出现问题：dpkg-split: No such file or directory&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t navyd/nginx --push -f nginx.Dockerfile .
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">[&lt;/span>+&lt;span style="color:#f92672">]&lt;/span> Building 96.1s &lt;span style="color:#f92672">(&lt;/span>30/34&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">[&lt;/span>internal&lt;span style="color:#f92672">]&lt;/span> load build definition from nginx.Dockerfile 0.1s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">=&lt;/span>&amp;gt; resolve docker.io/library/nginx:1.23-alpine@sha256:bd1ef87802f41785f48862616c1b89fdce091cd3 0.4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">[&lt;/span>linux/arm64 stage-3 1/3&lt;span style="color:#f92672">]&lt;/span> FROM docker.io/library/nginx:1.23-alpine@sha256:bd1ef87802f41785f488 0.5s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; &lt;span style="color:#f92672">=&lt;/span>&amp;gt; resolve docker.io/library/nginx:1.23-alpine@sha256:bd1ef87802f41785f48862616c1b89fdce091cd3 0.4s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; CACHED &lt;span style="color:#f92672">[&lt;/span>linux/arm64 base 2/2&lt;span style="color:#f92672">]&lt;/span> RUN set -eu; sed -ri &lt;span style="color:#e6db74">&amp;#34;s@^([^#]*)http[s]?://[^/\.]+(\.[^/\.]+ 0.0s
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> =&amp;gt; CACHED [linux/arm64 base-ariang 1/1] RUN set -eu; curl -m 10 -o ariang.zip -L &amp;#34;&lt;/span>https://git 0.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; CACHED &lt;span style="color:#f92672">[&lt;/span>linux/arm64 stage-3 2/3&lt;span style="color:#f92672">]&lt;/span> COPY --from&lt;span style="color:#f92672">=&lt;/span>base-ariang /public /var/www/a.navyd.xyz/public 0.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; CACHED &lt;span style="color:#f92672">[&lt;/span>linux/arm64 base-yacd 1/1&lt;span style="color:#f92672">]&lt;/span> RUN set -eu; curl -m &lt;span style="color:#ae81ff">10&lt;/span> -L &lt;span style="color:#e6db74">&amp;#34;https://github.com/haishanh 0.0s
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> =&amp;gt; CACHED [linux/arm64 stage-3 3/3] COPY --from=base-yacd /public /var/www/c.navyd.xyz/public 0.0s
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> =&amp;gt; CACHED [linux/arm/v7 base 2/2] RUN set -eu; sed -ri &amp;#34;&lt;/span>s@^&lt;span style="color:#f92672">([&lt;/span>^#&lt;span style="color:#f92672">]&lt;/span>*&lt;span style="color:#f92672">)&lt;/span>http&lt;span style="color:#f92672">[&lt;/span>s&lt;span style="color:#f92672">]&lt;/span>?://&lt;span style="color:#f92672">[&lt;/span>^/&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">]&lt;/span>+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">[&lt;/span>^/&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">]&lt;/span> 0.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; CACHED &lt;span style="color:#f92672">[&lt;/span>linux/arm/v7 base-ariang 1/1&lt;span style="color:#f92672">]&lt;/span> RUN set -eu; curl -m &lt;span style="color:#ae81ff">10&lt;/span> -o ariang.zip -L &lt;span style="color:#e6db74">&amp;#34;https://gi 0.0s
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> =&amp;gt; CACHED [linux/arm/v7 stage-3 2/3] COPY --from=base-ariang /public /var/www/a.navyd.xyz/public 0.0s
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> =&amp;gt; CACHED [linux/arm/v7 base-yacd 1/1] RUN set -eu; curl -m 10 -L &amp;#34;&lt;/span>https://github.com/haishan 0.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; CACHED &lt;span style="color:#f92672">[&lt;/span>linux/arm/v7 stage-3 3/3&lt;span style="color:#f92672">]&lt;/span> COPY --from&lt;span style="color:#f92672">=&lt;/span>base-yacd /public /var/www/c.navyd.xyz/public 0.0s
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">=&lt;/span>&amp;gt; ERROR &lt;span style="color:#f92672">[&lt;/span>linux/amd64 base 2/2&lt;span style="color:#f92672">]&lt;/span> RUN set -eu; sed -ri &lt;span style="color:#e6db74">&amp;#34;s@^([^#]*)http[s]?://[^/\.]+(\.[^/\.]+ 77.7s
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> &amp;gt; [linux/amd64 base 2/2] RUN set -eu; sed -ri &amp;#34;&lt;/span>s@^&lt;span style="color:#f92672">([&lt;/span>^#&lt;span style="color:#f92672">]&lt;/span>*&lt;span style="color:#f92672">)&lt;/span>http&lt;span style="color:#f92672">[&lt;/span>s&lt;span style="color:#f92672">]&lt;/span>?://&lt;span style="color:#f92672">[&lt;/span>^/&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">]&lt;/span>+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">[&lt;/span>^/&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">]&lt;/span>+&lt;span style="color:#f92672">)&lt;/span>+@&lt;span style="color:#ae81ff">\1&lt;/span>http://mirrors.ustc.edu.cn@g&lt;span style="color:#e6db74">&amp;#34; /etc/apt/sources.list &amp;amp;&amp;amp; apt-get update &amp;amp;&amp;amp; apt-get install -y unzip curl xz-utils &amp;amp;&amp;amp; rm -rf /var/lib/apt/lists/* &amp;amp;&amp;amp; mkdir -p &amp;#34;&lt;/span>/public&lt;span style="color:#e6db74">&amp;#34;:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 2.244 Get:1 http://mirrors.ustc.edu.cn/debian bullseye InRelease [116 kB]
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"># ...
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 71.61 Get:17 http://mirrors.ustc.edu.cn/debian bullseye/main amd64 unzip amd64 6.0-26+deb11u1 [172 kB]
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 75.53 debconf: delaying package configuration, since apt-utils is not installed
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.21 Fetched 3382 kB in 2s (2119 kB/s)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.43 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.44 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.45 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/00-openssl_1.1.1n-0+deb11u3_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.45 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.46 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.47 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.47 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/01-ca-certificates_20210119_all.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.47 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.48 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.49 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.49 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/02-xz-utils_5.2.5-2.1~deb11u1_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.49 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.51 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.52 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.52 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/03-libbrotli1_1.0.9-2+b2_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.52 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.53 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.54 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.55 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/04-libsasl2-modules-db_2.1.27+dfsg-2.1+deb11u1_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.55 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.56 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.57 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.57 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/05-libsasl2-2_2.1.27+dfsg-2.1+deb11u1_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.57 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.58 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.59 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.59 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/06-libldap-2.4-2_2.4.57+dfsg-3+deb11u1_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.59 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.60 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.61 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.61 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/07-libnghttp2-14_1.43.0-1_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.61 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.63 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.64 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.64 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/08-libpsl5_0.21.0-1.2_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.64 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.64 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.66 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.66 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/09-librtmp1_2.4+20151223.gitfa8646d.1-2+b2_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.66 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.67 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.68 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.68 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/10-libssh2-1_1.9.0-2_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.68 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.69 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.70 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.70 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/11-libcurl4_7.74.0-1.3+deb11u3_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.70 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.71 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.72 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.72 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/12-curl_7.74.0-1.3+deb11u3_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.72 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.73 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.74 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.74 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/13-libldap-common_2.4.57+dfsg-3+deb11u1_all.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.74 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.75 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.76 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.76 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/14-libsasl2-modules_2.1.27+dfsg-2.1+deb11u1_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.76 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.77 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.78 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.78 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/15-publicsuffix_20220811.1734-0+deb11u1_all.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.78 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.79 Error while loading /usr/sbin/dpkg-split: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.80 Error while loading /usr/sbin/dpkg-deb: No such file or directory
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.80 dpkg: error processing archive /tmp/apt-dpkg-install-Az6LcO/16-unzip_6.0-26+deb11u1_amd64.deb (--unpack):
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.80 dpkg-deb --control subprocess returned error exit status 1
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.86 Errors were encountered while processing:
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.86 /tmp/apt-dpkg-install-Az6LcO/00-openssl_1.1.1n-0+deb11u3_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.86 /tmp/apt-dpkg-install-Az6LcO/01-ca-certificates_20210119_all.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.86 /tmp/apt-dpkg-install-Az6LcO/02-xz-utils_5.2.5-2.1~deb11u1_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.86 /tmp/apt-dpkg-install-Az6LcO/03-libbrotli1_1.0.9-2+b2_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.86 /tmp/apt-dpkg-install-Az6LcO/04-libsasl2-modules-db_2.1.27+dfsg-2.1+deb11u1_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.86 /tmp/apt-dpkg-install-Az6LcO/05-libsasl2-2_2.1.27+dfsg-2.1+deb11u1_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.86 /tmp/apt-dpkg-install-Az6LcO/06-libldap-2.4-2_2.4.57+dfsg-3+deb11u1_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.86 /tmp/apt-dpkg-install-Az6LcO/07-libnghttp2-14_1.43.0-1_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.86 /tmp/apt-dpkg-install-Az6LcO/08-libpsl5_0.21.0-1.2_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.86 /tmp/apt-dpkg-install-Az6LcO/09-librtmp1_2.4+20151223.gitfa8646d.1-2+b2_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.87 /tmp/apt-dpkg-install-Az6LcO/10-libssh2-1_1.9.0-2_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.87 /tmp/apt-dpkg-install-Az6LcO/11-libcurl4_7.74.0-1.3+deb11u3_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.87 /tmp/apt-dpkg-install-Az6LcO/12-curl_7.74.0-1.3+deb11u3_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.87 /tmp/apt-dpkg-install-Az6LcO/13-libldap-common_2.4.57+dfsg-3+deb11u1_all.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.87 /tmp/apt-dpkg-install-Az6LcO/14-libsasl2-modules_2.1.27+dfsg-2.1+deb11u1_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.87 /tmp/apt-dpkg-install-Az6LcO/15-publicsuffix_20220811.1734-0+deb11u1_all.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 76.87 /tmp/apt-dpkg-install-Az6LcO/16-unzip_6.0-26+deb11u1_amd64.deb
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">#0 77.17 E: Sub-process /usr/bin/dpkg returned an error code (1)
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">nginx.Dockerfile:7
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">--
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> 6 | DEBIAN_FRONTEND=&amp;#34;&lt;/span>noninteractive&lt;span style="color:#e6db74">&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> 7 | &amp;gt;&amp;gt;&amp;gt; RUN set -eu; \
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> 8 | &amp;gt;&amp;gt;&amp;gt; sed -ri &amp;#34;&lt;/span>s@^&lt;span style="color:#f92672">([&lt;/span>^#&lt;span style="color:#f92672">]&lt;/span>*&lt;span style="color:#f92672">)&lt;/span>http&lt;span style="color:#f92672">[&lt;/span>s&lt;span style="color:#f92672">]&lt;/span>?://&lt;span style="color:#f92672">[&lt;/span>^/&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">]&lt;/span>+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">[&lt;/span>^/&lt;span style="color:#ae81ff">\.&lt;/span>&lt;span style="color:#f92672">]&lt;/span>+&lt;span style="color:#f92672">)&lt;/span>+@&lt;span style="color:#ae81ff">\1&lt;/span>&lt;span style="color:#e6db74">${&lt;/span>APT_MIRROR&lt;span style="color:#e6db74">}&lt;/span>@g&lt;span style="color:#e6db74">&amp;#34; /etc/apt/sources.list &amp;amp;&amp;amp; \
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> 9 | &amp;gt;&amp;gt;&amp;gt; apt-get update &amp;amp;&amp;amp; \
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> 10 | &amp;gt;&amp;gt;&amp;gt; apt-get install -y unzip curl xz-utils &amp;amp;&amp;amp; \
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> 11 | &amp;gt;&amp;gt;&amp;gt; rm -rf /var/lib/apt/lists/* &amp;amp;&amp;amp; \
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> 12 | &amp;gt;&amp;gt;&amp;gt; mkdir -p &amp;#34;&lt;/span>/public&lt;span style="color:#e6db74">&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74"> 13 |
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">--
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">ERROR: failed to solve: process &amp;#34;&lt;/span>/dev/.buildkit_qemu_emulator /bin/sh -c set -eu; sed -ri &lt;span style="color:#ae81ff">\&amp;#34;&lt;/span>s@^&lt;span style="color:#f92672">([&lt;/span>^#&lt;span style="color:#f92672">]&lt;/span>*&lt;span style="color:#f92672">)&lt;/span>http&lt;span style="color:#f92672">[&lt;/span>s&lt;span style="color:#f92672">]&lt;/span>?://&lt;span style="color:#f92672">[&lt;/span>^/&lt;span style="color:#ae81ff">\\&lt;/span>.&lt;span style="color:#f92672">]&lt;/span>+&lt;span style="color:#f92672">(&lt;/span>&lt;span style="color:#ae81ff">\\&lt;/span>.&lt;span style="color:#f92672">[&lt;/span>^/&lt;span style="color:#ae81ff">\\&lt;/span>.&lt;span style="color:#f92672">]&lt;/span>+&lt;span style="color:#f92672">)&lt;/span>+@&lt;span style="color:#ae81ff">\\&lt;/span>1&lt;span style="color:#e6db74">${&lt;/span>APT_MIRROR&lt;span style="color:#e6db74">}&lt;/span>@g&lt;span style="color:#ae81ff">\&amp;#34;&lt;/span> /etc/apt/sources.list &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y unzip curl xz-utils &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf /var/lib/apt/lists/* &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> mkdir -p &lt;span style="color:#ae81ff">\&amp;#34;&lt;/span>/public&lt;span style="color:#ae81ff">\&amp;#34;&lt;/span>&lt;span style="color:#e6db74">&amp;#34; did not complete successfully: exit code: 100
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在这里
+&lt;a
+class="link"
+href="https://github.com/docker/buildx/issues/495#issuecomment-991603416"
+target="_blank"
+rel="noopener"
+>Error building python 3.6 slim #495&lt;/a>
+了解到再次更新binfmt安装即可&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>docker run --rm --privileged tonistiigi/binfmt:latest --install all
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="persisting-env-and-arg-settings-to-all-later-stages-in-multi-stage-builds">Persisting ENV and ARG settings to all later stages in multi-stage builds
+&lt;/h3>&lt;p>在dockerfile多阶段构建中通常需要使用同一个变量在所有stage中，但是，对于无关的两个stage是无法直接使用之前stage的变量的&lt;/p>
+&lt;p>在这里
+&lt;a
+class="link"
+href="https://github.com/moby/moby/issues/37345#issuecomment-400245466"
+target="_blank"
+rel="noopener"
+>Persisting ENV and ARG settings to all later stages in multi-stage builds #37345&lt;/a>
+使用ARG声明可以达到这种效果&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">ARG&lt;/span> version_default&lt;span style="color:#f92672">=&lt;/span>v1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> alpine:latest as base1&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ARG&lt;/span> version_default&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> version&lt;span style="color:#f92672">=&lt;/span>$version_default&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> echo &lt;span style="color:#e6db74">${&lt;/span>version&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> echo &lt;span style="color:#e6db74">${&lt;/span>version_default&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> alpine:latest as base2&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ARG&lt;/span> version_default&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> echo &lt;span style="color:#e6db74">${&lt;/span>version_default&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/docker/build-push-action/blob/master/docs/advanced/multi-platform.md"
+target="_blank"
+rel="noopener"
+>Multi-platform image&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/53101932/8566831"
+target="_blank"
+rel="noopener"
+>multi-stage build in docker compose?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://yeasy.gitbook.io/docker_practice/buildx/multi-arch-images"
+target="_blank"
+rel="noopener"
+>使用 buildx 构建多种系统架构支持的 Docker 镜像&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/66695181/8566831"
+target="_blank"
+rel="noopener"
+>An error, &amp;ldquo;failed to solve with frontend dockerfile.v0&amp;rdquo;&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/docker/buildx/issues/426#issuecomment-732964418"
+target="_blank"
+rel="noopener"
+>failed to solve with frontend dockerfile.v0: failed to build LLB: executor failed running - runc did not terminate sucessfully #426&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/docker/compose/issues/8649#issuecomment-923816281"
+target="_blank"
+rel="noopener"
+>DOCKER_BUILDKIT=0 is not applied by docker-compose build #8649&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/58923844/8566831"
+target="_blank"
+rel="noopener"
+>How do you enable BuildKit with docker-compose?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.docker.com/develop/develop-images/build_enhancements/"
+target="_blank"
+rel="noopener"
+>Build images with BuildKit&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.kubernetes.org.cn/9059.html"
+target="_blank"
+rel="noopener"
+>基于 BuildKit 优化 Dockerfile 的构建&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://docs.docker.com/engine/reference/builder/#syntax"
+target="_blank"
+rel="noopener"
+>Dockerfile reference syntax&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.v2ex.com/t/839204"
+target="_blank"
+rel="noopener"
+>Docker buildx 报错了，求大神看看&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/docker/buildx/issues/495#issuecomment-991603416"
+target="_blank"
+rel="noopener"
+>Error building python 3.6 slim #495&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://github.com/moby/moby/issues/37345#issuecomment-400245466"
+target="_blank"
+rel="noopener"
+>Persisting ENV and ARG settings to all later stages in multi-stage builds #37345&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Template on NavyD的个人博客</title><link>/tags/template/</link><description>Recent content in Template on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 30 Mar 2023 19:02:41 +0800</lastBuildDate><atom:link href="/tags/template/index.xml" rel="self" type="application/rss+xml"/><item><title>在hugo中管理markdown文件</title><link>/posts/2021/08/markdown-management-in-hugo/</link><pubDate>Fri, 27 Aug 2021 18:38:09 +0800</pubDate><guid>/posts/2021/08/markdown-management-in-hugo/</guid><description>&lt;p>使用markdown写作有一个痛点，如何链接本地文件。如图片、本地md文件链接、其它博文相关文件log等，一般在workspace目录中放置一个&lt;code>assets/images&lt;/code>目录，md文件会链接到该路径。&lt;/p>
+&lt;pre tabindex="0">&lt;code>workspaces/
+- assets/
+- images/
+- files/
+- posts/
+- myblog.md
+- test/a.md
+&lt;/code>&lt;/pre>&lt;p>但是这样存在一个问题，大量文件被放在一个不相关的地方，在需要时很难寻找。一旦md文件目录发生迁移，整个md文件中的链接都失效了。&lt;/p>
+&lt;p>在hugo中目录结构如果md存在多种本地文件链接，则用一个文件夹放入一个index.md与对应文件在同个目录&lt;/p>
+&lt;pre tabindex="0">&lt;code>├── archetypes
+├── config.toml
+├── content
+- posts/
+- blog.md
+- multi-res/
+- index.md
+- a.png
+- b.log
+- c.file
+├── data
+├── layouts
+├── static
+└── themes
+&lt;/code>&lt;/pre>&lt;p>但是这里选择一个&lt;code>filename.md&lt;/code>文件被build后会生成无后缀的&lt;code>filename/&lt;/code>目录，里面存放相关的静态资源文件，如果md没有本地文件链接不需要文件夹。将一个md文件相关资源都放在这样的目录中非常方便：&lt;/p>
+&lt;pre tabindex="0">&lt;code>workspaces/
+- content/posts/
+- alone.md
+- myblog.md
+- myblog/
+- a.log
+- b.html
+- c.png
+- public/
+- ...
+&lt;/code>&lt;/pre>&lt;p>在vscode中配合
+&lt;a
+class="link"
+href="https://github.com/mathiassoeholm/markdown-link-updater"
+target="_blank"
+rel="noopener"
+>Markdown Link Updater&lt;/a>
+重命名文件后对应链接也会被修改&lt;/p>
+&lt;p>使用
+&lt;a
+class="link"
+href="https://github.com/gaurav-nelson/github-action-markdown-link-check"
+target="_blank"
+rel="noopener"
+>GitHub Action - Markdown link check&lt;/a>
+可以在github repo中检查link的有效性&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://www.isyin.cn/post/2018-05-03-hugo-%E7%9A%84%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86%E6%96%B9%E6%A1%88/"
+target="_blank"
+rel="noopener"
+>Hugo 的文件管理方案&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/getting-started/directory-structure/"
+target="_blank"
+rel="noopener"
+>Directory Structure&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/sections/"
+target="_blank"
+rel="noopener"
+>CONTENT MANAGEMENT Content Sections&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://olowolo.com/post/hugo-quick-start/"
+target="_blank"
+rel="noopener"
+>Hugo 从入门到会用&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="hugo解决方案">hugo解决方案
+&lt;/h2>&lt;h3 id="预处理markdown-link">预处理markdown link
+&lt;/h3>&lt;p>由于当前目录结构与hugo官方不一致，导致本地相对链接无法正常使用如：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&amp;lt;!-- 结构：
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">myblog.md
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">myblog/
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">-&lt;/span> &lt;span style="color:#75715e">vim_wordpress_esc
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">-&lt;/span> &lt;span style="color:#75715e">2021-08-04-23-17-08.png
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">--&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[&lt;span style="color:#f92672">vim_wordpress_esc&lt;/span>](&lt;span style="color:#a6e22e">my-hugo-blog/vim_wordpress_esc&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>![](my-hugo-blog/2021-08-04-23-17-08.png)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>对于上面的两个本地链接，hugo 构建后&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">a&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;myblog/vim_wordpress_esc&amp;#34;&lt;/span>&amp;gt;vim_wordpress_esc&amp;lt;/&lt;span style="color:#f92672">a&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&amp;lt;!-- 配置了 fancybox = true --&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">a&lt;/span> &lt;span style="color:#a6e22e">class&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;fancybox&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;http://localhost:1313/post/myblog/myblog/2021-08-04-23-17-08.png&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">data-fancybox&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;gallery&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">data-caption&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>&amp;gt;&amp;lt;&lt;span style="color:#f92672">img&lt;/span> &lt;span style="color:#a6e22e">src&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;my-hugo-blog/2021-08-04-23-17-08.png&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">alt&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>&amp;gt;&amp;lt;/&lt;span style="color:#f92672">a&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>很明显，blog.md被hugo后本地路径已经与&lt;code>myblog/&lt;/code>文件夹一级，而其中的相对路径链接还是没有变化，应该移除对应的filename前缀如：&lt;code>&amp;lt;a href=&amp;quot;vim_wordpress_esc&amp;quot;&amp;gt;vim_wordpress_esc&amp;lt;/a&amp;gt;&lt;/code>&lt;/p>
+&lt;h3 id="template-in-markdown">template in markdown
+&lt;/h3>&lt;p>有一种简单的方式可以实现，在markdown文件中嵌入hugo template，可以使重写对应的链接如：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">base&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;{{ .Site.BaseURL }}&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&amp;lt;!-- 访问：https://host.url/img/foo.jpg --&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>![&lt;span style="color:#f92672">Foo image&lt;/span>](&lt;span style="color:#a6e22e">img/foo.jpg&lt;/span>)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;em>&lt;strong>注意：上面的代码仅用于演示，实际中存在改写&lt;code>base url&lt;/code>后导致其它相对链接无法正常工作&lt;/strong>&lt;/em>&lt;/p>
+&lt;p>下面是简单的处理逻辑：对于&lt;code>myblog.md&lt;/code>，在当前页面下，如果存在以页面url.path的最后一层即filename开始的href，如：&lt;code>url=http://localhost:1313/post/myblog, url.path=/post/myblog, filename=myblog, href=myblog/vim_wordpress_esc&lt;/code>，则移除这一级的&lt;code>href=vim_wordpress_esc&lt;/code>&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/46180551/8566831"
+target="_blank"
+rel="noopener"
+>Cannot link to static files with Hugo&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="js">js
+&lt;/h3>&lt;p>开始的思路是使用js在页面加载时将对应href重写。但是看到&lt;code>&amp;lt;a class=&amp;quot;fancybox&amp;quot; href=&amp;quot;http://localhost:1313/post/myblog/myblog/2021-08-04-23-17-08.png&amp;quot;&lt;/code>就发现使用js无法保证所有对应的href被处理，可能由于加载顺序导致异常。如果link过多可能会影响性能&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-js" data-lang="js">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#a6e22e">list&lt;/span> &lt;span style="color:#f92672">=&lt;/span> window.&lt;span style="color:#a6e22e">location&lt;/span>.&lt;span style="color:#a6e22e">pathname&lt;/span>.&lt;span style="color:#a6e22e">split&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;/&amp;#34;&lt;/span>).&lt;span style="color:#a6e22e">filter&lt;/span>(&lt;span style="color:#a6e22e">name&lt;/span> =&amp;gt; &lt;span style="color:#a6e22e">name&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">&amp;gt;&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">console&lt;/span>.&lt;span style="color:#a6e22e">info&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;got path list: &amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">list&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#a6e22e">list&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#a6e22e">last&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">list&lt;/span>[&lt;span style="color:#a6e22e">list&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">console&lt;/span>.&lt;span style="color:#a6e22e">log&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;check all ref tag&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> (&lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#a6e22e">item&lt;/span> &lt;span style="color:#66d9ef">of&lt;/span> document.&lt;span style="color:#a6e22e">getElementsByTagName&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;a&amp;#34;&lt;/span>)) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">item&lt;/span>.&lt;span style="color:#a6e22e">getAttribute&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;href&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">console&lt;/span>.&lt;span style="color:#a6e22e">log&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;href &amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">href&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#a6e22e">href&lt;/span>.&lt;span style="color:#a6e22e">startsWith&lt;/span>(window.&lt;span style="color:#a6e22e">location&lt;/span>.&lt;span style="color:#a6e22e">href&lt;/span>)) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// console.log(&amp;#34;href &amp;#34;, href);
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>.&lt;span style="color:#a6e22e">substring&lt;/span>(window.&lt;span style="color:#a6e22e">location&lt;/span>.&lt;span style="color:#a6e22e">href&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#a6e22e">href&lt;/span>.&lt;span style="color:#a6e22e">startsWith&lt;/span>(&lt;span style="color:#a6e22e">last&lt;/span>)) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">let&lt;/span> &lt;span style="color:#a6e22e">newRef&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">href&lt;/span>.&lt;span style="color:#a6e22e">substring&lt;/span>(&lt;span style="color:#a6e22e">last&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">item&lt;/span>.&lt;span style="color:#a6e22e">setAttribute&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;href&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">newRef&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">console&lt;/span>.&lt;span style="color:#a6e22e">info&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;replaced &amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">href&lt;/span>, &lt;span style="color:#e6db74">&amp;#34; with &amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">newRef&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="render-hooks">render hooks
+&lt;/h3>&lt;p>在markdown渲染时预处理链接最合适，如果不行，就只能回到hugo标准目录结构了。&lt;/p>
+&lt;p>Markdown Render Hooks配合hugo template可以在渲染html时处理链接。定义下面的文件可以处理对应的链接类型&lt;/p>
+&lt;pre tabindex="0">&lt;code>layouts
+└── _default
+└── _markup
+├── render-image.html
+├── render-image.rss.xml
+└── render-link.html
+&lt;/code>&lt;/pre>&lt;p>下面是&lt;code>render-link.html&lt;/code>代码&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#f92672">a&lt;/span> &lt;span style="color:#a6e22e">test&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">{{$&lt;/span>&lt;span style="color:#a6e22e">name&lt;/span> &lt;span style="color:#a6e22e">:&lt;/span>&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">path.Base&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">.&lt;/span>&lt;span style="color:#a6e22e">Page&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">.&lt;/span>&lt;span style="color:#a6e22e">Permalink&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">{{&lt;/span>&lt;span style="color:#a6e22e">if&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">(&lt;/span>&lt;span style="color:#a6e22e">hasPrefix&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">.&lt;/span>&lt;span style="color:#a6e22e">Destination&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>&lt;span style="color:#a6e22e">name&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">)&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">{{$&lt;/span>&lt;span style="color:#a6e22e">size&lt;/span> &lt;span style="color:#a6e22e">:&lt;/span>&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">len&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>&lt;span style="color:#a6e22e">name&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">{{$&lt;/span>&lt;span style="color:#a6e22e">size &lt;/span>&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">add&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>&lt;span style="color:#a6e22e">size&lt;/span> &lt;span style="color:#a6e22e">1&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#960050;background-color:#1e0010">{{$&lt;/span>&lt;span style="color:#a6e22e">destUrl&lt;/span> &lt;span style="color:#a6e22e">:&lt;/span>&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">substr&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">.&lt;/span>&lt;span style="color:#a6e22e">Destination&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>&lt;span style="color:#a6e22e">size&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;{{substr .Destination $size}}&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">{{&lt;/span>&lt;span style="color:#a6e22e">else&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;{{.Destination | safeURL}}&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">{{&lt;/span>&lt;span style="color:#a6e22e">end&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#960050;background-color:#1e0010">{{&lt;/span> &lt;span style="color:#a6e22e">with&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">.&lt;/span>&lt;span style="color:#a6e22e">Title&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">title&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;{{ . }}&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">{{&lt;/span> &lt;span style="color:#a6e22e">end&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">}}&lt;/span>&amp;gt;{{ .Text | safeHTML }}&amp;lt;/&lt;span style="color:#f92672">a&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/getting-started/configuration-markup#markdown-render-hooks"
+target="_blank"
+rel="noopener"
+>Configure Markup: Markdown Render Hooks&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/markdown-pre-processing/27299"
+target="_blank"
+rel="noopener"
+>Markdown pre-processing?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/how-to-get-the-url-of-the-current-page-with-the-rel-or-relref-function/29113/4"
+target="_blank"
+rel="noopener"
+>How to get the URL of the current page with the rel or relref function?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/functions/"
+target="_blank"
+rel="noopener"
+>Functions Quick Reference&lt;/a>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="问题">问题
+&lt;/h2>&lt;p>在完成上面的工作后，未使用permalinks是正常可用的。一旦启用permalinks，所有在md文件同名文件夹下的都无法迁移到新的permalinks目录下&lt;/p>
+&lt;p>使用同名目录&lt;code>play-store-failed-to-download-in-clash-proxy.md, play-store-failed-to-download-in-clash-proxy/&lt;/code>部分构建结果:&lt;/p>
+&lt;pre tabindex="0">&lt;code>public/post
+├── 2021
+│   └── 08
+│   ├── 09
+│      ├── clash-transparent-proxy
+│      │   └── index.html
+│      └── play-store-failed-to-download-in-clash-proxy
+│      └── index.html
+├── index.html
+├── index.xml
+└── tools
+└── play-store-failed-to-download-in-clash-proxy
+├── 2021-08-09-17-57-48.png
+├── 2021-08-09-18-06-18.gif
+├── 2021-08-09-18-09-35.png
+├── 2021-08-09-18-14-35.png
+├── 2021-08-09-18-19-06.png
+├── 2021-08-09-18-34-55.png
+├── 2021-08-09-18-44-36.png
+├── 2021-08-09-19-13-51.png
+└── 2021-08-26-01-49-06.png
+&lt;/code>&lt;/pre>&lt;p>下面是使用标准目录&lt;code>play-store-failed-to-download-in-clash-proxy/index.md&lt;/code>部分构建结果:&lt;/p>
+&lt;pre tabindex="0">&lt;code>public/post
+├── 2021
+│   └── 08
+│   ├── 09
+│   │   ├── clash-transparent-proxy
+│   │   │   └── index.html
+│   │   └── play-store-failed-to-download-in-clash-proxy
+│   │   ├── 2021-08-09-17-57-48.png
+│   │   ├── 2021-08-09-18-06-18.gif
+│   │   ├── 2021-08-09-18-09-35.png
+│   │   ├── 2021-08-09-18-14-35.png
+│   │   ├── 2021-08-09-18-19-06.png
+│   │   ├── 2021-08-09-18-34-55.png
+│   │   ├── 2021-08-09-18-44-36.png
+│   │   ├── 2021-08-09-19-13-51.png
+│   │   ├── 2021-08-26-01-49-06.png
+│   │   └── index.html
+├── index.html
+├── index.xml
+└── tools
+└── play-store-failed-to-download-in-clash-proxy
+├── 2021-08-09-17-57-48.png
+├── 2021-08-09-18-06-18.gif
+├── 2021-08-09-18-09-35.png
+├── 2021-08-09-18-14-35.png
+├── 2021-08-09-18-19-06.png
+├── 2021-08-09-18-34-55.png
+├── 2021-08-09-18-44-36.png
+├── 2021-08-09-19-13-51.png
+└── 2021-08-26-01-49-06.png
+&lt;/code>&lt;/pre>&lt;p>暂时还不清楚要在标准目录中hugo如何移动对应的资源文件。但是非标准目录要这样的代价不如使用标准目录，避免一堆问题&lt;/p>
+&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://ttys3.dev/post/got-my-hugo-permalink-config-adjusted/"
+target="_blank"
+rel="noopener"
+>调整了下 Hugo 永久链接生成配置&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/page-bundles/"
+target="_blank"
+rel="noopener"
+>CONTENT MANAGEMENT Page Bundles&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://gohugo.io/templates/single-page-templates/"
+target="_blank"
+rel="noopener"
+>Single Page Templates&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

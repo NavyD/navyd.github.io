@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Mount on NavyD的个人博客</title><link>/tags/mount/</link><description>Recent content in Mount on NavyD的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 28 Jan 2025 18:26:14 +0800</lastBuildDate><atom:link href="/tags/mount/index.xml" rel="self" type="application/rss+xml"/><item><title>Mounting Practice on Linux</title><link>/posts/archives/linux/mounting-practice-on-linux/</link><pubDate>Mon, 09 May 2022 22:49:19 +0800</pubDate><guid>/posts/archives/linux/mounting-practice-on-linux/</guid><description>&lt;p>有一个需求，由于raspi4 home目录所在的dev空间容量不足达到90%，需要更换更大容量的dev。当前在系统中已挂载了一个4T的USB dev在/mnt/share/中，想在USB dev中直接划分一个目录挂载到/home中即可，mount的bind最合适&lt;/p>
+&lt;p>但是，在挂载后出现问题无法执行bin：&lt;code>mount zsh: permission denied: bin&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ mount --bind /mnt/share/home/navyd /home/navyd
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bin
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mount zsh: permission denied: bin
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="分析">分析
+&lt;/h2>&lt;p>出现问题后首先想到的是回滚，卸掉/home/navyd&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># avoid busy device&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cd /
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo umount -f /home/navyd
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后在&lt;code>/mnt/share/&lt;/code>挂载点测试是否可以执行bin文件，结果也无法执行bin，可能是挂载配置的问题。在
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/51234415/8566831"
+target="_blank"
+rel="noopener"
+>这里&lt;/a>
+了解到可能是mount选项为noexec，查询下当前的mount配置&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>$ mount -t ext4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/dev/sda1 on /mnt/share type ext4 &lt;span style="color:#f92672">(&lt;/span>rw,nosuid,nodev,noexec,relatime&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>下面是/etc/fstab配置&lt;/p>
+&lt;pre tabindex="0">&lt;code># ...
+UUID=5d0-x-x /mnt/share ext4 defaults,auto,rw,nofail,users,x-systemd.device-timeout=5 0 0
+&lt;/code>&lt;/pre>&lt;p>果然是mount的问题，修改fstab增加选项&lt;code>exec,dev,suid&lt;/code>并重新挂载查询，可以正常执行bin文件。然后试试重新bind /home/navyd看看，也可以正常使用了&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># UUID=5d0-x-x /mnt/share ext4 defaults,auto,rw,nofail,users,exec,dev,suid,x-systemd.device-timeout=5 0 0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo mount -o remount /mnt/share
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ mount -t ext4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/dev/sda1 on /mnt/share type ext4 &lt;span style="color:#f92672">(&lt;/span>rw,relatime&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ cd /mnt/share
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ bin
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ...&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>另外提一点，tar确实是最合适linux的备份工具，symlink可以完整的保留，而cp在默认是不会保留link的&lt;/p>
+&lt;h3 id="访问挂载点的原始内容">访问挂载点的原始内容
+&lt;/h3>&lt;p>在挂载后旧目录的内容被覆盖，无法通过原来的目录访问。但linux通过bind挂载仍然可以访问原有目录，如这里我想访问所有占用达到90%磁盘，并删除其中的内容。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>mkdir -p /mnt/home
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mount --bind /home /mnt/home
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 原始目录&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rm -rf /mnt/home/navyd
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解决">解决
+&lt;/h2>&lt;p>在/etc/fstab中配置&lt;/p>
+&lt;pre tabindex="0">&lt;code>UUID=5d0-x-x /mnt/share ext4 defaults,auto,rw,nofail,users,exec,dev,suid,x-systemd.device-timeout=5 0 0
+/mnt/share/home/navyd /home/navyd ext4 defaults,bind 0 0
+&lt;/code>&lt;/pre>&lt;p>参考：&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/19969471/8566831"
+target="_blank"
+rel="noopener"
+>How to unmount a busy device [closed]&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/51234415/8566831"
+target="_blank"
+rel="noopener"
+>Can&amp;rsquo;t execute a .sh script from mounted disk (Ubuntu 18.04): zsh: permission denied&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://superuser.com/a/99637"
+target="_blank"
+rel="noopener"
+>Can&amp;rsquo;t execute a script on a mounted external drive&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://askubuntu.com/a/175742"
+target="_blank"
+rel="noopener"
+>How do I remount a filesystem as read/write?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://serverfault.com/a/613184"
+target="_blank"
+rel="noopener"
+>How do I do &amp;lsquo;mount &amp;ndash;bind&amp;rsquo; in /etc/fstab?&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/4428"
+target="_blank"
+rel="noopener"
+>Access to original contents of mount point&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://man7.org/linux/man-pages/man5/fstab.5.html"
+target="_blank"
+rel="noopener"
+>fstab fileds: defaults&lt;/a>
+&lt;/li>
+&lt;li>
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/4428"
+target="_blank"
+rel="noopener"
+>Access to original contents of mount point&lt;/a>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>
