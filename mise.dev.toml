@@ -1,16 +1,6 @@
 [tools]
-# python = "3.13"
-# node = "20"
-# uv = "0.5"
 watchexec = "2.3"
-# "ubi:huacnlee/autocorrect" = "2.13"
-# # NOTE: 如果使用 `pipx:pre-commit` 会在首次安装时与 venv 冲突无法安装
-# pre-commit = "4"
-# actionlint = '1.7'
-# ruff = "0.9"
-# gitleaks = '8.23'
-# markdownlint-cli2 = "0.17"
-# typos = "1.29"
+act = "0.2"
 
 [env]
 # FIXME: create=true 在 CI 中首次安装 uv 时不存在 PATH 中导致创建 venv 失败
@@ -113,3 +103,32 @@ with open(stdout_path, "wb") as stdout:
 description = 'lint cached files with lefthook'
 depends = ['init-venv']
 run = 'lefthook run pre-commit'
+
+# TODO: 由于 `arg(i=1)` bug与无法处理为 list 的问题，无法作为参数处理
+# `mise run lint file1 file2`
+# 另外，由于默认由于 mise 将参数附加到 run 的最后一个 string 中如
+# 当 `shell=python -c`, `run = 'print("test")'` 将变为 `print("test") file1 file2` 导致运行错误
+# bug: arg(i=N) 会一直返回所有str，而不是指定位置的arg
+
+# echo {% set args = arg(name="files", default="", var=true) %}{% if args != "''" %}{{args}}{% endif %}
+# {% for i in range(end=4) %}
+#     {% set arg = arg(i=i, name="files", default="", var=true) %}
+#     {% if arg != "''" %}
+#         {{arg}}
+#     {% else %}
+#         {% break %}
+#     {% endif %}
+# {% endfor %}
+# run = 'lefthook run pre-commit {{arg(name="files", default="", var=true) | title}}'
+# shell = "python -c"
+# run = [
+    # '-c',
+#     '''
+# import sys
+# import subprocess
+# print(f"a{sys.argv}")
+# ''',
+    # command = ["lefthook", "run", "pre-commit", *[s for arg in sys.argv[1:] for s in ("--file", arg)]]
+    # print(f"Running command: {command}")
+    # subprocess.check_call(command)
+# ]
