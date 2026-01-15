@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Lint on NavyD 的个人博客</title><link>/tags/lint/</link><description>Recent content in Lint on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 03 Aug 2025 13:58:18 +0800</lastBuildDate><atom:link href="/tags/lint/index.xml" rel="self" type="application/rss+xml"/><item><title>CI Practice</title><link>/posts/2025/02/ci-practice/</link><pubDate>Tue, 18 Feb 2025 14:04:55 +0800</pubDate><guid>/posts/2025/02/ci-practice/</guid><description>&lt;h2 id="git-hook-manager"&gt;&lt;a href="#git-hook-manager" class="header-anchor"&gt;&lt;/a&gt;git hook manager
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook"
+target="_blank"
+rel="noopener"
+&gt;evilmartians/lefthook: Fast and powerful Git hooks manager for any type of projects&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/pre-commit/pre-commit"
+target="_blank"
+rel="noopener"
+&gt;pre-commit/pre-commit: A framework for managing and maintaining multi-language pre-commit hooks&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://xfyuan.github.io/2024/06/five-cool-and-surprising-ways-to-configure-lefthook-for-automation-joy/"
+target="_blank"
+rel="noopener"
+&gt;Lefthook 的五种武器&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://evilmartians.com/chronicles/5-cool-and-surprising-ways-to-configure-lefthook-for-automation-joy"
+target="_blank"
+rel="noopener"
+&gt;5 cool (and surprising) ways to configure Lefthook for automation joy&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="lefthook"&gt;&lt;a href="#lefthook" class="header-anchor"&gt;&lt;/a&gt;lefthook
+&lt;/h3&gt;&lt;h4 id="并行"&gt;&lt;a href="#%e5%b9%b6%e8%a1%8c" class="header-anchor"&gt;&lt;/a&gt;并行
+&lt;/h4&gt;&lt;p&gt;在 pre-commit 时通常会存在检查与修复操作，一个问题，并行处理同一个文件且都尝试更新时，如何处理竞争条件。&lt;/p&gt;
+&lt;p&gt;配置
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/parallel.html#parallel"
+target="_blank"
+rel="noopener"
+&gt;parallel&lt;/a&gt;
+可以让
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/Commands.html#commands"
+target="_blank"
+rel="noopener"
+&gt;&lt;code&gt;commands&lt;/code&gt;&lt;/a&gt;
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/Scripts.html#scripts"
+target="_blank"
+rel="noopener"
+&gt;Scripts&lt;/a&gt;
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/jobs.html#jobs"
+target="_blank"
+rel="noopener"
+&gt;&lt;code&gt;jobs&lt;/code&gt;&lt;/a&gt;
+类型的任务并行，但有时对其中某些特定的任务是需要先后顺序的，如所有的 lint 可以并行，但 fixed 通常需要在 lint 后执行避免竞争&lt;/p&gt;
+&lt;h5 id="jobs"&gt;&lt;a href="#jobs" class="header-anchor"&gt;&lt;/a&gt;jobs
+&lt;/h5&gt;&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/jobs.html#differences-from-commands-and-scripts"
+target="_blank"
+rel="noopener"
+&gt;Differences from Commands and Scripts&lt;/a&gt;
+提供了 job 组的概念，分组后 jobs 并行串行可组合方便&lt;/p&gt;
+&lt;h4 id="run-with-shell"&gt;&lt;a href="#run-with-shell" class="header-anchor"&gt;&lt;/a&gt;run with shell
+&lt;/h4&gt;&lt;p&gt;在运行命令
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/run.html"
+target="_blank"
+rel="noopener"
+&gt;&lt;code&gt;run: command list&lt;/code&gt;&lt;/a&gt;
+时无法指定 shell，&lt;code&gt;*nix&lt;/code&gt;, &lt;code&gt;windows&lt;/code&gt; 不兼容语法，只能使用
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/Scripts.html"
+target="_blank"
+rel="noopener"
+&gt;scripts&lt;/a&gt;
+文件执行，对于某些简单的命令非常不方便。&lt;/p&gt;
+&lt;p&gt;如检查文件名在 windows 上是否合法参考
+&lt;a
+class="link"
+href="https://github.com/pre-commit/pre-commit-hooks/issues/589"
+target="_blank"
+rel="noopener"
+&gt;# Add check for illegal Windows filenames&lt;/a&gt;
+使用
+&lt;code&gt;(?i)((^|/)(CON|PRN|AUX|NUL|COM[\d¹²³]|LPT[\d¹²³])(\.|/|$)|[&amp;lt;&amp;gt;:\&amp;quot;\\|?*\x00-\x1F]|/[^/]*[\.\s]/|[^/]*[\.\s]$)&lt;/code&gt;
+正则检查时需要创建文件而不能在 yaml 文件中写简单 python 的代码。&lt;/p&gt;
+&lt;p&gt;另外，在 &lt;code&gt;run: command to {staged_files}&lt;/code&gt; 看起来也非常不稳定，使用
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/run.html#quotes"
+target="_blank"
+rel="noopener"
+&gt;quotes&lt;/a&gt;
+处理模板，可能存在转义的问题。如 &lt;code&gt;run: yarn eslint &amp;quot;{staged_files}&amp;quot;&lt;/code&gt; 会被解析为
+&lt;code&gt;yarn eslint &amp;quot;file1.js&amp;quot; &amp;quot;file2.js&amp;quot; &amp;quot;[strange name].js&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;尽管在
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook/discussions/961#discussioncomment-12309384"
+target="_blank"
+rel="noopener"
+&gt;How to avoid git commit if one sub command in parallel a command fails #961&lt;/a&gt;
+看到可以分离 shell 命令为多个 job 组合，但在 windows 上没有 shell 的功能是致命的，如使用环境变量等，总不能为了 2 行脚本写 1 个文件运行，总之这个跨平台基本是无法使用的，如果可以
+&lt;a
+class="link"
+href="https://docs.github.com/zh/actions/writing-workflows/choosing-what-your-workflow-does/setting-a-default-shell-and-working-directory"
+target="_blank"
+rel="noopener"
+&gt;设置默认 shell 和工作目录&lt;/a&gt;
+就好了&lt;/p&gt;
+&lt;p&gt;为了兼容多平台可以使用
+&lt;a
+class="link"
+href="https://lefthook.dev/configuration/skip.html#skip"
+target="_blank"
+rel="noopener"
+&gt;skip.run&lt;/a&gt;
+运行命令检测当前是否为 windows&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;- &lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;lint lua on windows&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;skip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="nt"&gt;run&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;sh -c &amp;#39;exit 0&amp;#39;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;- &lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;lint lua on unix&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;skip&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="nt"&gt;run&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;cmd.exe /c &amp;#39;exit 0&amp;#39;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;最后，我打开了一个 PR
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook/pull/965"
+target="_blank"
+rel="noopener"
+&gt;feat: Add shell options to run commands #965&lt;/a&gt;
+添加 shell 选项类似
+&lt;a
+class="link"
+href="https://docs.github.com/zh/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_iddefaultsrunshell"
+target="_blank"
+rel="noopener"
+&gt;jobs.&amp;lt;job_id&amp;gt;.defaults.run.shell&lt;/a&gt;
+在多个平台允许指定 shell 运行程序&lt;/p&gt;
+&lt;p&gt;注意：从
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook/releases/tag/v1.11.5"
+target="_blank"
+rel="noopener"
+&gt;lefthook v1.11.5&lt;/a&gt;
+开始在中在 windows 平台上使用 git-bash 执行命令修复了这个问题
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook/pull/979"
+target="_blank"
+rel="noopener"
+&gt;fix: windows scripts issues #979&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook/issues/953"
+target="_blank"
+rel="noopener"
+&gt;# Wrap commands in Git bash on Windows&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/evilmartians/lefthook/issues/786"
+target="_blank"
+rel="noopener"
+&gt;# Invalid escaping of {staged_files}&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="lint"&gt;&lt;a href="#lint" class="header-anchor"&gt;&lt;/a&gt;lint
+&lt;/h2&gt;&lt;h3 id="yaml"&gt;&lt;a href="#yaml" class="header-anchor"&gt;&lt;/a&gt;yaml
+&lt;/h3&gt;&lt;h4 id="schema"&gt;&lt;a href="#schema" class="header-anchor"&gt;&lt;/a&gt;schema
+&lt;/h4&gt;&lt;p&gt;在
+&lt;a
+class="link"
+href="https://www.schemastore.org/json/"
+target="_blank"
+rel="noopener"
+&gt;JSON Schema Store&lt;/a&gt;
+中提供了 schema 结构以方便检查&lt;/p&gt;
+&lt;p&gt;yamllint 不支持验证
+&lt;a
+class="link"
+href="https://github.com/adrienverge/yamllint/issues/37"
+target="_blank"
+rel="noopener"
+&gt;Support to validate against a schema&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;a
+class="link"
+href="https://github.com/redhat-developer/yaml-language-server"
+target="_blank"
+rel="noopener"
+&gt;redhat-developer/yaml-language-server&lt;/a&gt;
+虽然支持验证
+&lt;a
+class="link"
+href="https://github.com/redhat-developer/yaml-language-server#using-inlined-schema"
+target="_blank"
+rel="noopener"
+&gt;Using inlined schema&lt;/a&gt;
+如 &lt;code&gt;# yaml-language-server: $schema=&amp;lt;urlToTheSchema&amp;gt;&lt;/code&gt; ，但未提供 cli 接口运行
+&lt;a
+class="link"
+href="https://github.com/redhat-developer/yaml-language-server/issues/535"
+target="_blank"
+rel="noopener"
+&gt;Command Line API/Option&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/3971822/how-do-i-validate-my-yaml-file-from-command-line"
+target="_blank"
+rel="noopener"
+&gt;How do I validate my YAML file from command line?&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="git-commit-message"&gt;&lt;a href="#git-commit-message" class="header-anchor"&gt;&lt;/a&gt;git commit message
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/conventional-changelog/commitlint"
+target="_blank"
+rel="noopener"
+&gt;conventional-changelog/commitlint: Lint commit messages&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/commitizen-tools/commitizen"
+target="_blank"
+rel="noopener"
+&gt;commitizen-tools/commitizen: Create committing rules for projects 🚀 auto bump versions ⬆️ and auto changelog generation&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;注意：对于非 js 项目
+&lt;code&gt;npm install --save-dev @commitlint/config-conventional @commitlint/cli&lt;/code&gt;
+是无法使用的&lt;/p&gt;
+&lt;h2 id="lang"&gt;&lt;a href="#lang" class="header-anchor"&gt;&lt;/a&gt;lang
+&lt;/h2&gt;&lt;h3 id="lua"&gt;&lt;a href="#lua" class="header-anchor"&gt;&lt;/a&gt;lua
+&lt;/h3&gt;&lt;p&gt;参考开源项目&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/neovim/nvim-lspconfig/blob/master/.github/workflows/lint.yml"
+target="_blank"
+rel="noopener"
+&gt;nvim-lspconfig/.github/workflows/lint.yml&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="lua-lint"&gt;&lt;a href="#lua-lint" class="header-anchor"&gt;&lt;/a&gt;lua lint
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/lunarmodules/luacheck"
+target="_blank"
+rel="noopener"
+&gt;luacheck: A tool for linting and static analysis of Lua code&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/Kampfkarren/selene"
+target="_blank"
+rel="noopener"
+&gt;selene: A blazing-fast modern Lua linter written in Rust&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;比较发现&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;安装方式：都从 github 分发二进制，但 luacheck 仅提供 windows 安装包，其它平台需要从 luarocks 安装&lt;/li&gt;
+&lt;li&gt;跨平台：luacheck 通过 luarocks 实现全平台，而 selene 不支持 arm
+&lt;a
+class="link"
+href="https://github.com/Kampfkarren/selene/issues/612"
+target="_blank"
+rel="noopener"
+&gt;feat: release aarch64 build #612&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="format"&gt;&lt;a href="#format" class="header-anchor"&gt;&lt;/a&gt;format
+&lt;/h4&gt;&lt;!-- TODO --&gt;</description></item><item><title>github actions in hugo</title><link>/posts/2021/08/github-actions-in-hugo/</link><pubDate>Fri, 06 Aug 2021 17:30:53 +0800</pubDate><guid>/posts/2021/08/github-actions-in-hugo/</guid><description>&lt;h2 id="问题"&gt;&lt;a href="#%e9%97%ae%e9%a2%98" class="header-anchor"&gt;&lt;/a&gt;问题
+&lt;/h2&gt;&lt;p&gt;使用markdown链接本地文件时，如果文件名包含空格，在链接时可能会出现行为不一致&lt;code&gt;git-submodule-in-hugo/你好%20a.png&lt;/code&gt;和&lt;code&gt;git-submodule-in-hugo/你好 a.png&lt;/code&gt;在vscode不同的插件中&lt;code&gt;kisstkondoros.vscode-gutter-preview&lt;/code&gt;, &lt;code&gt;shd101wyy.markdown-preview-enhanced&lt;/code&gt;存在有不同的解析结果，所以不能在文件名中出现空格&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23.png"
+width="1553"
+height="553"
+srcset="/posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23_hu_5fe4de5d163f7f97.png 480w, /posts/2021/08/github-actions-in-hugo/2021-08-06-17-43-23_hu_c6ffd11b29303fef.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="280"
+data-flex-basis="673px"
+&gt;
+&lt;/p&gt;
+&lt;h2 id="分析"&gt;&lt;a href="#%e5%88%86%e6%9e%90" class="header-anchor"&gt;&lt;/a&gt;分析
+&lt;/h2&gt;&lt;p&gt;在hugo渲染html时，可能也会出现空格的问题，如当前自定义的&lt;code&gt;layouts/_default/_markup/render-link.html&lt;/code&gt;，如果没有使用测试转义，可能导致&lt;code&gt;hasPrefix .Destination $name&lt;/code&gt;不一样的情况。当然，应该不会出现这样的情况，毕竟&lt;code&gt;$name&lt;/code&gt;与&lt;code&gt;.Destination&lt;/code&gt;都是经过hugo转义后的。但是本地不一致的行为影响体验，总之，空格禁用&lt;/p&gt;
+&lt;h2 id="github-action"&gt;&lt;a href="#github-action" class="header-anchor"&gt;&lt;/a&gt;github action
+&lt;/h2&gt;&lt;p&gt;在github仓库上在hugo build前使用actions检查是否含空格&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;jobs&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;check&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;runs-on&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;ubuntu-20.04&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;steps&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="nt"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;actions/checkout@master&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;Check file names with spaces&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;run&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="sd"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="sd"&gt; # search spaces in all subfolder names
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="sd"&gt; if s=$(find content/post | grep &amp;#39; &amp;#39;); then
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="sd"&gt; # output to stderr
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="sd"&gt; &amp;gt;&amp;amp;2 echo &amp;#34;found spaces in $s&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="sd"&gt; exit 1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="sd"&gt; fi&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;deploy&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;runs-on&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;ubuntu-20.04&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# dependence check&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;needs&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;check&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;#...&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://docs.github.com/en/actions/quickstart"
+target="_blank"
+rel="noopener"
+&gt;Quickstart for GitHub Actions&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#creating-dependent-jobs"
+target="_blank"
+rel="noopener"
+&gt;Creating dependent jobs&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

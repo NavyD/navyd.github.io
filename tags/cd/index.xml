@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CD on NavyD 的个人博客</title><link>/tags/cd/</link><description>Recent content in CD on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 17 Oct 2025 18:25:33 +0800</lastBuildDate><atom:link href="/tags/cd/index.xml" rel="self" type="application/rss+xml"/><item><title>从 GitHub 私有仓库部署 github pages 网站</title><link>/posts/2025/10/deploy-the-github-pages-from-a-github-private-repository/</link><pubDate>Thu, 16 Oct 2025 16:33:44 +0800</pubDate><guid>/posts/2025/10/deploy-the-github-pages-from-a-github-private-repository/</guid><description>&lt;p&gt;之前个人博客是基于
+&lt;a
+class="link"
+href="https://gohugo.io/"
+target="_blank"
+rel="noopener"
+&gt;hugo&lt;/a&gt;
+直接整个项目上传到 Github
+公共仓库中，然后利用
+&lt;a
+class="link"
+href="https://docs.github.com/zh/actions"
+target="_blank"
+rel="noopener"
+&gt;Github Actions&lt;/a&gt;
+直接构建到仓库中的一个分支上，再把这个分支部署到
+&lt;a
+class="link"
+href="https://docs.github.com/zh/pages"
+target="_blank"
+rel="noopener"
+&gt;Github Pages&lt;/a&gt;
+上，就这样用了很久，但是一直有几个问题比较困扰：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;源码公开可见，可以被随意复制粘贴到别的地方&lt;/li&gt;
+&lt;li&gt;修改记录一览无遗，没有隐私性&lt;/li&gt;
+&lt;li&gt;部分文档不想公开，即使删除后，仍能通过提交记录找回来&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;综上，网上搜索一番后，发现可以通过 GitHub，
+创建私有仓库，把源码提交到私有仓库后，通过 Actions
+触发自动构建，并推送到一个公开仓库中，再在公开仓库中触发 Github Pages
+的部署流程，完成博客更新发布的自动化流程。&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2025/10/deploy-the-github-pages-from-a-github-private-repository/20251017125534.png"
+width="621"
+height="471"
+srcset="/posts/2025/10/deploy-the-github-pages-from-a-github-private-repository/20251017125534_hu_bf68bb8cc2c03cc5.png 480w, /posts/2025/10/deploy-the-github-pages-from-a-github-private-repository/20251017125534_hu_d4968a0a9b768b91.png 1024w"
+loading="lazy"
+alt="deploy"
+class="gallery-image"
+data-flex-grow="131"
+data-flex-basis="316px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;下面参考
+&lt;a
+class="link"
+href="https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-deploy-to-external-repository-external_repository"
+target="_blank"
+rel="noopener"
+&gt;Deploy to external repository
+external_repository&lt;/a&gt;
+配置部署。&lt;/p&gt;
+&lt;h2 id="配置私有仓库-github-actions"&gt;&lt;a href="#%e9%85%8d%e7%bd%ae%e7%a7%81%e6%9c%89%e4%bb%93%e5%ba%93-github-actions" class="header-anchor"&gt;&lt;/a&gt;配置私有仓库 github actions
+&lt;/h2&gt;&lt;p&gt;修改博客项目根目录下 &lt;code&gt;.github/workflows/deploy.yml&lt;/code&gt; 文件，在 workflows
+目录下的文件都会被尝试解析为工作流。&lt;/p&gt;
+&lt;p&gt;关键在于使用
+&lt;a
+class="link"
+href="https://github.com/peaceiris/actions-gh-pages"
+target="_blank"
+rel="noopener"
+&gt;peaceiris/actions-gh-pages&lt;/a&gt;
+将 &lt;code&gt;hugo --minify&lt;/code&gt; 的构建目录 public 上传到 github pages
+所属的公共仓库 gh-pages 分支即可&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;span class="lnt"&gt;29
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;jobs&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;build-and-deploy&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;runs-on&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;ubuntu-latest&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;permissions&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;contents&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;write&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;concurrency&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;group&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;${{ github.workflow }}-${{ github.ref }}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;if&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;${{ github.event.workflow_run.conclusion == &amp;#39;success&amp;#39; }}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;steps&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="nt"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;actions/checkout@v5&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;with&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;submodules&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;fetch-depth&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# ...&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;Deploy&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;uses&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;peaceiris/actions-gh-pages@v4&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;if&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;github.ref == &amp;#39;refs/heads/main&amp;#39;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# https://github.com/peaceiris/actions-gh-pages#options&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;with&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;deploy_key&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;${{ secrets.ACTIONS_DEPLOY_KEY }}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;external_repository&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;NavyD/navyd.github.io&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# 替换为你的外部仓库&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# publish_branch: main # default: gh-pages&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;publish_dir&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;./public&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# This allows you to make your publish branch with only the latest commit&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;force_orphan&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;#cname: your-custom-domain.com # 添加这一行，替换为你的域名，避免每次 deploy 后都要手动更新 CNAME 文件&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;commit_message&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;${{ github.event.head_commit.message }}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;user_name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;github-actions[bot]&amp;#34;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;user_email&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;github-actions[bot]@users.noreply.github.com&amp;#34;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id="部署密钥"&gt;&lt;a href="#%e9%83%a8%e7%bd%b2%e5%af%86%e9%92%a5" class="header-anchor"&gt;&lt;/a&gt;部署密钥
+&lt;/h2&gt;&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://docs.github.com/zh/authentication/connecting-to-github-with-ssh/managing-deploy-keys#deploy-keys"
+target="_blank"
+rel="noopener"
+&gt;身份验证/使用 SSH
+进行连接/管理部署密钥/部署密钥&lt;/a&gt;
+&lt;/p&gt;
+&lt;h3 id="对比-deploy_key-vs-deploy_key"&gt;&lt;a href="#%e5%af%b9%e6%af%94-deploy_key-vs-deploy_key" class="header-anchor"&gt;&lt;/a&gt;对比 deploy_key VS deploy_key
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;Note that GITHUB_TOKEN has no permission to access to external repositories.
+Please create a personal access token and set it to personal_token like
+personal_token: ${{ secrets.PERSONAL_TOKEN }}.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id="部署密钥的优点"&gt;&lt;a href="#%e9%83%a8%e7%bd%b2%e5%af%86%e9%92%a5%e7%9a%84%e4%bc%98%e7%82%b9" class="header-anchor"&gt;&lt;/a&gt;部署密钥的优点
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;有权访问仓库和服务器的任何人都能够部署项目。&lt;/li&gt;
+&lt;li&gt;用户不必更改其本地 SSH 设置。&lt;/li&gt;
+&lt;li&gt;部署密钥默认为只读，但在将其添加到存储库时可授予它们写入权限。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="部署密钥的缺点"&gt;&lt;a href="#%e9%83%a8%e7%bd%b2%e5%af%86%e9%92%a5%e7%9a%84%e7%bc%ba%e7%82%b9" class="header-anchor"&gt;&lt;/a&gt;部署密钥的缺点
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;部署密钥只授予对单个仓库的访问权限。
+较复杂的项目可能要将多个仓库拉取到同一服务器。&lt;/li&gt;
+&lt;li&gt;部署密钥通常不受密码保护，因此在服务器遭到破坏时可轻松访问密钥。&lt;/li&gt;
+&lt;li&gt;部署密钥是没有到期日期的凭据。&lt;/li&gt;
+&lt;li&gt;部署密钥不直接与组织会员资格相关联。如果从存储库中删除了创建部署密钥的用户，
+部署密钥仍将处于活动状态，因为它不会绑定到特定用户，而是绑定到存储库。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="设置密钥"&gt;&lt;a href="#%e8%ae%be%e7%bd%ae%e5%af%86%e9%92%a5" class="header-anchor"&gt;&lt;/a&gt;设置密钥
+&lt;/h3&gt;&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://docs.github.com/zh/authentication/connecting-to-github-with-ssh/managing-deploy-keys#set-up-deploy-keys"
+target="_blank"
+rel="noopener"
+&gt;设置部署密钥&lt;/a&gt;
+创建&lt;/p&gt;
+&lt;h4 id="公共仓库"&gt;&lt;a href="#%e5%85%ac%e5%85%b1%e4%bb%93%e5%ba%93" class="header-anchor"&gt;&lt;/a&gt;公共仓库
+&lt;/h4&gt;&lt;p&gt;在公共仓库设置
+&lt;a
+class="link"
+href="https://github.com/NavyD/navyd.github.io/settings/keys"
+target="_blank"
+rel="noopener"
+&gt;Settings/keys/Deploy keys&lt;/a&gt;
+添加一个 ssh public key。&lt;/p&gt;
+&lt;h4 id="私有仓库"&gt;&lt;a href="#%e7%a7%81%e6%9c%89%e4%bb%93%e5%ba%93" class="header-anchor"&gt;&lt;/a&gt;私有仓库
+&lt;/h4&gt;&lt;p&gt;在私有仓库
+&lt;a
+class="link"
+href="https://github.com/NavyD/blog/settings/secrets/actions"
+target="_blank"
+rel="noopener"
+&gt;settings/secrets/actions&lt;/a&gt;
+将之前 ssh 生成的 key 添加到 secrets &lt;code&gt;ACTIONS_DEPLOY_KEY&lt;/code&gt; ，
+用于 github actions 中 &lt;code&gt;deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="开启-github-pages"&gt;&lt;a href="#%e5%bc%80%e5%90%af-github-pages" class="header-anchor"&gt;&lt;/a&gt;开启 github pages
+&lt;/h2&gt;&lt;p&gt;在
+&lt;a
+class="link"
+href="https://github.com/NavyD/navyd.github.io/settings/pages"
+target="_blank"
+rel="noopener"
+&gt;settings/pages/GitHub Pages&lt;/a&gt;
+中配置 &lt;code&gt;gh-pages&lt;/code&gt; 分支作为 GitHub Pages 部署即可。&lt;/p&gt;
+&lt;p&gt;最后在私有仓库中触发 github actions 即可自动部署 github pages 到公开仓库。&lt;/p&gt;
+&lt;h2 id="参考"&gt;&lt;a href="#%e5%8f%82%e8%80%83" class="header-anchor"&gt;&lt;/a&gt;参考
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://juejin.cn/post/7312035956189020169"
+target="_blank"
+rel="noopener"
+&gt;Github 私有仓库 + Actions 自动部署博客&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://shenghairong.github.io/posts/2024-11-10-hugo-gh_pages/"
+target="_blank"
+rel="noopener"
+&gt;免费使用 GitHub 私有仓库部署网站&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

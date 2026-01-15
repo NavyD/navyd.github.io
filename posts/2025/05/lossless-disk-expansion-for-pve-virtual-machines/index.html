@@ -1,0 +1,222 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content=" 转载修改于 给 PVE 虚拟机磁盘无损扩容 ..."><title>给 PVE 虚拟机磁盘无损扩容</title><link rel=canonical href=/posts/2025/05/lossless-disk-expansion-for-pve-virtual-machines/><link rel=stylesheet href=/scss/style.min.b0e76e98cdd4f7082d1fc36f7af7e0843a81201db2197c03ca426751dc923735.css><meta property='og:title' content="给 PVE 虚拟机磁盘无损扩容"><meta property='og:description' content=" 转载修改于 给 PVE 虚拟机磁盘无损扩容 ..."><meta property='og:url' content='/posts/2025/05/lossless-disk-expansion-for-pve-virtual-machines/'><meta property='og:site_name' content='NavyD 的个人博客'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='PVE'><meta property='article:tag' content='VM'><meta property='article:published_time' content='2025-05-31T22:22:52+08:00'><meta property='article:modified_time' content='2025-06-01T11:11:14+08:00'><meta name=twitter:title content="给 PVE 虚拟机磁盘无损扩容"><meta name=twitter:description content=" 转载修改于 给 PVE 虚拟机磁盘无损扩容 ..."></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=https://avatars.githubusercontent.com/u/22490764 width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🐧</span></figure><div class=site-meta><h1 class=site-name><a href=/>NavyD 的个人博客</a></h1><h2 class=site-description>Hello World!</h2></div></header><ol class=menu-social><li><a href=https://space.bilibili.com/47808239 target=_blank title=Bilibili rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7a4 4 0 01-4-4v-6z"/><path d="M8 3l2 3"/><path d="M16 3l-2 3"/><path d="M9 13v-2"/><path d="M15 11v2"/></svg></a></li><li><a href=https://github.com/NavyD target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://x.com/NavyD_hello target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/page/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/page/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=/en/>English</option><option value=/ selected>中文</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#存在-swap-分区的-pve-虚拟机磁盘如何扩容>存在 swap 分区的 PVE 虚拟机磁盘如何扩容？</a><ol><li><a href=#母鸡扩容>母鸡扩容</a></li><li><a href=#信息确认>信息确认</a></li><li><a href=#第一步关闭-swap-分区>第一步，关闭 swap 分区</a></li><li><a href=#第二步重新配置分区列表>第二步，重新配置分区列表</a></li><li><a href=#第三步重载分区列表>第三步，重载分区列表</a></li><li><a href=#第四步重新扫描磁盘容量>第四步，重新扫描磁盘容量</a></li><li><a href=#第五步重新配置-swap-分区>第五步，重新配置 swap 分区</a></li><li><a href=#第六步重新激活-swap-分区>第六步，重新激活 swap 分区</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><div class=article-title-wrapper><h2 class=article-title><a href=/posts/2025/05/lossless-disk-expansion-for-pve-virtual-machines/>给 PVE 虚拟机磁盘无损扩容</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-05-31T22:22:52+08:00>2025年5月31日22:22</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 4 分钟</time></div></footer></div></header><section class=article-content><blockquote><p>转载修改于
+<a class=link href=https://ezo.biz/New_Learning/1348.html target=_blank rel=noopener>给 PVE 虚拟机磁盘无损扩容</a></p></blockquote><p>家里使用的 NAS 是 DIY 的 All In
+One 主机，母鸡是 PVE（
+<a class=link href=https://www.proxmox.com/ target=_blank rel=noopener>Proxmox Virtual Environment</a>
+）。</p><p>为便于管理和维持良好的独立性，我把主要的 Docker 服务部署在基于 PVE 虚拟机的开源 NAS 系统
+OMV（
+<a class=link href=https://www.openmediavault.org/ target=_blank rel=noopener>openmediavault</a>
+）上。由于计划赶不上变化，
+原先给 OMV 预分配的磁盘空间已经耗尽，以致 web 管理页面也无法登录，只能通过 ssh 方式管理。
+为解决这个问题，在保数据的前提下，从母鸡分配磁盘空间进行扩容已是唯一选择。</p><p>原本以为扩容操作可以直接通过 PVE 的 web 管理页面便能轻松实现（我部分虚拟机确实是这样）。
+但是，OMV 这个情况和我预想的还是有点偏差，扩容后的空间无法合并到根目录上。具体原因是部署 OMV 时，
+我使用安装方式为虚拟机 IOS 镜像直读模式。从 win32 开始遗传的电脑使用习惯（安装直接点“下一步”）
+安装的 OMV，自然自带 swap 分区。由于 swap 分区的存在，导致 pve 扩容的空间无法和原来 OMV
+磁盘组成连贯分区，无法实现根目录扩容的目的。网上清一色的教程均为简单的独立分区无损扩容，
+并没有提及这种带其他分区的磁盘该如何扩容。因此，我写下这个笔记供后续遇到类似需求的朋友作为参考，避免踩坑。</p><h2 id=存在-swap-分区的-pve-虚拟机磁盘如何扩容><a href=#%e5%ad%98%e5%9c%a8-swap-%e5%88%86%e5%8c%ba%e7%9a%84-pve-%e8%99%9a%e6%8b%9f%e6%9c%ba%e7%a3%81%e7%9b%98%e5%a6%82%e4%bd%95%e6%89%a9%e5%ae%b9 class=header-anchor></a>存在 swap 分区的 PVE 虚拟机磁盘如何扩容？</h2><h3 id=母鸡扩容><a href=#%e6%af%8d%e9%b8%a1%e6%89%a9%e5%ae%b9 class=header-anchor></a>母鸡扩容</h3><p>母鸡扩容的方法很简单，可通过 PVE 的 Web 管理系统 -> 目标主机 -> 硬件 -> 选定目标磁盘 -> 操作菜单：磁盘操作 -> 调整大小，给你目标的主机设置需扩容的磁盘空间。</p><p><img src=/posts/2025/05/lossless-disk-expansion-for-pve-virtual-machines/20250531222525.png width=800 height=350 srcset="/posts/2025/05/lossless-disk-expansion-for-pve-virtual-machines/20250531222525_hu_a880934824928ec4.png 480w, /posts/2025/05/lossless-disk-expansion-for-pve-virtual-machines/20250531222525_hu_cc4e1b2fc85a9113.png 1024w" loading=lazy alt="resize disk" class=gallery-image data-flex-grow=228 data-flex-basis=548px></p><h3 id=信息确认><a href=#%e4%bf%a1%e6%81%af%e7%a1%ae%e8%ae%a4 class=header-anchor></a>信息确认</h3><p>通过 ssh 工具访问 OMV，查看磁盘的基本情况。</p><p>PS：本例子使用的磁盘均为 sda</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=nv>$sudo</span> parted /dev/sda <span class=s1>&#39;unit s print&#39;</span> free
+</span></span><span class=line><span class=cl>Model: ATA VBOX HARDDISK <span class=o>(</span>scsi<span class=o>)</span>
+</span></span><span class=line><span class=cl>Disk /dev/sda: 14336000s
+</span></span><span class=line><span class=cl>Sector size <span class=o>(</span>logical/physical<span class=o>)</span>: 512B/512B
+</span></span><span class=line><span class=cl>Partition Table: msdos
+</span></span><span class=line><span class=cl>Disk Flags:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Number  Start      End        Size       Type      File system     Flags
+</span></span><span class=line><span class=cl>        63s        2047s      1985s                Free Space
+</span></span><span class=line><span class=cl> <span class=m>1</span>      2048s      10485759s  10483712s  primary   ext4            boot
+</span></span><span class=line><span class=cl>        10485760s  10487805s  2046s                Free Space
+</span></span><span class=line><span class=cl> <span class=m>2</span>      10487806s  12580863s  2093058s   extended
+</span></span><span class=line><span class=cl> <span class=m>5</span>      10487808s  12580863s  2093056s   logical   linux-swap<span class=o>(</span>v1<span class=o>)</span>
+</span></span><span class=line><span class=cl>        12580864s  14335999s  1755136s             Free Space
+</span></span></code></pre></td></tr></table></div></div><p>如上面 shell 信息所示，sda1 被扩容的空间在磁盘分区的最后，中间隔着一个 swap 分区，这样扩容的空间是无法直接分配到 sda1 上。</p><p>如果要实现无损扩容必须把 swap 分区删除，然后把 sda1 扩容后再重建 swap 分区。</p><h3 id=第一步关闭-swap-分区><a href=#%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%85%b3%e9%97%ad-swap-%e5%88%86%e5%8c%ba class=header-anchor></a>第一步，关闭 swap 分区</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>$ free -h
+</span></span><span class=line><span class=cl>              total        used        free      shared  buff/cache   available
+</span></span><span class=line><span class=cl>Mem:           992M         52M        464M        3.2M        475M        784M
+</span></span><span class=line><span class=cl>Swap:          1.0G          0B        1.0G
+</span></span></code></pre></td></tr></table></div></div><p>通过 free 命令查看 swap 是否存在占用，如果没有，直接关掉；如果有，可以尝试重启下该虚拟机。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=nv>$sudo</span> swapoff /dev/sda5
+</span></span></code></pre></td></tr></table></div></div><h3 id=第二步重新配置分区列表><a href=#%e7%ac%ac%e4%ba%8c%e6%ad%a5%e9%87%8d%e6%96%b0%e9%85%8d%e7%bd%ae%e5%88%86%e5%8c%ba%e5%88%97%e8%a1%a8 class=header-anchor></a>第二步，重新配置分区列表</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=nv>$sudo</span> fdisk /dev/sda
+</span></span></code></pre></td></tr></table></div></div><p>(注意：假如你的虚拟机磁盘初始扇区是 63 而不是 2048, 你需要在 fdisk 命令后面增加一个参数 <code>-c=dos</code>)</p><p>参考下面的操作步骤删除 swap 分区和重建分区列表。</p><p>PS：本操作虽然是无损扩容，但数据无价<strong>建议有条件的一定要先备份数据！！！</strong></p><blockquote><p>NOTE: 在
+<a class=link href=https://serverfault.com/a/994465 target=_blank rel=noopener>Extend linux partition size without losing any data / techniques</a>
+解释了对正在挂载运行的文件系统扩容过程，扩容操作参考
+<a class=link href=https://askubuntu.com/a/119458 target=_blank rel=noopener>How can I resize an ext root partition at runtime?</a></p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>Welcome to fdisk <span class=o>(</span>util-linux 2.27.1<span class=o>)</span>.
+</span></span><span class=line><span class=cl>Changes will remain in memory only, <span class=k>until</span> you decide to write them.
+</span></span><span class=line><span class=cl>Be careful before using the write command.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Command <span class=o>(</span>m <span class=k>for</span> <span class=nb>help</span><span class=o>)</span>: p
+</span></span><span class=line><span class=cl>Disk /dev/sda: 6.9 GiB, <span class=m>7340032000</span> bytes, <span class=m>14336000</span> sectors
+</span></span><span class=line><span class=cl>Units: sectors of <span class=m>1</span> * <span class=nv>512</span> <span class=o>=</span> <span class=m>512</span> bytes
+</span></span><span class=line><span class=cl>Sector size <span class=o>(</span>logical/physical<span class=o>)</span>: <span class=m>512</span> bytes / <span class=m>512</span> bytes
+</span></span><span class=line><span class=cl>I/O size <span class=o>(</span>minimum/optimal<span class=o>)</span>: <span class=m>512</span> bytes / <span class=m>512</span> bytes
+</span></span><span class=line><span class=cl>Disklabel type: dos
+</span></span><span class=line><span class=cl>Disk identifier: 0x9e11c6df
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Device     Boot    Start      End  Sectors  Size Id Type
+</span></span><span class=line><span class=cl>/dev/sda1  *        <span class=m>2048</span> <span class=m>10485759</span> <span class=m>10483712</span>    5G <span class=m>83</span> Linux
+</span></span><span class=line><span class=cl>/dev/sda2       <span class=m>10487806</span> <span class=m>12580863</span>  <span class=m>2093058</span> 1022M  <span class=m>5</span> Extended
+</span></span><span class=line><span class=cl>/dev/sda5       <span class=m>10487808</span> <span class=m>12580863</span>  <span class=m>2093056</span> 1022M <span class=m>82</span> Linux swap / Solaris
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Command <span class=o>(</span>m <span class=k>for</span> <span class=nb>help</span><span class=o>)</span>: d
+</span></span><span class=line><span class=cl>Partition number <span class=o>(</span>1,2,5, default 5<span class=o>)</span>: <span class=m>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Partition <span class=m>2</span> has been deleted.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Command <span class=o>(</span>m <span class=k>for</span> <span class=nb>help</span><span class=o>)</span>: d
+</span></span><span class=line><span class=cl>Selected partition <span class=m>1</span>
+</span></span><span class=line><span class=cl>Partition <span class=m>1</span> has been deleted.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Command <span class=o>(</span>m <span class=k>for</span> <span class=nb>help</span><span class=o>)</span>: n
+</span></span><span class=line><span class=cl>Partition <span class=nb>type</span>
+</span></span><span class=line><span class=cl>   p   primary <span class=o>(</span><span class=m>0</span> primary, <span class=m>0</span> extended, <span class=m>4</span> free<span class=o>)</span>
+</span></span><span class=line><span class=cl>   e   extended <span class=o>(</span>container <span class=k>for</span> logical partitions<span class=o>)</span>
+</span></span><span class=line><span class=cl>Select <span class=o>(</span>default p<span class=o>)</span>: p
+</span></span><span class=line><span class=cl>Partition number <span class=o>(</span>1-4, default 1<span class=o>)</span>: <span class=m>1</span>
+</span></span><span class=line><span class=cl>First sector <span class=o>(</span>2048-14335999, default 2048<span class=o>)</span>:
+</span></span><span class=line><span class=cl>Last sector, +sectors or +size<span class=o>{</span>K,M,G,T,P<span class=o>}</span> <span class=o>(</span>2048-14335999, default 14335999<span class=o>)</span>: <span class=m>12242941</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Created a new partition <span class=m>1</span> of <span class=nb>type</span> <span class=s1>&#39;Linux&#39;</span> and of size 5.9 GiB.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Command <span class=o>(</span>m <span class=k>for</span> <span class=nb>help</span><span class=o>)</span>: n
+</span></span><span class=line><span class=cl>Partition <span class=nb>type</span>
+</span></span><span class=line><span class=cl>   p   primary <span class=o>(</span><span class=m>1</span> primary, <span class=m>0</span> extended, <span class=m>3</span> free<span class=o>)</span>
+</span></span><span class=line><span class=cl>   e   extended <span class=o>(</span>container <span class=k>for</span> logical partitions<span class=o>)</span>
+</span></span><span class=line><span class=cl>Select <span class=o>(</span>default p<span class=o>)</span>: p
+</span></span><span class=line><span class=cl>Partition number <span class=o>(</span>2-4, default 2<span class=o>)</span>: <span class=m>2</span>
+</span></span><span class=line><span class=cl>First sector <span class=o>(</span>12242942-14335999, default 12242944<span class=o>)</span>:
+</span></span><span class=line><span class=cl>Last sector, +sectors or +size<span class=o>{</span>K,M,G,T,P<span class=o>}</span> <span class=o>(</span>12242944-14335999, default 14335999<span class=o>)</span>:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Created a new partition <span class=m>2</span> of <span class=nb>type</span> <span class=s1>&#39;Linux&#39;</span> and of size <span class=m>1022</span> MiB.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Command <span class=o>(</span>m <span class=k>for</span> <span class=nb>help</span><span class=o>)</span>: a
+</span></span><span class=line><span class=cl>Partition number <span class=o>(</span>1,2, default 2<span class=o>)</span>: <span class=m>1</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>The bootable flag on partition <span class=m>1</span> is enabled now.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Command <span class=o>(</span>m <span class=k>for</span> <span class=nb>help</span><span class=o>)</span>: w
+</span></span><span class=line><span class=cl>The partition table has been altered.
+</span></span><span class=line><span class=cl>Calling ioctl<span class=o>()</span> to re-read partition table.
+</span></span><span class=line><span class=cl>Re-reading the partition table failed.: Device or resource busy
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>The kernel still uses the old table. The new table will be used at the next reboot or after you run partprobe<span class=o>(</span>8<span class=o>)</span> or kpartx<span class=o>(</span>8<span class=o>)</span>.
+</span></span></code></pre></td></tr></table></div></div><p>这部分有两个地方需要注意的：</p><p>1、sda1 扩容后的总大小必须是整个磁盘减去 swap 分区的大小，我上面的例子 sda1 就是：14335999-2093058=12242941</p><p>2、fdisk 分区使用‘a’命令是用来激活主分区，这个一定要重新激活。</p><h3 id=第三步重载分区列表><a href=#%e7%ac%ac%e4%b8%89%e6%ad%a5%e9%87%8d%e8%bd%bd%e5%88%86%e5%8c%ba%e5%88%97%e8%a1%a8 class=header-anchor></a>第三步，重载分区列表</h3><p>这里使用到的是 part­probe，OMV 是基于 De­bian 的，默认应该安装了，如果没有安装请自行搜索安装方法。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>sudo partprobe
+</span></span></code></pre></td></tr></table></div></div><h3 id=第四步重新扫描磁盘容量><a href=#%e7%ac%ac%e5%9b%9b%e6%ad%a5%e9%87%8d%e6%96%b0%e6%89%ab%e6%8f%8f%e7%a3%81%e7%9b%98%e5%ae%b9%e9%87%8f class=header-anchor></a>第四步，重新扫描磁盘容量</h3><p>使用 re­size2fs 命令对 sda1 进行扩容有重扫描容量。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>$ sudo resize2fs /dev/sda1
+</span></span><span class=line><span class=cl>resize2fs 1.42.12 <span class=o>(</span>29-Aug-2014<span class=o>)</span>
+</span></span><span class=line><span class=cl>Filesystem at /dev/sda1 is mounted on /<span class=p>;</span> on-line resizing required
+</span></span><span class=line><span class=cl><span class=nv>old_desc_blocks</span> <span class=o>=</span> 3, <span class=nv>new_desc_blocks</span> <span class=o>=</span> <span class=m>10</span>
+</span></span><span class=line><span class=cl>The filesystem on /dev/sda1 is now <span class=m>38833617</span> <span class=o>(</span>4k<span class=o>)</span> blocks long.
+</span></span></code></pre></td></tr></table></div></div><h3 id=第五步重新配置-swap-分区><a href=#%e7%ac%ac%e4%ba%94%e6%ad%a5%e9%87%8d%e6%96%b0%e9%85%8d%e7%bd%ae-swap-%e5%88%86%e5%8c%ba class=header-anchor></a>第五步，重新配置 swap 分区</h3><p>因为 fdisk 对 ext4 扩展分区支持不足，建议使用 cfdisk 进行重新配置 swap 分区。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>sudo cfdisk
+</span></span></code></pre></td></tr></table></div></div><p>选择 sda2 分区，转换成 <code>82 Linux swap / Solaris</code> 类型并保存。</p><h3 id=第六步重新激活-swap-分区><a href=#%e7%ac%ac%e5%85%ad%e6%ad%a5%e9%87%8d%e6%96%b0%e6%bf%80%e6%b4%bb-swap-%e5%88%86%e5%8c%ba class=header-anchor></a>第六步，重新激活 swap 分区</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>$ mkswap /dev/sda2
+</span></span><span class=line><span class=cl>/dev/sda2
+</span></span><span class=line><span class=cl><span class=nv>UUID</span><span class=o>=</span>d58bf1cb-d27a-487d-b337-056767fd5ad6 none swap sw <span class=m>0</span> <span class=m>0</span>
+</span></span></code></pre></td></tr></table></div></div><p>记下上面的 UUID。</p><p>用命令行重新激活 swap 分区。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>swapon /dev/sda2
+</span></span></code></pre></td></tr></table></div></div><p>通过命令把上面的 UUID 修改到 fstab 中</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>sudo nano /etc/fstab
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># swap was on /dev/sda5 during installation</span>
+</span></span><span class=line><span class=cl><span class=nv>UUID</span><span class=o>=</span>d58bf1cb-d27a-487d-b337-056767fd5ad6 none            swap    sw              <span class=m>0</span>       <span class=m>0</span>
+</span></span></code></pre></td></tr></table></div></div><p>确保没有问题后，重启虚拟机。</p><p>至此，无损扩容工作便全部完成。</p><p>祝你好运！</p></section><footer class=article-footer><section class=article-tags><a href=/tags/pve/>PVE</a>
+<a href=/tags/vm/>VM</a></section><section class=article-lastmod><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>最后更新于 2025-06-01 11:11:06 CST</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2026 NavyD 的个人博客</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

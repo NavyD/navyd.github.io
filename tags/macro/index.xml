@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Macro on NavyD 的个人博客</title><link>/tags/macro/</link><description>Recent content in Macro on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 03 Nov 2025 13:10:19 +0800</lastBuildDate><atom:link href="/tags/macro/index.xml" rel="self" type="application/rss+xml"/><item><title>在 neovim 中使用宏的一次实践记录</title><link>/posts/2025/11/practical-notes-on-using-neovim-macros/</link><pubDate>Sun, 02 Nov 2025 13:39:55 +0800</pubDate><guid>/posts/2025/11/practical-notes-on-using-neovim-macros/</guid><description>&lt;p&gt;在写 python 代码时发现之前 f-string 的日志出现
+&lt;a
+class="link"
+href="https://docs.astral.sh/ruff/rules/logging-f-string/"
+target="_blank"
+rel="noopener"
+&gt;logging-f-string (G004)&lt;/a&gt;
+警告：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;Checking if has sudo access with args: &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;check_args&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;debug&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;Found returncode=&lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;returncode&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt; stdout=&lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stdout&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt; &amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;stderr=&lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;p&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stderr&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt; with args: &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;check_args&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;Setting up &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_user&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt; login shell to &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_shell&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt; with args: &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;需要转换为&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;info&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;Checking if has sudo access with args: &lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;check_args&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这样需要修改的代码可能有几百行，一个个手动转换太累，这时可以考虑用
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/repeat.html#macro"
+target="_blank"
+rel="noopener"
+&gt;vim macro&lt;/a&gt;
+批量转换。&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h2 id="录制宏"&gt;&lt;a href="#%e5%bd%95%e5%88%b6%e5%ae%8f" class="header-anchor"&gt;&lt;/a&gt;录制宏
+&lt;/h2&gt;&lt;p&gt;下面是执行的宏：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-vim" data-lang="vim"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;vi&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;?\%&lt;span class="nx"&gt;V&lt;/span&gt;{.\{&lt;span class="p"&gt;-&lt;/span&gt;}}^&lt;span class="nx"&gt;M&lt;/span&gt;^[^[&amp;#34;&lt;span class="nx"&gt;yyi&lt;/span&gt;{]&lt;span class="nx"&gt;Aa&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; ^&lt;span class="nx"&gt;Ry&lt;/span&gt;^[[&lt;span class="nx"&gt;avi&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;?^&lt;span class="nx"&gt;P&lt;/span&gt;^&lt;span class="nx"&gt;M&lt;/span&gt;^[^[&lt;span class="nx"&gt;ca&lt;/span&gt;{%&lt;span class="nx"&gt;s&lt;/span&gt;^[[&lt;span class="nx"&gt;avi&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;?^&lt;span class="nx"&gt;P&lt;/span&gt;^&lt;span class="nx"&gt;M&lt;/span&gt;^[^[@&lt;span class="nx"&gt;a&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;注意：&lt;code&gt;^M&lt;/code&gt;, &lt;code&gt;^[&lt;/code&gt;, &lt;code&gt;^P&lt;/code&gt;, &lt;code&gt;^R&lt;/code&gt; 分别表示 &lt;code&gt;&amp;lt;CR&amp;gt;&lt;/code&gt; , &lt;code&gt;&amp;lt;ESC&amp;gt;&lt;/code&gt; , &lt;code&gt;&amp;lt;C-p&amp;gt;&lt;/code&gt; ,
+&lt;code&gt;&amp;lt;C-r&amp;gt;&lt;/code&gt;，参考
+&lt;a
+class="link"
+href="/posts/2025/03/neovim-in-practice/#%e4%bd%bf%e7%94%a8-ctrl-v-%e6%8e%a7%e5%88%b6%e5%ad%97%e7%ac%a6"
+&gt;使用 &lt;code&gt;ctrl-v&lt;/code&gt; 控制字符&lt;/a&gt;
+&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;具体操作是：&lt;/p&gt;
+&lt;!-- editorconfig-checker-disable --&gt;
+&lt;ol&gt;
+&lt;li&gt;录制宏 &lt;code&gt;qa&lt;/code&gt; 。&lt;/li&gt;
+&lt;li&gt;在 v 模式选中 &lt;code&gt;log.info(f&amp;quot;xx&amp;quot;)&lt;/code&gt; 中的参数 &lt;code&gt;f&amp;quot;xx&amp;quot;&lt;/code&gt; 后退出 v 模式。如
+&lt;code&gt;vi(v&lt;/code&gt; 。&lt;/li&gt;
+&lt;li&gt;从上次选中的范围内
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/pattern.html#%2F%5C%25V"
+target="_blank"
+rel="noopener"
+&gt;&lt;code&gt;\%V&lt;/code&gt;&lt;/a&gt;
+反向 &lt;code&gt;?&lt;/code&gt; 搜索 &lt;code&gt;{.\{-}}&lt;/code&gt; 。&lt;/li&gt;
+&lt;li&gt;复制最后一个 &lt;code&gt;{xx}&lt;/code&gt; 的内容 &lt;code&gt;xx&lt;/code&gt; 到寄存器 y 中。&lt;/li&gt;
+&lt;li&gt;移动光标 &lt;code&gt;]A&lt;/code&gt; 到这个参数的后面并插入 &lt;code&gt;, &lt;/code&gt; 与粘贴寄存器 y &lt;!-- markdownlint-disable-line MD038 --&gt;
+的内容作为新的参数。&lt;/li&gt;
+&lt;li&gt;将光标移动 &lt;code&gt;[a&lt;/code&gt; 回到这个新参数前（避免单个字符为参数时如 &lt;code&gt;(f&amp;quot;&amp;quot;, s)&lt;/code&gt; 与
+&lt;code&gt;(f&amp;quot;&amp;quot;, args)&lt;/code&gt; 移动光标的区别）。&lt;/li&gt;
+&lt;li&gt;执行步骤 2,3 重新搜索 &lt;code&gt;{xx}&lt;/code&gt; 的位置。&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;%s&lt;/code&gt; 替换 &lt;code&gt;{xx}&lt;/code&gt; : &lt;code&gt;ca{%s&lt;/code&gt; 。&lt;/li&gt;
+&lt;li&gt;最后递归的调用宏 &lt;code&gt;@a&lt;/code&gt; 直到搜索 &lt;code&gt;{.\{-}}&lt;/code&gt; 失败。&lt;/li&gt;
+&lt;li&gt;退出录制宏 &lt;code&gt;q&lt;/code&gt; 。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;!-- editorconfig-checker-enable --&gt;
+&lt;p&gt;这个宏实际存在一些问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;需要先找到 &lt;code&gt;log.info(f&amp;quot;&amp;quot;)&lt;/code&gt; 语句搜索
+&lt;code&gt;/log\w*\.\w\+(\n*\s*f&amp;quot;&lt;/code&gt; 后再执行 &lt;code&gt;@a&lt;/code&gt; ，由于 &lt;code&gt;@a&lt;/code&gt; 中重新搜索了，
+执行完后还需要再搜索 &lt;code&gt;/log\w*\.\w\+(\n*\s*f&amp;quot;&lt;/code&gt; ，&lt;code&gt;n/N&lt;/code&gt;
+搜索上下一个会被 &lt;code&gt;@a&lt;/code&gt; 中的搜索覆盖，非常不方便&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@a&lt;/code&gt; 执行的比较慢，同时还存在边缘情况，可能会修改失败&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;再录制一个宏：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;执行 &lt;code&gt;qq&lt;/code&gt; 录制宏&lt;/li&gt;
+&lt;li&gt;搜索 &lt;code&gt;/log\w*\.\w\+(\n*\s*f&amp;quot;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;执行之前的宏 &lt;code&gt;@a&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;退出录制宏 &lt;code&gt;q&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;但这又引入一个问题，在搜索失败后会自动停止宏的执行，递归宏 &lt;code&gt;@a&lt;/code&gt;
+便是依赖这个机制退出的，但没想到的是 &lt;code&gt;@a&lt;/code&gt; 的停止也会导致 &lt;code&gt;@q&lt;/code&gt; 宏的执行。
+又尝试先保存
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/pattern.html#last-pattern"
+target="_blank"
+rel="noopener"
+&gt;last-pattern&lt;/a&gt;
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/change.html#%40%2F"
+target="_blank"
+rel="noopener"
+&gt;&lt;code&gt;@/&lt;/code&gt;&lt;/a&gt;
+，然后
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/vimeval.html#try-conditionals"
+target="_blank"
+rel="noopener"
+&gt;try-conditionals&lt;/a&gt;
+捕获 &lt;code&gt;@a&lt;/code&gt; 的搜索错误后恢复 &lt;code&gt;@/&lt;/code&gt; 即可！&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-vim" data-lang="vim"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="nx"&gt;last_pat&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; @/
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;try&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;exe&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;norm! @a&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;endtry&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;let&lt;/span&gt; @/ &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;last_pat&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;但在执行到 &lt;code&gt;:exe 'norm! @a'&lt;/code&gt; 时出现在不停的修改一个个 &lt;code&gt;{xx}&lt;/code&gt;
+语句，吓的我赶紧停 &lt;code&gt;ctrl+c&lt;/code&gt; , &lt;code&gt;esc&lt;/code&gt; 不停的按，还好未保存，有几次的修改都是有
+bug 的，记得一次后面的参数一堆 &lt;code&gt;log.info(f&amp;quot;%s&amp;quot;, arg, path, ..., path)&lt;/code&gt;
+，给我整出阴影来了。。&lt;/p&gt;
+&lt;p&gt;这个原因可能是 &lt;code&gt;try&lt;/code&gt; 让 &lt;code&gt;@a&lt;/code&gt; 的执行不再被其中的搜索失败中止，或者是由于
+&lt;code&gt;vi(?\%V{.\{-}}&lt;/code&gt; 不停的向下搜索，而不是被限制在上次搜索范围内。说到底这个
+&lt;code&gt;\%V&lt;/code&gt; 有很大的不确定性，多次重复的搜索可能会导致上次范围修改的问题。&lt;/p&gt;
+&lt;h3 id="限制搜索范围"&gt;&lt;a href="#%e9%99%90%e5%88%b6%e6%90%9c%e7%b4%a2%e8%8c%83%e5%9b%b4" class="header-anchor"&gt;&lt;/a&gt;限制搜索范围
+&lt;/h3&gt;&lt;p&gt;现在看来是这个宏 &lt;code&gt;@a&lt;/code&gt; 的问题，依赖 &lt;code&gt;\%V&lt;/code&gt; 这个上次的搜索范围不靠谱，
+由于 &lt;code&gt;{xx}&lt;/code&gt; 这种 log 语句存在多个，需要一种方法可以在指定范围内搜索，
+参考
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/pattern.html#search-range"
+target="_blank"
+rel="noopener"
+&gt;search-range&lt;/a&gt;
+可以使用&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/pattern.html#%2F%5C%25%3El"
+target="_blank"
+rel="noopener"
+&gt;/%&amp;gt;l&lt;/a&gt;
+:
+在指定行范围内搜索如 &lt;code&gt;/\%&amp;gt;199l\%&amp;lt;300llimit&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/cmdline.html#%3Arange-pattern"
+target="_blank"
+rel="noopener"
+&gt;:/range-pattern&lt;/a&gt;
+:
+如 &lt;code&gt;:.,/pattern&lt;/code&gt; 表示从当前行开始直到首个 &lt;code&gt;pattern&lt;/code&gt; 的行&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/change.html#%3Asubstitute"
+target="_blank"
+rel="noopener"
+&gt;:substitute&lt;/a&gt;
+:
+在指定行范围内替换如 &lt;code&gt;:.,300s/Pattern//gc&lt;/code&gt; ，注意添加 &lt;code&gt;c&lt;/code&gt;
+选项开启在确认提示中使用 &lt;code&gt;n&lt;/code&gt; 跳转下一个后使用 &lt;code&gt;q&lt;/code&gt; 退出即可达到搜索跳转的效果&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这里选择使用 &lt;code&gt;\%&amp;gt;l&lt;/code&gt; 搜索方便，由于这个宏的操作比较复杂，
+录制一个宏如果出错重置太麻烦，不如写一个 vim script 函数直观方便。&lt;/p&gt;
+&lt;h2 id="函数"&gt;&lt;a href="#%e5%87%bd%e6%95%b0" class="header-anchor"&gt;&lt;/a&gt;函数
+&lt;/h2&gt;&lt;p&gt;之前使用的宏 &lt;code&gt;@a&lt;/code&gt; 是有问题的，优化后的逻辑如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;span class="lnt"&gt;29
+&lt;/span&gt;&lt;span class="lnt"&gt;30
+&lt;/span&gt;&lt;span class="lnt"&gt;31
+&lt;/span&gt;&lt;span class="lnt"&gt;32
+&lt;/span&gt;&lt;span class="lnt"&gt;33
+&lt;/span&gt;&lt;span class="lnt"&gt;34
+&lt;/span&gt;&lt;span class="lnt"&gt;35
+&lt;/span&gt;&lt;span class="lnt"&gt;36
+&lt;/span&gt;&lt;span class="lnt"&gt;37
+&lt;/span&gt;&lt;span class="lnt"&gt;38
+&lt;/span&gt;&lt;span class="lnt"&gt;39
+&lt;/span&gt;&lt;span class="lnt"&gt;40
+&lt;/span&gt;&lt;span class="lnt"&gt;41
+&lt;/span&gt;&lt;span class="lnt"&gt;42
+&lt;/span&gt;&lt;span class="lnt"&gt;43
+&lt;/span&gt;&lt;span class="lnt"&gt;44
+&lt;/span&gt;&lt;span class="lnt"&gt;45
+&lt;/span&gt;&lt;span class="lnt"&gt;46
+&lt;/span&gt;&lt;span class="lnt"&gt;47
+&lt;/span&gt;&lt;span class="lnt"&gt;48
+&lt;/span&gt;&lt;span class="lnt"&gt;49
+&lt;/span&gt;&lt;span class="lnt"&gt;50
+&lt;/span&gt;&lt;span class="lnt"&gt;51
+&lt;/span&gt;&lt;span class="lnt"&gt;52
+&lt;/span&gt;&lt;span class="lnt"&gt;53
+&lt;/span&gt;&lt;span class="lnt"&gt;54
+&lt;/span&gt;&lt;span class="lnt"&gt;55
+&lt;/span&gt;&lt;span class="lnt"&gt;56
+&lt;/span&gt;&lt;span class="lnt"&gt;57
+&lt;/span&gt;&lt;span class="lnt"&gt;58
+&lt;/span&gt;&lt;span class="lnt"&gt;59
+&lt;/span&gt;&lt;span class="lnt"&gt;60
+&lt;/span&gt;&lt;span class="lnt"&gt;61
+&lt;/span&gt;&lt;span class="lnt"&gt;62
+&lt;/span&gt;&lt;span class="lnt"&gt;63
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-vim" data-lang="vim"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;!&lt;/span&gt; &lt;span class="nx"&gt;PyLogFstr2Args&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;try&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 查找 log.info(f&amp;#34;xx&amp;#34;) 的语句&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;exe&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;norm! /log\w*\.\w\+(\n*\s*f&amp;#34;&amp;#39;&lt;/span&gt; . &lt;span class="s2"&gt;&amp;#34;\&amp;lt;CR&amp;gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;catch&lt;/span&gt; &lt;span class="sr"&gt;/.*/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;未找到 log f-string 语句&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;return&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;endtry&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 找到参数位置，方便修改后回到起始&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;norm&lt;/span&gt;&lt;span class="p"&gt;!&lt;/span&gt; &lt;span class="nx"&gt;f&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="nx"&gt;start_pos&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;getpos&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;.&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;norm&lt;/span&gt;&lt;span class="p"&gt;!&lt;/span&gt; %
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="nx"&gt;end_pos&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;getpos&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;.&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 将 `{xx}` 替换为 `%s` 并添加参数 `xx`&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="nx"&gt;count&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;try&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;while&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="nx"&gt;count&lt;/span&gt; &lt;span class="p"&gt;+=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 避免出错时无限循环导致修改操作崩溃&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;count&lt;/span&gt; &lt;span class="p"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;throw&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;too many args error&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;endif&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 在 log 语句行的范围内搜索 `{xx}`&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;exe&lt;/span&gt; &lt;span class="nx"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;norm! /\%%&amp;gt;%sl\%%&amp;lt;%sl{.\{-}}&amp;#39;&lt;/span&gt; . &lt;span class="s2"&gt;&amp;#34;\&amp;lt;CR&amp;gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;start_pos&lt;/span&gt;[&lt;span class="m"&gt;1&lt;/span&gt;] &lt;span class="p"&gt;-&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;end_pos&lt;/span&gt;[&lt;span class="m"&gt;1&lt;/span&gt;] &lt;span class="p"&gt;+&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; let choice = confirm(&amp;#34;continue &amp;#34; . start_pos[1] . &amp;#34;-&amp;#34; . end_pos[1], &amp;#34;&amp;amp;Yes\n&amp;amp;No&amp;#34;, 1, &amp;#34;Question&amp;#34;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; if choice != 1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; break&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; endif&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 复制到 reg y 中并替换为 `%s`&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;exe&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;norm! &amp;#34;yyi{ca{%s&amp;#39;&lt;/span&gt; . &lt;span class="s2"&gt;&amp;#34;\&amp;lt;ESC&amp;gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;call&lt;/span&gt; &lt;span class="nx"&gt;setpos&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;.&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;start_pos&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 从在最后的 `)` 前插入 `, ` 并粘贴后移动到 `)` 上&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;exe&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;norm! %i, &amp;#39;&lt;/span&gt; . &lt;span class="s2"&gt;&amp;#34;\&amp;lt;ESC&amp;gt;&amp;#34;&lt;/span&gt; . &lt;span class="s1"&gt;&amp;#39;&amp;#34;ypl&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 更新位置 不必要的操作&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; let end_pos = getpos(&amp;#39;.&amp;#39;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;endwhile&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;catch&lt;/span&gt; &lt;span class="sr"&gt;/^Vim\%((\a\+)\)\=:E486/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;参数替换完成&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;endtry&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="nx"&gt;count&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;call&lt;/span&gt; &lt;span class="nx"&gt;setpos&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;.&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;start_pos&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;try&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;while&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="nx"&gt;count&lt;/span&gt; &lt;span class="p"&gt;+=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;count&lt;/span&gt; &lt;span class="p"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;5&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;throw&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;too many args error&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;endif&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 搜索 `f&amp;#34;`&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;exe&lt;/span&gt; &lt;span class="nx"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;norm! /\%%&amp;gt;%sl\%%&amp;lt;%sl\((\|\s\+\)\s*f&amp;#34;&amp;#39;&lt;/span&gt; . &lt;span class="s2"&gt;&amp;#34;\&amp;lt;CR&amp;gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;start_pos&lt;/span&gt;[&lt;span class="m"&gt;1&lt;/span&gt;] &lt;span class="p"&gt;-&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;end_pos&lt;/span&gt;[&lt;span class="m"&gt;1&lt;/span&gt;] &lt;span class="p"&gt;+&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; exe printf(&amp;#39;norm! /\%%&amp;gt;%sl\%%&amp;lt;%slf&amp;#34;&amp;#39; . &amp;#34;\&amp;lt;CR&amp;gt;&amp;#34;, start_pos[1] - 1, end_pos[1] + 1)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 删除 `f`&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;norm&lt;/span&gt;&lt;span class="p"&gt;!&lt;/span&gt; &lt;span class="nx"&gt;ffx&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;endwhile&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;catch&lt;/span&gt; &lt;span class="sr"&gt;/^Vim\%((\a\+)\)\=:E486/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;删除f完成&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;endtry&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;endfunction&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id="问题"&gt;&lt;a href="#%e9%97%ae%e9%a2%98" class="header-anchor"&gt;&lt;/a&gt;问题
+&lt;/h2&gt;&lt;h3 id="如何创建临时使用的函数"&gt;&lt;a href="#%e5%a6%82%e4%bd%95%e5%88%9b%e5%bb%ba%e4%b8%b4%e6%97%b6%e4%bd%bf%e7%94%a8%e7%9a%84%e5%87%bd%e6%95%b0" class="header-anchor"&gt;&lt;/a&gt;如何创建临时使用的函数
+&lt;/h3&gt;&lt;p&gt;有时需要在临时写一些函数并执行&lt;/p&gt;
+&lt;h4 id="在命令模式定义函数"&gt;&lt;a href="#%e5%9c%a8%e5%91%bd%e4%bb%a4%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89%e5%87%bd%e6%95%b0" class="header-anchor"&gt;&lt;/a&gt;在命令模式定义函数
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-vim" data-lang="vim"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;!&lt;/span&gt; &lt;span class="nx"&gt;TempMacroFunction&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nx"&gt;normal&lt;/span&gt;&lt;span class="p"&gt;!&lt;/span&gt; @&lt;span class="nx"&gt;a&lt;/span&gt; &lt;span class="c"&gt;&amp;#34; 执行寄存器 a 中的宏&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;endfunction&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 带参数&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;!&lt;/span&gt; &lt;span class="nx"&gt;RunMacro&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;register&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="k"&gt;execute&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;normal! @&amp;#34;&lt;/span&gt; . &lt;span class="nx"&gt;a&lt;/span&gt;:&lt;span class="nx"&gt;register&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;endfunction&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34;调用&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;call&lt;/span&gt; &lt;span class="nx"&gt;TempMacroFunction&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 删除&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;delfunction&lt;/span&gt; &lt;span class="nx"&gt;TempMacroFunction&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h4 id="source"&gt;&lt;a href="#source" class="header-anchor"&gt;&lt;/a&gt;&lt;code&gt;:source&lt;/code&gt;
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;span class="lnt"&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-vim" data-lang="vim"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 先加载文件中的函数定义&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;source&lt;/span&gt; &lt;span class="nx"&gt;temp&lt;/span&gt;.&lt;span class="nx"&gt;vim&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 然后调用函数&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;call&lt;/span&gt; &lt;span class="nx"&gt;YourFunctionName&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 加载当前文件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; NOTE: 如果这是个临时文件可能无效&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;source&lt;/span&gt; %
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h4 id="execute"&gt;&lt;a href="#execute" class="header-anchor"&gt;&lt;/a&gt;&lt;code&gt;:execute&lt;/code&gt;
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-vim" data-lang="vim"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 读取当前 buffer 内容到寄存器并执行&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;%&lt;span class="nx"&gt;y&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="nx"&gt;exe&lt;/span&gt; @*
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 执行寄存器中的内容&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;execute&lt;/span&gt; &lt;span class="nx"&gt;getreg&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;a&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 读取文件内容并执行&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;execute&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;source&amp;#39;&lt;/span&gt; &lt;span class="nx"&gt;expand&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;temp.vim&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;还可以创建一个 autocmd 当内容变化后执行 buffer 内容
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/autocmd.html#autocmd-buffer-local"
+target="_blank"
+rel="noopener"
+&gt;autocmd-buffer-local&lt;/a&gt;
+：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-vim" data-lang="vim"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;autocmd&lt;/span&gt; &lt;span class="nx"&gt;InsertLeave&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;buffer&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt; %&lt;span class="nx"&gt;yank&lt;/span&gt; &lt;span class="nx"&gt;a&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="nx"&gt;exe&lt;/span&gt; @&lt;span class="nx"&gt;a&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="如何将宏转换为可打印字符"&gt;&lt;a href="#%e5%a6%82%e4%bd%95%e5%b0%86%e5%ae%8f%e8%bd%ac%e6%8d%a2%e4%b8%ba%e5%8f%af%e6%89%93%e5%8d%b0%e5%ad%97%e7%ac%a6" class="header-anchor"&gt;&lt;/a&gt;如何将宏转换为可打印字符
+&lt;/h3&gt;&lt;p&gt;在 vim 中的宏存在特殊键如 &lt;code&gt;esc&lt;/code&gt; 在 vim 中可使用 &lt;code&gt;&amp;lt;C-v&amp;gt;&amp;lt;Esc&amp;gt;&lt;/code&gt; 输入 &lt;code&gt;esc&lt;/code&gt;
+键作为特殊字符类似 &lt;code&gt;^[&lt;/code&gt; ，但无法被其它程序读取打印，为了可读取性需要转换。&lt;/p&gt;
+&lt;p&gt;目前可使用 &lt;code&gt;:echo&lt;/code&gt; 和 &lt;code&gt;strtrans()&lt;/code&gt; 函数&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;span class="lnt"&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-vim" data-lang="vim"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 将宏内容转换为可读字符串&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;echo&lt;/span&gt; &lt;span class="nx"&gt;strtrans&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;@&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 或者使用 string() 函数&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;echo&lt;/span&gt; &lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;@&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 或直接使用 echo&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;echo&lt;/span&gt; @&lt;span class="nx"&gt;a&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;test^[&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;注意：如果宏内容中包含 &lt;code&gt;&amp;lt;CR&amp;gt;&lt;/code&gt; 会中断前后的内容，需要去除 &lt;code&gt;&amp;lt;CR&amp;gt;&lt;/code&gt; 才能正常转换&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id="调试函数"&gt;&lt;a href="#%e8%b0%83%e8%af%95%e5%87%bd%e6%95%b0" class="header-anchor"&gt;&lt;/a&gt;调试函数
+&lt;/h3&gt;&lt;p&gt;使用
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/repeat.html#%3Adebug"
+target="_blank"
+rel="noopener"
+&gt;:debug&lt;/a&gt;
+命令进行单步调试&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-vim" data-lang="vim"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 调试函数调用&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;debug&lt;/span&gt; &lt;span class="nx"&gt;call&lt;/span&gt; &lt;span class="nx"&gt;MyFunction&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 调试命令&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;debug&lt;/span&gt; &lt;span class="nx"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;test&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 调试映射&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;debug&lt;/span&gt; &lt;span class="nx"&gt;normal&lt;/span&gt; &lt;span class="nx"&gt;gg&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;调试命令说明&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;s&lt;/code&gt; (step) - 单步执行，进入函数&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;n&lt;/code&gt; (next) - 单步执行，不进入函数&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;c&lt;/code&gt; (continue) - 继续执行直到断点或结束&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;q&lt;/code&gt; (quit) - 退出调试&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;i&lt;/code&gt; (interrupt) - 中断执行&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;f&lt;/code&gt; (finish) - 执行直到当前函数结束&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="是否可将-catch-pattern-中的模式作为作为变量使用"&gt;&lt;a href="#%e6%98%af%e5%90%a6%e5%8f%af%e5%b0%86-catch-pattern-%e4%b8%ad%e7%9a%84%e6%a8%a1%e5%bc%8f%e4%bd%9c%e4%b8%ba%e4%bd%9c%e4%b8%ba%e5%8f%98%e9%87%8f%e4%bd%bf%e7%94%a8" class="header-anchor"&gt;&lt;/a&gt;是否可将 &lt;code&gt;catch /pattern/&lt;/code&gt; 中的模式作为作为变量使用
+&lt;/h3&gt;&lt;p&gt;在多个 catch 时通常有相同的模式，如果能作为同一个变量更方便维护，参考
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/18796698/variable-interpolation-in-vimscript-catch-clause"
+target="_blank"
+rel="noopener"
+&gt;Variable Interpolation in Vimscript catch clause&lt;/a&gt;
+与
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/vimeval.html#%3Acatch"
+target="_blank"
+rel="noopener"
+&gt;:catch&lt;/a&gt;
+中的
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/pattern.html#_2.-the-definition-of-a-pattern"
+target="_blank"
+rel="noopener"
+&gt;pattern&lt;/a&gt;
+必须是字面字符串，不能使用变量，但也有其它方案：&lt;/p&gt;
+&lt;h4 id="在-catch-块内使用条件判断"&gt;&lt;a href="#%e5%9c%a8-catch-%e5%9d%97%e5%86%85%e4%bd%bf%e7%94%a8%e6%9d%a1%e4%bb%b6%e5%88%a4%e6%96%ad" class="header-anchor"&gt;&lt;/a&gt;在 catch 块内使用条件判断
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-vim" data-lang="vim"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;let&lt;/span&gt; &lt;span class="nx"&gt;target_error&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;E492&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;try&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 可能出错的代码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;NotAValidCommand&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;catch&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;v&lt;/span&gt;:&lt;span class="nx"&gt;exception&lt;/span&gt; &lt;span class="p"&gt;=~&lt;/span&gt; &lt;span class="nx"&gt;target_error&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;捕获到目标错误：&amp;#34;&lt;/span&gt; . &lt;span class="nx"&gt;v&lt;/span&gt;:&lt;span class="nx"&gt;exception&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 处理特定错误&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;else&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;其他错误：&amp;#34;&lt;/span&gt; . &lt;span class="nx"&gt;v&lt;/span&gt;:&lt;span class="nx"&gt;exception&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt; &amp;#34; 重新抛出或其他处理&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;endif&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;endtry&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;注意：&lt;code&gt;execute 'catch /' . error_pattern . '/'&lt;/code&gt; 这种亲测无效&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id="如何编辑宏"&gt;&lt;a href="#%e5%a6%82%e4%bd%95%e7%bc%96%e8%be%91%e5%ae%8f" class="header-anchor"&gt;&lt;/a&gt;如何编辑宏
+&lt;/h3&gt;&lt;p&gt;通常录制宏的时候有错误或不必要的操作时需要修改，基本步骤：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;录制宏到某个寄存器（比如 q）。&lt;/li&gt;
+&lt;li&gt;将宏寄存器的内容取出（如粘贴到当前光标位置）修改。&lt;/li&gt;
+&lt;li&gt;将修改后的内容放回寄存器。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;问题是录制宏内有许多特殊字符如 &lt;code&gt;^[=&amp;lt;ESC&amp;gt;&lt;/code&gt;，修改其内容是一个不小的挑战。&lt;/p&gt;
+&lt;p&gt;另外也可以在命令行中使用 &lt;code&gt;:let @q='...'&lt;/code&gt; 来定义宏，如&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-vim" data-lang="vim"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 定义搜索宏&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;let&lt;/span&gt; @&lt;span class="nx"&gt;q&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;/TODO\&amp;lt;CR&amp;gt;dd&amp;#34;&lt;/span&gt; &lt;span class="c"&gt;&amp;#34; 搜索 TODO 并删除&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;let&lt;/span&gt; @&lt;span class="nx"&gt;q&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;iText^[&amp;#39;&lt;/span&gt; &lt;span class="c"&gt;&amp;#34; ^[ 是 Esc（按 Ctrl+V, Esc 输入）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 引号包装文本&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;let&lt;/span&gt; @&lt;span class="nx"&gt;q&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;i\&amp;#34;\&amp;lt;Esc&amp;gt;ea\&amp;#34;\&amp;lt;Esc&amp;gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;&amp;#34; 带错误处理的递归宏&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="k"&gt;let&lt;/span&gt; @&lt;span class="nx"&gt;r&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;:try\&amp;lt;CR&amp;gt;/TODO\&amp;lt;CR&amp;gt;dd@r\&amp;lt;CR&amp;gt;:catch\&amp;lt;CR&amp;gt;:endtry\&amp;lt;CR&amp;gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description></item></channel></rss>

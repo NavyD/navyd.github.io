@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Async on NavyD 的个人博客</title><link>/tags/async/</link><description>Recent content in Async on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 08 Mar 2025 00:04:43 +0800</lastBuildDate><atom:link href="/tags/async/index.xml" rel="self" type="application/rss+xml"/><item><title>Async in Neovim Lua</title><link>/posts/2025/02/async-in-neovim-lua/</link><pubDate>Sun, 23 Feb 2025 10:32:59 +0800</pubDate><guid>/posts/2025/02/async-in-neovim-lua/</guid><description>&lt;p&gt;在 neovim 中使用
+&lt;a
+class="link"
+href="https://lazy.folke.io/spec#spec-setup"
+target="_blank"
+rel="noopener"
+&gt;lazy.nvim build&lt;/a&gt;
+运行构建函数时同步执行会导致 UI 卡住直到 build 函数结束，体验非常差！&lt;/p&gt;
+&lt;h2 id="plenaryasync--plenaryjob"&gt;&lt;a href="#plenaryasync--plenaryjob" class="header-anchor"&gt;&lt;/a&gt;plenary.async &amp;amp; plenary.job
+&lt;/h2&gt;&lt;p&gt;后面发现
+&lt;a
+class="link"
+href="https://github.com/nvim-lua/plenary.nvim#plenaryjob"
+target="_blank"
+rel="noopener"
+&gt;plenary.job&lt;/a&gt;
+提供了异步运行外部命令的工具，但未能解决异步函数与正常函数间的兼容问题。&lt;/p&gt;
+&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://gregorias.github.io/posts/using-coroutines-in-neovim-lua/#addendum-whats-wrong-with-plenary-async"
+target="_blank"
+rel="noopener"
+&gt;Using coroutines in Neovim Lua: Addendum: What’s wrong with Plenary Async?&lt;/a&gt;
+&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;You might be aware of 
+&lt;a
+class="link"
+href="https://gregorias.github.io/posts/how-does-plenary.async.run-run-asynchronously/"
+target="_blank"
+rel="noopener"
+&gt;an attempt by Plenary to make asynchronous easy: &lt;code&gt;async.run&lt;/code&gt;&lt;/a&gt;
+. I don’t think it’s a good library for a few reasons:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;async&lt;/code&gt; uses a complicated machinery that is hard to understand. It’s unnecessary, because native coroutines work just fine.&lt;/li&gt;
+&lt;li&gt;The machinery is fragile. 
+&lt;a
+class="link"
+href="https://github.com/nvim-lua/plenary.nvim/issues/395"
+target="_blank"
+rel="noopener"
+&gt;You can’t even nest two coroutine functions&lt;/a&gt;
+, which is a pretty basic thing you’d want to do.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="nvim-nio"&gt;&lt;a href="#nvim-nio" class="header-anchor"&gt;&lt;/a&gt;nvim-nio
+&lt;/h2&gt;&lt;p&gt;在
+&lt;a
+class="link"
+href="https://github.com/nvim-neotest/nvim-nio"
+target="_blank"
+rel="noopener"
+&gt;nvim-nio: A library for asynchronous IO in Neovim&lt;/a&gt;
+提供了出色的开发者体验。API 文档齐全，包含示例和完整类型注释。&lt;/p&gt;
+&lt;h3 id="nioprocess-不支持-windows"&gt;&lt;a href="#nioprocess-%e4%b8%8d%e6%94%af%e6%8c%81-windows" class="header-anchor"&gt;&lt;/a&gt;nio.process 不支持 windows
+&lt;/h3&gt;&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://github.com/nvim-neotest/nvim-nio/issues/26"
+target="_blank"
+rel="noopener"
+&gt;[BUG] Error reading process output on windows: &lt;code&gt;EBADF: bad file descriptor&lt;/code&gt; #26&lt;/a&gt;
+，解决方法是使用
+&lt;a
+class="link"
+href="https://github.com/nvim-neotest/nvim-nio/blob/21f5324bfac14e22ba26553caf69ec76ae8a7662/lua/nio/control.lua#L104"
+target="_blank"
+rel="noopener"
+&gt;nio.control.future&lt;/a&gt;
+与
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/lua.html#vim.system%28%29"
+target="_blank"
+rel="noopener"
+&gt;vim.system()&lt;/a&gt;
+，参考
+&lt;a
+class="link"
+href="https://github.com/nvim-neorocks/rocks-git.nvim/blob/main/lua/rocks-git/git.lua#L80"
+target="_blank"
+rel="noopener"
+&gt;nvim-neorocks/rocks-git.nvim: lua/rocks-git/git.lua&lt;/a&gt;
+&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kr"&gt;function&lt;/span&gt; &lt;span class="nc"&gt;process&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;run_co&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;nio_ctrl&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;require&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;nio.control&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;future&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;nio_ctrl.future&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;---@type boolean, vim.SystemObj | string&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;ok&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;so_or_err&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pcall&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;vim.system&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sc&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;future.set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sc&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kr"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kr"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;ok&lt;/span&gt; &lt;span class="kr"&gt;then&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;---@cast so_or_err string&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;---@type vim.SystemCompleted&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kd"&gt;local&lt;/span&gt; &lt;span class="n"&gt;sc&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;code&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;signal&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;stderr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;Failed to invoke command `%s`: %s&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;table.concat&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34; &amp;#34;&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="n"&gt;so_or_err&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;future.set_error&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sc&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kr"&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kr"&gt;return&lt;/span&gt; &lt;span class="n"&gt;future.wait&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kr"&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="vimscript-function-must-not-be-called-in-a-lua-loop-callback"&gt;&lt;a href="#vimscript-function-must-not-be-called-in-a-lua-loop-callback" class="header-anchor"&gt;&lt;/a&gt;Vimscript function must not be called in a lua loop callback
+&lt;/h3&gt;&lt;p&gt;在 nio 中调用 &lt;code&gt;vim.fn.exepath&lt;/code&gt; 时出现错误：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-console" data-lang="console"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Error executing luv callback:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;.../navyd/.local/share/nvim/lazy/nvim-nio/lua/nio/tasks.lua:100: Async task failed without callback: The coroutine failed with this message:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;/home/navyd/.config/nvim/lua/plugins/chineseinput.lua:87: E5560: Vimscript function must not be called in a lua loop callback
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;stack traceback:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; [C]: in function &amp;#39;exepath&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; /home/navyd/.config/nvim/lua/plugins/chineseinput.lua:87: in function &amp;#39;build_jieba_co&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; /home/navyd/.config/nvim/lua/plugins/chineseinput.lua:160: in function &amp;lt;/home/navyd/.config/nvim/lua/plugins/chineseinput.lua:159&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;stack traceback:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; [C]: in function &amp;#39;error&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; .../navyd/.local/share/nvim/lazy/nvim-nio/lua/nio/tasks.lua:100: in function &amp;#39;close_task&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; .../navyd/.local/share/nvim/lazy/nvim-nio/lua/nio/tasks.lua:122: in function &amp;#39;cb&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; .../navyd/.local/share/nvim/lazy/nvim-nio/lua/nio/tasks.lua:183: in function &amp;#39;waiter&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; ...avyd/.local/share/nvim/lazy/nvim-nio/lua/nio/control.lua:116: in function &amp;#39;wake&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; ...avyd/.local/share/nvim/lazy/nvim-nio/lua/nio/control.lua:129: in function &amp;#39;set&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; /home/navyd/.config/nvim/lua/utils/process.lua:15: in function &amp;#39;on_exit&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; ...nt_nvimQolLo0/usr/share/nvim/runtime/lua/vim/_system.lua:301: in function &amp;lt;...nt_nvimQolLo0/usr/share/nvim/runtime/lua/vim/_system.lua:271&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://www.reddit.com/r/neovim/comments/ulx17m/using_nvim_buf_set_text_without_running_into/"
+target="_blank"
+rel="noopener"
+&gt;# Using nvim_buf_set_text without running into E5560: must not be called in Lua loop callback&lt;/a&gt;
+使用
+&lt;a
+class="link"
+href="https://neovim.io/doc/user/lua.html#vim.schedule%28%29"
+target="_blank"
+rel="noopener"
+&gt;vim.schedule&lt;/a&gt;
+解决&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;vim.schedule&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kr"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;-- ...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kr"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;不过这个 api 不能返回执行结果，可能对代码逻辑有影响，简单的解决方式是使用闭包提前调用传递变量即可&lt;/p&gt;
+&lt;h2 id="问题"&gt;&lt;a href="#%e9%97%ae%e9%a2%98" class="header-anchor"&gt;&lt;/a&gt;问题
+&lt;/h2&gt;&lt;p&gt;在
+&lt;a
+class="link"
+href="https://github.com/neovim/neovim/issues/19624#issuecomment-1406704791"
+target="_blank"
+rel="noopener"
+&gt;Lua: structured concurrency, Promises, task pipelines #19624&lt;/a&gt;
+中有一系列关于 neovim 协程的讨论，但还未有一个结果，目前也只是尝试阶段。&lt;/p&gt;
+&lt;p&gt;在下面有一些关于协程的文章：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/ms-jpq/lua-async-await"
+target="_blank"
+rel="noopener"
+&gt;lua-async-await: Async Await in 90 lines of code&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://www.lua.org/pil/9.html"
+target="_blank"
+rel="noopener"
+&gt;lua: Coroutines&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/nvim-neo-tree/neo-tree.nvim/discussions/1340"
+target="_blank"
+rel="noopener"
+&gt;nvim-neo-tree/neo-tree.nvim: 0. Complete re-write? #1340&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://www.reddit.com/r/neovim/comments/1g8lutp/coroutine_tutorial_for_neovim_lua/"
+target="_blank"
+rel="noopener"
+&gt;Coroutine tutorial for Neovim Lua&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://www.reddit.com/r/neovim/comments/1bhw6pm/announcing_nvimnio_a_library_for_asynchronous_io/"
+target="_blank"
+rel="noopener"
+&gt;Announcing nvim-nio, a library for asynchronous IO in Neovim&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

@@ -1,0 +1,384 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content=" 在使用 scoop 安装字体 nerd-fonts 后尝试更新时总是会遇到字体文件无法访问的问题 Copy-Item : The process cannot access the file 'C:\\Users\\navyd\\AppData\\Local\\Microsoft\\Windows\\Fonts\\CaskaydiaCoveNerdFont-BoldItalic.ttf' because it is being used by another process. ，与 Updating font fails on Windows 10 (21H2)\u00a0#271 中的描述一致。\n..."><title>如何使用 scoop 安装字体</title><link rel=canonical href=/posts/2025/08/how-to-install-fonts-using-scoop/><link rel=stylesheet href=/scss/style.min.b0e76e98cdd4f7082d1fc36f7af7e0843a81201db2197c03ca426751dc923735.css><meta property='og:title' content="如何使用 scoop 安装字体"><meta property='og:description' content=" 在使用 scoop 安装字体 nerd-fonts 后尝试更新时总是会遇到字体文件无法访问的问题 Copy-Item : The process cannot access the file 'C:\\Users\\navyd\\AppData\\Local\\Microsoft\\Windows\\Fonts\\CaskaydiaCoveNerdFont-BoldItalic.ttf' because it is being used by another process. ，与 Updating font fails on Windows 10 (21H2)\u00a0#271 中的描述一致。\n..."><meta property='og:url' content='/posts/2025/08/how-to-install-fonts-using-scoop/'><meta property='og:site_name' content='NavyD 的个人博客'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='windows'><meta property='article:tag' content='powershell'><meta property='article:tag' content='CLI'><meta property='article:tag' content='font'><meta property='article:tag' content='nerd-fonts'><meta property='article:tag' content='terminal'><meta property='article:published_time' content='2025-08-29T16:03:18+08:00'><meta property='article:modified_time' content='2025-08-31T11:02:49+08:00'><meta name=twitter:title content="如何使用 scoop 安装字体"><meta name=twitter:description content=" 在使用 scoop 安装字体 nerd-fonts 后尝试更新时总是会遇到字体文件无法访问的问题 Copy-Item : The process cannot access the file 'C:\\Users\\navyd\\AppData\\Local\\Microsoft\\Windows\\Fonts\\CaskaydiaCoveNerdFont-BoldItalic.ttf' because it is being used by another process. ，与 Updating font fails on Windows 10 (21H2)\u00a0#271 中的描述一致。\n..."></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=https://avatars.githubusercontent.com/u/22490764 width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🐧</span></figure><div class=site-meta><h1 class=site-name><a href=/>NavyD 的个人博客</a></h1><h2 class=site-description>Hello World!</h2></div></header><ol class=menu-social><li><a href=https://space.bilibili.com/47808239 target=_blank title=Bilibili rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7a4 4 0 01-4-4v-6z"/><path d="M8 3l2 3"/><path d="M16 3l-2 3"/><path d="M9 13v-2"/><path d="M15 11v2"/></svg></a></li><li><a href=https://github.com/NavyD target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://x.com/NavyD_hello target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/page/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/page/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=/en/>English</option><option value=/ selected>中文</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#分析>分析</a><ol><li><a href=#检查占用字体句柄的进程>检查占用字体句柄的进程</a></li></ol></li><li><a href=#解决>解决</a><ol><li><a href=#通过系统设置卸载首选最安全>通过系统设置卸载（首选、最安全）</a></li><li><a href=#在安全模式下删除>在安全模式下删除</a></li><li><a href=#使用命令强制删除高级方法>使用命令强制删除（高级方法）</a></li></ol></li><li><a href=#总结>总结</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><div class=article-title-wrapper><h2 class=article-title><a href=/posts/2025/08/how-to-install-fonts-using-scoop/>如何使用 scoop 安装字体</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-08-29T16:03:18+08:00>2025年8月29日16:03</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 5 分钟</time></div></footer></div></header><section class=article-content><p>在使用 scoop 安装字体
+<a class=link href=https://github.com/matthewjberger/scoop-nerd-fonts target=_blank rel=noopener>nerd-fonts</a>
+后尝试更新时总是会遇到字体文件无法访问的问题 <code>Copy-Item : The process cannot access the file 'C:\Users\navyd\AppData\Local\Microsoft\Windows\Fonts\CaskaydiaCoveNerdFont-BoldItalic.ttf' because it is being used by another process.</code>
+，与
+<a class=link href=https://github.com/matthewjberger/scoop-nerd-fonts/issues/271 target=_blank rel=noopener>Updating font fails on Windows 10 (21H2) #271</a>
+中的描述一致。</p><h2 id=分析><a href=#%e5%88%86%e6%9e%90 class=header-anchor></a>分析</h2><p>由于之前是 scoop 全局安装的字体，不使用用户级字体安装原因参考
+<a class=link href=https://github.com/matthewjberger/scoop-nerd-fonts/issues/198#issuecomment-1488996737 target=_blank rel=noopener>Weird behavior for installed fonts after Windows 11 22H2 update #198</a>
+，并且 scoop 目前已经可以在用户目录正常安装字体，不再需要管理员权限！</p><p>在这里直接尝试使用 scoop 移除字体时发现字体被许多程序占用，无法卸载！</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> gsudo scoop update -gf SarasaGothic-SC
+</span></span><span class=line><span class=cl><span class=go>SarasaGothic-SC: 1.0.32 -&gt; 1.0.32 (global)
+</span></span></span><span class=line><span class=cl><span class=go>Updating one outdated app:
+</span></span></span><span class=line><span class=cl><span class=go>Updating &#39;SarasaGothic-SC&#39; (1.0.32 -&gt; 1.0.32)
+</span></span></span><span class=line><span class=cl><span class=go>Downloading new version
+</span></span></span><span class=line><span class=cl><span class=go>Loading Sarasa-TTF-1.0.32.7z from cache.
+</span></span></span><span class=line><span class=cl><span class=go>Checking hash of Sarasa-TTF-1.0.32.7z ... ok.
+</span></span></span><span class=line><span class=cl><span class=go>Running pre_uninstall script...
+</span></span></span><span class=line><span class=cl><span class=go> Error
+</span></span></span><span class=line><span class=cl><span class=go> Cannot uninstall &#39;SarasaGothic-SC&#39; font.
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=go> Reason
+</span></span></span><span class=line><span class=cl><span class=go> The &#39;SarasaGothic-SC&#39; font is currently being used by another application,
+</span></span></span><span class=line><span class=cl><span class=go> so it cannot be deleted.
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=go> Suggestion
+</span></span></span><span class=line><span class=cl><span class=go> Close all applications that are using &#39;SarasaGothic-SC&#39; font (e.g. vscode),
+</span></span></span><span class=line><span class=cl><span class=go> and then try again.
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=检查占用字体句柄的进程><a href=#%e6%a3%80%e6%9f%a5%e5%8d%a0%e7%94%a8%e5%ad%97%e4%bd%93%e5%8f%a5%e6%9f%84%e7%9a%84%e8%bf%9b%e7%a8%8b class=header-anchor></a>检查占用字体句柄的进程</h3><p>使用 windows 资源监视器查看什么进程打开了这些字体。经过简单的测试发现，如果在
+<code>windows terminal</code>
+中未包含中文字体时不会打开相关的中文字体句柄，首次出现中文字符才会打开相关字体句柄。</p><p><img src=/posts/2025/08/how-to-install-fonts-using-scoop/20250830190510.png width=891 height=593 srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830190510_hu_7020d43db2cab685.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830190510_hu_1a59cb14586c065.png 1024w" loading=lazy alt="search handles in resource monitor" class=gallery-image data-flex-grow=150 data-flex-basis=360px></p><p>微软官方应用
+<a class=link href=https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer target=_blank rel=noopener>Process Explorer</a>
+（安装命令 <code>winget install Microsoft.Sysinternals.ProcessExplorer</code>
+注意重启终端后执行命令 <code>procexp</code>）也可以查看文件句柄。</p><p><img src=/posts/2025/08/how-to-install-fonts-using-scoop/20250831104858.png width=786 height=593 srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250831104858_hu_b79b7909fad6c18f.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250831104858_hu_ca9d04f6b9402a52.png 1024w" loading=lazy alt="search handles in process explorer" class=gallery-image data-flex-grow=132 data-flex-basis=318px></p><p>另外还可以使用
+<a class=link href=https://systeminformer.com/ target=_blank rel=noopener>System Informer</a>
+查看打开文件句柄的进程，响应更快。</p><p><img src=/posts/2025/08/how-to-install-fonts-using-scoop/20250830182325.png width=811 height=593 srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830182325_hu_15a1e5e82a972678.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830182325_hu_8bac471d094f3755.png 1024w" loading=lazy alt="search handles in system informer" class=gallery-image data-flex-grow=136 data-flex-basis=328px></p><p>注意：这 2 个应用要显示子进程树形列表可以点击 <code>Process</code>, <code>Name</code>
+列来切换显示方式，参考
+<a class=link href=https://github.com/winsiderss/systeminformer/discussions/1091#discussioncomment-1953197 target=_blank rel=noopener>filtering multiple same processes to single process #1091</a>
+。</p><p>可以发现有许多进程如 <code>chrome</code>, <code>obsidian</code>, <code>windows terminal</code>
+等常用的应用都在使用这个字体，需要手动关闭这些进程，但棘手的是
+<code>windows terminal</code>
+作为系统自带的终端，执行 powershell 等 CLI 命令需要在终端执行，这就不可能执行 scoop 卸载命令前关闭
+<code>windows terminal</code> ，这是个死循环！！</p><p>参考
+<a class=link href=https://github.com/matthewjberger/scoop-nerd-fonts/issues/271#issuecomment-1825913674 target=_blank rel=noopener>Updating font fails on Windows 10 (21H2) #271</a>
+提到需要使用额外的终端软件运行 scoop 命令即可。</p><blockquote><p>Note that updating the font from a console which uses the font still failed
+with the same error. I think this is expected. I just had to start a cmd.exe
+or another shell not using that font, and then the update went through without
+error. Similar to when updating pwsh or WindowsTerminal, I&rsquo;ll have to keep an
+eye out using <code>scoop status</code> when there is an update to the font, and update
+it in another shell instead of the one I use normally which uses the font.</p></blockquote><p>注意：</p><ul><li>目前执行 <code>cmd.exe</code> 会启动 <code>windows terminal</code> ，需要安装第三方终端如
+<a class=link href=https://github.com/alacritty/alacritty target=_blank rel=noopener>alacritty</a>
+以避免使用需要移除的字体文件。</li><li>在执行 scoop 卸载命令前需要关闭所有使用相关字体的进程。</li></ul><p>执行卸载命令并安装字体到用户目录</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> gsudo scoop uninstall -g SarasaGothic-SC
+</span></span><span class=line><span class=cl><span class=go>Uninstalling &#39;SarasaGothic-SC&#39; (1.0.32).
+</span></span></span><span class=line><span class=cl><span class=go>Running pre_uninstall script...done.
+</span></span></span><span class=line><span class=cl><span class=go>Running uninstaller script...The &#39;Sarasa-Gothic&#39; Font family has been uninstalled and will not be present after restarting your computer.
+</span></span></span><span class=line><span class=cl><span class=go>done.
+</span></span></span><span class=line><span class=cl><span class=go>Unlinking C:\ProgramData\scoop\apps\SarasaGothic-SC\current
+</span></span></span><span class=line><span class=cl><span class=go>Removing older version (1.0.19).
+</span></span></span><span class=line><span class=cl><span class=go>Removing older version (1.0.25).
+</span></span></span><span class=line><span class=cl><span class=go>Removing older version (1.0.28).
+</span></span></span><span class=line><span class=cl><span class=go>Removing older version (1.0.30).
+</span></span></span><span class=line><span class=cl><span class=go>Removing older version (_1.0.32.old).
+</span></span></span><span class=line><span class=cl><span class=go>Removing older version (_1.0.32.old(1)).
+</span></span></span><span class=line><span class=cl><span class=go>Removing older version (_1.0.32.old(2)).
+</span></span></span><span class=line><span class=cl><span class=go>&#39;SarasaGothic-SC&#39; was uninstalled.
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=gp>$</span> scoop install SarasaGothic-SC
+</span></span><span class=line><span class=cl><span class=go>Installing &#39;SarasaGothic-SC&#39; (1.0.32) [64bit] from &#39;spc&#39; bucket
+</span></span></span><span class=line><span class=cl><span class=go>Loading Sarasa-TTF-1.0.32.7z from cache.
+</span></span></span><span class=line><span class=cl><span class=go>Checking hash of Sarasa-TTF-1.0.32.7z ... ok.
+</span></span></span><span class=line><span class=cl><span class=go>Extracting Sarasa-TTF-1.0.32.7z ... done.
+</span></span></span><span class=line><span class=cl><span class=go>Running pre_install script...done.
+</span></span></span><span class=line><span class=cl><span class=go>Running installer script...done.
+</span></span></span><span class=line><span class=cl><span class=go>Linking ~\scoop\apps\SarasaGothic-SC\current =&gt; ~\scoop\apps\SarasaGothic-SC\1.0.32
+</span></span></span><span class=line><span class=cl><span class=go>&#39;SarasaGothic-SC&#39; (1.0.32) was installed successfully!
+</span></span></span></code></pre></td></tr></table></div></div><p>在成功卸载全局的相关字体重启后，尝试使用用户级目录安装字体时发现<code>~\AppData\Local\Microsoft\Windows\Fonts</code>
+存在许久之前已安装的字体，尽管 scoop 安装过程中出现 <code>Copy-Item</code>
+访问错误但最后提示命令成功执行，与开头提到的问题一样，这就导致了一个问题，scoop 更新的字体版本与实际 windows 上安装的字体版本不一致，系统仍然在更新前的老版本（注意这里的截图是
+<code>1.0.32</code> 与 scoop 安装的一致，但实际更新出错时系统不会更新字体版本）。</p><p><img src=/posts/2025/08/how-to-install-fonts-using-scoop/20250830193355.png width=707 height=526 srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830193355_hu_c37bbe1ca47900b5.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830193355_hu_f5ef603c78effae7.png 1024w" loading=lazy alt="show font version in sys settings" class=gallery-image data-flex-grow=134 data-flex-basis=322px></p><p>在使用 <code>scoop install SarasaGothic-SC</code>
+安装的字体后会导致卸载失败，重启后相关文件仍然存在！</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> scoop uninstall SarasaGothic-SC
+</span></span><span class=line><span class=cl><span class=go>Uninstalling &#39;SarasaGothic-SC&#39; (1.0.32).
+</span></span></span><span class=line><span class=cl><span class=go>Running pre_uninstall script...done.
+</span></span></span><span class=line><span class=cl><span class=go>Running uninstaller script...The &#39;Sarasa-Gothic&#39; Font family has been uninstalled and will not be present after restarting your computer.
+</span></span></span><span class=line><span class=cl><span class=go>done.
+</span></span></span><span class=line><span class=cl><span class=go>Unlinking ~\scoop\apps\SarasaGothic-SC\current
+</span></span></span><span class=line><span class=cl><span class=go>&#39;SarasaGothic-SC&#39; was uninstalled.
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=gp>$</span> l C:<span class=se>\U</span>sers<span class=se>\n</span>avyd<span class=se>\A</span>ppData<span class=se>\L</span>ocal<span class=se>\M</span>icrosoft<span class=se>\W</span>indows<span class=se>\F</span>onts
+</span></span><span class=line><span class=cl><span class=go>Mode  Size Date Modified    Name
+</span></span></span><span class=line><span class=cl><span class=go>d----    - 2025-08-29 15:53 ./
+</span></span></span><span class=line><span class=cl><span class=go>d----    - 2025-07-06 17:52 ../
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.5M 2024-04-12 20:00 CaskaydiaCoveNerdFontMono-Bold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.3M 2024-04-12 20:00 CaskaydiaCoveNerdFontMono-BoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.5M 2024-04-12 20:00 CaskaydiaCoveNerdFontMono-ExtraLight.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.3M 2024-04-12 20:00 CaskaydiaCoveNerdFontMono-ExtraLightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.3M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-Italic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.5M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-Light.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.3M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-LightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.5M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-Regular.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.5M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-SemiBold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.3M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-SemiBoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.5M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-SemiLight.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.3M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-SemiLightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.6M 2024-04-12 20:02 CaskaydiaCoveNerdFontPropo-Bold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.4M 2024-04-12 20:02 CaskaydiaCoveNerdFontPropo-BoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.6M 2024-04-12 20:02 CaskaydiaCoveNerdFontPropo-ExtraLight.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.4M 2024-04-12 20:02 CaskaydiaCoveNerdFontPropo-ExtraLightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.4M 2024-04-12 19:57 CaskaydiaCoveNerdFontPropo-Italic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.6M 2024-04-12 19:58 CaskaydiaCoveNerdFontPropo-Light.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.4M 2024-04-12 19:58 CaskaydiaCoveNerdFontPropo-LightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.6M 2024-04-12 19:58 CaskaydiaCoveNerdFontPropo-Regular.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.6M 2024-04-12 19:58 CaskaydiaCoveNerdFontPropo-SemiBold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.4M 2024-04-12 19:57 CaskaydiaCoveNerdFontPropo-SemiBoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.6M 2024-04-12 19:58 CaskaydiaCoveNerdFontPropo-SemiLight.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 2.4M 2024-04-12 19:57 CaskaydiaCoveNerdFontPropo-SemiLightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 309k 2023-01-14 23:20 JetBrainsMonoVariable-Italic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a--- 303k 2023-01-14 23:20 JetBrainsMonoVariable.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:40 SarasaFixedSC-Bold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaFixedSC-BoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:40 SarasaFixedSC-ExtraLight.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaFixedSC-ExtraLightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaFixedSC-Italic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:40 SarasaFixedSC-Light.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaFixedSC-LightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:40 SarasaFixedSC-Regular.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:40 SarasaFixedSC-SemiBold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaFixedSC-SemiBoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:40 SarasaFixedSlabSC-Bold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:41 SarasaFixedSlabSC-BoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:40 SarasaFixedSlabSC-ExtraLight.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaFixedSlabSC-ExtraLightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaFixedSlabSC-Italic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:40 SarasaFixedSlabSC-Light.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:41 SarasaFixedSlabSC-LightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:40 SarasaFixedSlabSC-Regular.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:40 SarasaFixedSlabSC-SemiBold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaFixedSlabSC-SemiBoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  24M 2025-07-20 08:39 SarasaGothicSC-Bold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaGothicSC-BoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  24M 2025-07-20 08:38 SarasaGothicSC-ExtraLight.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:38 SarasaGothicSC-ExtraLightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaGothicSC-Italic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  24M 2025-07-20 08:38 SarasaGothicSC-Light.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:38 SarasaGothicSC-LightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  24M 2025-07-20 08:39 SarasaGothicSC-Regular.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  24M 2025-07-20 08:39 SarasaGothicSC-SemiBold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaGothicSC-SemiBoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaMonoSC-Bold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaMonoSC-BoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:38 SarasaMonoSC-ExtraLight.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:38 SarasaMonoSC-ExtraLightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaMonoSC-Italic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:38 SarasaMonoSC-Light.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:38 SarasaMonoSC-LightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:38 SarasaMonoSC-Regular.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaMonoSC-SemiBold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaMonoSC-SemiBoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaMonoSlabSC-Bold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaMonoSlabSC-BoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaMonoSlabSC-ExtraLight.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaMonoSlabSC-ExtraLightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaMonoSlabSC-Italic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaMonoSlabSC-Light.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  27M 2025-07-20 08:39 SarasaMonoSlabSC-LightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaMonoSlabSC-Regular.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaMonoSlabSC-SemiBold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaMonoSlabSC-SemiBoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaTermSC-Bold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaTermSC-BoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaTermSC-ExtraLight.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaTermSC-ExtraLightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaTermSC-Italic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:39 SarasaTermSC-Light.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaTermSC-LightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaTermSC-Regular.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaTermSC-SemiBold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaTermSC-SemiBoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:40 SarasaTermSlabSC-Bold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaTermSlabSC-BoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaTermSlabSC-ExtraLight.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaTermSlabSC-ExtraLightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaTermSlabSC-Italic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaTermSlabSC-Light.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  27M 2025-07-20 08:40 SarasaTermSlabSC-LightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaTermSlabSC-Regular.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaTermSlabSC-SemiBold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  26M 2025-07-20 08:40 SarasaTermSlabSC-SemiBoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  24M 2025-07-20 08:39 SarasaUiSC-Bold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaUiSC-BoldItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  24M 2025-07-20 08:38 SarasaUiSC-ExtraLight.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:38 SarasaUiSC-ExtraLightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaUiSC-Italic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  24M 2025-07-20 08:38 SarasaUiSC-Light.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:38 SarasaUiSC-LightItalic.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  24M 2025-07-20 08:38 SarasaUiSC-Regular.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  24M 2025-07-20 08:39 SarasaUiSC-SemiBold.ttf
+</span></span></span><span class=line><span class=cl><span class=go>-a---  25M 2025-07-20 08:39 SarasaUiSC-SemiBoldItalic.ttf
+</span></span></span></code></pre></td></tr></table></div></div><p>尝试从 <code>explorer.exe</code> 中移除时失败</p><p><img src=/posts/2025/08/how-to-install-fonts-using-scoop/20250830152441.png width=812 height=714 srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830152441_hu_ef2f11daa54d125.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830152441_hu_545b1a5cee1ce183.png 1024w" loading=lazy alt="failed to delete in explorer.exe" class=gallery-image data-flex-grow=113 data-flex-basis=272px></p><p>但字体相关占用的进程又找不到！</p><p><img src=/posts/2025/08/how-to-install-fonts-using-scoop/20250830152700.png width=786 height=593 srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830152700_hu_e5c992b87f8faf32.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830152700_hu_50874876995371d5.png 1024w" loading=lazy alt="not found process" class=gallery-image data-flex-grow=132 data-flex-basis=318px></p><p>好在 deepseek 有办法！！</p><h2 id=解决><a href=#%e8%a7%a3%e5%86%b3 class=header-anchor></a>解决</h2><h3 id=通过系统设置卸载首选最安全><a href=#%e9%80%9a%e8%bf%87%e7%b3%bb%e7%bb%9f%e8%ae%be%e7%bd%ae%e5%8d%b8%e8%bd%bd%e9%a6%96%e9%80%89%e6%9c%80%e5%ae%89%e5%85%a8 class=header-anchor></a>通过系统设置卸载（首选、最安全）</h3><p>在设置界面中只能单个删除字体</p><p><img src=/posts/2025/08/how-to-install-fonts-using-scoop/20250830154418.png width=707 height=890 srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830154418_hu_6e1082438f869de6.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830154418_hu_895ed0e81617c3bb.png 1024w" loading=lazy alt="delete fonts in settings" class=gallery-image data-flex-grow=79 data-flex-basis=190px></p><p>可以使用 旧字体控制面板界面 或进入 <code>C:\WINDOWS\Fonts</code> 批量删除字体</p><p><img src=/posts/2025/08/how-to-install-fonts-using-scoop/20250830154124.png width=812 height=714 srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830154124_hu_9d52193a3dbd8691.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830154124_hu_f28d853a076b9872.png 1024w" loading=lazy alt="delete fonts in control panel" class=gallery-image data-flex-grow=113 data-flex-basis=272px></p><h3 id=在安全模式下删除><a href=#%e5%9c%a8%e5%ae%89%e5%85%a8%e6%a8%a1%e5%bc%8f%e4%b8%8b%e5%88%a0%e9%99%a4 class=header-anchor></a>在安全模式下删除</h3><p>未使用！！！</p><h3 id=使用命令强制删除高级方法><a href=#%e4%bd%bf%e7%94%a8%e5%91%bd%e4%bb%a4%e5%bc%ba%e5%88%b6%e5%88%a0%e9%99%a4%e9%ab%98%e7%ba%a7%e6%96%b9%e6%b3%95 class=header-anchor></a>使用命令强制删除（高级方法）</h3><p>对于在可用字体中无法查找到的但存在于 <code>~\AppData\Local\Microsoft\Windows\Fonts</code>
+中的字体文件，在 <code>explorer.exe</code> 中无法删除提示
+<code>操作无法完成，因为文件已在 System 中打开。请关闭该文件并重试</code> 时，可以使用
+<em>管理员权限</em> 运行命令强制删除相关字体文件</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=nb>Remove-Item</span> <span class=n>-Force</span> <span class=n>-Path</span> <span class=s2>&#34;C:\Users\navyd\AppData\Local\Microsoft\Windows\Fonts\Sarasa*.ttf&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>注意：确保你删除的是正确的字体文件，误删系统字体会导致显示问题。</p><h2 id=总结><a href=#%e6%80%bb%e7%bb%93 class=header-anchor></a>总结</h2><p>由于 windows 系统的限制，使用 scoop 管理字体相对比较麻烦，一旦字体需要更新，所有使用这些字体的进程都需要关闭才能正常更新。</p><p>如果使用 <code>scoop update -a</code>
+更新字体时未成功应用到系统，可以关闭所有相关进程后强制重新安装
+<code>scoop update -f SarasaGothic-SC</code> 即可。</p></section><footer class=article-footer><section class=article-tags><a href=/tags/windows/>Windows</a>
+<a href=/tags/powershell/>Powershell</a>
+<a href=/tags/cli/>CLI</a>
+<a href=/tags/font/>Font</a>
+<a href=/tags/nerd-fonts/>Nerd-Fonts</a>
+<a href=/tags/terminal/>Terminal</a></section><section class=article-lastmod><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>最后更新于 2025-08-31 11:02:08 CST</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/posts/2021/11/port-forwarding-in-wsl2/><div class=article-details><h2 class=article-title>Port Forwarding in Wsl2</h2></div></a></article><article><a href=/posts/2025/02/powershell-practice/><div class=article-details><h2 class=article-title>Powersell 实践</h2></div></a></article><article><a href=/posts/2025/02/powershell-profile-startup-acceleration/><div class=article-details><h2 class=article-title>Powershell 配置文件启动加速</h2></div></a></article><article><a href=/posts/2025/02/failed-to-run-mise-watch-command-on-windows/><div class=article-details><h2 class=article-title>Failed to Run Mise Watch Command on Windows</h2></div></a></article><article><a href=/posts/2025/02/daemon-process-in-windows/><div class=article-details><h2 class=article-title>Daemon Process in Windows</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2026 NavyD 的个人博客</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

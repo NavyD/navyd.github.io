@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Debian on NavyD 的个人博客</title><link>/tags/debian/</link><description>Recent content in Debian on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 15 Jan 2026 14:55:46 +0800</lastBuildDate><atom:link href="/tags/debian/index.xml" rel="self" type="application/rss+xml"/><item><title>如何在 Raspberry Pi 4 中配置网络</title><link>/posts/2026/01/how-to-configure-networking-in-raspberry-pi/</link><pubDate>Fri, 02 Jan 2026 20:54:42 +0800</pubDate><guid>/posts/2026/01/how-to-configure-networking-in-raspberry-pi/</guid><description>&lt;p&gt;最近我的 &lt;code&gt;raspberry pi4&lt;/code&gt; 在晚上进入 ssh
+重启后没管，直到第二天早上发现无法连网才知道系统挂了，我尝试过使用
+&lt;code&gt;sudo fsck.ext4 -fy /dev/sdc2&lt;/code&gt; 修复 root ext4
+文件系统，以前这种情况也出现过，但这次不知道是什么情况，在我的 nas, wsl2
+不同的系统上挂载 SD 卡修复通过也还是无法启动，也尝试过修复 &lt;code&gt;/boot&lt;/code&gt; 分区
+&lt;code&gt;sudo fsck.vfat /dev/sdc2&lt;/code&gt; 选择 &lt;code&gt;2) Copy backup to original&lt;/code&gt;
+也没用，最后没办法，尝试使用 restic 备份恢复 &lt;code&gt;/boot&lt;/code&gt;
+分区，不出意外的也没用，甚至还有些文件不见了，看来 restic
+对于这种情况还是不适合的，只有完整的系统备份才有效吧！raspberry pi4 的 SD
+卡还是太脆弱了，这种情况不少见，没办法只能重装系统了，正好
+&lt;a
+class="link"
+href="https://www.debian.org/News/2025/20250809"
+target="_blank"
+rel="noopener"
+&gt;debian 13 trixie&lt;/a&gt;
+最近发布可以升级
+&lt;a
+class="link"
+href="https://downloads.raspberrypi.com/raspios_arm64/release_notes.txt"
+target="_blank"
+rel="noopener"
+&gt;Raspberry Pi OS: View release notes&lt;/a&gt;
+。&lt;/p&gt;
+&lt;p&gt;由于目前我的 rpi4 设备是作为旁路由存在的，新系统的首要任务就是在无 DHCP
+网络环境中配置静态 IP 方便使用。之前在
+&lt;a
+class="link"
+href="https://github.com/raspberrypi/rpi-imager"
+target="_blank"
+rel="noopener"
+&gt;raspberrypi/rpi-imager&lt;/a&gt;
+工具安装系统到 SD 卡时会有静态 IP 的配置，但在最近的
+&lt;a
+class="link"
+href="https://github.com/raspberrypi/rpi-imager/releases/tag/v2.0.0"
+target="_blank"
+rel="noopener"
+&gt;v2.0.0: A new Imager&lt;/a&gt;
+更新后发现没有了这个选项，在
+&lt;a
+class="link"
+href="https://github.com/raspberrypi/rpi-imager/issues/1215#issuecomment-3324702500"
+target="_blank"
+rel="noopener"
+&gt;Allow static IP address configuration in &amp;ldquo;OS Customisation &amp;gt; General&amp;rdquo; #1215&lt;/a&gt;
+这个问题中提到 &lt;code&gt;Use link-local addresses if you have no DHCP server&lt;/code&gt;
+这个方法可以访问无 DHCP 的 rpi4
+设备，但目前未测试过（希望不会有这个机会），我是使用 HDMI 显示直接在物理机操作。&lt;/p&gt;
+&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://www.raspberrypi.com/documentation/computers/configuration.html#assign-a-static-ip-address"
+target="_blank"
+rel="noopener"
+&gt;raspberrypi doc: Assign a static IP address&lt;/a&gt;
+建议应该在路由器中配置 IP，这与我的需求不合，参考
+&lt;a
+class="link"
+href="https://www.raspberrypi.com/documentation/computers/configuration.html#networking"
+target="_blank"
+rel="noopener"
+&gt;raspberrypi doc: Networking&lt;/a&gt;
+中使用
+&lt;a
+class="link"
+href="https://manpages.debian.org/man/nmcli"
+target="_blank"
+rel="noopener"
+&gt;nmcli&lt;/a&gt;
+通过
+&lt;a
+class="link"
+href="https://wiki.debian.org/NetworkManager"
+target="_blank"
+rel="noopener"
+&gt;NetworkManager&lt;/a&gt;
+配置网络，其中的
+&lt;a
+class="link"
+href="https://wiki.debian.org/NetworkManager#FAQ"
+target="_blank"
+rel="noopener"
+&gt;FAQ&lt;/a&gt;
+提到在
+&lt;a
+class="link"
+href="https://wiki.debian.org/NetworkConfiguration#resolv.conf.DNS_configuration_for_NetworkManager"
+target="_blank"
+rel="noopener"
+&gt;DNS configuration for NetworkManager&lt;/a&gt;
+使用配置文件。偶然发现
+&lt;a
+class="link"
+href="https://manpages.debian.org/trixie/network-manager/nmtui.1.en.html"
+target="_blank"
+rel="noopener"
+&gt;nmtui&lt;/a&gt;
+命令行交互工具，相比 nmcli 更方便，也不需要 GUI 环境。&lt;/p&gt;
+&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://unix.stackexchange.com/a/682907"
+target="_blank"
+rel="noopener"
+&gt;Where does Network Manager store settings?&lt;/a&gt;
+使用下面的命令查看配置文件&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-console" data-lang="console"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="gp"&gt;$&lt;/span&gt; sudo nmcli -f NAME,DEVICE,FILENAME connection show
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;NAME DEVICE FILENAME
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;eth0-staticip eth0 /etc/NetworkManager/system-connections/eth0-staticip.nmconnection
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;netplan-wlan0-hack wlan0 /run/NetworkManager/system-connections/netplan-wlan0-hack.nmconnection
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;br-6408c35527cc br-6408c35527cc /run/NetworkManager/system-connections/br-6408c35527cc.nmconnection
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;br-f6608c9e01b4 br-f6608c9e01b4 /run/NetworkManager/system-connections/br-f6608c9e01b4.nmconnection
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;lo lo /run/NetworkManager/system-connections/lo.nmconnection
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Meta Meta /run/NetworkManager/system-connections/Meta.nmconnection
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;br-4469806f33c3 br-4469806f33c3 /run/NetworkManager/system-connections/br-4469806f33c3.nmconnection
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;docker0 docker0 /run/NetworkManager/system-connections/docker0.nmconnection
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;下面是使用 &lt;code&gt;nmtui&lt;/code&gt; 配置静态 IP 的配置
+&lt;code&gt;/etc/NetworkManager/system-connections/eth0-staticip.nmconnection&lt;/code&gt; 内容：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-ini" data-lang="ini"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;[connection]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;eth0-staticip&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;uuid&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;32a9b0f1-1912-31c7-a875-260e4deb8631&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;ethernet&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;autoconnect-priority&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;-999&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;interface-name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;eth0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;timestamp&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;1766818245&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;[ethernet]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;[ipv4]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;address1&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;192.168.93.2/24&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;dns&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;127.0.0.1;192.168.93.1;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;192.168.93.1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;method&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;manual&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;[ipv6]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;addr-gen-mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;default&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;method&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;auto&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;[proxy]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description></item></channel></rss>

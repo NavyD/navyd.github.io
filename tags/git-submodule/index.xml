@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Git Submodule on NavyD 的个人博客</title><link>/tags/git-submodule/</link><description>Recent content in Git Submodule on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 30 Mar 2023 19:02:41 +0800</lastBuildDate><atom:link href="/tags/git-submodule/index.xml" rel="self" type="application/rss+xml"/><item><title>Merge Two Git Repos</title><link>/posts/2021/08/merge-two-git-repos/</link><pubDate>Sun, 08 Aug 2021 01:49:33 +0800</pubDate><guid>/posts/2021/08/merge-two-git-repos/</guid><description>&lt;h2 id="问题"&gt;&lt;a href="#%e9%97%ae%e9%a2%98" class="header-anchor"&gt;&lt;/a&gt;问题
+&lt;/h2&gt;&lt;p&gt;从原始博客仓库&lt;code&gt;blog-resources&lt;/code&gt;中迁移所有记录到新的hugo博客仓库&lt;code&gt;navyd.github.io&lt;/code&gt;新文件夹下&lt;code&gt;content/res&lt;/code&gt;中，以后慢慢修改为hugo博客形式。下面是两个仓库的目录结构&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;../
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; - blog-resources/
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; - .git/
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; - blog.md
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; - ...
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; - navyd.github.io/
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; - .git/
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; - content/
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; - post/
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; - ...
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id="分析"&gt;&lt;a href="#%e5%88%86%e6%9e%90" class="header-anchor"&gt;&lt;/a&gt;分析
+&lt;/h2&gt;&lt;p&gt;
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/10548919/8566831"
+target="_blank"
+rel="noopener"
+&gt;git merge&lt;/a&gt;
+&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;span class="lnt"&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; navyd.github.io
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git checkout -b blog
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git remote add blog-res ../blog-resources
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git fetch blog-res --tags
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git merge --allow-unrelated-histories blog-res/master &lt;span class="c1"&gt;# or whichever branch you want to merge&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git remote remove blog-res
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;mv test.md content/res &lt;span class="c1"&gt;# 移动之前仓库的文件到res中&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git commit -m &lt;span class="s1"&gt;&amp;#39;mv to res folder&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这个方法有个很大的缺点，在merge时会合并到根目录，可能出现冲突，无法自定义合并到子文件夹中，虽然可以提前使用
+&lt;a
+class="link"
+href="https://github.com/newren/git-filter-repo"
+target="_blank"
+rel="noopener"
+&gt;git-filter-repo&lt;/a&gt;
+命令：&lt;code&gt;git filter-repo --to-subdirectory-filter blog-res&lt;/code&gt;，但是&lt;code&gt;ubuntu 20.04&lt;/code&gt;无法安装，放弃使用merge的方法&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/08/merge-two-git-repos/2021-08-08-01-49-49.png"
+width="1151"
+height="976"
+srcset="/posts/2021/08/merge-two-git-repos/2021-08-08-01-49-49_hu_78c16fe54202030a.png 480w, /posts/2021/08/merge-two-git-repos/2021-08-08-01-49-49_hu_e84ae8aea62cdedc.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="117"
+data-flex-basis="283px"
+&gt;
+&lt;/p&gt;
+&lt;h3 id="注意"&gt;&lt;a href="#%e6%b3%a8%e6%84%8f" class="header-anchor"&gt;&lt;/a&gt;注意
+&lt;/h3&gt;&lt;p&gt;如果仓库中存在未被git管理的文件，一定要备份好，&lt;code&gt;git reset --hard&lt;/code&gt;将会完全覆盖这样的文件，无法找回&lt;/p&gt;
+&lt;p&gt;使用&lt;code&gt;git reset --hard &amp;lt;commit_id&amp;gt;&lt;/code&gt;回到合并前的状态。如果操作失误出现大量的&lt;code&gt;untracked files&lt;/code&gt;，可以使用&lt;code&gt;git clean&lt;/code&gt;删除&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 查看可被清除的文件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git clean -n
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 删除文件目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git clean -f -d
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;如果在merge后想要撤消，但是使用&lt;code&gt;git log&lt;/code&gt;找不能合并的记录日志对应的commit id，可以使用&lt;code&gt;git reflog&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;span class="lnt"&gt;29
+&lt;/span&gt;&lt;span class="lnt"&gt;30
+&lt;/span&gt;&lt;span class="lnt"&gt;31
+&lt;/span&gt;&lt;span class="lnt"&gt;32
+&lt;/span&gt;&lt;span class="lnt"&gt;33
+&lt;/span&gt;&lt;span class="lnt"&gt;34
+&lt;/span&gt;&lt;span class="lnt"&gt;35
+&lt;/span&gt;&lt;span class="lnt"&gt;36
+&lt;/span&gt;&lt;span class="lnt"&gt;37
+&lt;/span&gt;&lt;span class="lnt"&gt;38
+&lt;/span&gt;&lt;span class="lnt"&gt;39
+&lt;/span&gt;&lt;span class="lnt"&gt;40
+&lt;/span&gt;&lt;span class="lnt"&gt;41
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;$ git log
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;commit 0504c8037617b01b6c90183a7b8fcdaf71216411 &lt;span class="o"&gt;(&lt;/span&gt;HEAD -&amp;gt; main, blog&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Merge: a30ea67 34cef1f
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Author: navyd &amp;lt;dhjnavyd@gmail.com&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Date: Sun Aug &lt;span class="m"&gt;8&lt;/span&gt; 01:39:45 &lt;span class="m"&gt;2021&lt;/span&gt; +0800
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Add &lt;span class="s1"&gt;&amp;#39;content/res/&amp;#39;&lt;/span&gt; from commit &lt;span class="s1"&gt;&amp;#39;34cef1f6fe6477181818e55ff468e9a62c7fccbf&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; git-subtree-dir: content/res
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; git-subtree-mainline: a30ea67efb72183d0d696dc74d9677a98b784035
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; git-subtree-split: 34cef1f6fe6477181818e55ff468e9a62c7fccbf
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;commit a30ea67efb72183d0d696dc74d9677a98b784035 &lt;span class="o"&gt;(&lt;/span&gt;origin/main, origin/HEAD&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Author: navyd &amp;lt;dhjnavyd@gmail.com&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Date: Sat Aug &lt;span class="m"&gt;7&lt;/span&gt; 00:26:58 &lt;span class="m"&gt;2021&lt;/span&gt; +0800
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; even主题问题
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;$ git reflog
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;0504c80 &lt;span class="o"&gt;(&lt;/span&gt;HEAD -&amp;gt; main, blog&lt;span class="o"&gt;)&lt;/span&gt; HEAD@&lt;span class="o"&gt;{&lt;/span&gt;0&lt;span class="o"&gt;}&lt;/span&gt;: merge blog: Fast-forward
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;a30ea67 &lt;span class="o"&gt;(&lt;/span&gt;origin/main, origin/HEAD&lt;span class="o"&gt;)&lt;/span&gt; HEAD@&lt;span class="o"&gt;{&lt;/span&gt;1&lt;span class="o"&gt;}&lt;/span&gt;: reset: moving to a30ea67
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;c9dc62b HEAD@&lt;span class="o"&gt;{&lt;/span&gt;2&lt;span class="o"&gt;}&lt;/span&gt;: reset: moving to HEAD~1
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;e341955 HEAD@&lt;span class="o"&gt;{&lt;/span&gt;3&lt;span class="o"&gt;}&lt;/span&gt;: checkout: moving from blog to main
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;0504c80 &lt;span class="o"&gt;(&lt;/span&gt;HEAD -&amp;gt; main, blog&lt;span class="o"&gt;)&lt;/span&gt; HEAD@&lt;span class="o"&gt;{&lt;/span&gt;4&lt;span class="o"&gt;}&lt;/span&gt;: reset: moving to 0504c80
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;94302ef HEAD@&lt;span class="o"&gt;{&lt;/span&gt;5&lt;span class="o"&gt;}&lt;/span&gt;: commit: &lt;span class="nb"&gt;test&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;0504c80 &lt;span class="o"&gt;(&lt;/span&gt;HEAD -&amp;gt; main, blog&lt;span class="o"&gt;)&lt;/span&gt; HEAD@&lt;span class="o"&gt;{&lt;/span&gt;6&lt;span class="o"&gt;}&lt;/span&gt;: reset: moving to 0504c8037617b01b6c90183a7b8fcdaf71216411
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;a30ea67 &lt;span class="o"&gt;(&lt;/span&gt;origin/main, origin/HEAD&lt;span class="o"&gt;)&lt;/span&gt; HEAD@&lt;span class="o"&gt;{&lt;/span&gt;7&lt;span class="o"&gt;}&lt;/span&gt;: reset: moving to a30ea67
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;00dc6b8 HEAD@&lt;span class="o"&gt;{&lt;/span&gt;8&lt;span class="o"&gt;}&lt;/span&gt;: commit: mv
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;1f736a4 HEAD@&lt;span class="o"&gt;{&lt;/span&gt;9&lt;span class="o"&gt;}&lt;/span&gt;: reset: moving to 1f736a4272dbd8306d8451bcb9fe5d35ce81878e
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;a30ea67 &lt;span class="o"&gt;(&lt;/span&gt;origin/main, origin/HEAD&lt;span class="o"&gt;)&lt;/span&gt; HEAD@&lt;span class="o"&gt;{&lt;/span&gt;10&lt;span class="o"&gt;}&lt;/span&gt;: checkout: moving from main to blog
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;e341955 HEAD@&lt;span class="o"&gt;{&lt;/span&gt;11&lt;span class="o"&gt;}&lt;/span&gt;: merge blog: Fast-forward
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;a30ea67 &lt;span class="o"&gt;(&lt;/span&gt;origin/main, origin/HEAD&lt;span class="o"&gt;)&lt;/span&gt; HEAD@&lt;span class="o"&gt;{&lt;/span&gt;12&lt;span class="o"&gt;}&lt;/span&gt;: checkout: moving from blog to main
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;e341955 HEAD@&lt;span class="o"&gt;{&lt;/span&gt;13&lt;span class="o"&gt;}&lt;/span&gt;: commit: remove index.md
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;c9dc62b HEAD@&lt;span class="o"&gt;{&lt;/span&gt;14&lt;span class="o"&gt;}&lt;/span&gt;: commit: mv to old folder
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;e965a30 HEAD@&lt;span class="o"&gt;{&lt;/span&gt;15&lt;span class="o"&gt;}&lt;/span&gt;: merge blog-res/master: Merge made by the &lt;span class="s1"&gt;&amp;#39;recursive&amp;#39;&lt;/span&gt; strategy.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;a30ea67 &lt;span class="o"&gt;(&lt;/span&gt;origin/main, origin/HEAD&lt;span class="o"&gt;)&lt;/span&gt; HEAD@&lt;span class="o"&gt;{&lt;/span&gt;16&lt;span class="o"&gt;}&lt;/span&gt;: reset: moving to a30ea67
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;a30ea67 &lt;span class="o"&gt;(&lt;/span&gt;origin/main, origin/HEAD&lt;span class="o"&gt;)&lt;/span&gt; HEAD@&lt;span class="o"&gt;{&lt;/span&gt;17&lt;span class="o"&gt;}&lt;/span&gt;: reset: moving to HEAD~
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;e440e06 HEAD@&lt;span class="o"&gt;{&lt;/span&gt;18&lt;span class="o"&gt;}&lt;/span&gt;: merge blog-res/master: Merge made by the &lt;span class="s1"&gt;&amp;#39;recursive&amp;#39;&lt;/span&gt; strategy.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;a30ea67 &lt;span class="o"&gt;(&lt;/span&gt;origin/main, origin/HEAD&lt;span class="o"&gt;)&lt;/span&gt; HEAD@&lt;span class="o"&gt;{&lt;/span&gt;19&lt;span class="o"&gt;}&lt;/span&gt;: checkout: moving from main to blog
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;$ git reset --hard id
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id="解决"&gt;&lt;a href="#%e8%a7%a3%e5%86%b3" class="header-anchor"&gt;&lt;/a&gt;解决
+&lt;/h2&gt;&lt;p&gt;在这里提到
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/14992078/8566831"
+target="_blank"
+rel="noopener"
+&gt;使用git subtree&lt;/a&gt;
+&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; navyd.github.io
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git checkout -b blog
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 添加blog-resources@master&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git subtree add --prefix&lt;span class="o"&gt;=&lt;/span&gt;content/res ../blog-resources master
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 合并blog到main分支&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git checkout main
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git merge blog
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;完成合并log&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;$ git log
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;commit 0504c8037617b01b6c90183a7b8fcdaf71216411 &lt;span class="o"&gt;(&lt;/span&gt;HEAD -&amp;gt; main, blog&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Merge: a30ea67 34cef1f
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Author: navyd &amp;lt;dhjnavyd@gmail.com&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Date: Sun Aug &lt;span class="m"&gt;8&lt;/span&gt; 01:39:45 &lt;span class="m"&gt;2021&lt;/span&gt; +0800
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Add &lt;span class="s1"&gt;&amp;#39;content/res/&amp;#39;&lt;/span&gt; from commit &lt;span class="s1"&gt;&amp;#39;34cef1f6fe6477181818e55ff468e9a62c7fccbf&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; git-subtree-dir: content/res
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; git-subtree-mainline: a30ea67efb72183d0d696dc74d9677a98b784035
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; git-subtree-split: 34cef1f6fe6477181818e55ff468e9a62c7fccbf
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/1425892/how-do-you-merge-two-git-repositories"
+target="_blank"
+rel="noopener"
+&gt;How do you merge two Git repositories?&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/64966/8566831"
+target="_blank"
+rel="noopener"
+&gt;How to remove local (untracked) files from the current Git working tree&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/2389423/8566831"
+target="_blank"
+rel="noopener"
+&gt;Undo a Git merge that hasn&amp;rsquo;t been pushed yet&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/newren/git-filter-repo"
+target="_blank"
+rel="noopener"
+&gt;newren/git-filter-repo&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://segmentfault.com/a/1190000012002151"
+target="_blank"
+rel="noopener"
+&gt;git subtree教程&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Powertoys on NavyD 的个人博客</title><link>/tags/powertoys/</link><description>Recent content in Powertoys on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 14 Dec 2025 16:53:46 +0800</lastBuildDate><atom:link href="/tags/powertoys/index.xml" rel="self" type="application/rss+xml"/><item><title>无法打开 powertoys 中的命令面板 x-cmdpal</title><link>/posts/2025/12/get-an-app-to-open-this-x-cmdpal-link/</link><pubDate>Sun, 14 Dec 2025 16:38:06 +0800</pubDate><guid>/posts/2025/12/get-an-app-to-open-this-x-cmdpal-link/</guid><description>&lt;p&gt;在 windows 的使用 powertoys 中的
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/windows/powertoys/command-palette/overview"
+target="_blank"
+rel="noopener"
+&gt;PowerToys Command Palette utility&lt;/a&gt;
+时，启动 powertoys 时提示无法打开 &lt;code&gt;x-cmdpal&lt;/code&gt; 链接，无法响应快捷键
+&lt;code&gt;win+alt+space&lt;/code&gt; ，
+参考
+&lt;a
+class="link"
+href="https://github.com/microsoft/PowerToys/issues/39476"
+target="_blank"
+rel="noopener"
+&gt;We can&amp;rsquo;t open this &amp;lsquo;x-cmdpal&amp;rsquo; link. #39476&lt;/a&gt;
+，如果进入 powertoys 界面打开 &lt;code&gt;command palette&lt;/code&gt; 开关会再次出现错误提示窗口。&lt;/p&gt;
+&lt;h2 id="解决"&gt;&lt;a href="#%e8%a7%a3%e5%86%b3" class="header-anchor"&gt;&lt;/a&gt;解决
+&lt;/h2&gt;&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://www.reddit.com/r/PowerToys/comments/1nwtc3q/comment/nhiz7ya/?utm_source=share&amp;amp;utm_medium=web3x&amp;amp;utm_name=web3xcss&amp;amp;utm_term=1&amp;amp;utm_content=share_button"
+target="_blank"
+rel="noopener"
+&gt;Can&amp;rsquo;t open Command Palette&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;打开 &lt;code&gt;%LOCALAPPDATA%\PowerToys\WinUI3Apps\CmdPal&lt;/code&gt; 目录找到最新版本的 cmdpal
+安装文件手动安装即可解决&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-console" data-lang="console"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="gp"&gt;$&lt;/span&gt; dir
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="go"&gt; Directory: C:\Users\navyd\AppData\Local\PowerToys\WinUI3Apps\CmdPal
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="go"&gt;Mode LastWriteTime Length Name
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;---- ------------- ------ ----
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;d---- 2025/8/9 21:27 Dependencies
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2025/4/9 6:12 101051277 Microsoft.CmdPal.UI_0.1.1.0_x64.msix
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2025/7/1 14:05 107417560 Microsoft.CmdPal.UI_0.3.1822.0_x64.msix
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2025/7/7 2:56 107420079 Microsoft.CmdPal.UI_0.3.1871.0_x64.msix
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2025/10/15 9:21 48183353 Microsoft.CmdPal.UI_0.6.2882.0_x64.msix
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2025/10/23 9:42 48175451 Microsoft.CmdPal.UI_0.6.2963.0_x64.msix
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2025/11/24 4:23 48295373 Microsoft.CmdPal.UI_0.7.3271.0_x64.msix
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description></item></channel></rss>

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hotkey on NavyD 的个人博客</title><link>/tags/hotkey/</link><description>Recent content in Hotkey on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 01 Apr 2025 00:38:45 +0800</lastBuildDate><atom:link href="/tags/hotkey/index.xml" rel="self" type="application/rss+xml"/><item><title>在 Windows 上如何禁止快捷键 Ctrl+Space 切换中英文输入法</title><link>/posts/2025/03/how-to-disable-the-shortcut-ctrl+space-to-switch-between-chinese-and-english-input-methods-on-windows/</link><pubDate>Tue, 25 Mar 2025 23:46:42 +0800</pubDate><guid>/posts/2025/03/how-to-disable-the-shortcut-ctrl+space-to-switch-between-chinese-and-english-input-methods-on-windows/</guid><description>&lt;h2 id="autohotkey"&gt;&lt;a href="#autohotkey" class="header-anchor"&gt;&lt;/a&gt;Autohotkey
+&lt;/h2&gt;&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://niallzhou.cfd/post/tricks/disable_ctrl_space/"
+target="_blank"
+rel="noopener"
+&gt;屏蔽 Windows 下 Ctrl+Space 快捷键&lt;/a&gt;
+&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-ahk" data-lang="ahk"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;#HotIf&lt;/span&gt; &lt;span class="nf"&gt;WinActive&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;ahk_exe emacs.exe&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;Space&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt; &lt;span class="nb"&gt;SetKeyDelay&lt;/span&gt; &lt;span class="mi"&gt;75&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt; &lt;span class="nb"&gt;ControlSend&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;^{Space}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;ahk_exe emacs.exe&amp;#34;&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="n"&gt;#HotIf&lt;/span&gt; &lt;span class="nf"&gt;WinActive&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;ahk_exe code.exe&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;Space&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ControlSend&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;^{Space}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;ahk_exe code.exe&amp;#34;&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="n"&gt;#HotIf&lt;/span&gt; &lt;span class="nf"&gt;WinActive&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;ahk_exe clion64.exe&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;Space&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;ControlSend&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;^{Space}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;ahk_exe clion64.exe&amp;#34;&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;修改后&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;span class="lnt"&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-autohotkey" data-lang="autohotkey"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;#Requires&lt;/span&gt; &lt;span class="n"&gt;AutoHotkey&lt;/span&gt; &lt;span class="n"&gt;v2&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="nb"&gt;#SingleInstance&lt;/span&gt;&lt;span class="c1"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;; 键入`&amp;lt;C-space&amp;gt;`时发送`&amp;lt;C-space&amp;gt;`到当前活动窗口&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;Space&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="c1"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt; ; [WinTitle Parameter &amp;amp; Last Found Window](https://www.autohotkey.com/docs/v2/misc/WinTitle.htm#ActiveWindow)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt; ; A表示当前活动窗口&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt; &lt;span class="nb"&gt;ControlSend&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;^{Space}&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,,&lt;/span&gt; &lt;span class="s"&gt;&amp;#34;A&amp;#34;&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;对于部分程序如 windows
+terminal 这个无效，退出 ahk 后可使用 ENG 美式键盘在 wsl 中 &lt;code&gt;showkey -a&lt;/code&gt; 输入
+&lt;code&gt;^@ 0 0000 0x00&lt;/code&gt; 。在 vscode,neovide 中 &lt;code&gt;ctrl+space&lt;/code&gt;
+可正常工作，我尝试了 alacritty,wezterm,windowsterminal 即使在美式键盘下 neovim 也无法正常使用。而 windows
+terminal 中使用 powershell 在美式键盘下输入 c-space 正常工作，启用这段程序后 c-space 无效，可能不只是终端的问题
+&lt;a
+class="link"
+href="https://github.com/microsoft/terminal/issues/15939"
+target="_blank"
+rel="noopener"
+&gt;Control+Space not sent to program running in terminal #15939&lt;/a&gt;
+，与
+&lt;a
+class="link"
+href="/posts/2025/03/neovim-in-practice/#windows-%e4%b8%8a%e4%bd%bf%e7%94%a8-c-space-%e6%97%a0%e6%95%88"
+&gt;neovim 实践：windows 上使用 &lt;code&gt;&amp;lt;C-space&amp;gt;&lt;/code&gt; 无效&lt;/a&gt;
+不同，这不是 windows terminal 的问题&lt;/p&gt;
+&lt;p&gt;在使用键盘监听程序测试时如
+&lt;a
+class="link"
+href="https://en.key-test.ru/"
+target="_blank"
+rel="noopener"
+&gt;&amp;ldquo;Key-Test&amp;rdquo; - keyboard test online&lt;/a&gt;
+在按下 &lt;code&gt;ctrl+space&lt;/code&gt;
+时会发送 &lt;code&gt;ctrl+space&lt;/code&gt;, &lt;code&gt;ctrl+space&lt;/code&gt; 两次，这可能会导致问题&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://www.zhihu.com/question/22288432"
+target="_blank"
+rel="noopener"
+&gt;如何改变 Windows 默认的输入法快捷键 Ctrl+Space 为其他值&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://www.bilibili.com/read/cv5012438/"
+target="_blank"
+rel="noopener"
+&gt;VS Code 中的快捷键 Ctrl+Space 与微软拼音冲突无法正确触发补全，使用 AutoHotkey 解决&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/rime/weasel/issues/1343"
+target="_blank"
+rel="noopener"
+&gt;关于 Ctrl+Space，小狼毫应保持与系统一致的行为模式 #1343&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://www.autohotkey.com/boards/viewtopic.php?f=82&amp;amp;t=116487&amp;amp;sid=fe4fae88b0563f0a9a8427c226cb05cb"
+target="_blank"
+rel="noopener"
+&gt;How to get current active window in v2?&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://www.autohotkey.com/docs/v2/misc/WinTitle.htm#ActiveWindow"
+target="_blank"
+rel="noopener"
+&gt;WinTitle Parameter &amp;amp; Last Found Window: A&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="注册表"&gt;&lt;a href="#%e6%b3%a8%e5%86%8c%e8%a1%a8" class="header-anchor"&gt;&lt;/a&gt;注册表
+&lt;/h2&gt;&lt;p&gt;从
+&lt;a
+class="link"
+href="https://www.zhihu.com/question/22288432/answer/81286232"
+target="_blank"
+rel="noopener"
+&gt;如何改变 Windows 默认的输入法快捷键 Ctrl+Space 为其他值？&lt;/a&gt;
+中发现只需要改 &lt;code&gt;HKEY_USERS\.DEFAULT\Control Panel\Input Method\Hot Keys&lt;/code&gt;
+的 00000010 和 00000070 就可以了，修改步骤参考
+&lt;a
+class="link"
+href="https://superuser.com/a/480723"
+target="_blank"
+rel="noopener"
+&gt;CTRL-Space always toggles Chinese IME (Windows 7)&lt;/a&gt;
+，注意
+&lt;a
+class="link"
+href="https://learn.microsoft.com/zh-cn/windows/win32/sysinfo/registry-value-types#byte-formats"
+target="_blank"
+rel="noopener"
+&gt;REG_BINARY&lt;/a&gt;
+值的转换参考
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/6551342"
+target="_blank"
+rel="noopener"
+&gt;How to set a binary registry value (REG_BINARY) with PowerShell?&lt;/a&gt;
+，如 &lt;code&gt;Key Modifiers&lt;/code&gt; 表示为 &lt;code&gt;左Alt+Shift&lt;/code&gt; 时在注册表中显示 &lt;code&gt;05 c0 00 00&lt;/code&gt;
+转换处理 &lt;code&gt;([byte[]](0x05, 0xc0, 0x00, 0x00))&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;span class="lnt"&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;# 定位到 Ctrl+Space 对应的注册表项（通常是 00000070）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nv"&gt;$basePath&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;HKCU:\Control Panel\Input Method\Hot Keys&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;# 70 表示 cht, 10 表示 chs&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;foreach&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;$ime_key&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;00000070&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;00000010&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nv"&gt;$keyPath&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;Join-Path&lt;/span&gt; &lt;span class="nv"&gt;$basePath&lt;/span&gt; &lt;span class="nv"&gt;$ime_key&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c"&gt;# Set-ItemProperty -Path $keyPath -Name &amp;#34;Key Modifiers&amp;#34; -Value ([byte[]](0x05, 0xc0, 0x00, 0x00))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nb"&gt;Set-ItemProperty&lt;/span&gt; &lt;span class="n"&gt;-Path&lt;/span&gt; &lt;span class="nv"&gt;$keyPath&lt;/span&gt; &lt;span class="n"&gt;-Name&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;Key Modifiers&amp;#34;&lt;/span&gt; &lt;span class="n"&gt;-Value&lt;/span&gt; &lt;span class="n"&gt;0x00&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nb"&gt;Set-ItemProperty&lt;/span&gt; &lt;span class="n"&gt;-Path&lt;/span&gt; &lt;span class="nv"&gt;$keyPath&lt;/span&gt; &lt;span class="n"&gt;-Name&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;Virtual Key&amp;#34;&lt;/span&gt; &lt;span class="n"&gt;-Value&lt;/span&gt; &lt;span class="n"&gt;0xFF&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;注意：使用图形界面修改默认热键只需要重启应用界面即可使得 &lt;code&gt;ctrl+space&lt;/code&gt;
+生效，但直接修改注册表可能需要重新登录或重启才能生效&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2025/03/how-to-disable-the-shortcut-ctrl&amp;#43;space-to-switch-between-chinese-and-english-input-methods-on-windows/20250326012543.png"
+width="479"
+height="616"
+srcset="/posts/2025/03/how-to-disable-the-shortcut-ctrl&amp;#43;space-to-switch-between-chinese-and-english-input-methods-on-windows/20250326012543_hu_b9b28d72b60f9ed5.png 480w, /posts/2025/03/how-to-disable-the-shortcut-ctrl&amp;#43;space-to-switch-between-chinese-and-english-input-methods-on-windows/20250326012543_hu_cebef9022a497e8c.png 1024w"
+loading="lazy"
+alt="change ime hotkey"
+class="gallery-image"
+data-flex-grow="77"
+data-flex-basis="186px"
+&gt;
+&lt;/p&gt;
+&lt;h3 id="监听注册表"&gt;&lt;a href="#%e7%9b%91%e5%90%ac%e6%b3%a8%e5%86%8c%e8%a1%a8" class="header-anchor"&gt;&lt;/a&gt;监听注册表
+&lt;/h3&gt;&lt;p&gt;注意重启等可能无效，使用注册表更新事件
+&lt;a
+class="link"
+href="https://learn.microsoft.com/zh-cn/windows/win32/api/winreg/nf-winreg-regnotifychangekeyvalue"
+target="_blank"
+rel="noopener"
+&gt;winreg.RegNotifyChangeKeyValue&lt;/a&gt;
+可以避免修改无效&lt;/p&gt;
+&lt;!-- TODO --&gt;</description></item></channel></rss>

@@ -1,0 +1,238 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="在使用 clash 时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。\n如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动\n..."><title>重定向已启动程序的输出</title><link rel=canonical href=/posts/2021/09/redirect-output-of-running-process/><link rel=stylesheet href=/scss/style.min.b0e76e98cdd4f7082d1fc36f7af7e0843a81201db2197c03ca426751dc923735.css><meta property='og:title' content="重定向已启动程序的输出"><meta property='og:description' content="在使用 clash 时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。\n如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动\n..."><meta property='og:url' content='/posts/2021/09/redirect-output-of-running-process/'><meta property='og:site_name' content='NavyD 的个人博客'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='linux'><meta property='article:tag' content='shell'><meta property='article:tag' content='bash'><meta property='article:tag' content='clash'><meta property='article:tag' content='cli'><meta property='article:tag' content='docker'><meta property='article:tag' content='pipe'><meta property='article:published_time' content='2021-09-06T12:22:01+08:00'><meta property='article:modified_time' content='2023-03-30T19:02:41+08:00'><meta name=twitter:title content="重定向已启动程序的输出"><meta name=twitter:description content="在使用 clash 时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。\n如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动\n..."></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=https://avatars.githubusercontent.com/u/22490764 width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🐧</span></figure><div class=site-meta><h1 class=site-name><a href=/>NavyD 的个人博客</a></h1><h2 class=site-description>Hello World!</h2></div></header><ol class=menu-social><li><a href=https://space.bilibili.com/47808239 target=_blank title=Bilibili rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7a4 4 0 01-4-4v-6z"/><path d="M8 3l2 3"/><path d="M16 3l-2 3"/><path d="M9 13v-2"/><path d="M15 11v2"/></svg></a></li><li><a href=https://github.com/NavyD target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://x.com/NavyD_hello target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/page/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/page/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=/en/>English</option><option value=/ selected>中文</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#分析>分析</a><ol><li><a href=#strace>strace</a></li></ol></li><li><a href=#解决>解决</a><ol><li><a href=#重定向>重定向</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><div class=article-title-wrapper><h2 class=article-title><a href=/posts/2021/09/redirect-output-of-running-process/>重定向已启动程序的输出</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2021-09-06T12:22:01+08:00>2021年9月6日12:22</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 4 分钟</time></div></footer></div></header><section class=article-content><p>在使用
+<a class=link href=https://github.com/Dreamacro/clash target=_blank rel=noopener>clash</a>
+时要在clash启动后创建对应tun设备iptables与ip route相关操作，这需要保证clash正常启动。</p><p>如果使用延时方式操作，可能clash不一定能启动完成，如在clash首次启动时会进行较长时间的初始化下载，延时不可取。如果可以读取clash的输出，可以保证clash可以正常启动</p><h2 id=分析><a href=#%e5%88%86%e6%9e%90 class=header-anchor></a>分析</h2><p>下面是典型的clash的启动输出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>$ clash
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial provider HK&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial provider IEPL&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial provider SGP&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial provider US&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial provider NeteaseMusic&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial provider TW&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial compatible provider GoogleCN&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial compatible provider Proxy&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial compatible provider Epic&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial compatible provider Apple&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial compatible provider SSH22&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial compatible provider Icloud&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial compatible provider Final-Match&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial compatible provider Telegram&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider direct&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider telegramcidr&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:40Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider reject&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider gfw&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider tld-not-cn&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider cncidr&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider proxy&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider lancidr&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider icloud&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider netease-music&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider greatfire&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider apple&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider private&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;Start initial rule provider google&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;RESTful API listening at: 0.0.0.0:9090&#34;</span>
+</span></span><span class=line><span class=cl><span class=nv>time</span><span class=o>=</span><span class=s2>&#34;2021-09-13T02:35:41Z&#34;</span> <span class=nv>level</span><span class=o>=</span>info <span class=nv>msg</span><span class=o>=</span><span class=s2>&#34;DNS server listening at: 0.0.0.0:5353&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>通常可以在启动程序时重定向如<code>clash &> temp.log</code>，有没有一种可能，复制或重定向已启动程序的输出，这样可以不用局限于启动clash，只要clash进程存在就行</p><p><em><strong>更新：如果要检查clash是否成功启动，可以简单的判断clash的端口是否被使用</strong></em></p><h3 id=strace><a href=#strace class=header-anchor></a>strace</h3><p>过滤strace的输出</p><ul><li>过滤write指定的文件描述符fd</li></ul><p>使用<code>-e write=1,2</code>表示仅列出fd 1与2即stdout,stderr。但是在docker的进程中与宿主机存在区别，无法生效。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ strace -p <span class=k>$(</span>pgrep clash<span class=k>)</span> -e <span class=nv>write</span><span class=o>=</span><span class=m>1</span> -e <span class=nv>signal</span><span class=o>=</span>none -e <span class=nv>trace</span><span class=o>=</span>write
+</span></span><span class=line><span class=cl>strace: Process <span class=m>220553</span> attached
+</span></span><span class=line><span class=cl>write<span class=o>(</span>14, <span class=s2>&#34;E\0\0\220\304\206@\0?\21\352\250\306\22\0\10\306\22\0\1&#39;\34\36a\0|\204\334\0\1\0`&#34;</span>..., 144<span class=o>)</span> <span class=o>=</span> <span class=m>144</span>
+</span></span><span class=line><span class=cl>write<span class=o>(</span>14, <span class=s2>&#34;E\0\4\351\17\36@\0@\21&amp;\\\337J\2\335\300\250]\272\\@\312J\4\325\302m\27\376\375\0&#34;</span>..., 1257<span class=o>)</span> <span class=o>=</span> <span class=m>1257</span>
+</span></span><span class=line><span class=cl><span class=c1>#...</span>
+</span></span></code></pre></td></tr></table></div></div><p>strace使用<code>-y</code>显示对应的fd</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ sudo strace -p <span class=k>$(</span>pgrep clash<span class=k>)</span> -e <span class=nv>trace</span><span class=o>=</span>write -y
+</span></span><span class=line><span class=cl>strace: Process <span class=m>220553</span> attached
+</span></span><span class=line><span class=cl>write<span class=o>(</span>14&lt;/dev/net/tun&gt;, <span class=s2>&#34;E\0\0004\237D@\0?\6\20S\306\22\0\7\306\22\0\1\221 \36a&gt;[\376\316\234k\271\274&#34;</span>..., 52<span class=o>)</span> <span class=o>=</span> <span class=m>52</span>
+</span></span><span class=line><span class=cl>write<span class=o>(</span>35&lt;socket:<span class=o>[</span>1897396<span class=o>]</span>&gt;, <span class=s2>&#34;\202\301!\16F\234\256\3733\270\307H\203\265!\223H\344_#\337)d\223\310~]%m\362\250\202&#34;</span>..., 71<span class=o>)</span> <span class=o>=</span> <span class=m>71</span>
+</span></span><span class=line><span class=cl>write<span class=o>(</span>1&lt;pipe:<span class=o>[</span>1652130<span class=o>]</span>&gt;, <span class=s2>&#34;...&#34;</span>, 40<span class=o>)</span> <span class=o>=</span> <span class=m>40</span>
+</span></span></code></pre></td></tr></table></div></div><p>查看对应进程的fd</p><ul><li><p>在docker中</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ docker <span class=nb>exec</span> -it clash bash -c <span class=s1>&#39;ls -al /proc/$(pgrep clash)/fd&#39;</span>
+</span></span><span class=line><span class=cl>total <span class=m>0</span>
+</span></span><span class=line><span class=cl>dr-x------    <span class=m>2</span> root     root             <span class=m>0</span> Sep <span class=m>13</span> 06:10 .
+</span></span><span class=line><span class=cl>dr-xr-xr-x    <span class=m>9</span> nobody   nobody           <span class=m>0</span> Sep <span class=m>13</span> 06:10 ..
+</span></span><span class=line><span class=cl>lrwx------    <span class=m>1</span> root     root            <span class=m>64</span> Sep <span class=m>13</span> 06:10 <span class=m>0</span> -&gt; /dev/null
+</span></span><span class=line><span class=cl>l-wx------    <span class=m>1</span> root     root            <span class=m>64</span> Sep <span class=m>13</span> 06:10 <span class=m>1</span> -&gt; pipe:<span class=o>[</span>1652130<span class=o>]</span>
+</span></span><span class=line><span class=cl>lrwx------    <span class=m>1</span> root     root            <span class=m>64</span> Sep <span class=m>13</span> 06:10 <span class=m>10</span> -&gt; socket:<span class=o>[</span>1645489<span class=o>]</span>
+</span></span><span class=line><span class=cl><span class=c1># ...</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># docker clash进程在主机上的fd</span>
+</span></span><span class=line><span class=cl>$ sudo ls -al /proc/<span class=k>$(</span>pgrep clash<span class=k>)</span>/fd
+</span></span><span class=line><span class=cl>total <span class=m>0</span>
+</span></span><span class=line><span class=cl>dr-x------ <span class=m>2</span> root   root     <span class=m>0</span> Sep <span class=m>13</span> 14:24 .
+</span></span><span class=line><span class=cl>dr-xr-xr-x <span class=m>9</span> nobody nogroup  <span class=m>0</span> Sep <span class=m>13</span> 14:09 ..
+</span></span><span class=line><span class=cl>lrwx------ <span class=m>1</span> root   root    <span class=m>64</span> Sep <span class=m>13</span> 14:29 <span class=m>0</span> -&gt; /dev/null
+</span></span><span class=line><span class=cl>l-wx------ <span class=m>1</span> root   root    <span class=m>64</span> Sep <span class=m>13</span> 14:29 <span class=m>1</span> -&gt; <span class=s1>&#39;pipe:[1652130]&#39;</span>
+</span></span><span class=line><span class=cl>lrwx------ <span class=m>1</span> root   root    <span class=m>64</span> Sep <span class=m>13</span> 14:29 <span class=m>10</span> -&gt; <span class=s1>&#39;socket:[1645489]&#39;</span>
+</span></span><span class=line><span class=cl><span class=c1># ...</span>
+</span></span></code></pre></td></tr></table></div></div></li><li><p>在host中</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># no redirection</span>
+</span></span><span class=line><span class=cl>$ bash -c <span class=s1>&#39;while true; do echo &#39;</span>1<span class=s1>&#39;; sleep 1; done &amp; ls -al /proc/$!/fd &amp;&amp; kill -9 $!&#39;</span>
+</span></span><span class=line><span class=cl><span class=m>1</span>
+</span></span><span class=line><span class=cl>total <span class=m>0</span>
+</span></span><span class=line><span class=cl>dr-x------ <span class=m>2</span> navyd navyd  <span class=m>0</span> Sep <span class=m>13</span> 14:18 .
+</span></span><span class=line><span class=cl>dr-xr-xr-x <span class=m>9</span> navyd navyd  <span class=m>0</span> Sep <span class=m>13</span> 14:18 ..
+</span></span><span class=line><span class=cl>lr-x------ <span class=m>1</span> navyd navyd <span class=m>64</span> Sep <span class=m>13</span> 14:18 <span class=m>0</span> -&gt; /dev/null
+</span></span><span class=line><span class=cl>lrwx------ <span class=m>1</span> navyd navyd <span class=m>64</span> Sep <span class=m>13</span> 14:18 <span class=m>1</span> -&gt; /dev/pts/0
+</span></span><span class=line><span class=cl>lrwx------ <span class=m>1</span> navyd navyd <span class=m>64</span> Sep <span class=m>13</span> 14:18 <span class=m>2</span> -&gt; /dev/pts/0
+</span></span><span class=line><span class=cl><span class=c1># ...</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># redirect to /dev/null</span>
+</span></span><span class=line><span class=cl>$ <span class=k>while</span> true<span class=p>;</span> <span class=k>do</span> <span class=nb>echo</span> <span class=s1>&#39;1&#39;</span><span class=p>;</span> sleep 1<span class=p>;</span> <span class=k>done</span> &gt;/dev/null <span class=p>&amp;</span> ls -al /proc/<span class=nv>$!</span>/fd <span class=o>&amp;&amp;</span> <span class=nb>kill</span> -9 <span class=nv>$!</span>
+</span></span><span class=line><span class=cl>total <span class=m>0</span>
+</span></span><span class=line><span class=cl>dr-x------ <span class=m>2</span> navyd navyd  <span class=m>0</span> Sep <span class=m>13</span> 12:42 .
+</span></span><span class=line><span class=cl>dr-xr-xr-x <span class=m>9</span> navyd navyd  <span class=m>0</span> Sep <span class=m>13</span> 12:42 ..
+</span></span><span class=line><span class=cl>lrwx------ <span class=m>1</span> navyd navyd <span class=m>64</span> Sep <span class=m>13</span> 12:42 <span class=m>0</span> -&gt; /dev/pts/0
+</span></span><span class=line><span class=cl>l-wx------ <span class=m>1</span> navyd navyd <span class=m>64</span> Sep <span class=m>13</span> 12:42 <span class=m>1</span> -&gt; /dev/null
+</span></span><span class=line><span class=cl>lrwx------ <span class=m>1</span> navyd navyd <span class=m>64</span> Sep <span class=m>13</span> 12:42 <span class=m>10</span> -&gt; /dev/pts/0
+</span></span><span class=line><span class=cl>lr-x------ <span class=m>1</span> navyd navyd <span class=m>64</span> Sep <span class=m>13</span> 12:42 <span class=m>11</span> -&gt; /home/navy
+</span></span><span class=line><span class=cl><span class=c1># ...</span>
+</span></span></code></pre></td></tr></table></div></div></li></ul><p>可以明显的看到docker中的stdout被链接到了<code>pipe:[1652130]</code>，而host中是一个本地路径链接，strace可能无法正确访问docker的stdout，可以使用readlink读取链接给strace过滤：<code>-P "$(readlink /proc/"$CLASH_PID"/fd/1)"</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>start_clash<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    sudo -u <span class=s2>&#34;</span><span class=nv>$RUN_USER</span><span class=s2>&#34;</span> clash -d <span class=s2>&#34;</span><span class=nv>$CLASH_DIR</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>    strace -P <span class=s2>&#34;</span><span class=k>$(</span>readlink /proc/<span class=s2>&#34;</span><span class=nv>$CLASH_PID</span><span class=s2>&#34;</span>/fd/1<span class=k>)</span><span class=s2>&#34;</span> -e <span class=nv>trace</span><span class=o>=</span>write -e <span class=nv>signal</span><span class=o>=</span>none -s <span class=m>1000</span> -X raw -p <span class=s2>&#34;</span><span class=nv>$CLASH_PID</span><span class=s2>&#34;</span> 2&gt;<span class=p>&amp;</span><span class=m>1</span> <span class=p>|</span> <span class=k>while</span> <span class=nb>read</span> -r line<span class=p>;</span> <span class=k>do</span>
+</span></span><span class=line><span class=cl>        <span class=c1># 修改</span>
+</span></span><span class=line><span class=cl>        <span class=nv>line</span><span class=o>=</span><span class=k>$(</span>sed -n -r <span class=s1>&#39;s/^write\([0-9]+,\s*&#34;(.+)&#34;,\s*[0-9]+\)\s*=\s*[[:digit:]]+$/\1/p&#39;</span> <span class=o>&lt;&lt;&lt;</span> <span class=s2>&#34;</span><span class=nv>$line</span><span class=s2>&#34;</span><span class=k>)</span>
+</span></span><span class=line><span class=cl>        <span class=c1># echo &#34;dumping line: $line&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>[[</span> <span class=nv>$line</span> <span class=o>==</span> *<span class=s2>&#34;listening at&#34;</span>* <span class=o>]]</span><span class=p>;</span> <span class=k>then</span>
+</span></span><span class=line><span class=cl>            <span class=nb>echo</span> <span class=s2>&#34;clash has started at line: </span><span class=nv>$line</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=nb>break</span>
+</span></span><span class=line><span class=cl>        <span class=k>fi</span>
+</span></span><span class=line><span class=cl>    <span class=k>done</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>注意：</p><ul><li>strace默认输出到stderr重定向到标准输出<code>2>&amp;1</code></li><li><code>-X raw</code>使用原始的输出防止乱码</li><li><code>-s 1000</code>指定最大的打印字符串避免默认32过小截断输出</li><li><code>-e trace=write -e signal=none</code>过滤非write输出</li></ul><p><em><strong>但是上面存在一个问题，strace是对sys call作用，clash输出log时没有<code>Start initial rule provider</code>与后面的<code>listening at</code>，同时使用sync命令没用，可能是缓存没有刷新。这里不清楚 TODO</strong></em></p><p>另外还有gdb,screen两种方式可以重定向，但是无法简单编程使用</p><h2 id=解决><a href=#%e8%a7%a3%e5%86%b3 class=header-anchor></a>解决</h2><h3 id=重定向><a href=#%e9%87%8d%e5%ae%9a%e5%90%91 class=header-anchor></a>重定向</h3><p>最简单的方法就是在后台重定向clash的输出到文件，再读取文件确认启动</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># start clash and confirm and return pid</span>
+</span></span><span class=line><span class=cl>start_clash<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    sudo -u <span class=s2>&#34;</span><span class=nv>$RUN_USER</span><span class=s2>&#34;</span> clash -d <span class=s2>&#34;</span><span class=nv>$CLASH_DIR</span><span class=s2>&#34;</span> <span class=p>&amp;</span>&gt; temp.log
+</span></span><span class=line><span class=cl>    <span class=nb>local</span> <span class=nv>pid</span><span class=o>=</span><span class=nv>$!</span>
+</span></span><span class=line><span class=cl>    tail -f temp.log <span class=p>|</span> <span class=k>while</span> <span class=nb>read</span> -r line
+</span></span><span class=line><span class=cl>    <span class=k>do</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>[[</span> <span class=nv>$line</span> <span class=o>==</span> *<span class=s2>&#34;listening at&#34;</span>* <span class=o>]]</span><span class=p>;</span> <span class=k>then</span>
+</span></span><span class=line><span class=cl>            <span class=nb>echo</span> <span class=s2>&#34;clash has started at line: </span><span class=nv>$line</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> pid
+</span></span><span class=line><span class=cl>        <span class=k>fi</span>
+</span></span><span class=line><span class=cl>    <span class=k>done</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>注意不能使用<code>sudo -u "$RUN_USER" clash -d "$CLASH_DIR" | while read -r line; do ... done</code>，在while退出break后将会使clash直接退出。下面使用bash一行命令测试：无限循环while退出后整个管道命令终止</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=cp>#!/bin/bash
+</span></span></span><span class=line><span class=cl><span class=cp></span><span class=nb>local</span> <span class=nv>count</span><span class=o>=</span>0<span class=p>;</span> <span class=k>while</span> true<span class=p>;</span> <span class=k>do</span> <span class=nb>echo</span> <span class=s2>&#34;sleeping </span><span class=k>$((</span><span class=nv>count</span><span class=o>+=</span><span class=m>1</span><span class=k>))</span><span class=s2>&#34;</span><span class=p>;</span> sleep 1<span class=p>;</span> <span class=k>done</span> <span class=p>|</span> <span class=k>while</span> <span class=nb>read</span> line<span class=p>;</span> <span class=k>do</span> <span class=nb>echo</span> <span class=s2>&#34;read </span><span class=nv>$line</span><span class=s2>&#34;</span><span class=p>;</span> <span class=k>if</span> <span class=o>[[</span> <span class=nv>$line</span> <span class=o>==</span> *<span class=s2>&#34;9&#34;</span>* <span class=o>]]</span><span class=p>;</span> <span class=k>then</span> <span class=nb>echo</span> <span class=s2>&#34;end </span><span class=nv>$line</span><span class=s2>&#34;</span><span class=p>;</span> break<span class=p>;</span> <span class=k>fi</span><span class=p>;</span> <span class=k>done</span>
+</span></span></code></pre></td></tr></table></div></div><p>另外，可以使用python等方式完全重写更好维护，算上iptables相关的配置都200多行了</p><p>参考：</p><ul><li><a class=link href=https://stackoverflow.com/questions/593724/redirect-stderr-stdout-of-a-process-after-its-been-started-using-command-lin target=_blank rel=noopener>Redirect STDERR / STDOUT of a process AFTER it&rsquo;s been started, using command line?</a></li><li><a class=link href=https://www.baeldung.com/linux/redirect-output-of-running-process target=_blank rel=noopener>Redirecting the Output of an Already Running Process</a></li><li><a class=link href=https://askubuntu.com/a/731237 target=_blank rel=noopener>How do I save terminal output to a file?</a></li><li><a class=link href=https://jvns.ca/blog/2020/04/29/why-strace-doesnt-work-in-docker/ target=_blank rel=noopener>Why strace doesn&rsquo;t work in Docker</a></li><li><a class=link href=https://stackoverflow.com/a/229606/8566831 target=_blank rel=noopener>How to check if a string contains a substring in Bash</a></li><li><a class=link href=https://unix.stackexchange.com/questions/30370/how-to-get-the-pid-of-the-last-executed-command-in-shell-script target=_blank rel=noopener>How to get the pid of the last executed command in shell script?</a></li><li><a class=link href=https://unix.stackexchange.com/a/163814 target=_blank rel=noopener>grep on a variable</a></li></ul></section><footer class=article-footer><section class=article-tags><a href=/tags/linux/>Linux</a>
+<a href=/tags/shell/>Shell</a>
+<a href=/tags/bash/>Bash</a>
+<a href=/tags/clash/>Clash</a>
+<a href=/tags/cli/>CLI</a>
+<a href=/tags/docker/>Docker</a>
+<a href=/tags/pipe/>Pipe</a></section><section class=article-lastmod><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>最后更新于 2023-03-30 19:02:03 CST</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/posts/2021/08/clash-transparent-proxy/><div class=article-details><h2 class=article-title>Clash透明代理</h2></div></a></article><article><a href=/posts/2021/08/docker-multi-platform-build/><div class=article-details><h2 class=article-title>Docker Multi Platform Build</h2></div></a></article><article><a href=/posts/2021/08/play-store-failed-to-download-in-clash-proxy/><div class=article-details><h2 class=article-title>clash代理在Google Play Store下载时失败</h2></div></a></article><article><a href=/posts/2021/08/merge-two-git-repos/><div class=article-details><h2 class=article-title>Merge Two Git Repos</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2026 NavyD 的个人博客</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

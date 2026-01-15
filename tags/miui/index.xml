@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Miui on NavyD 的个人博客</title><link>/tags/miui/</link><description>Recent content in Miui on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 30 Mar 2023 19:02:41 +0800</lastBuildDate><atom:link href="/tags/miui/index.xml" rel="self" type="application/rss+xml"/><item><title>clash代理在Google Play Store下载时失败</title><link>/posts/2021/08/play-store-failed-to-download-in-clash-proxy/</link><pubDate>Mon, 09 Aug 2021 17:21:47 +0800</pubDate><guid>/posts/2021/08/play-store-failed-to-download-in-clash-proxy/</guid><description>&lt;p&gt;&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-14-35.png"
+width="353"
+height="136"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-14-35_hu_97df052f4e172299.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-14-35_hu_45cfe7916d7e2a42.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="259"
+data-flex-basis="622px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;clash透明代理使用规则发现GOOGLE PLAY商店下载应用一直处于等待中，全局代理能够正常下载。在我的oneplus3t上是可以正常使用play商店的，但是在redmi k40上只能浏览，无法下载，一直处于pending状态。&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-06-18.gif"
+width="354"
+height="356"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-06-18_hu_4dbd1f2cdc3b6853.gif 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-06-18_hu_9d542237083ac5a0.gif 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="99"
+data-flex-basis="238px"
+&gt;
+&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-09-35.png"
+width="348"
+height="435"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-09-35_hu_1307f99fc1ac9bac.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-09-35_hu_a626632a3504c32.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="80"
+data-flex-basis="192px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;相关环境：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;redmi k40&lt;/li&gt;
+&lt;li&gt;miui 12.5.4&lt;/li&gt;
+&lt;li&gt;从小米商店下载的 &lt;code&gt;Play Store version: 258.21-19 [0] [PR] 379071060&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="分析"&gt;&lt;a href="#%e5%88%86%e6%9e%90" class="header-anchor"&gt;&lt;/a&gt;分析
+&lt;/h2&gt;&lt;p&gt;这个问题持续了2个月，开始遇到时使用oneplus3t上的其它的代理软件如老王、pandavpn测试没有clash环境下play商店是否可用，这两种免费的代理都无法使用，根本没法连接国外网站，测试失败&lt;/p&gt;
+&lt;p&gt;还有各种miui无法下载时的搜索问题&lt;code&gt;小米google play一直显示正在下载, miui12 google play 不能下载&lt;/code&gt;，基本都是下面这种操作：包括清除下载管理器的缓存，清除googlePlay缓存和数据等&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;打开系统自带的【下载管理】应用&lt;/li&gt;
+&lt;li&gt;点击【设置】&lt;/li&gt;
+&lt;li&gt;将【使用迅雷下载引擎】关闭
+&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-19-06.png"
+width="806"
+height="1070"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-19-06_hu_2be841a9ad8b763c.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-19-06_hu_a4767e50875ad708.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="75"
+data-flex-basis="180px"
+&gt;
+&lt;/li&gt;
+&lt;li&gt;重新打开Google Play应用商店进行下载或者更新应用&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;依然不可用。&lt;/p&gt;
+&lt;p&gt;有时候感觉就是这么突然，就在今天，可能是之前在什么地方看到过clash与play store的问题，而且是有关clash规则的，也就是我现在正在使用的
+&lt;a
+class="link"
+href="https://github.com/Loyalsoldier/clash-rules"
+target="_blank"
+rel="noopener"
+&gt;clash-rules&lt;/a&gt;
+。&lt;/p&gt;
+&lt;p&gt;打开issues中搜索&lt;code&gt;play&lt;/code&gt;果然发现了问题：&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-19-13-51.png"
+width="1535"
+height="422"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-19-13-51_hu_c6b270881238f46f.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-19-13-51_hu_7101cd209cfd328f.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="363"
+data-flex-basis="872px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;根据
+&lt;a
+class="link"
+href="https://github.com/Loyalsoldier/clash-rules/issues/28#issuecomment-829886733"
+target="_blank"
+rel="noopener"
+&gt;clash 规则模式下google play无法下载 #28&lt;/a&gt;
+的方法是&lt;code&gt;services.googleapis.cn&lt;/code&gt;没有使用代理，下面是在clash使用play下载时的google连接：&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-34-55.png"
+width="1703"
+height="380"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-34-55_hu_eb0baccf62e62df8.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-34-55_hu_de7b8e7a0cb5bead.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="448"
+data-flex-basis="1075px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;可以看到最后的&lt;code&gt;services.googleapis.cn&lt;/code&gt;确实是直连TCP。&lt;/p&gt;
+&lt;h3 id="后记"&gt;&lt;a href="#%e5%90%8e%e8%ae%b0" class="header-anchor"&gt;&lt;/a&gt;后记
+&lt;/h3&gt;&lt;p&gt;在这之后，依然存在无法下载的问题，可能是由于下面的神奇操作使得之前的分析不可用：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;启用clash&lt;/li&gt;
+&lt;li&gt;进入play store下载更新应用&lt;/li&gt;
+&lt;li&gt;等待一段时间后一直显示正在下载&lt;/li&gt;
+&lt;li&gt;断网等待几秒不要退出play store&lt;/li&gt;
+&lt;li&gt;重连网络可以看到play store开始下载/更新应用&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;上面这个操作看运气，不具有稳定性，导致代理&lt;code&gt;services.googleapis.cn&lt;/code&gt;分析不可用，就连使用全局代理都无法使用。&lt;/p&gt;
+&lt;p&gt;google搜索&lt;code&gt;miui12 clash 代理 play store&lt;/code&gt;，在这篇文章
+&lt;a
+class="link"
+href="https://www.v2ex.com/t/696735"
+target="_blank"
+rel="noopener"
+&gt;关于 Google Play 商店只能浏览不能下载的一点奇怪发现&lt;/a&gt;
+和我的情况十分相似：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;ping 后发现这个网址的 IP 是 203.208 网段的，也就是 Google 部署在中国大陆的 IP 之一。更奇怪的是只有在我使用 HK 线路的时候，哪怕是全局，Play 商店都不能下载更新。一但使用别的地区（ SG/US&amp;hellip;）的网络，Play 商店就正常了。&lt;/p&gt;
+&lt;p&gt;Google Play 能不能下载及更新只跟机场有关。与手机是否国行，services.googl 去掉 eapis.cn 是否走代理都无关。 好的机场无需任何设置，在国行上也可以下载更新。（小米手机必须关闭迅雷功能）&lt;/p&gt;
+&lt;p&gt;一般来说，这个问题发生在香港节点较多。原因的本质是 ip 被谷歌识别为中国 ip 。 （虽然你的 ip 的确是香港的）&lt;/p&gt;
+&lt;p&gt;直接的结果是某些谷歌服务不可用。 已知的有 Google Play 无法更新下载。 地图时间轴打开 400，YoutubePremium 不可用。&lt;/p&gt;
+&lt;p&gt;判断的方式上面已经有人提过，可以通过以下两个链接：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;https://www.google.com/maps/timeline&lt;/code&gt; 打开 400 错误表示 ip 被封
+&lt;code&gt;https://www.youtube.com/red&lt;/code&gt; 网页打开提示“YouTube Premium 在您所在的国家 /地区尚未推出”。在手机上使用链接直接跳转到 YouTube app 里，它会明确地告诉你 YouTube Premium 在中国未推出。&lt;/p&gt;
+&lt;p&gt;这种节点无论做什么努力都是无法改变无法使用 Google Play 的本质问题的。只有换节点一个办法。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在多次实验后，发现global+iepl专线节点有效，同时，除了HK节点，其它节点都可以在&lt;code&gt;services.googleapis.cn&lt;/code&gt;代理下使得play store正常下载&lt;/p&gt;
+&lt;h3 id="代理udp"&gt;&lt;a href="#%e4%bb%a3%e7%90%86udp" class="header-anchor"&gt;&lt;/a&gt;代理UDP
+&lt;/h3&gt;&lt;p&gt;另外，由于存在另一个&lt;code&gt;services.googleapis.cn&lt;/code&gt;UDP连接，尝试了多种方式都无法代理UDP，解析&lt;code&gt;services.googleapis.cn&lt;/code&gt;常见ip有：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;120.253.253.98 中国 上海 上海 移动
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;180.163.150.162 中国 上海 上海 电信
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;203.208.39.226 中国 北京 北京 谷歌云
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;203.208.43.66 中国 北京 北京 谷歌云
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;180.163.150.34 中国 上海 上海 电信
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;#...
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;用&lt;code&gt;180.163.150.34&lt;/code&gt;尝试在配置文件中添加&lt;code&gt;IP-CIDR,180.163.0.0/16,Proxy&lt;/code&gt;但无法对UDP生效。在clash-rules中的
+&lt;a
+class="link"
+href="https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt"
+target="_blank"
+rel="noopener"
+&gt;中国大陆 IPv4 地址列表 cncidr.txt&lt;/a&gt;
+规则中存在对该ip的配置&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-yml" data-lang="yml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;rules&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="c"&gt;#...&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;GEOIP,,DIRECT&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;GEOIP,CN,DIRECT&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;MATCH,Final-Match&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-26-01-49-06.png"
+width="598"
+height="208"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-26-01-49-06_hu_36fdacf4ddfbe8cc.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-26-01-49-06_hu_709aaf5e486fd810.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="287"
+data-flex-basis="690px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;什么时候有时间好好研究下&lt;/p&gt;
+&lt;!-- todo --&gt;
+&lt;h2 id="解决"&gt;&lt;a href="#%e8%a7%a3%e5%86%b3" class="header-anchor"&gt;&lt;/a&gt;解决
+&lt;/h2&gt;&lt;p&gt;在clash配置文件中加上&lt;code&gt;DOMAIN,services.googleapis.cn,Proxy&lt;/code&gt;，注意&lt;code&gt;Proxy&lt;/code&gt;尽量不要使用香港节点如：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-yml" data-lang="yml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;# ...&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="nt"&gt;proxy-groups&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;Proxy&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;type&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;select&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;proxies&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# - HK-Test&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;IEPL-Test&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;SGP-Test&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;US-Test&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;TW-Test&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;DIRECT&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="nt"&gt;rules&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;RULE-SET,private,DIRECT&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;RULE-SET,reject,REJECT&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# clash 规则模式下google play无法下载 https://github.com/Loyalsoldier/clash-rules/issues/28&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;DOMAIN,services.googleapis.cn,Proxy&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;RULE-SET,icloud,Icloud&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;RULE-SET,apple,Apple&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;RULE-SET,google,Google&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;DOMAIN-KEYWORD,epic,Epic&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;RULE-SET,proxy,Proxy&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;RULE-SET,direct,DIRECT&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;RULE-SET,telegramcidr,Telegram&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;GEOIP,,DIRECT&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;GEOIP,CN,DIRECT&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="l"&gt;MATCH,Final-Match&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;重启clash后可以正常下载应用，这里存在tcp与udp的&lt;code&gt;services.googleapis.cn&lt;/code&gt;，tcp的使用了代理&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-44-36.png"
+width="1102"
+height="317"
+srcset="/posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-44-36_hu_a08c665e39ebb3a2.png 480w, /posts/2021/08/play-store-failed-to-download-in-clash-proxy/2021-08-09-18-44-36_hu_6edda6712302cbb3.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="347"
+data-flex-basis="834px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/Loyalsoldier/clash-rules"
+target="_blank"
+rel="noopener"
+&gt;Loyalsoldier/clash-rules&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/Loyalsoldier/clash-rules/issues/28"
+target="_blank"
+rel="noopener"
+&gt;clash 规则模式下google play无法下载 #28&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://yueyue200830.github.io/2020/02/29/%E8%A7%A3%E5%86%B3Google-Play-Store%E4%B8%80%E7%9B%B4%E3%80%8C%E6%AD%A3%E5%9C%A8%E7%AD%89%E5%BE%85%E4%B8%8B%E8%BD%BD%E3%80%8D%E7%9A%84%E9%97%AE%E9%A2%98/"
+target="_blank"
+rel="noopener"
+&gt;解决Google Play Store一直「正在等待下载」的问题&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="http://www.chinacion.cn/article/8209.html"
+target="_blank"
+rel="noopener"
+&gt;小米手机 Google Play 一直等待下载/安装不了软件解决办法&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://www.v2ex.com/t/696735"
+target="_blank"
+rel="noopener"
+&gt;关于 Google Play 商店只能浏览不能下载的一点奇怪发现&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/Kr328/ClashForAndroid/issues/113"
+target="_blank"
+rel="noopener"
+&gt;Play商店和youtube代理不了 #113&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/Kr328/ClashForAndroid/issues/478"
+target="_blank"
+rel="noopener"
+&gt;[BUG] Play Store应用无法下载 #478&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://lancellc.gitbook.io/clash/clash-config-file/rules/ip-based-rule"
+target="_blank"
+rel="noopener"
+&gt;clash IP-based Rule&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

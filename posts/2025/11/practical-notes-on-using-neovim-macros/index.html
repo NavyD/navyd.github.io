@@ -1,0 +1,363 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="在写 python 代码时发现之前 f-string 的日志出现 logging-f-string (G004) 警告：\n..."><title>在 neovim 中使用宏的一次实践记录</title><link rel=canonical href=/posts/2025/11/practical-notes-on-using-neovim-macros/><link rel=stylesheet href=/scss/style.min.b0e76e98cdd4f7082d1fc36f7af7e0843a81201db2197c03ca426751dc923735.css><meta property='og:title' content="在 neovim 中使用宏的一次实践记录"><meta property='og:description' content="在写 python 代码时发现之前 f-string 的日志出现 logging-f-string (G004) 警告：\n..."><meta property='og:url' content='/posts/2025/11/practical-notes-on-using-neovim-macros/'><meta property='og:site_name' content='NavyD 的个人博客'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='neovim'><meta property='article:tag' content='python'><meta property='article:tag' content='macro'><meta property='article:tag' content='tips'><meta property='article:published_time' content='2025-11-02T13:39:55+08:00'><meta property='article:modified_time' content='2025-11-03T13:10:19+08:00'><meta name=twitter:title content="在 neovim 中使用宏的一次实践记录"><meta name=twitter:description content="在写 python 代码时发现之前 f-string 的日志出现 logging-f-string (G004) 警告：\n..."></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=https://avatars.githubusercontent.com/u/22490764 width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🐧</span></figure><div class=site-meta><h1 class=site-name><a href=/>NavyD 的个人博客</a></h1><h2 class=site-description>Hello World!</h2></div></header><ol class=menu-social><li><a href=https://space.bilibili.com/47808239 target=_blank title=Bilibili rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7a4 4 0 01-4-4v-6z"/><path d="M8 3l2 3"/><path d="M16 3l-2 3"/><path d="M9 13v-2"/><path d="M15 11v2"/></svg></a></li><li><a href=https://github.com/NavyD target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://x.com/NavyD_hello target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/page/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/page/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=/en/>English</option><option value=/ selected>中文</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#录制宏>录制宏</a><ol><li><a href=#限制搜索范围>限制搜索范围</a></li></ol></li><li><a href=#函数>函数</a></li><li><a href=#问题>问题</a><ol><li><a href=#如何创建临时使用的函数>如何创建临时使用的函数</a><ol><li><a href=#在命令模式定义函数>在命令模式定义函数</a></li><li><a href=#source><code>:source</code></a></li><li><a href=#execute><code>:execute</code></a></li></ol></li><li><a href=#如何将宏转换为可打印字符>如何将宏转换为可打印字符</a></li><li><a href=#调试函数>调试函数</a></li><li><a href=#是否可将-catch-pattern-中的模式作为作为变量使用>是否可将 <code>catch /pattern/</code> 中的模式作为作为变量使用</a><ol><li><a href=#在-catch-块内使用条件判断>在 catch 块内使用条件判断</a></li></ol></li><li><a href=#如何编辑宏>如何编辑宏</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><div class=article-title-wrapper><h2 class=article-title><a href=/posts/2025/11/practical-notes-on-using-neovim-macros/>在 neovim 中使用宏的一次实践记录</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-11-02T13:39:55+08:00>2025年11月2日13:39</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 5 分钟</time></div></footer></div></header><section class=article-content><p>在写 python 代码时发现之前 f-string 的日志出现
+<a class=link href=https://docs.astral.sh/ruff/rules/logging-f-string/ target=_blank rel=noopener>logging-f-string (G004)</a>
+警告：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=bp>self</span><span class=o>.</span><span class=n>log</span><span class=o>.</span><span class=n>info</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;Checking if has sudo access with args: </span><span class=si>{</span><span class=n>check_args</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=bp>self</span><span class=o>.</span><span class=n>log</span><span class=o>.</span><span class=n>debug</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=sa>f</span><span class=s2>&#34;Found returncode=</span><span class=si>{</span><span class=n>p</span><span class=o>.</span><span class=n>returncode</span><span class=si>}</span><span class=s2> stdout=</span><span class=si>{</span><span class=n>p</span><span class=o>.</span><span class=n>stdout</span><span class=si>}</span><span class=s2> &#34;</span>
+</span></span><span class=line><span class=cl>    <span class=sa>f</span><span class=s2>&#34;stderr=</span><span class=si>{</span><span class=n>p</span><span class=o>.</span><span class=n>stderr</span><span class=si>}</span><span class=s2> with args: </span><span class=si>{</span><span class=n>check_args</span><span class=si>}</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=bp>self</span><span class=o>.</span><span class=n>log</span><span class=o>.</span><span class=n>info</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=sa>f</span><span class=s2>&#34;Setting up </span><span class=si>{</span><span class=bp>self</span><span class=o>.</span><span class=n>_user</span><span class=si>}</span><span class=s2> login shell to </span><span class=si>{</span><span class=bp>self</span><span class=o>.</span><span class=n>_shell</span><span class=si>}</span><span class=s2> with args: </span><span class=si>{</span><span class=n>args</span><span class=si>}</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>需要转换为</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=bp>self</span><span class=o>.</span><span class=n>log</span><span class=o>.</span><span class=n>info</span><span class=p>(</span><span class=s2>&#34;Checking if has sudo access with args: </span><span class=si>%s</span><span class=s2>&#34;</span><span class=p>,</span> <span class=n>check_args</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>这样需要修改的代码可能有几百行，一个个手动转换太累，这时可以考虑用
+<a class=link href=https://neovim.io/doc/user/repeat.html#macro target=_blank rel=noopener>vim macro</a>
+批量转换。</p><h2 id=录制宏><a href=#%e5%bd%95%e5%88%b6%e5%ae%8f class=header-anchor></a>录制宏</h2><p>下面是执行的宏：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-vim data-lang=vim><span class=line><span class=cl><span class=nx>vi</span><span class=p>(</span>?\%<span class=nx>V</span>{.\{<span class=p>-</span>}}^<span class=nx>M</span>^[^[&#34;<span class=nx>yyi</span>{]<span class=nx>Aa</span><span class=p>,</span> ^<span class=nx>Ry</span>^[[<span class=nx>avi</span><span class=p>(</span>?^<span class=nx>P</span>^<span class=nx>M</span>^[^[<span class=nx>ca</span>{%<span class=nx>s</span>^[[<span class=nx>avi</span><span class=p>(</span>?^<span class=nx>P</span>^<span class=nx>M</span>^[^[@<span class=nx>a</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>注意：<code>^M</code>, <code>^[</code>, <code>^P</code>, <code>^R</code> 分别表示 <code>&lt;CR></code> , <code>&lt;ESC></code> , <code>&lt;C-p></code> ,
+<code>&lt;C-r></code>，参考
+<a class=link href=/posts/2025/03/neovim-in-practice/#%e4%bd%bf%e7%94%a8-ctrl-v-%e6%8e%a7%e5%88%b6%e5%ad%97%e7%ac%a6>使用 <code>ctrl-v</code> 控制字符</a></p></blockquote><p>具体操作是：</p><ol><li>录制宏 <code>qa</code> 。</li><li>在 v 模式选中 <code>log.info(f"xx")</code> 中的参数 <code>f"xx"</code> 后退出 v 模式。如
+<code>vi(v</code> 。</li><li>从上次选中的范围内
+<a class=link href=https://neovim.io/doc/user/pattern.html#%2F%5C%25V target=_blank rel=noopener><code>\%V</code></a>
+反向 <code>?</code> 搜索 <code>{.\{-}}</code> 。</li><li>复制最后一个 <code>{xx}</code> 的内容 <code>xx</code> 到寄存器 y 中。</li><li>移动光标 <code>]A</code> 到这个参数的后面并插入 <code>, </code>与粘贴寄存器 y 的内容作为新的参数。</li><li>将光标移动 <code>[a</code> 回到这个新参数前（避免单个字符为参数时如 <code>(f"", s)</code> 与
+<code>(f"", args)</code> 移动光标的区别）。</li><li>执行步骤 2,3 重新搜索 <code>{xx}</code> 的位置。</li><li>使用 <code>%s</code> 替换 <code>{xx}</code> : <code>ca{%s</code> 。</li><li>最后递归的调用宏 <code>@a</code> 直到搜索 <code>{.\{-}}</code> 失败。</li><li>退出录制宏 <code>q</code> 。</li></ol><p>这个宏实际存在一些问题：</p><ul><li>需要先找到 <code>log.info(f"")</code> 语句搜索
+<code>/log\w*\.\w\+(\n*\s*f"</code> 后再执行 <code>@a</code> ，由于 <code>@a</code> 中重新搜索了，
+执行完后还需要再搜索 <code>/log\w*\.\w\+(\n*\s*f"</code> ，<code>n/N</code>
+搜索上下一个会被 <code>@a</code> 中的搜索覆盖，非常不方便</li><li><code>@a</code> 执行的比较慢，同时还存在边缘情况，可能会修改失败</li></ul><p>再录制一个宏：</p><ol><li>执行 <code>qq</code> 录制宏</li><li>搜索 <code>/log\w*\.\w\+(\n*\s*f"</code></li><li>执行之前的宏 <code>@a</code></li><li>退出录制宏 <code>q</code></li></ol><p>但这又引入一个问题，在搜索失败后会自动停止宏的执行，递归宏 <code>@a</code>
+便是依赖这个机制退出的，但没想到的是 <code>@a</code> 的停止也会导致 <code>@q</code> 宏的执行。
+又尝试先保存
+<a class=link href=https://neovim.io/doc/user/pattern.html#last-pattern target=_blank rel=noopener>last-pattern</a>
+<a class=link href=https://neovim.io/doc/user/change.html#%40%2F target=_blank rel=noopener><code>@/</code></a>
+，然后
+<a class=link href=https://neovim.io/doc/user/vimeval.html#try-conditionals target=_blank rel=noopener>try-conditionals</a>
+捕获 <code>@a</code> 的搜索错误后恢复 <code>@/</code> 即可！</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-vim data-lang=vim><span class=line><span class=cl><span class=p>:</span><span class=k>let</span> <span class=nx>last_pat</span> <span class=p>=</span> @/
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>try</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>exe</span> <span class=s1>&#39;norm! @a&#39;</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>endtry</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=k>let</span> @/ <span class=p>=</span> <span class=nx>last_pat</span>
+</span></span></code></pre></td></tr></table></div></div><p>但在执行到 <code>:exe 'norm! @a'</code> 时出现在不停的修改一个个 <code>{xx}</code>
+语句，吓的我赶紧停 <code>ctrl+c</code> , <code>esc</code> 不停的按，还好未保存，有几次的修改都是有
+bug 的，记得一次后面的参数一堆 <code>log.info(f"%s", arg, path, ..., path)</code>
+，给我整出阴影来了。。</p><p>这个原因可能是 <code>try</code> 让 <code>@a</code> 的执行不再被其中的搜索失败中止，或者是由于
+<code>vi(?\%V{.\{-}}</code> 不停的向下搜索，而不是被限制在上次搜索范围内。说到底这个
+<code>\%V</code> 有很大的不确定性，多次重复的搜索可能会导致上次范围修改的问题。</p><h3 id=限制搜索范围><a href=#%e9%99%90%e5%88%b6%e6%90%9c%e7%b4%a2%e8%8c%83%e5%9b%b4 class=header-anchor></a>限制搜索范围</h3><p>现在看来是这个宏 <code>@a</code> 的问题，依赖 <code>\%V</code> 这个上次的搜索范围不靠谱，
+由于 <code>{xx}</code> 这种 log 语句存在多个，需要一种方法可以在指定范围内搜索，
+参考
+<a class=link href=https://neovim.io/doc/user/pattern.html#search-range target=_blank rel=noopener>search-range</a>
+可以使用</p><ul><li><a class=link href=https://neovim.io/doc/user/pattern.html#%2F%5C%25%3El target=_blank rel=noopener>/%>l</a>
+:
+在指定行范围内搜索如 <code>/\%>199l\%&lt;300llimit</code></li><li><a class=link href=https://neovim.io/doc/user/cmdline.html#%3Arange-pattern target=_blank rel=noopener>:/range-pattern</a>
+:
+如 <code>:.,/pattern</code> 表示从当前行开始直到首个 <code>pattern</code> 的行</li><li><a class=link href=https://neovim.io/doc/user/change.html#%3Asubstitute target=_blank rel=noopener>:substitute</a>
+:
+在指定行范围内替换如 <code>:.,300s/Pattern//gc</code> ，注意添加 <code>c</code>
+选项开启在确认提示中使用 <code>n</code> 跳转下一个后使用 <code>q</code> 退出即可达到搜索跳转的效果</li></ul><p>这里选择使用 <code>\%>l</code> 搜索方便，由于这个宏的操作比较复杂，
+录制一个宏如果出错重置太麻烦，不如写一个 vim script 函数直观方便。</p><h2 id=函数><a href=#%e5%87%bd%e6%95%b0 class=header-anchor></a>函数</h2><p>之前使用的宏 <code>@a</code> 是有问题的，优化后的逻辑如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-vim data-lang=vim><span class=line><span class=cl><span class=k>function</span><span class=p>!</span> <span class=nx>PyLogFstr2Args</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>  <span class=nx>try</span>
+</span></span><span class=line><span class=cl><span class=c>    &#34; 查找 log.info(f&#34;xx&#34;) 的语句</span>
+</span></span><span class=line><span class=cl>    <span class=nx>exe</span> <span class=s1>&#39;norm! /log\w*\.\w\+(\n*\s*f&#34;&#39;</span> . <span class=s2>&#34;\&lt;CR&gt;&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=nx>catch</span> <span class=sr>/.*/</span>
+</span></span><span class=line><span class=cl>    <span class=nx>echo</span> <span class=s2>&#34;未找到 log f-string 语句&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=nx>return</span> <span class=m>0</span>
+</span></span><span class=line><span class=cl>  <span class=nx>endtry</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>  &#34; 找到参数位置，方便修改后回到起始</span>
+</span></span><span class=line><span class=cl>  <span class=nx>norm</span><span class=p>!</span> <span class=nx>f</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>  <span class=k>let</span> <span class=nx>start_pos</span> <span class=p>=</span> <span class=nx>getpos</span><span class=p>(</span><span class=s1>&#39;.&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=nx>norm</span><span class=p>!</span> %
+</span></span><span class=line><span class=cl>  <span class=k>let</span> <span class=nx>end_pos</span> <span class=p>=</span> <span class=nx>getpos</span><span class=p>(</span><span class=s1>&#39;.&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>  &#34; 将 `{xx}` 替换为 `%s` 并添加参数 `xx`</span>
+</span></span><span class=line><span class=cl>  <span class=k>let</span> <span class=nx>count</span> <span class=p>=</span> <span class=m>0</span>
+</span></span><span class=line><span class=cl>  <span class=nx>try</span>
+</span></span><span class=line><span class=cl>    <span class=nx>while</span> <span class=m>1</span>
+</span></span><span class=line><span class=cl>      <span class=k>let</span> <span class=nx>count</span> <span class=p>+=</span> <span class=m>1</span>
+</span></span><span class=line><span class=cl><span class=c>      &#34; 避免出错时无限循环导致修改操作崩溃</span>
+</span></span><span class=line><span class=cl>      <span class=k>if</span> <span class=nx>count</span> <span class=p>&gt;</span> <span class=m>10</span>
+</span></span><span class=line><span class=cl>        <span class=nx>throw</span> <span class=s1>&#39;too many args error&#39;</span>
+</span></span><span class=line><span class=cl>      <span class=k>endif</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>      &#34; 在 log 语句行的范围内搜索 `{xx}`</span>
+</span></span><span class=line><span class=cl>      <span class=nx>exe</span> <span class=nx>printf</span><span class=p>(</span><span class=s1>&#39;norm! /\%%&gt;%sl\%%&lt;%sl{.\{-}}&#39;</span> . <span class=s2>&#34;\&lt;CR&gt;&#34;</span><span class=p>,</span> <span class=nx>start_pos</span>[<span class=m>1</span>] <span class=p>-</span> <span class=m>1</span><span class=p>,</span> <span class=nx>end_pos</span>[<span class=m>1</span>] <span class=p>+</span> <span class=m>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>      &#34; let choice = confirm(&#34;continue &#34; . start_pos[1] . &#34;-&#34; . end_pos[1], &#34;&amp;Yes\n&amp;No&#34;, 1, &#34;Question&#34;)</span>
+</span></span><span class=line><span class=cl><span class=c>      &#34; if choice != 1</span>
+</span></span><span class=line><span class=cl><span class=c>      &#34;   break</span>
+</span></span><span class=line><span class=cl><span class=c>      &#34; endif</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>      &#34; 复制到 reg y 中并替换为 `%s`</span>
+</span></span><span class=line><span class=cl>      <span class=nx>exe</span> <span class=s1>&#39;norm! &#34;yyi{ca{%s&#39;</span> . <span class=s2>&#34;\&lt;ESC&gt;&#34;</span>
+</span></span><span class=line><span class=cl>      <span class=nx>call</span> <span class=nx>setpos</span><span class=p>(</span><span class=s1>&#39;.&#39;</span><span class=p>,</span> <span class=nx>start_pos</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c>      &#34; 从在最后的 `)` 前插入 `, ` 并粘贴后移动到 `)` 上</span>
+</span></span><span class=line><span class=cl>      <span class=nx>exe</span> <span class=s1>&#39;norm! %i, &#39;</span> . <span class=s2>&#34;\&lt;ESC&gt;&#34;</span> . <span class=s1>&#39;&#34;ypl&#39;</span>
+</span></span><span class=line><span class=cl><span class=c>      &#34; 更新位置 不必要的操作</span>
+</span></span><span class=line><span class=cl><span class=c>      &#34; let end_pos = getpos(&#39;.&#39;)</span>
+</span></span><span class=line><span class=cl>    <span class=nx>endwhile</span>
+</span></span><span class=line><span class=cl>  <span class=nx>catch</span> <span class=sr>/^Vim\%((\a\+)\)\=:E486/</span>
+</span></span><span class=line><span class=cl>    <span class=nx>echo</span> <span class=s1>&#39;参数替换完成&#39;</span>
+</span></span><span class=line><span class=cl>  <span class=nx>endtry</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=k>let</span> <span class=nx>count</span> <span class=p>=</span> <span class=m>0</span>
+</span></span><span class=line><span class=cl>  <span class=nx>call</span> <span class=nx>setpos</span><span class=p>(</span><span class=s1>&#39;.&#39;</span><span class=p>,</span> <span class=nx>start_pos</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=nx>try</span>
+</span></span><span class=line><span class=cl>    <span class=nx>while</span> <span class=m>1</span>
+</span></span><span class=line><span class=cl>      <span class=k>let</span> <span class=nx>count</span> <span class=p>+=</span> <span class=m>1</span>
+</span></span><span class=line><span class=cl>      <span class=k>if</span> <span class=nx>count</span> <span class=p>&gt;</span> <span class=m>5</span>
+</span></span><span class=line><span class=cl>        <span class=nx>throw</span> <span class=s1>&#39;too many args error&#39;</span>
+</span></span><span class=line><span class=cl>      <span class=k>endif</span>
+</span></span><span class=line><span class=cl><span class=c>      &#34; 搜索 `f&#34;`</span>
+</span></span><span class=line><span class=cl>      <span class=nx>exe</span> <span class=nx>printf</span><span class=p>(</span><span class=s1>&#39;norm! /\%%&gt;%sl\%%&lt;%sl\((\|\s\+\)\s*f&#34;&#39;</span> . <span class=s2>&#34;\&lt;CR&gt;&#34;</span><span class=p>,</span> <span class=nx>start_pos</span>[<span class=m>1</span>] <span class=p>-</span> <span class=m>1</span><span class=p>,</span> <span class=nx>end_pos</span>[<span class=m>1</span>] <span class=p>+</span> <span class=m>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c>      &#34; exe printf(&#39;norm! /\%%&gt;%sl\%%&lt;%slf&#34;&#39; . &#34;\&lt;CR&gt;&#34;, start_pos[1] - 1, end_pos[1] + 1)</span>
+</span></span><span class=line><span class=cl><span class=c>      &#34; 删除 `f`</span>
+</span></span><span class=line><span class=cl>      <span class=nx>norm</span><span class=p>!</span> <span class=nx>ffx</span>
+</span></span><span class=line><span class=cl>    <span class=nx>endwhile</span>
+</span></span><span class=line><span class=cl>  <span class=nx>catch</span> <span class=sr>/^Vim\%((\a\+)\)\=:E486/</span>
+</span></span><span class=line><span class=cl>    <span class=nx>echo</span> <span class=s1>&#39;删除f完成&#39;</span>
+</span></span><span class=line><span class=cl>  <span class=nx>endtry</span>
+</span></span><span class=line><span class=cl><span class=k>endfunction</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=问题><a href=#%e9%97%ae%e9%a2%98 class=header-anchor></a>问题</h2><h3 id=如何创建临时使用的函数><a href=#%e5%a6%82%e4%bd%95%e5%88%9b%e5%bb%ba%e4%b8%b4%e6%97%b6%e4%bd%bf%e7%94%a8%e7%9a%84%e5%87%bd%e6%95%b0 class=header-anchor></a>如何创建临时使用的函数</h3><p>有时需要在临时写一些函数并执行</p><h4 id=在命令模式定义函数><a href=#%e5%9c%a8%e5%91%bd%e4%bb%a4%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89%e5%87%bd%e6%95%b0 class=header-anchor></a>在命令模式定义函数</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-vim data-lang=vim><span class=line><span class=cl><span class=p>:</span><span class=k>function</span><span class=p>!</span> <span class=nx>TempMacroFunction</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>:</span>  <span class=nx>normal</span><span class=p>!</span> @<span class=nx>a</span>  <span class=c>&#34; 执行寄存器 a 中的宏</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=k>endfunction</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>&#34; 带参数</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=k>function</span><span class=p>!</span> <span class=nx>RunMacro</span><span class=p>(</span><span class=nx>register</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>:</span>  <span class=k>execute</span> <span class=s2>&#34;normal! @&#34;</span> . <span class=nx>a</span>:<span class=nx>register</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=k>endfunction</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>&#34;调用</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>call</span> <span class=nx>TempMacroFunction</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=c>&#34; 删除</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>delfunction</span> <span class=nx>TempMacroFunction</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=source><a href=#source class=header-anchor></a><code>:source</code></h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-vim data-lang=vim><span class=line><span class=cl><span class=c>&#34; 先加载文件中的函数定义</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>source</span> <span class=nx>temp</span>.<span class=nx>vim</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>&#34; 然后调用函数</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>call</span> <span class=nx>YourFunctionName</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>&#34; 加载当前文件</span>
+</span></span><span class=line><span class=cl><span class=c>&#34; NOTE: 如果这是个临时文件可能无效</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>source</span> %
+</span></span></code></pre></td></tr></table></div></div><h4 id=execute><a href=#execute class=header-anchor></a><code>:execute</code></h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-vim data-lang=vim><span class=line><span class=cl><span class=c>&#34; 读取当前 buffer 内容到寄存器并执行</span>
+</span></span><span class=line><span class=cl><span class=p>:</span>%<span class=nx>y</span> <span class=p>|</span> <span class=nx>exe</span> @*
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>&#34; 执行寄存器中的内容</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=k>execute</span> <span class=nx>getreg</span><span class=p>(</span><span class=s1>&#39;a&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>&#34; 读取文件内容并执行</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=k>execute</span> <span class=s1>&#39;source&#39;</span> <span class=nx>expand</span><span class=p>(</span><span class=s1>&#39;temp.vim&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>还可以创建一个 autocmd 当内容变化后执行 buffer 内容
+<a class=link href=https://neovim.io/doc/user/autocmd.html#autocmd-buffer-local target=_blank rel=noopener>autocmd-buffer-local</a>
+：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-vim data-lang=vim><span class=line><span class=cl><span class=p>:</span><span class=k>autocmd</span> <span class=nx>InsertLeave</span> <span class=p>&lt;</span><span class=nx>buffer</span><span class=p>&gt;</span> %<span class=nx>yank</span> <span class=nx>a</span> <span class=p>|</span> <span class=nx>exe</span> @<span class=nx>a</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=如何将宏转换为可打印字符><a href=#%e5%a6%82%e4%bd%95%e5%b0%86%e5%ae%8f%e8%bd%ac%e6%8d%a2%e4%b8%ba%e5%8f%af%e6%89%93%e5%8d%b0%e5%ad%97%e7%ac%a6 class=header-anchor></a>如何将宏转换为可打印字符</h3><p>在 vim 中的宏存在特殊键如 <code>esc</code> 在 vim 中可使用 <code>&lt;C-v>&lt;Esc></code> 输入 <code>esc</code>
+键作为特殊字符类似 <code>^[</code> ，但无法被其它程序读取打印，为了可读取性需要转换。</p><p>目前可使用 <code>:echo</code> 和 <code>strtrans()</code> 函数</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-vim data-lang=vim><span class=line><span class=cl><span class=c>&#34; 将宏内容转换为可读字符串</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>echo</span> <span class=nx>strtrans</span><span class=p>(</span>@<span class=nx>a</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>&#34; 或者使用 string() 函数</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>echo</span> <span class=nx>string</span><span class=p>(</span>@<span class=nx>a</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>&#34; 或直接使用 echo</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>echo</span> @<span class=nx>a</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>echo</span> <span class=s1>&#39;test^[&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>注意：如果宏内容中包含 <code>&lt;CR></code> 会中断前后的内容，需要去除 <code>&lt;CR></code> 才能正常转换</p></blockquote><h3 id=调试函数><a href=#%e8%b0%83%e8%af%95%e5%87%bd%e6%95%b0 class=header-anchor></a>调试函数</h3><p>使用
+<a class=link href=https://neovim.io/doc/user/repeat.html#%3Adebug target=_blank rel=noopener>:debug</a>
+命令进行单步调试</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-vim data-lang=vim><span class=line><span class=cl><span class=c>&#34; 调试函数调用</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>debug</span> <span class=nx>call</span> <span class=nx>MyFunction</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>&#34; 调试命令</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>debug</span> <span class=nx>echo</span> <span class=s2>&#34;test&#34;</span>
+</span></span><span class=line><span class=cl><span class=c>
+</span></span></span><span class=line><span class=cl><span class=c>&#34; 调试映射</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=nx>debug</span> <span class=nx>normal</span> <span class=nx>gg</span>
+</span></span></code></pre></td></tr></table></div></div><p>调试命令说明</p><ul><li><code>s</code> (step) - 单步执行，进入函数</li><li><code>n</code> (next) - 单步执行，不进入函数</li><li><code>c</code> (continue) - 继续执行直到断点或结束</li><li><code>q</code> (quit) - 退出调试</li><li><code>i</code> (interrupt) - 中断执行</li><li><code>f</code> (finish) - 执行直到当前函数结束</li></ul><h3 id=是否可将-catch-pattern-中的模式作为作为变量使用><a href=#%e6%98%af%e5%90%a6%e5%8f%af%e5%b0%86-catch-pattern-%e4%b8%ad%e7%9a%84%e6%a8%a1%e5%bc%8f%e4%bd%9c%e4%b8%ba%e4%bd%9c%e4%b8%ba%e5%8f%98%e9%87%8f%e4%bd%bf%e7%94%a8 class=header-anchor></a>是否可将 <code>catch /pattern/</code> 中的模式作为作为变量使用</h3><p>在多个 catch 时通常有相同的模式，如果能作为同一个变量更方便维护，参考
+<a class=link href=https://stackoverflow.com/questions/18796698/variable-interpolation-in-vimscript-catch-clause target=_blank rel=noopener>Variable Interpolation in Vimscript catch clause</a>
+与
+<a class=link href=https://neovim.io/doc/user/vimeval.html#%3Acatch target=_blank rel=noopener>:catch</a>
+中的
+<a class=link href=https://neovim.io/doc/user/pattern.html#_2.-the-definition-of-a-pattern target=_blank rel=noopener>pattern</a>
+必须是字面字符串，不能使用变量，但也有其它方案：</p><h4 id=在-catch-块内使用条件判断><a href=#%e5%9c%a8-catch-%e5%9d%97%e5%86%85%e4%bd%bf%e7%94%a8%e6%9d%a1%e4%bb%b6%e5%88%a4%e6%96%ad class=header-anchor></a>在 catch 块内使用条件判断</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-vim data-lang=vim><span class=line><span class=cl><span class=k>let</span> <span class=nx>target_error</span> <span class=p>=</span> <span class=s1>&#39;E492&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>try</span>
+</span></span><span class=line><span class=cl><span class=c>    &#34; 可能出错的代码</span>
+</span></span><span class=line><span class=cl>    <span class=nx>NotAValidCommand</span>
+</span></span><span class=line><span class=cl><span class=nx>catch</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nx>v</span>:<span class=nx>exception</span> <span class=p>=~</span> <span class=nx>target_error</span>
+</span></span><span class=line><span class=cl>        <span class=nx>echo</span> <span class=s2>&#34;捕获到目标错误：&#34;</span> . <span class=nx>v</span>:<span class=nx>exception</span>
+</span></span><span class=line><span class=cl><span class=c>        &#34; 处理特定错误</span>
+</span></span><span class=line><span class=cl>    <span class=k>else</span>
+</span></span><span class=line><span class=cl>        <span class=nx>echo</span> <span class=s2>&#34;其他错误：&#34;</span> . <span class=nx>v</span>:<span class=nx>exception</span>
+</span></span><span class=line><span class=cl><span class=c>        &#34; 重新抛出或其他处理</span>
+</span></span><span class=line><span class=cl>    <span class=k>endif</span>
+</span></span><span class=line><span class=cl><span class=nx>endtry</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>注意：<code>execute 'catch /' . error_pattern . '/'</code> 这种亲测无效</p></blockquote><h3 id=如何编辑宏><a href=#%e5%a6%82%e4%bd%95%e7%bc%96%e8%be%91%e5%ae%8f class=header-anchor></a>如何编辑宏</h3><p>通常录制宏的时候有错误或不必要的操作时需要修改，基本步骤：</p><ol><li>录制宏到某个寄存器（比如 q）。</li><li>将宏寄存器的内容取出（如粘贴到当前光标位置）修改。</li><li>将修改后的内容放回寄存器。</li></ol><p>问题是录制宏内有许多特殊字符如 <code>^[=&lt;ESC></code>，修改其内容是一个不小的挑战。</p><p>另外也可以在命令行中使用 <code>:let @q='...'</code> 来定义宏，如</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-vim data-lang=vim><span class=line><span class=cl><span class=c>&#34; 定义搜索宏</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=k>let</span> @<span class=nx>q</span> <span class=p>=</span> <span class=s2>&#34;/TODO\&lt;CR&gt;dd&#34;</span>          <span class=c>&#34; 搜索 TODO 并删除</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=k>let</span> @<span class=nx>q</span> <span class=p>=</span> <span class=s1>&#39;iText^[&#39;</span>               <span class=c>&#34; ^[ 是 Esc（按 Ctrl+V, Esc 输入）</span>
+</span></span><span class=line><span class=cl><span class=c>&#34; 引号包装文本</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=k>let</span> @<span class=nx>q</span> <span class=p>=</span> <span class=s2>&#34;i\&#34;\&lt;Esc&gt;ea\&#34;\&lt;Esc&gt;&#34;</span>
+</span></span><span class=line><span class=cl><span class=c>&#34; 带错误处理的递归宏</span>
+</span></span><span class=line><span class=cl><span class=p>:</span><span class=k>let</span> @<span class=nx>r</span> <span class=p>=</span> <span class=s2>&#34;:try\&lt;CR&gt;/TODO\&lt;CR&gt;dd@r\&lt;CR&gt;:catch\&lt;CR&gt;:endtry\&lt;CR&gt;&#34;</span>
+</span></span></code></pre></td></tr></table></div></div></section><footer class=article-footer><section class=article-tags><a href=/tags/neovim/>Neovim</a>
+<a href=/tags/python/>Python</a>
+<a href=/tags/macro/>Macro</a>
+<a href=/tags/tips/>Tips</a></section><section class=article-lastmod><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>最后更新于 2025-11-03 13:10:11 CST</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/posts/2025/11/dmypy-not-working-in-nvim-lint/><div class=article-details><h2 class=article-title>在 nvim-lint 中的 dmypy 无法工作</h2></div></a></article><article><a href=/posts/2025/03/neovim-in-practice/><div class=article-details><h2 class=article-title>neovim 实践</h2></div></a></article><article><a href=/posts/2025/09/how-to-install-nvim-treesitter-on-windows/><div class=article-details><h2 class=article-title>如何在 windows 上安装 nvim-treesitter</h2></div></a></article><article><a href=/posts/2025/09/powershell-code-completion-in-neovim-is-very-slow/><div class=article-details><h2 class=article-title>在 neovim 中的 powershell 代码补全非常慢</h2></div></a></article><article><a href=/posts/2025/03/getting-return-status-and-program-output-in-lua/><div class=article-details><h2 class=article-title>在 Lua 中获取返回状态和程序输出</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2026 NavyD 的个人博客</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

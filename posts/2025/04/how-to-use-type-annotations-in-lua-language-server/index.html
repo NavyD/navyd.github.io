@@ -1,0 +1,310 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="在使用 lua-language-server 对 openresty/lua-nginx-module 编写 lua 程序时发现只有部分类型注释如 ngx ，而需要 require 加载的库如 ngx.balancer , ngx.upstream 的类型定义几乎不可用。\n..."><title>如何在 luals 中使用类型注释</title><link rel=canonical href=/posts/2025/04/how-to-use-type-annotations-in-lua-language-server/><link rel=stylesheet href=/scss/style.min.b0e76e98cdd4f7082d1fc36f7af7e0843a81201db2197c03ca426751dc923735.css><meta property='og:title' content="如何在 luals 中使用类型注释"><meta property='og:description' content="在使用 lua-language-server 对 openresty/lua-nginx-module 编写 lua 程序时发现只有部分类型注释如 ngx ，而需要 require 加载的库如 ngx.balancer , ngx.upstream 的类型定义几乎不可用。\n..."><meta property='og:url' content='/posts/2025/04/how-to-use-type-annotations-in-lua-language-server/'><meta property='og:site_name' content='NavyD 的个人博客'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='lua'><meta property='article:tag' content='LSP'><meta property='article:published_time' content='2025-04-02T14:51:47+08:00'><meta property='article:modified_time' content='2025-04-02T19:28:29+08:00'><meta name=twitter:title content="如何在 luals 中使用类型注释"><meta name=twitter:description content="在使用 lua-language-server 对 openresty/lua-nginx-module 编写 lua 程序时发现只有部分类型注释如 ngx ，而需要 require 加载的库如 ngx.balancer , ngx.upstream 的类型定义几乎不可用。\n..."></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=https://avatars.githubusercontent.com/u/22490764 width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🐧</span></figure><div class=site-meta><h1 class=site-name><a href=/>NavyD 的个人博客</a></h1><h2 class=site-description>Hello World!</h2></div></header><ol class=menu-social><li><a href=https://space.bilibili.com/47808239 target=_blank title=Bilibili rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7a4 4 0 01-4-4v-6z"/><path d="M8 3l2 3"/><path d="M16 3l-2 3"/><path d="M9 13v-2"/><path d="M15 11v2"/></svg></a></li><li><a href=https://github.com/NavyD target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://x.com/NavyD_hello target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/page/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/page/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=/en/>English</option><option value=/ selected>中文</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#分析>分析</a></li><li><a href=#解决>解决</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><div class=article-title-wrapper><h2 class=article-title><a href=/posts/2025/04/how-to-use-type-annotations-in-lua-language-server/>如何在 luals 中使用类型注释</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-04-02T14:51:47+08:00>2025年4月2日14:51</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 2 分钟</time></div></footer></div></header><section class=article-content><p>在使用
+<a class=link href=https://github.com/luals/lua-language-server target=_blank rel=noopener>lua-language-server</a>
+对
+<a class=link href=https://github.com/openresty/lua-nginx-module target=_blank rel=noopener>openresty/lua-nginx-module</a>
+编写 lua 程序时发现只有部分类型注释如 <code>ngx</code> ，而需要 <code>require</code> 加载的库如
+<a class=link href=https://github.com/openresty/lua-resty-core/blob/master/lib/ngx/balancer.md target=_blank rel=noopener>ngx.balancer</a>
+,
+<a class=link href=https://github.com/openresty/lua-upstream-nginx-module target=_blank rel=noopener>ngx.upstream</a>
+的类型定义几乎不可用。</p><h2 id=分析><a href=#%e5%88%86%e6%9e%90 class=header-anchor></a>分析</h2><p>下面是移除了注释后的类型文件
+<code>~/.local/share/nvim/mason/packages/lua-language-server/libexec/meta/3rd/OpenResty/library/ngx/balancer.lua</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-lua data-lang=lua><span class=line><span class=cl><span class=c1>---@meta</span>
+</span></span><span class=line><span class=cl><span class=kd>local</span> <span class=n>balancer</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>version</span> <span class=o>=</span> <span class=n>require</span><span class=p>(</span><span class=s2>&#34;resty.core.base&#34;</span><span class=p>).</span><span class=n>version</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>---@param  addr    string</span>
+</span></span><span class=line><span class=cl><span class=c1>---@param  port    integer</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return boolean ok</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return string? error</span>
+</span></span><span class=line><span class=cl><span class=kr>function</span> <span class=nc>balancer</span><span class=p>.</span><span class=nf>set_current_peer</span><span class=p>(</span><span class=n>addr</span><span class=p>,</span> <span class=n>port</span><span class=p>)</span> <span class=kr>end</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>---@param  connect_timeout? number</span>
+</span></span><span class=line><span class=cl><span class=c1>---@param  send_timeout?    number</span>
+</span></span><span class=line><span class=cl><span class=c1>---@param  read_timeout?    number</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return boolean          ok</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return string?          error</span>
+</span></span><span class=line><span class=cl><span class=kr>function</span> <span class=nc>balancer</span><span class=p>.</span><span class=nf>set_timeouts</span><span class=p>(</span><span class=n>connect_timeout</span><span class=p>,</span> <span class=n>send_timeout</span><span class=p>,</span> <span class=n>read_timeout</span><span class=p>)</span> <span class=kr>end</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>---@alias ngx.balancer.failure</span>
+</span></span><span class=line><span class=cl><span class=c1>---| &#39;&#34;next&#34;&#39; # Failures due to bad status codes sent from the backend server. The origin&#39;s response is same though, which means the backend connection can still be reused for future requests.</span>
+</span></span><span class=line><span class=cl><span class=c1>---| &#39;&#34;failed&#34;&#39; Fatal errors while communicating to the backend server (like connection timeouts, connection resets, and etc). In this case, the backend connection must be aborted and cannot get reused.</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>---@return ngx.balancer.failure? state_name</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return integer?              status_code</span>
+</span></span><span class=line><span class=cl><span class=kr>function</span> <span class=nc>balancer</span><span class=p>.</span><span class=nf>get_last_failure</span><span class=p>()</span> <span class=kr>end</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>--</span>
+</span></span><span class=line><span class=cl><span class=c1>---@param  count   integer</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return boolean ok</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return string? error</span>
+</span></span><span class=line><span class=cl><span class=kr>function</span> <span class=nc>balancer</span><span class=p>.</span><span class=nf>set_more_tries</span><span class=p>(</span><span class=n>count</span><span class=p>)</span> <span class=kr>end</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>---@return boolean ok</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return string? error</span>
+</span></span><span class=line><span class=cl><span class=kr>function</span> <span class=nc>balancer</span><span class=p>.</span><span class=nf>recreate_request</span><span class=p>()</span> <span class=kr>end</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kr>return</span> <span class=n>balancer</span>
+</span></span></code></pre></td></tr></table></div></div><p>目前存在这些类型文件</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>&gt;</span> l ~/.local/share/nvim/mason/packages/lua-language-server/libexec/meta/3rd
+</span></span><span class=line><span class=cl><span class=go>Permissions Size User  Group Date Modified    Name
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 ./
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-23 14:00 ../
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 bee/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 busted/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 Cocos4.0/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 Defold/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 example/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 ffi-reflect/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 Jass/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 lfs/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 love2d/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 lovr/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 luaecs/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 luassert/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 luv/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 OpenResty/
+</span></span></span><span class=line><span class=cl><span class=go>drwxr-xr-x     - navyd navyd 2025-03-13 11:37 skynet/
+</span></span></span></code></pre></td></tr></table></div></div><p>在
+<a class=link href=https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#lua_ls target=_blank rel=noopener>nvim-lspconfig: lua_ls</a>
+中有默认可用的配置，其中有配置项
+<a class=link href=https://luals.github.io/wiki/settings/#workspacelibrary target=_blank rel=noopener>Lua.workspace.library</a>
+是提供类型注释文件目录的，在
+<a class=link href=https://luals.github.io/wiki/definition-files/ target=_blank rel=noopener>Using Definition Files</a>
+提到
+<a class=link href=https://github.com/LuaLS/LLS-Addons target=_blank rel=noopener>LLS-Addons</a>
+提供了大量的常用库类型定义。</p><p>其项目的目录与 <code>lua-language-server/libexec/meta/3rd</code>
+差不多，只是目录包含差太多了，就
+<code>~/.local/share/nvim/mason/packages/lua-language-server/libexec/meta/3rd/OpenResty/library/ngx/balancer.lua</code>
+文件而言，其定义与当前 <code>addons/openresty</code> 子模块链接到的
+<a class=link href=https://github.com/LuaCATS/openresty/blob/cc15b6401f553756e44e7ebdade7f4a382079521/library/ngx/balancer.lua target=_blank rel=noopener>openresty/library/ngx/balancer.lua</a>
+一致，但这个子模块已许久未更新，如
+<a class=link href=https://github.com/LuaCATS/openresty/blob/3376d52b3e061f40751f5d12505a610b898d13ce/library/ngx/balancer.lua target=_blank rel=noopener>openresty/library/ngx/balancer.lua</a>
+明显与当前使用的不一样</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-lua data-lang=lua><span class=line><span class=cl><span class=c1>---@meta</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>---@class ngx.balancer</span>
+</span></span><span class=line><span class=cl><span class=c1>---@field version string</span>
+</span></span><span class=line><span class=cl><span class=kd>local</span> <span class=n>balancer</span> <span class=o>=</span> <span class=p>{}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>---@param  addr    string</span>
+</span></span><span class=line><span class=cl><span class=c1>---@param  port    integer</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return boolean ok</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return string? error</span>
+</span></span><span class=line><span class=cl><span class=kr>function</span> <span class=nc>balancer</span><span class=p>.</span><span class=nf>set_current_peer</span><span class=p>(</span><span class=n>addr</span><span class=p>,</span> <span class=n>port</span><span class=p>)</span> <span class=kr>end</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>---@param  connect_timeout? number</span>
+</span></span><span class=line><span class=cl><span class=c1>---@param  send_timeout?    number</span>
+</span></span><span class=line><span class=cl><span class=c1>---@param  read_timeout?    number</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return boolean          ok</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return string?          error</span>
+</span></span><span class=line><span class=cl><span class=kr>function</span> <span class=nc>balancer</span><span class=p>.</span><span class=nf>set_timeouts</span><span class=p>(</span><span class=n>connect_timeout</span><span class=p>,</span> <span class=n>send_timeout</span><span class=p>,</span> <span class=n>read_timeout</span><span class=p>)</span> <span class=kr>end</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>---@alias ngx.balancer.failure</span>
+</span></span><span class=line><span class=cl><span class=c1>---| &#34;next&#34; # Failures due to bad status codes sent from the backend server. The origin&#39;s response is same though, which means the backend connection can still be reused for future requests.</span>
+</span></span><span class=line><span class=cl><span class=c1>---| &#34;failed&#34; # Fatal errors while communicating to the backend server (like connection timeouts, connection resets, and etc). In this case, the backend connection must be aborted and cannot get reused.</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>---@return ngx.balancer.failure? state_name</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return integer?              status_code</span>
+</span></span><span class=line><span class=cl><span class=kr>function</span> <span class=nc>balancer</span><span class=p>.</span><span class=nf>get_last_failure</span><span class=p>()</span> <span class=kr>end</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>--</span>
+</span></span><span class=line><span class=cl><span class=c1>---@param  count   integer</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return boolean ok</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return string? error</span>
+</span></span><span class=line><span class=cl><span class=kr>function</span> <span class=nc>balancer</span><span class=p>.</span><span class=nf>set_more_tries</span><span class=p>(</span><span class=n>count</span><span class=p>)</span> <span class=kr>end</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>---@return boolean ok</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return string? error</span>
+</span></span><span class=line><span class=cl><span class=kr>function</span> <span class=nc>balancer</span><span class=p>.</span><span class=nf>recreate_request</span><span class=p>()</span> <span class=kr>end</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>---@param on boolean</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return boolean? ok</span>
+</span></span><span class=line><span class=cl><span class=c1>---@return string? error</span>
+</span></span><span class=line><span class=cl><span class=kr>function</span> <span class=nc>balancer</span><span class=p>.</span><span class=nf>set_upstream_tls</span><span class=p>(</span><span class=n>on</span><span class=p>)</span> <span class=kr>end</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kr>return</span> <span class=n>balancer</span>
+</span></span></code></pre></td></tr></table></div></div><p>这个文件是在
+<a class=link href=https://github.com/williamboman/mason.nvim target=_blank rel=noopener>mason.nvim</a>
+导致的，开始只在其代码中发现
+<a class=link href=https://github.com/williamboman/mason.nvim/blob/fc98833b6da5de5a9c5b1446ac541577059555be/lua/mason-core/installer/managers/common.lua#L29 target=_blank rel=noopener>mason.nvim/lua/mason-core/installer/managers/common.lua</a>
+一点相关，但后面发现还有个
+<a class=link href=https://github.com/mason-org/mason-registry target=_blank rel=noopener>mason-registry</a>
+用于定义相关源如
+<a class=link href=https://github.com/mason-org/mason-registry/blob/430a762bb22d4a70b0dd0dd96ad289b6b9452057/packages/lua-language-server/package.yaml target=_blank rel=noopener>mason-registry/packages/lua-language-server/package.yaml</a>
+，其中都是 <code>libexec/bin/lua-language-server</code> 相关，而
+<code>libexec/meta/3rd/OpenResty/library/ngx/balancer.lua</code> 是由
+<a class=link href=https://github.com/LuaLS/lua-language-server/releases target=_blank rel=noopener>lua-language-server/releases</a>
+中压缩包提供的，也在
+<a class=link href=https://github.com/LuaLS/lua-language-server/tree/802e13ccac1153c32b90e6f203fa482fff7a603e/meta target=_blank rel=noopener>lua-language-server/meta</a>
+，其中的 <code>lua-language-server/meta/3rd/OpenResty</code> 子模块链接到是未更新前的
+<a class=link href=https://github.com/LuaCATS/openresty/tree/3bec36f0f645bb38b3c8208990d5c36feb66ce3d target=_blank rel=noopener>LuaCATS/openresty</a>
+，这也就是为何 <code>ngx.balancer</code> 等类型定义几乎不可用的原因！</p><h2 id=解决><a href=#%e8%a7%a3%e5%86%b3 class=header-anchor></a>解决</h2><p>在
+<a class=link href=https://github.com/LazyVim/LazyVim target=_blank rel=noopener>lazyvim</a>
+中现在使用
+<a class=link href=https://github.com/folke/lazydev.nvim target=_blank rel=noopener>lazydev.nvim: Faster LuaLS setup for Neovim</a>
+来配置 lua ls，参考
+<a class=link href=https://github.com/folke/lazydev.nvim/issues/39#issuecomment-2203460917 target=_blank rel=noopener>feature: load library on filename #39</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-lua data-lang=lua><span class=line><span class=cl><span class=c1>---@type LazySpec[]</span>
+</span></span><span class=line><span class=cl><span class=kr>return</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=c1>-- [feature: load library on filename #39](https://github.com/folke/lazydev.nvim/issues/39#issuecomment-2203460917)</span>
+</span></span><span class=line><span class=cl>  <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;LuaCATS/openresty&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>name</span> <span class=o>=</span> <span class=s2>&#34;lua-openresty-types&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>lazy</span> <span class=o>=</span> <span class=kc>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=p>},</span>
+</span></span><span class=line><span class=cl>  <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;folke/lazydev.nvim&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=c1>---@module &#39;lazydev&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=c1>---@param opts lazydev.Config</span>
+</span></span><span class=line><span class=cl>    <span class=n>opts</span> <span class=o>=</span> <span class=kr>function</span><span class=p>(</span><span class=n>_</span><span class=p>,</span> <span class=n>opts</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=c1>---@type lazydev.Library.spec[]</span>
+</span></span><span class=line><span class=cl>      <span class=kd>local</span> <span class=n>libs</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;lua-openresty-types/library&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=c1>-- { path = &#34;luassert-types/library&#34;, words = { &#34;assert&#34; } },</span>
+</span></span><span class=line><span class=cl>        <span class=c1>-- { path = &#34;lua-openresty-types/library&#34; },</span>
+</span></span><span class=line><span class=cl>      <span class=p>}</span>
+</span></span><span class=line><span class=cl>      <span class=n>vim.list_extend</span><span class=p>(</span><span class=n>opts.library</span><span class=p>,</span> <span class=n>libs</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=kr>end</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=p>},</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>注意：如果当前目录下存在
+<a class=link href=https://luals.github.io/wiki/configuration/#luarcjson-file target=_blank rel=noopener>.luarc.json</a>
+可能会导致当前的配置无效
+<a class=link href=https://github.com/folke/lazydev.nvim/pull/64 target=_blank rel=noopener>docs: hint how to deal with .luarc.json #64</a></p></section><footer class=article-footer><section class=article-tags><a href=/tags/lua/>Lua</a>
+<a href=/tags/lsp/>LSP</a></section><section class=article-lastmod><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>最后更新于 2025-04-02 19:28:04 CST</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/posts/2025/03/getting-return-status-and-program-output-in-lua/><div class=article-details><h2 class=article-title>在 Lua 中获取返回状态和程序输出</h2></div></a></article><article><a href=/posts/2025/03/how-to-stream-shell-command-output-to-buffer-in-neovim/><div class=article-details><h2 class=article-title>在 neovim 中如何将 shell 命令输出流式传输到缓冲区</h2></div></a></article><article><a href=/posts/2025/02/async-in-neovim-lua/><div class=article-details><h2 class=article-title>Async in Neovim Lua</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2026 NavyD 的个人博客</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

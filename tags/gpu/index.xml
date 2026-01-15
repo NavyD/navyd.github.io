@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Gpu on NavyD 的个人博客</title><link>/tags/gpu/</link><description>Recent content in Gpu on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 29 Mar 2023 16:49:45 +0800</lastBuildDate><atom:link href="/tags/gpu/index.xml" rel="self" type="application/rss+xml"/><item><title>Intel Gpu Support for Wsl2</title><link>/posts/2023/03/intel-gpu-support-for-wsl2/</link><pubDate>Wed, 29 Mar 2023 11:50:19 +0800</pubDate><guid>/posts/2023/03/intel-gpu-support-for-wsl2/</guid><description>&lt;p&gt;&lt;img src="https://tomthegreat.com/content/images/size/w960/2022/09/plex_ubuntu_docker.png"
+loading="lazy"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;在使用docker时应用需要使用gpu加速解码，尝试在wsl2中挂载intel集显设备/dev/dri时无法正常启动，找不到设备文件。&lt;/p&gt;
+&lt;h2 id="分析"&gt;&lt;a href="#%e5%88%86%e6%9e%90" class="header-anchor"&gt;&lt;/a&gt;分析
+&lt;/h2&gt;&lt;p&gt;在win10 21H2以上开始支持wsl2 gpu，win11肯定是支持的，网上大部分都是NVIDIA的资料，intel集显比较少。&lt;/p&gt;
+&lt;p&gt;在这里
+&lt;a
+class="link"
+href="https://github.com/intel/compute-runtime/blob/master/WSL.md"
+target="_blank"
+rel="noopener"
+&gt;WDDM GPU Paravirtualization support for WSL2&lt;/a&gt;
+提到可能是显卡驱动的问题&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Required driver package (30.0.100.9955) is available here.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="解决"&gt;&lt;a href="#%e8%a7%a3%e5%86%b3" class="header-anchor"&gt;&lt;/a&gt;解决
+&lt;/h2&gt;&lt;p&gt;在这里下载新驱动
+&lt;a
+class="link"
+href="https://www.intel.com/content/www/us/en/download/19344/intel-graphics-windows-dch-drivers.html"
+target="_blank"
+rel="noopener"
+&gt;Intel® Graphics – Windows* DCH Drivers&lt;/a&gt;
+，重新安装新的驱动后即可正常挂载设备/dev/dri&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/intel/compute-runtime/blob/master/WSL.md"
+target="_blank"
+rel="noopener"
+&gt;WDDM GPU Paravirtualization support for WSL2&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/windows/ai/directml/gpu-accelerated-training"
+target="_blank"
+rel="noopener"
+&gt;GPU accelerated ML training&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://ubuntu.com/tutorials/enabling-gpu-acceleration-on-ubuntu-on-wsl2-with-the-nvidia-cuda-platform#1-overview"
+target="_blank"
+rel="noopener"
+&gt;Enabling GPU acceleration on Ubuntu on WSL2 with the NVIDIA CUDA Platform&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

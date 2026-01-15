@@ -1,0 +1,892 @@
+$ mise watch build --log-level trace -- --log-level trace
+TRACE  1 [src\cli\mod.rs:330] logger done
+TRACE  1 [src\cli\mod.rs:331] migrate start
+TRACE  1 [src\cli\mod.rs:331] migrate done
+DEBUG  1 [src\cli\mod.rs:336] ARGS: C:\Users\navyd\workspaces\projects\mise\target\release\mise.exe watch build --log-level trace -- --log-level trace
+TRACE  1 [src\cli\mod.rs:342] run watch start
+TRACE  1 [src\config\mod.rs:96] load start
+TRACE  1 [src\backend\mod.rs:57] load_tools start
+TRACE  2 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\act\.mise.backend
+TRACE  8 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cargo-cargo-insta\.mise.backend
+TRACE  9 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\actionlint\.mise.backend
+TRACE 10 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\bun\.mise.backend
+TRACE  4 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-git-delete-merged-branches\.mise.backend
+TRACE  6 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\jq\.mise.backend
+TRACE 11 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cargo-binstall\.mise.backend
+TRACE 13 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cargo-cargo-edit\.mise.backend
+TRACE  5 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\npm-bitwarden-cli\.mise.backend
+TRACE  7 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\python\.mise.backend
+TRACE 12 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\java\.mise.backend
+TRACE  3 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\go\.mise.backend
+TRACE  2 [src\toolset\install_state.rs:104] init_tools act
+TRACE  2 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-pgcli\.mise.backend
+TRACE  4 [src\toolset\install_state.rs:104] init_tools pipx:git-delete-merged-branches
+TRACE  4 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-git-filter-repo\.mise.backend
+TRACE 10 [src\toolset\install_state.rs:104] init_tools bun
+TRACE 10 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-pre-commit\.mise.backend
+TRACE  5 [src\toolset\install_state.rs:104] init_tools npm:@bitwarden/cli
+TRACE  5 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\npm-markdown-link-check\.mise.backend
+TRACE  4 [src\toolset\install_state.rs:104] init_tools pipx:git-filter-repo
+TRACE  4 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-ipython\.mise.backend
+TRACE  2 [src\toolset\install_state.rs:104] init_tools pipx:pgcli
+TRACE  2 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-poetry\.mise.backend
+TRACE  4 [src\toolset\install_state.rs:104] init_tools pipx:ipython
+TRACE  4 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-maturin\.mise.backend
+TRACE 13 [src\toolset\install_state.rs:104] init_tools cargo:cargo-edit
+TRACE 13 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-mycli\.mise.backend
+TRACE  8 [src\toolset\install_state.rs:104] init_tools cargo:cargo-insta
+TRACE  8 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cargo-git-cliff\.mise.backend
+TRACE  9 [src\toolset\install_state.rs:104] init_tools actionlint
+TRACE  9 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\npm-markdownlint-cli\.mise.backend
+TRACE  8 [src\toolset\install_state.rs:104] init_tools cargo:git-cliff
+TRACE  8 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cargo-samply\.mise.backend
+TRACE  8 [src\toolset\install_state.rs:104] init_tools cargo:samply
+TRACE  8 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cargo-toml-cli\.mise.backend
+TRACE  3 [src\toolset\install_state.rs:104] init_tools go
+TRACE  3 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cosign\.mise.backend
+TRACE 13 [src\toolset\install_state.rs:104] init_tools pipx:mycli
+TRACE 13 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\minisign\.mise.backend
+TRACE 13 [src\toolset\install_state.rs:104] init_tools minisign
+TRACE 13 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\node\.mise.backend
+TRACE  2 [src\toolset\install_state.rs:104] init_tools pipx:poetry
+TRACE  2 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\npm-prettier\.mise.backend
+TRACE 12 [src\toolset\install_state.rs:104] init_tools java
+TRACE 12 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-toml-sort\.mise.backend
+TRACE  9 [src\toolset\install_state.rs:104] init_tools npm:markdownlint-cli
+TRACE  9 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pre-commit\.mise.backend
+TRACE 13 [src\toolset\install_state.rs:104] init_tools node
+TRACE 13 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\npm-zhlint\.mise.backend
+TRACE  4 [src\toolset\install_state.rs:104] init_tools pipx:maturin
+TRACE  4 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\taplo\.mise.backend
+TRACE  8 [src\toolset\install_state.rs:104] init_tools cargo:toml-cli
+TRACE  8 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\wait-for-gh-rate-limit\.mise.backend
+TRACE  5 [src\toolset\install_state.rs:104] init_tools npm:markdown-link-check
+TRACE  5 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\uv\.mise.backend
+TRACE  3 [src\toolset\install_state.rs:104] init_tools cosign
+TRACE  3 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\rust\.mise.backend
+TRACE 13 [src\toolset\install_state.rs:104] init_tools npm:zhlint
+TRACE 13 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\ripgrep\.mise.backend
+TRACE  7 [src\toolset\install_state.rs:104] init_tools python
+TRACE  7 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\rust-analyzer\.mise.backend
+TRACE  7 [src\toolset\install_state.rs:104] init_tools rust-analyzer
+TRACE  7 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\slsa-verifier\.mise.backend
+TRACE  4 [src\toolset\install_state.rs:104] init_tools taplo
+TRACE  4 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\watchexec\.mise.backend
+TRACE  8 [src\toolset\install_state.rs:104] init_tools wait-for-gh-rate-limit
+TRACE  8 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\zig\.mise.backend
+TRACE  2 [src\toolset\install_state.rs:104] init_tools npm:prettier
+TRACE  9 [src\toolset\install_state.rs:104] init_tools pre-commit
+TRACE 12 [src\toolset\install_state.rs:104] init_tools pipx:toml-sort
+TRACE 13 [src\toolset\install_state.rs:104] init_tools ripgrep
+TRACE  5 [src\toolset\install_state.rs:104] init_tools uv
+TRACE 11 [src\toolset\install_state.rs:104] init_tools cargo-binstall
+TRACE  3 [src\toolset\install_state.rs:104] init_tools rust
+TRACE  4 [src\toolset\install_state.rs:104] init_tools watchexec
+TRACE  8 [src\toolset\install_state.rs:104] init_tools zig
+TRACE 10 [src\toolset\install_state.rs:104] init_tools pipx:pre-commit
+TRACE  7 [src\toolset\install_state.rs:104] init_tools slsa-verifier
+TRACE  6 [src\toolset\install_state.rs:104] init_tools jq
+TRACE  1 [src\registry.rs:41] disable_backends
+TRACE  1 [src\registry.rs:45] disable_backends
+TRACE  1 [src\backend\mod.rs:67] load_tools core
+TRACE  1 [src\backend\mod.rs:78] load_tools install_state
+TRACE  1 [src\backend\mod.rs:92] load_tools done
+TRACE  1 [src\config\mod.rs:98] load idiomatic_files
+TRACE  1 [src\config\mod.rs:104] load config_filenames
+DEBUG  1 [src\config\mod.rs:106] Loaded config paths ["C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\mise.toml", "C:\\Users\\navyd\\.config\\mise\\config.toml"] from config filenames: [".bun-version", ".deno-version", ".go-version", ".java-version", ".node-version", ".nvmrc", ".python-version", ".python-versions", ".ruby-version", ".sdkmanrc", ".swift-version", ".terraform-version", ".zig-version", "Gemfile", "rust-toolchain.toml", ".tool-versions", ".config/mise/conf.d/*.toml", ".config/mise/config.toml", ".config/mise.toml", ".mise/config.toml", "mise/config.toml", ".rtx.toml", "mise.toml", ".mise.toml", ".config/mise/config.local.toml", ".config/mise.local.toml", ".mise/config.local.toml", ".rtx.local.toml", "mise.local.toml", ".mise.local.toml"]
+TRACE  1 [src\config\mod.rs:107] load config_paths
+TRACE  1 [src\config\mod.rs:108] config_paths: ["C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\mise.toml", "C:\\Users\\navyd\\.config\\mise\\config.toml"]
+TRACE  2 [src\file.rs:176] cat C:\Users\navyd\workspaces\projects\navyd.github.io\mise.toml
+TRACE  3 [src\file.rs:176] cat C:\Users\navyd\.config\mise\config.toml
+TRACE  2 [src\config\config_file\mise_toml.rs:113] parsing: C:\Users\navyd\workspaces\projects\navyd.github.io\mise.toml
+TRACE  3 [src\config\config_file\mise_toml.rs:113] parsing: C:\Users\navyd\.config\mise\config.toml
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: 20
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: graalvm-community-23
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: 1.23
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: stable
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: 0.13
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: 0.5
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: 0.2
+TRACE  1 [src\config\mod.rs:110] load config_files
+TRACE  1 [src\config\mod.rs:1130] load_vars start
+TRACE  1 [src\config\mod.rs:1151] load_vars done
+TRACE  1 [src\config\mod.rs:1153] EnvResults
+TRACE  1 [src\config\mod.rs:1113] load_aliases: 0
+TRACE  1 [src\config\mod.rs:752] project_root: Some("C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io")
+TRACE  1 [src\config\mod.rs:1125] load_plugins: 0
+TRACE  1 [src\config\mod.rs:137] load build
+TRACE  1 [src\config\mod.rs:140] load validate
+TRACE  1 [src\config\mod.rs:143] load all aliases
+TRACE  1 [src\config\mod.rs:146] load redactions
+TRACE  1 [src\config\mod.rs:149] config: Config {
+    Config Files: [
+        "C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\mise.toml",
+        "C:\\Users\\navyd\\.config\\mise\\config.toml",
+    ],
+}
+TRACE  1 [src\config\mod.rs:156] load done
+TRACE  1 [src\lockfile.rs:212] [node@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:32] reading lockfile C:\Users\navyd\.config\mise\config.lock
+TRACE  1 [src\file.rs:176] cat C:\Users\navyd\.config\mise\config.lock
+TRACE  1 [src\lockfile.rs:32] reading lockfile C:\Users\navyd\workspaces\projects\navyd.github.io\mise.lock
+TRACE  1 [src\file.rs:176] cat C:\Users\navyd\workspaces\projects\navyd.github.io\mise.lock
+TRACE  1 [src\lockfile.rs:212] [java@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [go@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [rust@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [zig@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [npm:@bitwarden/cli@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [uv@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [pipx:ipython@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [pipx:mycli@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [pipx:pgcli@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [pipx:git-filter-repo@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [pipx:pre-commit@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [pipx:git-delete-merged-branches@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [pipx:maturin@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [pipx:poetry@] reading all lockfiles
+TRACE  1 [src\lockfile.rs:212] [act@] reading all lockfiles
+TRACE  5 [src\toolset\tool_version.rs:40] resolving go@1.23 (use_locked_version)
+TRACE  7 [src\toolset\tool_version.rs:40] resolving pipx:git-delete-merged-branches@latest (use_locked_version)
+TRACE  3 [src\toolset\tool_version.rs:40] resolving pipx:mycli@latest (use_locked_version)
+TRACE  2 [src\toolset\tool_version.rs:40] resolving node@20 (use_locked_version)
+TRACE  2 [src\lockfile.rs:205] [node@20] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  8 [src\toolset\tool_version.rs:40] resolving pipx:pgcli@latest (use_locked_version)
+TRACE  9 [src\toolset\tool_version.rs:40] resolving pipx:git-filter-repo@latest (use_locked_version)
+TRACE  9 [src\lockfile.rs:205] [pipx:git-filter-repo@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE 11 [src\toolset\tool_version.rs:40] resolving npm:@bitwarden/cli@latest (use_locked_version)
+TRACE  6 [src\toolset\tool_version.rs:40] resolving java@graalvm-community-23 (use_locked_version)
+TRACE 12 [src\toolset\tool_version.rs:40] resolving rust@stable (use_locked_version)
+TRACE 13 [src\toolset\tool_version.rs:40] resolving pipx:pre-commit@latest (use_locked_version)
+TRACE  5 [src\lockfile.rs:205] [go@1.23] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  7 [src\lockfile.rs:205] [pipx:git-delete-merged-branches@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  3 [src\lockfile.rs:205] [pipx:mycli@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE 10 [src\toolset\tool_version.rs:40] resolving uv@0.5 (use_locked_version)
+TRACE  8 [src\lockfile.rs:205] [pipx:pgcli@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  4 [src\toolset\tool_version.rs:40] resolving zig@0.13 (use_locked_version)
+TRACE  2 [src\toolset\tool_version.rs:40] resolving pipx:poetry@latest (use_locked_version)
+TRACE  9 [src\toolset\tool_version.rs:40] resolving act@0.2 (use_locked_version)
+TRACE 11 [src\lockfile.rs:205] [npm:@bitwarden/cli@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  6 [src\lockfile.rs:205] [java@graalvm-community-23] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE 12 [src\lockfile.rs:205] [rust@stable] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE 13 [src\lockfile.rs:205] [pipx:pre-commit@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  5 [src\toolset\tool_version.rs:40] resolving pipx:ipython@latest (use_locked_version)
+TRACE  7 [src\toolset\tool_version.rs:40] resolving pipx:maturin@latest (use_locked_version)
+TRACE 10 [src\lockfile.rs:205] [uv@0.5] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  4 [src\lockfile.rs:205] [zig@0.13] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  2 [src\lockfile.rs:205] [pipx:poetry@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  9 [src\lockfile.rs:205] [act@0.2] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  5 [src\lockfile.rs:205] [pipx:ipython@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  7 [src\lockfile.rs:205] [pipx:maturin@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  1 [src\toolset\builder.rs:52] toolset::builder::build
+TRACE  1 [src\config\mod.rs:322] load_all_tasks
+TRACE  3 [src\lockfile.rs:212] [node@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [java@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [go@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [rust@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [zig@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [npm:@bitwarden/cli@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [uv@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [pipx:ipython@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [pipx:mycli@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [pipx:pgcli@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [pipx:git-filter-repo@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [pipx:pre-commit@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [pipx:git-delete-merged-branches@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [pipx:maturin@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [pipx:poetry@] reading all lockfiles
+TRACE  3 [src\lockfile.rs:212] [act@] reading all lockfiles
+TRACE  3 [src\toolset\tool_request_set.rs:166] tool_request_set::build
+TRACE  3 [src\toolset\tool_version.rs:40] resolving node@20 (use_locked_version)
+TRACE  3 [src\lockfile.rs:205] [node@20] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  4 [src\toolset\tool_version.rs:40] resolving zig@0.13 (use_locked_version)
+TRACE  3 [src\toolset\tool_version.rs:40] resolving npm:@bitwarden/cli@latest (use_locked_version)
+TRACE  8 [src\toolset\tool_version.rs:40] resolving pipx:git-delete-merged-branches@latest (use_locked_version)
+TRACE  8 [src\lockfile.rs:205] [pipx:git-delete-merged-branches@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE 11 [src\toolset\tool_version.rs:40] resolving go@1.23 (use_locked_version)
+TRACE  9 [src\toolset\tool_version.rs:40] resolving pipx:git-filter-repo@latest (use_locked_version)
+TRACE  9 [src\lockfile.rs:205] [pipx:git-filter-repo@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  7 [src\toolset\tool_version.rs:40] resolving pipx:poetry@latest (use_locked_version)
+TRACE  6 [src\toolset\tool_version.rs:40] resolving java@graalvm-community-23 (use_locked_version)
+TRACE 13 [src\toolset\tool_version.rs:40] resolving rust@stable (use_locked_version)
+TRACE 10 [src\toolset\tool_version.rs:40] resolving pipx:pgcli@latest (use_locked_version)
+TRACE  2 [src\toolset\tool_version.rs:40] resolving pipx:mycli@latest (use_locked_version)
+TRACE  2 [src\lockfile.rs:205] [pipx:mycli@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  3 [src\lockfile.rs:205] [npm:@bitwarden/cli@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  2 [src\toolset\tool_version.rs:40] resolving act@0.2 (use_locked_version)
+TRACE  2 [src\lockfile.rs:205] [act@0.2] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  8 [src\toolset\tool_version.rs:40] resolving pipx:maturin@latest (use_locked_version)
+TRACE  5 [src\toolset\tool_version.rs:40] resolving pipx:ipython@latest (use_locked_version)
+TRACE  9 [src\toolset\tool_version.rs:40] resolving pipx:pre-commit@latest (use_locked_version)
+TRACE  9 [src\lockfile.rs:205] [pipx:pre-commit@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  6 [src\lockfile.rs:205] [java@graalvm-community-23] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE 13 [src\lockfile.rs:205] [rust@stable] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE 10 [src\lockfile.rs:205] [pipx:pgcli@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  4 [src\lockfile.rs:205] [zig@0.13] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE 12 [src\toolset\tool_version.rs:40] resolving uv@0.5 (use_locked_version)
+TRACE 12 [src\lockfile.rs:205] [uv@0.5] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  8 [src\lockfile.rs:205] [pipx:maturin@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  5 [src\lockfile.rs:205] [pipx:ipython@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  7 [src\lockfile.rs:205] [pipx:poetry@latest] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE 11 [src\lockfile.rs:205] [go@1.23] reading lockfile for C:\Users\navyd\.config\mise\config.toml
+TRACE  3 [src\toolset\mod.rs:499] env start
+TRACE  3 [src\backend\mod.rs:262] node is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\node\20 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] java is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\java\graalvm-community-23 (not installed)
+TRACE  3 [src\backend\mod.rs:262] go is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\go\1.23 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] zig is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\zig\0.13 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] npm:@bitwarden/cli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\npm-bitwarden-cli\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] uv is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\uv\0.5 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:ipython is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-ipython\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:mycli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-mycli\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:pgcli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pgcli\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:git-filter-repo is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-filter-repo\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:pre-commit is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pre-commit\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:git-delete-merged-branches is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-delete-merged-branches\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:maturin is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-maturin\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:poetry is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-poetry\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] act is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\act\0.2 (runtime symlink)
+TRACE  3 [src\config\mod.rs:585] load_env start
+DEBUG  3 [src\config\env_directive\mod.rs:199] Got config root C:\Users\navyd from source path C:\Users\navyd\.config\mise\config.toml
+DEBUG  3 [src\config\env_directive\mod.rs:199] Got config root C:\Users\navyd from source path C:\Users\navyd\.config\mise\config.toml
+DEBUG  3 [src\config\env_directive\mod.rs:199] Got config root C:\Users\navyd from source path C:\Users\navyd\.config\mise\config.toml
+DEBUG  3 [src\config\env_directive\mod.rs:199] Got config root C:\Users\navyd from source path C:\Users\navyd\.config\mise\config.toml
+DEBUG  3 [src\config\env_directive\mod.rs:199] Got config root C:\Users\navyd\workspaces\projects\navyd.github.io from source path C:\Users\navyd\workspaces\projects\navyd.github.io\mise.toml
+DEBUG  3 [src\config\env_directive\mod.rs:158] Normalized path C:\Users\navyd\workspaces\projects\navyd.github.io\.env with config root C:\Users\navyd\workspaces\projects\navyd.github.io and p .env
+DEBUG  3 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\xx-2.0.4\src\file.rs:216] glob: "C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\.env"
+TRACE  3 [src\config\mod.rs:619] EnvResults {
+    env: [
+        "UV_INDEX_STRATEGY",
+        "RUSTUP_DIST_SERVER",
+        "RUSTUP_UPDATE_ROOT",
+        "PYTHONUTF8",
+    ],
+    env_files: [
+        "C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\.env",
+    ],
+}
+TRACE  3 [src\toolset\mod.rs:527] env end
+TRACE  3 [src\backend\mod.rs:262] node is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\node\20 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] java is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\java\graalvm-community-23 (not installed)
+TRACE  3 [src\backend\mod.rs:262] go is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\go\1.23 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] zig is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\zig\0.13 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] npm:@bitwarden/cli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\npm-bitwarden-cli\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] uv is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\uv\0.5 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:ipython is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-ipython\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:mycli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-mycli\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:pgcli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pgcli\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:git-filter-repo is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-filter-repo\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:pre-commit is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pre-commit\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:git-delete-merged-branches is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-delete-merged-branches\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:maturin is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-maturin\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:poetry is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-poetry\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] act is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\act\0.2 (runtime symlink)
+TRACE 10 [src\aqua\aqua_registry.rs:201] reading cached aqua-registry for astral-sh/uv from "C:\\Users\\navyd\\AppData\\Local\\Temp\\mise\\aqua-registry\\pkgs\\astral-sh\\uv\\registry.yaml"
+TRACE  3 [src\aqua\aqua_registry.rs:201] reading cached aqua-registry for nektos/act from "C:\\Users\\navyd\\AppData\\Local\\Temp\\mise\\aqua-registry\\pkgs\\nektos\\act\\registry.yaml"
+TRACE 10 [src\file.rs:32] open C:\Users\navyd\AppData\Local\Temp\mise\aqua-registry\pkgs\astral-sh\uv\registry.yaml
+TRACE  3 [src\file.rs:32] open C:\Users\navyd\AppData\Local\Temp\mise\aqua-registry\pkgs\nektos\act\registry.yaml
+TRACE 10 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = false
+TRACE 10 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] bool = false
+TRACE 10 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] func = semver("<= 0.2.19")
+TRACE 10 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] expr = "<= 0.2.19"
+TRACE 10 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = "<= 0.2.19"
+TRACE 10 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] string = "<= 0.2.19"
+TRACE 10 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] ident = Version
+TRACE 10 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = "0.2.20"
+TRACE 10 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] string = "0.2.20"
+TRACE 10 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\operator.rs:53] [operator] Pair { rule: equal_op, span: Span { str: "==", start: 8, end: 10 }, inner: [] }
+TRACE 10 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = true
+TRACE 10 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] bool = true
+DEBUG  3 [src\config\env_directive\mod.rs:199] Got config root C:\Users\navyd\workspaces\projects\navyd.github.io from source path C:\Users\navyd\workspaces\projects\navyd.github.io\mise.toml
+TRACE  3 [src\config\env_directive\venv.rs:31] python venv: .venv create=true
+DEBUG  3 [src\config\env_directive\mod.rs:158] Normalized path C:\Users\navyd\workspaces\projects\navyd.github.io\.venv with config root C:\Users\navyd\workspaces\projects\navyd.github.io and p .venv
+TRACE  3 [src\toolset\mod.rs:730] EnvResults {
+    env: [
+        "VIRTUAL_ENV",
+    ],
+    env_paths: [
+        "C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\.venv\\Scripts",
+    ],
+}
+TRACE  3 [src\toolset\mod.rs:499] env start
+TRACE  3 [src\backend\mod.rs:262] node is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\node\20 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] java is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\java\graalvm-community-23 (not installed)
+TRACE  3 [src\backend\mod.rs:262] go is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\go\1.23 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] zig is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\zig\0.13 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] npm:@bitwarden/cli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\npm-bitwarden-cli\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] uv is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\uv\0.5 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:ipython is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-ipython\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:mycli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-mycli\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:pgcli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pgcli\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:git-filter-repo is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-filter-repo\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:pre-commit is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pre-commit\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:git-delete-merged-branches is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-delete-merged-branches\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:maturin is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-maturin\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:poetry is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-poetry\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] act is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\act\0.2 (runtime symlink)
+TRACE  3 [src\toolset\mod.rs:527] env end
+TRACE  3 [src\backend\mod.rs:262] node is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\node\20 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] java is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\java\graalvm-community-23 (not installed)
+TRACE  3 [src\backend\mod.rs:262] go is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\go\1.23 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] zig is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\zig\0.13 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] npm:@bitwarden/cli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\npm-bitwarden-cli\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] uv is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\uv\0.5 (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:ipython is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-ipython\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:mycli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-mycli\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:pgcli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pgcli\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:git-filter-repo is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-filter-repo\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:pre-commit is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pre-commit\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:git-delete-merged-branches is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-delete-merged-branches\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:maturin is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-maturin\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] pipx:poetry is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-poetry\latest (runtime symlink)
+TRACE  3 [src\backend\mod.rs:262] act is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\act\0.2 (runtime symlink)
+TRACE 11 [src\aqua\aqua_registry.rs:201] reading cached aqua-registry for astral-sh/uv from "C:\\Users\\navyd\\AppData\\Local\\Temp\\mise\\aqua-registry\\pkgs\\astral-sh\\uv\\registry.yaml"
+TRACE 11 [src\file.rs:32] open C:\Users\navyd\AppData\Local\Temp\mise\aqua-registry\pkgs\astral-sh\uv\registry.yaml
+TRACE  5 [src\aqua\aqua_registry.rs:201] reading cached aqua-registry for nektos/act from "C:\\Users\\navyd\\AppData\\Local\\Temp\\mise\\aqua-registry\\pkgs\\nektos\\act\\registry.yaml"
+TRACE  5 [src\file.rs:32] open C:\Users\navyd\AppData\Local\Temp\mise\aqua-registry\pkgs\nektos\act\registry.yaml
+TRACE 11 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = false
+TRACE 11 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] bool = false
+TRACE 11 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] func = semver("<= 0.2.19")
+TRACE 11 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] expr = "<= 0.2.19"
+TRACE 11 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = "<= 0.2.19"
+TRACE 11 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] string = "<= 0.2.19"
+TRACE 11 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] ident = Version
+TRACE 11 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = "0.2.20"
+TRACE 11 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] string = "0.2.20"
+TRACE 11 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\operator.rs:53] [operator] Pair { rule: equal_op, span: Span { str: "==", start: 8, end: 10 }, inner: [] }
+TRACE 11 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = true
+TRACE 11 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] bool = true
+TRACE  1 [src\config\mod.rs:340] loaded task build – C:\Users\navyd\workspaces\projects\navyd.github.io\mise.toml
+TRACE  1 [src\config\mod.rs:348] load_all_tasks 1
+DEBUG  1 [src\cli\watch.rs:189] $ watchexec -f content/posts/**/*.md -- mise run build --log-level trace
+DEBUG  1 [src\cmd.rs:94] $ watchexec -f content/posts/**/*.md -- mise run build --log-level trace
+TRACE  1 [src\toolset\mod.rs:499] env start
+TRACE  1 [src\backend\mod.rs:262] node is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\node\20 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] java is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\java\graalvm-community-23 (not installed)
+TRACE  1 [src\backend\mod.rs:262] go is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\go\1.23 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] zig is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\zig\0.13 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] npm:@bitwarden/cli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\npm-bitwarden-cli\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] uv is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\uv\0.5 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:ipython is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-ipython\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:mycli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-mycli\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:pgcli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pgcli\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:git-filter-repo is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-filter-repo\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:pre-commit is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pre-commit\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:git-delete-merged-branches is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-delete-merged-branches\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:maturin is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-maturin\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:poetry is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-poetry\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] act is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\act\0.2 (runtime symlink)
+TRACE  1 [src\toolset\mod.rs:527] env end
+TRACE  1 [src\backend\mod.rs:262] node is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\node\20 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] java is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\java\graalvm-community-23 (not installed)
+TRACE  1 [src\backend\mod.rs:262] go is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\go\1.23 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] zig is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\zig\0.13 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] npm:@bitwarden/cli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\npm-bitwarden-cli\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] uv is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\uv\0.5 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:ipython is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-ipython\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:mycli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-mycli\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:pgcli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pgcli\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:git-filter-repo is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-filter-repo\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:pre-commit is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pre-commit\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:git-delete-merged-branches is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-delete-merged-branches\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:maturin is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-maturin\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:poetry is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-poetry\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] act is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\act\0.2 (runtime symlink)
+TRACE  4 [src\aqua\aqua_registry.rs:201] reading cached aqua-registry for astral-sh/uv from "C:\\Users\\navyd\\AppData\\Local\\Temp\\mise\\aqua-registry\\pkgs\\astral-sh\\uv\\registry.yaml"
+TRACE  4 [src\file.rs:32] open C:\Users\navyd\AppData\Local\Temp\mise\aqua-registry\pkgs\astral-sh\uv\registry.yaml
+TRACE  8 [src\aqua\aqua_registry.rs:201] reading cached aqua-registry for nektos/act from "C:\\Users\\navyd\\AppData\\Local\\Temp\\mise\\aqua-registry\\pkgs\\nektos\\act\\registry.yaml"
+TRACE  8 [src\file.rs:32] open C:\Users\navyd\AppData\Local\Temp\mise\aqua-registry\pkgs\nektos\act\registry.yaml
+TRACE  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = false
+TRACE  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] bool = false
+TRACE  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] func = semver("<= 0.2.19")
+TRACE  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] expr = "<= 0.2.19"
+TRACE  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = "<= 0.2.19"
+TRACE  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] string = "<= 0.2.19"
+TRACE  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] ident = Version
+TRACE  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = "0.2.20"
+TRACE  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] string = "0.2.20"
+TRACE  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\operator.rs:53] [operator] Pair { rule: equal_op, span: Span { str: "==", start: 8, end: 10 }, inner: [] }
+TRACE  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = true
+TRACE  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] bool = true
+DEBUG  1 [src\config\env_directive\mod.rs:199] Got config root C:\Users\navyd\workspaces\projects\navyd.github.io from source path C:\Users\navyd\workspaces\projects\navyd.github.io\mise.toml
+TRACE  1 [src\config\env_directive\venv.rs:31] python venv: .venv create=true
+DEBUG  1 [src\config\env_directive\mod.rs:158] Normalized path C:\Users\navyd\workspaces\projects\navyd.github.io\.venv with config root C:\Users\navyd\workspaces\projects\navyd.github.io and p .venv
+TRACE  1 [src\toolset\mod.rs:730] EnvResults {
+    env: [
+        "VIRTUAL_ENV",
+    ],
+    env_paths: [
+        "C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\.venv\\Scripts",
+    ],
+}
+TRACE  1 [src\toolset\mod.rs:499] env start
+TRACE  1 [src\backend\mod.rs:262] node is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\node\20 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] java is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\java\graalvm-community-23 (not installed)
+TRACE  1 [src\backend\mod.rs:262] go is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\go\1.23 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] zig is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\zig\0.13 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] npm:@bitwarden/cli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\npm-bitwarden-cli\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] uv is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\uv\0.5 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:ipython is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-ipython\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:mycli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-mycli\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:pgcli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pgcli\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:git-filter-repo is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-filter-repo\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:pre-commit is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pre-commit\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:git-delete-merged-branches is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-delete-merged-branches\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:maturin is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-maturin\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:poetry is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-poetry\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] act is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\act\0.2 (runtime symlink)
+TRACE  1 [src\toolset\mod.rs:527] env end
+TRACE  1 [src\backend\mod.rs:262] node is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\node\20 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] java is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\java\graalvm-community-23 (not installed)
+TRACE  1 [src\backend\mod.rs:262] go is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\go\1.23 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] zig is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\zig\0.13 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] npm:@bitwarden/cli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\npm-bitwarden-cli\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] uv is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\uv\0.5 (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:ipython is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-ipython\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:mycli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-mycli\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:pgcli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pgcli\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:git-filter-repo is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-filter-repo\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:pre-commit is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pre-commit\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:git-delete-merged-branches is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-delete-merged-branches\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:maturin is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-maturin\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] pipx:poetry is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-poetry\latest (runtime symlink)
+TRACE  1 [src\backend\mod.rs:262] act is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\act\0.2 (runtime symlink)
+TRACE  8 [src\aqua\aqua_registry.rs:201] reading cached aqua-registry for astral-sh/uv from "C:\\Users\\navyd\\AppData\\Local\\Temp\\mise\\aqua-registry\\pkgs\\astral-sh\\uv\\registry.yaml"
+TRACE 11 [src\aqua\aqua_registry.rs:201] reading cached aqua-registry for nektos/act from "C:\\Users\\navyd\\AppData\\Local\\Temp\\mise\\aqua-registry\\pkgs\\nektos\\act\\registry.yaml"
+TRACE  8 [src\file.rs:32] open C:\Users\navyd\AppData\Local\Temp\mise\aqua-registry\pkgs\astral-sh\uv\registry.yaml
+TRACE 11 [src\file.rs:32] open C:\Users\navyd\AppData\Local\Temp\mise\aqua-registry\pkgs\nektos\act\registry.yaml
+TRACE  8 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = false
+TRACE  8 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] bool = false
+TRACE  8 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] func = semver("<= 0.2.19")
+TRACE  8 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] expr = "<= 0.2.19"
+TRACE  8 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = "<= 0.2.19"
+TRACE  8 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] string = "<= 0.2.19"
+TRACE  8 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] ident = Version
+TRACE  8 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = "0.2.20"
+TRACE  8 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] string = "0.2.20"
+TRACE  8 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\operator.rs:53] [operator] Pair { rule: equal_op, span: Span { str: "==", start: 8, end: 10 }, inner: [] }
+TRACE  8 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\ast\node.rs:62] value = true
+TRACE  8 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\expr-lang-0.2.2\src\value.rs:179] bool = true
+[Running: mise run build --log-level trace]
+The application panicked (crashed).
+Message:  called `Option::unwrap()` on a `None` value
+Location: C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\xx-2.0.4\src\file.rs:222
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ BACKTRACE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                                ⋮ 10 frames hidden ⋮
+  11: core::panicking::panic<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/core\src\panicking.rs:148
+  12: core::option::unwrap_failed<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/core\src\option.rs:2009
+  13: xx::file::glob::h343cba11b3c3b846
+      at <unknown source file>:<unknown line>
+  14: mise::config::env_directive::EnvResults::resolve::ha2208a9bf139220f
+      at <unknown source file>:<unknown line>
+  15: mise::config::Config::load_env::hd3f7f28d37100d24
+      at <unknown source file>:<unknown line>
+  16: core::ops::function::FnOnce::call_once{{vtable.shim}}::hf40b95e929660dca
+      at <unknown source file>:<unknown line>
+  17: once_cell::imp::initialize_or_wait::h92b1d9ad3d879251
+      at <unknown source file>:<unknown line>
+  18: once_cell::imp::OnceCell<T>::initialize::hf41e65594be8a5e8
+      at <unknown source file>:<unknown line>
+  19: mise::config::Config::watch_files::he540111f9c199137
+      at <unknown source file>:<unknown line>
+  20: mise::cli::hook_env::HookEnv::run::h0ed7c7c40d51e402
+      at <unknown source file>:<unknown line>
+  21: mise::cli::Cli::run::h6b5a0ceafbf2936b
+      at <unknown source file>:<unknown line>
+  22: mise::toolset::tool_version_list::ToolVersionList::resolve::h302a1a067936e031
+      at <unknown source file>:<unknown line>
+  23: std::sys::backtrace::__rust_begin_short_backtrace::h31a61dc467c8bf6d
+      at <unknown source file>:<unknown line>
+  24: std::rt::lang_start::{{closure}}::hbb564d3853bfbedb
+      at <unknown source file>:<unknown line>
+  25: std::rt::lang_start_internal::closure$1<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/std\src\rt.rs:174
+  26: std::panicking::try::do_call<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/std\src\panicking.rs:557
+  27: std::panicking::try<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/std\src\panicking.rs:520
+  28: std::panic::catch_unwind<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/std\src\panic.rs:358
+  29: std::rt::lang_start_internal<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/std\src\rt.rs:174
+  30: main<unknown>
+      at <unknown source file>:<unknown line>
+  31: invoke_main<unknown>
+      at D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:78panicked at C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\color-eyre-0.6.3\src\config.rs:284:29:
+
+thread panicked while processing panic. aborting.
+TRACE  1 [src\cli\mod.rs:330] logger done
+TRACE  1 [src\cli\mod.rs:331] migrate start
+TRACE  1 [src\cli\mod.rs:331] migrate done
+DEBUG  1 [src\cli\mod.rs:336] ARGS: C:\Users\navyd\workspaces\projects\mise\target\release\mise.exe run build --log-level trace
+TRACE  1 [src\cli\mod.rs:342] run run start
+TRACE  1 [src\cli\run.rs:218] run init
+TRACE  1 [src\config\mod.rs:96] load start
+TRACE  1 [src\backend\mod.rs:57] load_tools start
+TRACE  5 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\go\.mise.backend
+TRACE  3 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-git-delete-merged-branches\.mise.backend
+TRACE 10 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\python\.mise.backend
+TRACE  6 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cargo-cargo-insta\.mise.backend
+TRACE  4 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cargo-binstall\.mise.backend
+TRACE  9 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\actionlint\.mise.backend
+TRACE  7 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\npm-bitwarden-cli\.mise.backend
+TRACE 12 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-pgcli\.mise.backend
+TRACE  2 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\act\.mise.backend
+TRACE  8 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\bun\.mise.backend
+TRACE 11 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cargo-toml-cli\.mise.backend
+TRACE 13 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cargo-samply\.mise.backend
+TRACE 13 [src\toolset\install_state.rs:104] init_tools cargo:samply
+TRACE 13 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cosign\.mise.backend
+TRACE  7 [src\toolset\install_state.rs:104] init_tools npm:@bitwarden/cli
+TRACE  7 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\npm-markdown-link-check\.mise.backend
+TRACE  6 [src\toolset\install_state.rs:104] init_tools cargo:cargo-insta
+TRACE  6 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cargo-git-cliff\.mise.backend
+TRACE  9 [src\toolset\install_state.rs:104] init_tools actionlint
+TRACE  9 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-ipython\.mise.backend
+TRACE  5 [src\toolset\install_state.rs:104] init_tools go
+TRACE  5 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\java\.mise.backend
+TRACE  9 [src\toolset\install_state.rs:104] init_tools pipx:ipython
+TRACE  9 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-maturin\.mise.backend
+TRACE  2 [src\toolset\install_state.rs:104] init_tools act
+TRACE  2 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-git-filter-repo\.mise.backend
+TRACE  6 [src\toolset\install_state.rs:104] init_tools cargo:git-cliff
+TRACE  6 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-pre-commit\.mise.backend
+TRACE  4 [src\toolset\install_state.rs:104] init_tools cargo-binstall
+TRACE  4 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\cargo-cargo-edit\.mise.backend
+TRACE  5 [src\toolset\install_state.rs:104] init_tools java
+TRACE  5 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\jq\.mise.backend
+TRACE  4 [src\toolset\install_state.rs:104] init_tools cargo:cargo-edit
+TRACE  4 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\minisign\.mise.backend
+TRACE  4 [src\toolset\install_state.rs:104] init_tools minisign
+TRACE  4 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\node\.mise.backend
+TRACE 13 [src\toolset\install_state.rs:104] init_tools cosign
+TRACE 13 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-poetry\.mise.backend
+TRACE  9 [src\toolset\install_state.rs:104] init_tools pipx:maturin
+TRACE  9 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-mycli\.mise.backend
+TRACE 13 [src\toolset\install_state.rs:104] init_tools pipx:poetry
+TRACE 13 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\npm-markdownlint-cli\.mise.backend
+TRACE  9 [src\toolset\install_state.rs:104] init_tools pipx:mycli
+TRACE  9 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\taplo\.mise.backend
+TRACE  5 [src\toolset\install_state.rs:104] init_tools jq
+TRACE  5 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pipx-toml-sort\.mise.backend
+TRACE  6 [src\toolset\install_state.rs:104] init_tools pipx:pre-commit
+TRACE  6 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\npm-prettier\.mise.backend
+TRACE  5 [src\toolset\install_state.rs:104] init_tools pipx:toml-sort
+TRACE  5 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\pre-commit\.mise.backend
+TRACE  2 [src\toolset\install_state.rs:104] init_tools pipx:git-filter-repo
+TRACE  2 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\wait-for-gh-rate-limit\.mise.backend
+TRACE  8 [src\toolset\install_state.rs:104] init_tools bun
+TRACE  8 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\npm-zhlint\.mise.backend
+TRACE  4 [src\toolset\install_state.rs:104] init_tools node
+TRACE  4 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\uv\.mise.backend
+TRACE 13 [src\toolset\install_state.rs:104] init_tools npm:markdownlint-cli
+TRACE 13 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\rust\.mise.backend
+TRACE  5 [src\toolset\install_state.rs:104] init_tools pre-commit
+TRACE  5 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\watchexec\.mise.backend
+TRACE 12 [src\toolset\install_state.rs:104] init_tools pipx:pgcli
+TRACE  7 [src\toolset\install_state.rs:104] init_tools npm:markdown-link-check
+TRACE 12 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\ripgrep\.mise.backend
+TRACE  7 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\rust-analyzer\.mise.backend
+TRACE  7 [src\toolset\install_state.rs:104] init_tools rust-analyzer
+TRACE  7 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\slsa-verifier\.mise.backend
+TRACE  3 [src\toolset\install_state.rs:104] init_tools pipx:git-delete-merged-branches
+TRACE  3 [src\file.rs:176] cat C:\Users\navyd\AppData\Local\mise\installs\zig\.mise.backend
+TRACE 11 [src\toolset\install_state.rs:104] init_tools cargo:toml-cli
+TRACE  5 [src\toolset\install_state.rs:104] init_tools watchexec
+TRACE 12 [src\toolset\install_state.rs:104] init_tools ripgrep
+TRACE  6 [src\toolset\install_state.rs:104] init_tools npm:prettier
+TRACE  7 [src\toolset\install_state.rs:104] init_tools slsa-verifier
+TRACE 13 [src\toolset\install_state.rs:104] init_tools rust
+TRACE  4 [src\toolset\install_state.rs:104] init_tools uv
+TRACE  2 [src\toolset\install_state.rs:104] init_tools wait-for-gh-rate-limit
+TRACE 10 [src\toolset\install_state.rs:104] init_tools python
+TRACE  9 [src\toolset\install_state.rs:104] init_tools taplo
+TRACE  3 [src\toolset\install_state.rs:104] init_tools zig
+TRACE  8 [src\toolset\install_state.rs:104] init_tools npm:zhlint
+TRACE  1 [src\registry.rs:41] disable_backends
+TRACE  1 [src\registry.rs:45] disable_backends
+TRACE  1 [src\backend\mod.rs:67] load_tools core
+TRACE  1 [src\backend\mod.rs:78] load_tools install_state
+TRACE  1 [src\backend\mod.rs:92] load_tools done
+TRACE  1 [src\config\mod.rs:98] load idiomatic_files
+TRACE  1 [src\config\mod.rs:104] load config_filenames
+DEBUG  1 [src\config\mod.rs:106] Loaded config paths ["\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\mise.toml", "\\\\?\\C:\\Users\\navyd\\.config\\mise\\config.toml"] from config filenames: [".bun-version", ".deno-version", ".go-version", ".java-version", ".node-version", ".nvmrc", ".python-version", ".python-versions", ".ruby-version", ".sdkmanrc", ".swift-version", ".terraform-version", ".zig-version", "Gemfile", "rust-toolchain.toml", ".tool-versions", ".config/mise/conf.d/*.toml", ".config/mise/config.toml", ".config/mise.toml", ".mise/config.toml", "mise/config.toml", ".rtx.toml", "mise.toml", ".mise.toml", ".config/mise/config.local.toml", ".config/mise.local.toml", ".mise/config.local.toml", ".rtx.local.toml", "mise.local.toml", ".mise.local.toml"]
+TRACE  1 [src\config\mod.rs:107] load config_paths
+TRACE  1 [src\config\mod.rs:108] config_paths: ["\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\mise.toml", "\\\\?\\C:\\Users\\navyd\\.config\\mise\\config.toml"]
+TRACE  2 [src\file.rs:176] cat \\?\C:\Users\navyd\workspaces\projects\navyd.github.io\mise.toml
+TRACE  3 [src\file.rs:176] cat \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  2 [src\config\config_file\mise_toml.rs:113] parsing: \\?\C:\Users\navyd\workspaces\projects\navyd.github.io\mise.toml
+TRACE  3 [src\config\config_file\mise_toml.rs:113] parsing: \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: 20
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: graalvm-community-23
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: 1.23
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: stable
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: 0.13
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: 0.5
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: latest
+TRACE  3 [src\cli\args\tool_arg.rs:60] parsing ToolVersionType from: 0.2
+TRACE  1 [src\config\mod.rs:110] load config_files
+TRACE  1 [src\config\mod.rs:1130] load_vars start
+TRACE  1 [src\config\mod.rs:1151] load_vars done
+TRACE  1 [src\config\mod.rs:1153] EnvResults
+TRACE  1 [src\config\mod.rs:1113] load_aliases: 0
+TRACE  1 [src\config\mod.rs:752] project_root: Some("\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io")
+TRACE  1 [src\config\mod.rs:1125] load_plugins: 0
+TRACE  1 [src\config\mod.rs:137] load build
+TRACE  1 [src\config\mod.rs:140] load validate
+TRACE  1 [src\config\mod.rs:143] load all aliases
+TRACE  1 [src\config\mod.rs:146] load redactions
+TRACE  1 [src\config\mod.rs:149] config: Config {
+    Config Files: [
+        "\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\mise.toml",
+        "\\\\?\\C:\\Users\\navyd\\.config\\mise\\config.toml",
+    ],
+}
+TRACE  1 [src\config\mod.rs:156] load done
+TRACE  1 [src\config\mod.rs:322] load_all_tasks
+TRACE  4 [src\lockfile.rs:212] [node@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:32] reading lockfile \\?\C:\Users\navyd\.config\mise\config.lock
+TRACE  4 [src\file.rs:176] cat \\?\C:\Users\navyd\.config\mise\config.lock
+TRACE  4 [src\lockfile.rs:32] reading lockfile \\?\C:\Users\navyd\workspaces\projects\navyd.github.io\mise.lock
+TRACE  4 [src\file.rs:176] cat \\?\C:\Users\navyd\workspaces\projects\navyd.github.io\mise.lock
+TRACE  4 [src\lockfile.rs:212] [java@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [go@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [rust@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [zig@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [npm:@bitwarden/cli@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [uv@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [pipx:ipython@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [pipx:mycli@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [pipx:pgcli@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [pipx:git-filter-repo@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [pipx:pre-commit@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [pipx:git-delete-merged-branches@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [pipx:maturin@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [pipx:poetry@] reading all lockfiles
+TRACE  4 [src\lockfile.rs:212] [act@] reading all lockfiles
+TRACE  4 [src\toolset\tool_request_set.rs:166] tool_request_set::build
+TRACE  4 [src\toolset\tool_version.rs:40] resolving node@20 (use_locked_version)
+TRACE  2 [src\toolset\tool_version.rs:40] resolving pipx:mycli@latest (use_locked_version)
+TRACE  8 [src\toolset\tool_version.rs:40] resolving pipx:pgcli@latest (use_locked_version)
+TRACE  8 [src\lockfile.rs:205] [pipx:pgcli@latest] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  5 [src\toolset\tool_version.rs:40] resolving go@1.23 (use_locked_version)
+TRACE  3 [src\toolset\tool_version.rs:40] resolving zig@0.13 (use_locked_version)
+TRACE 12 [src\toolset\tool_version.rs:40] resolving rust@stable (use_locked_version)
+TRACE 12 [src\lockfile.rs:205] [rust@stable] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE 11 [src\toolset\tool_version.rs:40] resolving java@graalvm-community-23 (use_locked_version)
+TRACE 11 [src\lockfile.rs:205] [java@graalvm-community-23] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  9 [src\toolset\tool_version.rs:40] resolving npm:@bitwarden/cli@latest (use_locked_version)
+TRACE  9 [src\lockfile.rs:205] [npm:@bitwarden/cli@latest] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  4 [src\lockfile.rs:205] [node@20] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  2 [src\lockfile.rs:205] [pipx:mycli@latest] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE 10 [src\toolset\tool_version.rs:40] resolving uv@0.5 (use_locked_version)
+TRACE  5 [src\lockfile.rs:205] [go@1.23] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  8 [src\toolset\tool_version.rs:40] resolving pipx:ipython@latest (use_locked_version)
+TRACE  3 [src\lockfile.rs:205] [zig@0.13] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  7 [src\toolset\tool_version.rs:40] resolving pipx:git-filter-repo@latest (use_locked_version)
+TRACE 12 [src\toolset\tool_version.rs:40] resolving pipx:maturin@latest (use_locked_version)
+TRACE  6 [src\toolset\tool_version.rs:40] resolving pipx:git-delete-merged-branches@latest (use_locked_version)
+TRACE 13 [src\toolset\tool_version.rs:40] resolving pipx:poetry@latest (use_locked_version)
+TRACE  9 [src\toolset\tool_version.rs:40] resolving pipx:pre-commit@latest (use_locked_version)
+TRACE 10 [src\lockfile.rs:205] [uv@0.5] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  2 [src\toolset\tool_version.rs:40] resolving act@0.2 (use_locked_version)
+TRACE  8 [src\lockfile.rs:205] [pipx:ipython@latest] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  7 [src\lockfile.rs:205] [pipx:git-filter-repo@latest] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE 12 [src\lockfile.rs:205] [pipx:maturin@latest] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  6 [src\lockfile.rs:205] [pipx:git-delete-merged-branches@latest] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE 13 [src\lockfile.rs:205] [pipx:poetry@latest] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  9 [src\lockfile.rs:205] [pipx:pre-commit@latest] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  2 [src\lockfile.rs:205] [act@0.2] reading lockfile for \\?\C:\Users\navyd\.config\mise\config.toml
+TRACE  4 [src\toolset\mod.rs:499] env start
+TRACE  4 [src\backend\mod.rs:262] node is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\node\20 (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] java is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\java\graalvm-community-23 (not installed)
+TRACE  4 [src\backend\mod.rs:262] go is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\go\1.23 (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] zig is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\zig\0.13 (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] npm:@bitwarden/cli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\npm-bitwarden-cli\latest (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] uv is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\uv\0.5 (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] pipx:ipython is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-ipython\latest (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] pipx:mycli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-mycli\latest (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] pipx:pgcli is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pgcli\latest (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] pipx:git-filter-repo is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-filter-repo\latest (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] pipx:pre-commit is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-pre-commit\latest (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] pipx:git-delete-merged-branches is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-git-delete-merged-branches\latest (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] pipx:maturin is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-maturin\latest (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] pipx:poetry is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\pipx-poetry\latest (runtime symlink)
+TRACE  4 [src\backend\mod.rs:262] act is not installed, path: C:\Users\navyd\AppData\Local\mise\installs\act\0.2 (runtime symlink)
+TRACE  4 [src\config\mod.rs:585] load_env start
+DEBUG  4 [src\config\env_directive\mod.rs:199] Got config root \\?\C:\Users\navyd from source path \\?\C:\Users\navyd\.config\mise\config.toml
+DEBUG  4 [src\config\env_directive\mod.rs:199] Got config root \\?\C:\Users\navyd from source path \\?\C:\Users\navyd\.config\mise\config.toml
+DEBUG  4 [src\config\env_directive\mod.rs:199] Got config root \\?\C:\Users\navyd from source path \\?\C:\Users\navyd\.config\mise\config.toml
+DEBUG  4 [src\config\env_directive\mod.rs:199] Got config root \\?\C:\Users\navyd from source path \\?\C:\Users\navyd\.config\mise\config.toml
+DEBUG  4 [src\config\env_directive\mod.rs:199] Got config root \\?\C:\Users\navyd\workspaces\projects\navyd.github.io from source path \\?\C:\Users\navyd\workspaces\projects\navyd.github.io\mise.toml
+DEBUG  4 [src\config\env_directive\mod.rs:158] Normalized path \\?\C:\Users\navyd\workspaces\projects\navyd.github.io\.env with config root \\?\C:\Users\navyd\workspaces\projects\navyd.github.io and p .env
+DEBUG  4 [C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\xx-2.0.4\src\file.rs:216] glob: "\\\\?\\C:\\Users\\navyd\\workspaces\\projects\\navyd.github.io\\.env"
+The application panicked (crashed).
+Message:  called `Option::unwrap()` on a `None` value
+Location: C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\xx-2.0.4\src\file.rs:222
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ BACKTRACE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                                ⋮ 10 frames hidden ⋮
+  11: core::panicking::panic<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/core\src\panicking.rs:148
+  12: core::option::unwrap_failed<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/core\src\option.rs:2009
+  13: xx::file::glob::h343cba11b3c3b846
+      at <unknown source file>:<unknown line>
+  14: mise::config::env_directive::EnvResults::resolve::ha2208a9bf139220f
+      at <unknown source file>:<unknown line>
+  15: mise::config::Config::load_env::hd3f7f28d37100d24
+      at <unknown source file>:<unknown line>
+  16: core::ops::function::FnOnce::call_once{{vtable.shim}}::hf40b95e929660dca
+      at <unknown source file>:<unknown line>
+  17: once_cell::imp::initialize_or_wait::h92b1d9ad3d879251
+      at <unknown source file>:<unknown line>
+  18: once_cell::imp::OnceCell<T>::initialize::hf41e65594be8a5e8
+      at <unknown source file>:<unknown line>
+  19: once_cell::imp::OnceCell<T>::initialize::{{closure}}::hbf69fed95b08ab5d
+      at <unknown source file>:<unknown line>
+  20: once_cell::imp::initialize_or_wait::h92b1d9ad3d879251
+      at <unknown source file>:<unknown line>
+  21: once_cell::imp::OnceCell<T>::initialize::heff4b13064c59e2f
+      at <unknown source file>:<unknown line>
+  22: mise::toolset::Toolset::env_from_tools::h0905e54a048b9b35
+      at <unknown source file>:<unknown line>
+  23: mise::toolset::Toolset::final_env::h02afafa0101e607e
+      at <unknown source file>:<unknown line>
+  24: mise::toolset::Toolset::env_with_path::h8e51f97ead416001
+      at <unknown source file>:<unknown line>
+  25: mise::toolset::Toolset::full_env::h4032115530fd4ebf
+      at <unknown source file>:<unknown line>
+  26: once_cell::imp::OnceCell<T>::initialize::{{closure}}::h66e09daf9e6c0e37
+      at <unknown source file>:<unknown line>
+  27: once_cell::imp::initialize_or_wait::h92b1d9ad3d879251
+      at <unknown source file>:<unknown line>
+  28: once_cell::imp::OnceCell<T>::initialize::h90d0e6000fd926ff
+      at <unknown source file>:<unknown line>
+  29: mise::task::Task::tera_ctx::h63c2bae5e85e9f66
+      at <unknown source file>:<unknown line>
+  30: mise::task::Task::render::h264a60149cb1c4b9
+      at <unknown source file>:<unknown line>
+  31: <alloc::vec::into_iter::IntoIter<T,A> as core::iter::traits::iterator::Iterator>::fold::hbe6104d85c7764c3
+      at <unknown source file>:<unknown line>
+  32: alloc::vec::in_place_collect::<impl alloc::vec::spec_from_iter::SpecFromIter<T,I> for alloc::vec::Vec<T>>::from_iter::h61f8f24de8d0a79c
+      at <unknown source file>:<unknown line>
+  33: rayon::iter::plumbing::Folder::consume_iter::h33140fb6e4632afc
+      at <unknown source file>:<unknown line>
+  34: rayon::iter::plumbing::bridge_producer_consumer::helper::h256c790f3c8f0ac0
+      at <unknown source file>:<unknown line>
+  35: rayon::iter::extend::<impl rayon::iter::ParallelExtend<T> for alloc::vec::Vec<T>>::par_extend::h9cf7bcdfba44a413
+      at <unknown source file>:<unknown line>
+  36: mise::config::Config::load_tasks_in_dir::hdab0f4ed01ad69c1
+      at <unknown source file>:<unknown line>
+  37: <alloc::vec::Vec<T,A> as alloc::vec::spec_extend::SpecExtend<T,I>>::spec_extend::h35696ed5de03cb95
+      at <unknown source file>:<unknown line>
+  38: rayon::iter::plumbing::bridge_producer_consumer::helper::h3ff92c7ec5d1bfdd
+      at <unknown source file>:<unknown line>
+  39: <itertools::unique_impl::UniqueBy<I,V,F> as core::iter::traits::iterator::Iterator>::next::h823723075d621c7b
+      at <unknown source file>:<unknown line>
+  40: rayon::iter::plumbing::bridge_producer_consumer::helper::h3ff92c7ec5d1bfdd
+      at <unknown source file>:<unknown line>
+  41: <itertools::unique_impl::UniqueBy<I,V,F> as core::iter::traits::iterator::Iterator>::next::h823723075d621c7b
+      at <unknown source file>:<unknown line>
+  42: rayon::iter::plumbing::bridge_producer_consumer::helper::h3ff92c7ec5d1bfdd
+      at <unknown source file>:<unknown line>
+  43: <rayon::vec::IntoIter<T> as rayon::iter::ParallelIterator>::drive_unindexed::h0609ea814a912ec7
+      at <unknown source file>:<unknown line>
+  44: rayon::iter::extend::<impl rayon::iter::ParallelExtend<T> for alloc::vec::Vec<T>>::par_extend::hd3e30cb33bb7c7b2
+      at <unknown source file>:<unknown line>
+  45: rayon::result::<impl rayon::iter::FromParallelIterator<core::result::Result<T,E>> for core::result::Result<C,E>>::from_par_iter::h83dca0357f44d144
+      at <unknown source file>:<unknown line>
+  46: mise::config::Config::load_local_tasks::h22fbe96f075d7301
+      at <unknown source file>:<unknown line>
+  47: <eyre::error::ErrorImpl<E> as core::fmt::Display>::fmt::hacb629c3858dae26
+      at <unknown source file>:<unknown line>
+  48: rayon_core::registry::WorkerThread::wait_until_cold::hb2950d47799d28b4
+      at <unknown source file>:<unknown line>
+  49: rayon_core::registry::ThreadBuilder::run::hd811d31f41e373fe
+      at <unknown source file>:<unknown line>
+  50: std::sys::backtrace::__rust_begin_short_backtrace::h19375067f3838ce2
+      at <unknown source file>:<unknown line>
+  51: std::thread::Builder::spawn_unchecked::h1c05ff0b73876456
+      at <unknown source file>:<unknown line>
+  52: alloc::boxed::impl$28::call_once<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/alloc\src\boxed.rs:1972
+  53: alloc::boxed::impl$28::call_once<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/alloc\src\boxed.rs:1972
+  54: std::sys::pal::windows::thread::impl$0::new::thread_start<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/std\src\sys\pal\windows\thread.rs:55
+  55: BaseThreadInitThunk<unknown>
+      at <unknown source file>:<unknown line>
+  56: RtlUserThreadStart<unknown>
+      at <unknown source file>:<unknown line>
+
+Run with COLORBT_SHOW_HIDDEN=1 environment variable to disable frame filtering.
+The application panicked (crashed).
+Message:  called `Option::unwrap()` on a `None` value
+Location: C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\xx-2.0.4\src\file.rs:222
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ BACKTRACE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                                ⋮ 10 frames hidden ⋮
+  11: core::panicking::panic<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/core\src\panicking.rs:148
+  12: core::option::unwrap_failed<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/core\src\option.rs:2009
+  13: xx::file::glob::h343cba11b3c3b846
+      at <unknown source file>:<unknown line>
+  14: mise::config::env_directive::EnvResults::resolve::ha2208a9bf139220f
+      at <unknown source file>:<unknown line>
+  15: mise::config::Config::load_env::hd3f7f28d37100d24
+      at <unknown source file>:<unknown line>
+  16: core::ops::function::FnOnce::call_once{{vtable.shim}}::hf40b95e929660dca
+      at <unknown source file>:<unknown line>
+  17: once_cell::imp::initialize_or_wait::h92b1d9ad3d879251
+      at <unknown source file>:<unknown line>
+  18: once_cell::imp::OnceCell<T>::initialize::hf41e65594be8a5e8
+      at <unknown source file>:<unknown line>
+  19: mise::config::Config::watch_files::he540111f9c199137
+      at <unknown source file>:<unknown line>
+  20: mise::cli::hook_env::HookEnv::run::h0ed7c7c40d51e402
+      at <unknown source file>:<unknown line>
+  21: mise::cli::Cli::run::h6b5a0ceafbf2936b
+      at <unknown source file>:<unknown line>
+  22: mise::toolset::tool_version_list::ToolVersionList::resolve::h302a1a067936e031
+      at <unknown source file>:<unknown line>
+  23: std::sys::backtrace::__rust_begin_short_backtrace::h31a61dc467c8bf6d
+      at <unknown source file>:<unknown line>
+  24: std::rt::lang_start::{{closure}}::hbb564d3853bfbedb
+      at <unknown source file>:<unknown line>
+  25: std::rt::lang_start_internal::closure$1<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/std\src\rt.rs:174
+  26: std::panicking::try::do_call<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/std\src\panicking.rs:557
+  27: std::panicking::try<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/std\src\panicking.rs:520
+  28: std::panic::catch_unwind<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/std\src\panic.rs:358
+  29: std::rt::lang_start_internal<unknown>
+      at /rustc/e71f9a9a98b0faf423844bf0ba7438f29dc27d58\library/std\src\rt.rs:174
+  30: main<unknown>
+      at <unknown source file>:<unknown line>
+  31: invoke_main<unknown>
+      at D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:78panicked at C:\Users\navyd\.cargo\registry\src\rsproxy.cn-0dccff568467c15b\color-eyre-0.6.3\src\config.rs:284:29:
+
+thread panicked while processing panic. aborting.
+[Command was successful]

@@ -1,0 +1,995 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blog on NavyD 的个人博客</title><link>/tags/blog/</link><description>Recent content in Blog on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 30 Mar 2023 19:02:41 +0800</lastBuildDate><atom:link href="/tags/blog/index.xml" rel="self" type="application/rss+xml"/><item><title>my hugo blog</title><link>/posts/2021/08/my-hugo-blog/</link><pubDate>Fri, 06 Aug 2021 00:36:35 +0800</pubDate><guid>/posts/2021/08/my-hugo-blog/</guid><description>&lt;p&gt;&lt;img src="https://d33wubrfki0l68.cloudfront.net/c38c7334cc3f23585738e40334284fddcaf03d5e/2e17c/images/hugo-logo-wide.svg"
+loading="lazy"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;使用hugo在github搭建静态博客。&lt;/p&gt;
+&lt;h2 id="选型"&gt;&lt;a href="#%e9%80%89%e5%9e%8b" class="header-anchor"&gt;&lt;/a&gt;选型
+&lt;/h2&gt;&lt;p&gt;可选类型&lt;/p&gt;
+&lt;h3 id="动态博客"&gt;&lt;a href="#%e5%8a%a8%e6%80%81%e5%8d%9a%e5%ae%a2" class="header-anchor"&gt;&lt;/a&gt;动态博客
+&lt;/h3&gt;&lt;p&gt;比较知名的动态博客工具有下面几种：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://wordpress.com/"
+target="_blank"
+rel="noopener"
+&gt;wordpress&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="http://typecho.org/"
+target="_blank"
+rel="noopener"
+&gt;typecho&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;都是开源项目，wordpress(简称WP)是使用最广泛的，而typecho开发都不是告别活跃&lt;/p&gt;
+&lt;p&gt;对于博客项目，稳定是前提&lt;/p&gt;
+&lt;p&gt;开源项目参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/WordPress/WordPress"
+target="_blank"
+rel="noopener"
+&gt;WordPress/WordPress&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/typecho/typecho"
+target="_blank"
+rel="noopener"
+&gt;typecho/typecho&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="部署"&gt;&lt;a href="#%e9%83%a8%e7%bd%b2" class="header-anchor"&gt;&lt;/a&gt;部署
+&lt;/h4&gt;&lt;p&gt;在试用WP中，虽然现在可以使用docker方便的部署，我使用raspi4 2GB运行有点不够，运行WP与mysql后仅剩下200M左右，如果再vscode remote连接直接死机，需要开启swap才能正常。&lt;/p&gt;
+&lt;h4 id="markdown"&gt;&lt;a href="#markdown" class="header-anchor"&gt;&lt;/a&gt;markdown
+&lt;/h4&gt;&lt;p&gt;由于之前都是使用markdown写作，存在100多篇md博文，不可能一一复制到WP中，所以想使用工具批量发布到WP中。在初步使用中没有发现在WP中有方法直接渲染markdown，基本都是md在线编辑器，不符合需求。&lt;/p&gt;
+&lt;p&gt;换个方式，使用已经渲染好的html文件发布到WP更好，避免了md的渲染不一致的问题，同时可以使用wp rest api批量更新。&lt;/p&gt;
+&lt;p&gt;尝试直接复制使用渲染markdown转换的html不可用，WP的html代码文本编辑器会转义部分代码&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;原始markdown内容&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-markdown" data-lang="markdown"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="gh"&gt;# vim配置
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="gh"&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&amp;lt;!-- 去除空格`&lt;span class="sb"&gt;` `&lt;/span&gt; --&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;`&lt;span class="sb"&gt;` `&lt;/span&gt;yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;vim: true
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;`&lt;span class="sb"&gt;` `&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;参考：
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;*&lt;/span&gt; [&lt;span class="nt"&gt;Vim 配置入门&lt;/span&gt;](&lt;span class="na"&gt;http://www.ruanyifeng.com/blog/2018/09/vimrc.html&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用markdown-preview-enhanced导出cdn hosted文件
+&lt;a
+class="link"
+href=""
+&gt;vim_markdown_preview_enhanced.html&lt;/a&gt;
+，下面是部分代码：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;span class="lnt"&gt;29
+&lt;/span&gt;&lt;span class="lnt"&gt;30
+&lt;/span&gt;&lt;span class="lnt"&gt;31
+&lt;/span&gt;&lt;span class="lnt"&gt;32
+&lt;/span&gt;&lt;span class="lnt"&gt;33
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-html" data-lang="html"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="cp"&gt;&amp;lt;!DOCTYPE html&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;head&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;title&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;vim&lt;span class="ni"&gt;&amp;amp;#x914D;&amp;amp;#x7F6E;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;title&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;meta&lt;/span&gt; &lt;span class="na"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;utf-8&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;meta&lt;/span&gt; &lt;span class="na"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;viewport&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;content&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;width=device-width, initial-scale=1.0&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;link&lt;/span&gt; &lt;span class="na"&gt;rel&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;stylesheet&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;href&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;style&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;/**
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;* prism.js Github theme based on GitHub&amp;#39;s theme.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;* @author Sam Clarke
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;*/
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;code[class*=&amp;#34;language-&amp;#34;],
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;pre[class*=&amp;#34;language-&amp;#34;] {
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;color: #333;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;background: none;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;font-family: Consolas, &amp;#34;Liberation Mono&amp;#34;, Menlo, Courier, monospace;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;text-align: left;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;white-space: pre;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;word-spacing: normal;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;word-break: normal;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;word-wrap: normal;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;line-height: 1.4;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-moz-tab-size: 8;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-o-tab-size: 8;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;tab-size: 8;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-webkit-hyphens: none;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-moz-hyphens: none;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-ms-hyphens: none;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;hyphens: none;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;经过WP转义后
+&lt;a
+class="link"
+href="/posts/2021/08/my-hugo-blog/vim_wordpress_esc"
+&gt;vim_wordpress_esc&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-04-23-17-08.png"
+width="1424"
+height="653"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-04-23-17-08_hu_f3f07070df9507a3.png 480w, /posts/2021/08/my-hugo-blog/2021-08-04-23-17-08_hu_a93e42fd1d8e16a4.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="218"
+data-flex-basis="523px"
+&gt;
+下面是部分代码：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-html" data-lang="html"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="ni"&gt;&amp;amp;nbsp;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="ni"&gt;&amp;amp;nbsp;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;style&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;/**&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;* prism.js Github theme based on GitHub&amp;#39;s theme.&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;* @author Sam Clarke&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;*/&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;code[class*=&amp;#34;language-&amp;#34;],&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;pre[class*=&amp;#34;language-&amp;#34;] {&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;color: #333;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;background: none;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;font-family: Consolas, &amp;#34;Liberation Mono&amp;#34;, Menlo, Courier, monospace;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;text-align: left;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;white-space: pre;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;word-spacing: normal;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;word-break: normal;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;word-wrap: normal;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;line-height: 1.4;&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;p&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;p&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;-moz-tab-size: 8;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-o-tab-size: 8;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;tab-size: 8;&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;p&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;p&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;-webkit-hyphens: none;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-moz-hyphens: none;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-ms-hyphens: none;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;hyphens: none;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;br&lt;/span&gt; &lt;span class="p"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;}&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;p&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;可以看到&lt;code&gt;title, link&lt;/code&gt;等tag被移除转义为&lt;code&gt;&amp;amp;nbsp;&lt;/code&gt;，其中&lt;code&gt;&amp;lt;link rel=&amp;quot;stylesheet&amp;quot; href=&amp;quot;https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css&amp;quot;&amp;gt;&lt;/code&gt;被移除导致无法正确显示代码高亮；&lt;code&gt;\n&lt;/code&gt;被转义为&lt;code&gt;&amp;lt;br /&amp;gt;&lt;/code&gt;。下面有可以解决这两个问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;minifiy html移除所有&lt;code&gt;\n&lt;/code&gt;避免转义：有各种插件可以生成一行的html文件&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在WP中引用全局外部css。有两种方式&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;在额外css中插入&lt;code&gt;@import url(&amp;quot;//cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css&amp;quot;);&lt;/code&gt;
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-05-00-41-10.png"
+width="509"
+height="468"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-05-00-41-10_hu_d49435201c54e047.png 480w, /posts/2021/08/my-hugo-blog/2021-08-05-00-41-10_hu_77f08a9ef14c7161.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="108"
+data-flex-basis="261px"
+&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在主题style.css中插入&lt;code&gt;@import url(&amp;quot;//cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css&amp;quot;);&lt;/code&gt;
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-05-00-43-59.png"
+width="881"
+height="357"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-05-00-43-59_hu_d71a9165e9ad331d.png 480w, /posts/2021/08/my-hugo-blog/2021-08-05-00-43-59_hu_804c122a34ac8b64.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="246"
+data-flex-basis="592px"
+&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://cloud.tencent.com/developer/article/1150073"
+target="_blank"
+rel="noopener"
+&gt;在WordPress中使用Markdown进行写作的正确姿势&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://www.paincker.com/publish-markdown"
+target="_blank"
+rel="noopener"
+&gt;WordPress+PublishMarkdown快速构建个人博客&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://zhuanlan.zhihu.com/p/65593971"
+target="_blank"
+rel="noopener"
+&gt;命令行创建和发布 MarkDown 到 WordPress&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://developer.wordpress.org/rest-api/reference/"
+target="_blank"
+rel="noopener"
+&gt;REST API Handbook&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://developer.wordpress.org/rest-api/reference/posts/"
+target="_blank"
+rel="noopener"
+&gt;rest api: Posts&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://stackoverflow.com/questions/27045670/how-to-link-external-css-in-wordpress"
+target="_blank"
+rel="noopener"
+&gt;How to link external css in wordpress? [closed]&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="问题"&gt;&lt;a href="#%e9%97%ae%e9%a2%98" class="header-anchor"&gt;&lt;/a&gt;问题
+&lt;/h4&gt;&lt;p&gt;到此，markdown渲染的问题解决了，新的问题出现了，如何批量渲染md文件。vscode markdown-preview-enhanced插件只提供了手动的方式渲染出html，front-matter配置自动导出需要打开预览界面才行，不利于自动化&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;span class="lnt"&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nn"&gt;---&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;embed_local_images&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kc"&gt;false&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;embed_svg&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;offline&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kc"&gt;false&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;toc&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;undefined&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="nt"&gt;print_background&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kc"&gt;false&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="nn"&gt;---&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;另外，对于不常用的图片，可以base64编码嵌入html文件中，缺点是文件过大，不利于缓存加载，链接形式的图片可以懒加载体验更好&lt;/p&gt;
+&lt;p&gt;于是转而寻找自动化工具，在
+&lt;a
+class="link"
+href="https://github.com/typora/typora-issues/issues/824#issuecomment-418176112"
+target="_blank"
+rel="noopener"
+&gt;typora issues&lt;/a&gt;
+中找到答案：Static Site Generator&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/"
+target="_blank"
+rel="noopener"
+&gt;Markdown Preview Enhanced docs&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/typora/typora-issues/issues/824"
+target="_blank"
+rel="noopener"
+&gt;Support export Multiple Documents #824&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/typora/typora-issues/issues/1999"
+target="_blank"
+rel="noopener"
+&gt;[Summary] Advanced command line interface support #1999&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/typora/typora-issues"
+target="_blank"
+rel="noopener"
+&gt;typora issues&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="静态博客"&gt;&lt;a href="#%e9%9d%99%e6%80%81%e5%8d%9a%e5%ae%a2" class="header-anchor"&gt;&lt;/a&gt;静态博客
+&lt;/h3&gt;&lt;p&gt;知名的静态博客工具有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/hexojs/hexo"
+target="_blank"
+rel="noopener"
+&gt;hexo&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo"
+target="_blank"
+rel="noopener"
+&gt;hugo. A fast, simple &amp;amp; powerful blog framework, powered by Node.js.&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/jekyll/jekyll"
+target="_blank"
+rel="noopener"
+&gt;jekyll. Jekyll is a blog-aware static site generator in Ruby&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="选型-1"&gt;&lt;a href="#%e9%80%89%e5%9e%8b-1" class="header-anchor"&gt;&lt;/a&gt;选型
+&lt;/h4&gt;&lt;p&gt;hexo使用nodejs开发，hugo使用golang开发，相对更熟悉golang。速度在这里不是重点，nodejs已经足够&lt;/p&gt;
+&lt;p&gt;部署方面，由于不是nodejs开发者，需要配置复杂的开发环境，虽然可借助docker在本地使用，但是没有找到可用的docker镜像，能满足需求。hugo部署非常简单，只有一个bin文件，结合git管理与github pages非常方便&lt;/p&gt;
+&lt;p&gt;在资源方面，hexo更多，但本着可以折腾golang、轻量博客功能不作过多要求的精神，hugo是理想的选择&lt;/p&gt;
+&lt;h2 id="hugo博客"&gt;&lt;a href="#hugo%e5%8d%9a%e5%ae%a2" class="header-anchor"&gt;&lt;/a&gt;hugo博客
+&lt;/h2&gt;&lt;p&gt;
+&lt;a
+class="link"
+href="/posts/2021/08/markdown-management-in-hugo/"
+&gt;目录管理&lt;/a&gt;
+&lt;/p&gt;
+&lt;h3 id="github-pages部署"&gt;&lt;a href="#github-pages%e9%83%a8%e7%bd%b2" class="header-anchor"&gt;&lt;/a&gt;github pages部署
+&lt;/h3&gt;&lt;p&gt;在github上使用一个仓库&lt;code&gt;&amp;lt;username&amp;gt;.github.io&lt;/code&gt;保存hugo博文与gh-pages。基本配置在
+&lt;a
+class="link"
+href="https://gohugo.io/hosting-and-deployment/hosting-on-github/#readout"
+target="_blank"
+rel="noopener"
+&gt;Host on GitHub&lt;/a&gt;
+一致。&lt;/p&gt;
+&lt;p&gt;但是要注意
+&lt;a
+class="link"
+href="https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-first-deployment-with-github_token"
+target="_blank"
+rel="noopener"
+&gt;First Deployment with GITHUB_TOKEN&lt;/a&gt;
+，配置完github ations后需要主动创建&lt;code&gt;gh-pages&lt;/code&gt;&lt;em&gt;空的分支&lt;/em&gt;用于保存在hugo public/中的内容，并在repo settings中将其配置为GitHub Pages的source：&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-06-01-20-34.png"
+width="1127"
+height="744"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-06-01-20-34_hu_af146cd894575ebc.png 480w, /posts/2021/08/my-hugo-blog/2021-08-06-01-20-34_hu_394ee368572f2794.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="151"
+data-flex-basis="363px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/marketplace/actions/github-pages-action"
+target="_blank"
+rel="noopener"
+&gt;GitHub Pages action&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://gohugo.io/hosting-and-deployment/hosting-on-github/#types-of-github-pages"
+target="_blank"
+rel="noopener"
+&gt;hugo: Host on GitHub&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/marketplace/actions/hugo-setup"
+target="_blank"
+rel="noopener"
+&gt;GitHub Action Hugo setup&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="定制域名"&gt;&lt;a href="#%e5%ae%9a%e5%88%b6%e5%9f%9f%e5%90%8d" class="header-anchor"&gt;&lt;/a&gt;定制域名
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;在dns提供商添加cname解析到gh-pages的域名&lt;code&gt;navyd.github.io&lt;/code&gt;。如
+&lt;a
+class="link"
+href="https://dns.console.aliyun.com"
+target="_blank"
+rel="noopener"
+&gt;阿里云DNS解析控制台&lt;/a&gt;
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-06-23-27-37.png"
+width="710"
+height="587"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-06-23-27-37_hu_bd52d07dc6183454.png 480w, /posts/2021/08/my-hugo-blog/2021-08-06-23-27-37_hu_8885ca076e455353.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="120"
+data-flex-basis="290px"
+&gt;
+&lt;/li&gt;
+&lt;li&gt;添加域名&lt;code&gt;blog.navyd.xyz&lt;/code&gt;内容到&lt;code&gt;static/CNAME&lt;/code&gt;文件&lt;/li&gt;
+&lt;li&gt;根据
+&lt;a
+class="link"
+href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-a-subdomain"
+target="_blank"
+rel="noopener"
+&gt;Configuring a subdomain&lt;/a&gt;
+指导，在github仓库中添加子域名&lt;code&gt;blog.navyd.xyz&lt;/code&gt;并启用https
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-06-23-19-29.png"
+width="1433"
+height="693"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-06-23-19-29_hu_9359bd7cc0769921.png 480w, /posts/2021/08/my-hugo-blog/2021-08-06-23-19-29_hu_1a692cd09e7e6f91.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="206"
+data-flex-basis="496px"
+&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;注意：如果用浏览器打开新域名时提示不安全的证书，可能是缓存了以前使用过的域名证书，使用chrome无痕模式可以正常打开，等待chrome刷新缓存即可&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://gohugo.io/hosting-and-deployment/hosting-on-github/#use-a-custom-domain"
+target="_blank"
+rel="noopener"
+&gt;hugo Use a Custom Domain&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages"
+target="_blank"
+rel="noopener"
+&gt;About custom domains and GitHub Pages&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/9123911/8566831"
+target="_blank"
+rel="noopener"
+&gt;Q: Custom domain for GitHub project pages&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://stackoverflow.com/a/16455966/8566831"
+target="_blank"
+rel="noopener"
+&gt;Can github pages CNAME file contain more than one domain?&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="even主题"&gt;&lt;a href="#even%e4%b8%bb%e9%a2%98" class="header-anchor"&gt;&lt;/a&gt;even主题
+&lt;/h3&gt;&lt;h4 id="主题更改无效"&gt;&lt;a href="#%e4%b8%bb%e9%a2%98%e6%9b%b4%e6%94%b9%e6%97%a0%e6%95%88" class="header-anchor"&gt;&lt;/a&gt;主题更改无效
+&lt;/h4&gt;&lt;p&gt;在
+&lt;a
+class="link"
+href="https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md#theme-color"
+target="_blank"
+rel="noopener"
+&gt;Theme Color&lt;/a&gt;
+中提到可以在evne目录中&lt;code&gt;/assets/sass/_variable.scss&lt;/code&gt;文件修改主题&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-scss" data-lang="scss"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// ========== Theme Color ========== //
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// Config here to change theme color
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// Default | Mint Green | Cobalt Blue | Hot Pink | Dark Violet
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;&lt;/span&gt;&lt;span class="nv"&gt;$theme-color-config&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Dark Violet&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;如果未生效可能是由于hugo不是extend版本，使用&lt;code&gt;--tags extended&lt;/code&gt;重新编译&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;$ hugo version
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;hugo v0.87.0 linux/amd64 &lt;span class="nv"&gt;BuildDate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;unknown
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 在hugo源码内重编译&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;$ &lt;span class="nv"&gt;CGO_ENABLED&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; go install --tags extended
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;$ hugo version
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;hugo v0.87.0+extended linux/amd64 &lt;span class="nv"&gt;BuildDate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;unknown
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/olOwOlo/hugo-theme-even/issues/350#issuecomment-857537169"
+target="_blank"
+rel="noopener"
+&gt;怎么更该了主题/assets/sass/_variable.scss 颜色值没发生改变是怎么回事&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/gohugoio/hugo#build-and-install-the-binaries-from-source-advanced-install"
+target="_blank"
+rel="noopener"
+&gt;Build and Install the Binaries from Source (Advanced Install)&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/olOwOlo/hugo-theme-even/blob/master/README-zh.md#installation"
+target="_blank"
+rel="noopener"
+&gt;even Installation&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="submodule无法修改"&gt;&lt;a href="#submodule%e6%97%a0%e6%b3%95%e4%bf%ae%e6%94%b9" class="header-anchor"&gt;&lt;/a&gt;submodule无法修改
+&lt;/h4&gt;&lt;p&gt;由于使用了&lt;code&gt;git submodle&lt;/code&gt;将even作为项目的子模块，现在要修改&lt;code&gt;/assets/sass/_variable.scss&lt;/code&gt;文件，但是无法完成。如果之后无法找到解决方法，只有使用clone而不是作为submodule&lt;/p&gt;
+&lt;!-- todo --&gt;
+&lt;h4 id="启用点击统计"&gt;&lt;a href="#%e5%90%af%e7%94%a8%e7%82%b9%e5%87%bb%e7%bb%9f%e8%ae%a1" class="header-anchor"&gt;&lt;/a&gt;启用点击统计
+&lt;/h4&gt;&lt;p&gt;even支持不蒜子统计站点访问量&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-toml" data-lang="toml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;params&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;busuanzi&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="c"&gt;# count web traffic by busuanzi # 是否使用不蒜子统计站点访问量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;enable&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;siteUV&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;sitePV&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;pagePV&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;主站统计&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-34-15.png"
+width="659"
+height="365"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-08-14-34-15_hu_b15354c07439b08.png 480w, /posts/2021/08/my-hugo-blog/2021-08-08-14-34-15_hu_8439ed1313a1a6bd.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="180"
+data-flex-basis="433px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;文章访问统计&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-34-54.png"
+width="516"
+height="348"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-08-14-34-54_hu_73d6584a2eaf4e9.png 480w, /posts/2021/08/my-hugo-blog/2021-08-08-14-34-54_hu_b0bd69e0a43c7ee9.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="148"
+data-flex-basis="355px"
+&gt;
+&lt;/p&gt;
+&lt;h4 id="启用utterances评论"&gt;&lt;a href="#%e5%90%af%e7%94%a8utterances%e8%af%84%e8%ae%ba" class="header-anchor"&gt;&lt;/a&gt;启用utterances评论
+&lt;/h4&gt;&lt;p&gt;utterances 是依托于 github repository 的 issues 建立的评论功能&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;点击
+&lt;a
+class="link"
+href="https://github.com/apps/utterances"
+target="_blank"
+rel="noopener"
+&gt;GitHub App utterances&lt;/a&gt;
+为github pages仓库&lt;code&gt;navyd.github.io&lt;/code&gt;安装
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-03-17.png"
+width="1332"
+height="469"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-08-14-03-17_hu_6c1bc2c71c663de0.png 480w, /posts/2021/08/my-hugo-blog/2021-08-08-14-03-17_hu_bb9673087a9db0c3.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="284"
+data-flex-basis="681px"
+&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;选择使用utterances评论的仓库
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-19-00.png"
+width="1359"
+height="914"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-08-14-19-00_hu_b9fc603d5e1455c.png 480w, /posts/2021/08/my-hugo-blog/2021-08-08-14-19-00_hu_c889974f2f5efcbb.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="148"
+data-flex-basis="356px"
+&gt;
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-03-08.png"
+width="1030"
+height="801"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-08-14-03-08_hu_96c40b6ad55636af.png 480w, /posts/2021/08/my-hugo-blog/2021-08-08-14-03-08_hu_4f159008d57c6b31.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="128"
+data-flex-basis="308px"
+&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在even配置中启用utterances&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-toml" data-lang="toml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;params&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;utterances&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="c"&gt;# https://utteranc.es/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;owner&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;navyd&amp;#34;&lt;/span&gt; &lt;span class="c"&gt;# Your GitHub ID&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;repo&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;navyd.github.io&amp;#34;&lt;/span&gt; &lt;span class="c"&gt;# The repo to store comments&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;启动&lt;code&gt;hugo server -D&lt;/code&gt;本地查看效果
+&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-08-14-23-26.png"
+width="1338"
+height="1006"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-08-14-23-26_hu_33bfff6e8fcd06d8.png 480w, /posts/2021/08/my-hugo-blog/2021-08-08-14-23-26_hu_e1384209761c4506.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="319px"
+&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://blog.51cto.com/xdr630/2797532"
+target="_blank"
+rel="noopener"
+&gt;hugo博客使用 utterances 作为评论系统&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://utteranc.es/"
+target="_blank"
+rel="noopener"
+&gt;utterances&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://blog.dontjudge.cn/post/hugo-%E4%B8%BB%E9%A2%98-even-%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E9%85%8D%E7%BD%AE/"
+target="_blank"
+rel="noopener"
+&gt;Hugo 主题 Even 的自定义配置&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="多层toc"&gt;&lt;a href="#%e5%a4%9a%e5%b1%82toc" class="header-anchor"&gt;&lt;/a&gt;多层toc
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-toml" data-lang="toml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;markup&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;tableOfContents&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;startLevel&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;endLevel&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;配置前：&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-09-20-22-02.png"
+width="213"
+height="287"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-09-20-22-02_hu_8dc97d3382d0f4a2.png 480w, /posts/2021/08/my-hugo-blog/2021-08-09-20-22-02_hu_caffd4775be6d569.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="74"
+data-flex-basis="178px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;配置后：&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/08/my-hugo-blog/2021-08-09-20-23-57.png"
+width="212"
+height="698"
+srcset="/posts/2021/08/my-hugo-blog/2021-08-09-20-23-57_hu_ed763ed281286486.png 480w, /posts/2021/08/my-hugo-blog/2021-08-09-20-23-57_hu_99d1c36dc77dd3e8.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="30"
+data-flex-basis="72px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://kuang.netlify.app/blog/hugo.html"
+target="_blank"
+rel="noopener"
+&gt;Hugo 相关部署操作&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/toc/"
+target="_blank"
+rel="noopener"
+&gt;CONTENT MANAGEMENT Table of Contents&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://gohugo.io/getting-started/configuration-markup#config"
+target="_blank"
+rel="noopener"
+&gt;Configure Markup&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="配置"&gt;&lt;a href="#%e9%85%8d%e7%bd%ae" class="header-anchor"&gt;&lt;/a&gt;配置
+&lt;/h3&gt;&lt;h4 id="忽略渲染部分文件"&gt;&lt;a href="#%e5%bf%bd%e7%95%a5%e6%b8%b2%e6%9f%93%e9%83%a8%e5%88%86%e6%96%87%e4%bb%b6" class="header-anchor"&gt;&lt;/a&gt;忽略渲染部分文件
+&lt;/h4&gt;&lt;p&gt;在输出中发现非hugo配置的md文件被渲染，实际不需要渲染生成这些文件&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;$ hugo --debug
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Start building sites …
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;hugo v0.87.0 linux/amd64 &lt;span class="nv"&gt;BuildDate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;unknown
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;INFO 2021/08/27 19:47:43 syncing static files to /home/navyd/Workspaces/projects/navyd.github.io/public/
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;DEBUG 2021/08/27 19:47:43 Render page Cargo Doc Open Does Not Work in Wsl to &lt;span class="s2"&gt;&amp;#34;/post/rust/cargo-doc-open-does-not-work-in-wsl/index.html&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;DEBUG 2021/08/27 19:47:43 found menu: &lt;span class="s2"&gt;&amp;#34;main&amp;#34;&lt;/span&gt;, in site config
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;DEBUG 2021/08/27 19:47:43 found menu: &lt;span class="s2"&gt;&amp;#34;main&amp;#34;&lt;/span&gt;, in site config
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;DEBUG 2021/08/27 19:47:43 found menu: &lt;span class="s2"&gt;&amp;#34;main&amp;#34;&lt;/span&gt;, in site config
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;DEBUG 2021/08/27 19:47:43 found menu: &lt;span class="s2"&gt;&amp;#34;main&amp;#34;&lt;/span&gt;, in site config
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;DEBUG 2021/08/27 19:47:43 Render page to &lt;span class="s2"&gt;&amp;#34;/res/docker/docker更换国内镜像/index.html&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;DEBUG 2021/08/27 19:47:43 Render page to &lt;span class="s2"&gt;&amp;#34;/res/docker/docker构建容器/index.html&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# ...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;|&lt;/span&gt; ZH-CN
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-------------------+--------
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Pages &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="m"&gt;155&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Paginator pages &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Non-page files &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="m"&gt;175&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Static files &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="m"&gt;39&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Processed images &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Aliases &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="m"&gt;17&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Sitemaps &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Cleaned &lt;span class="p"&gt;|&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Total in &lt;span class="m"&gt;391&lt;/span&gt; ms
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-toml" data-lang="toml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;# baseURL = &amp;#34;https://blog.navyd.xyz/&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;# languageCode = &amp;#34;en&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;# ...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;ignoreFiles&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;content/res/*&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;# [permalinks]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;#...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://gohugo.io/getting-started/configuration/#ignore-content-and-data-files-when-rendering"
+target="_blank"
+rel="noopener"
+&gt;Ignore Content and Data Files when Rendering&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="修改首页博文list排序"&gt;&lt;a href="#%e4%bf%ae%e6%94%b9%e9%a6%96%e9%a1%b5%e5%8d%9a%e6%96%87list%e6%8e%92%e5%ba%8f" class="header-anchor"&gt;&lt;/a&gt;修改首页博文list排序
+&lt;/h4&gt;&lt;p&gt;覆盖主题中提供的list模板如&lt;code&gt;themes/&amp;lt;your-theme&amp;gt;/layouts/_default/list.html&lt;/code&gt;，放到&lt;code&gt;layouts/_default/list.html&lt;/code&gt;中，修改其中的关键变量&lt;code&gt;.Pages&lt;/code&gt;，hugo在这
+&lt;a
+class="link"
+href="https://gohugo.io/templates/lists/#order-content"
+target="_blank"
+rel="noopener"
+&gt;Lists of Content in Hugo#Order Content&lt;/a&gt;
+提供了多种方式排序，默认为&lt;code&gt;Weight &amp;gt; Date &amp;gt; LinkTitle &amp;gt; FilePath&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://gohugo.io/templates/lists/#order-content"
+target="_blank"
+rel="noopener"
+&gt;Lists of Content in Hugo#Order Content&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://discourse.gohugo.io/t/sorting-paginated-pages-by-date/14472"
+target="_blank"
+rel="noopener"
+&gt;Sorting paginated pages by date&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://gohugo.io/templates/pagination/#list-paginator-pages"
+target="_blank"
+rel="noopener"
+&gt;TEMPLATES Pagination List Paginator Pages&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://gohugo.io/variables/page/#pages"
+target="_blank"
+rel="noopener"
+&gt;VARIABLES AND PARAMS Page Variables The .Pages Variable&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="content-summaries"&gt;&lt;a href="#content-summaries" class="header-anchor"&gt;&lt;/a&gt;Content Summaries
+&lt;/h4&gt;&lt;p&gt;使用&lt;code&gt;&amp;lt;!--more--&amp;gt;&lt;/code&gt;控制渲染md显示文章简介&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://gohugo.io/content-management/summaries/#readout"
+target="_blank"
+rel="noopener"
+&gt;CONTENT MANAGEMENT Content Summaries&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

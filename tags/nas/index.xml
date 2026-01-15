@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NAS on NavyD 的个人博客</title><link>/tags/nas/</link><description>Recent content in NAS on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 02 Apr 2025 23:16:19 +0800</lastBuildDate><atom:link href="/tags/nas/index.xml" rel="self" type="application/rss+xml"/><item><title>部署 immich 相册服务</title><link>/posts/2025/03/deployment-of-immich-album-service/</link><pubDate>Wed, 26 Mar 2025 19:08:58 +0800</pubDate><guid>/posts/2025/03/deployment-of-immich-album-service/</guid><description>&lt;p&gt;&lt;img src="https://immich.app/assets/images/feature-panel-286c220a4bdfd8a0a9a3abc45c47a600.webp"
+loading="lazy"
+alt="immich logo"
+&gt;
+&lt;/p&gt;
+&lt;h2 id="机器学习"&gt;&lt;a href="#%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" class="header-anchor"&gt;&lt;/a&gt;机器学习
+&lt;/h2&gt;&lt;h3 id="模型选择"&gt;&lt;a href="#%e6%a8%a1%e5%9e%8b%e9%80%89%e6%8b%a9" class="header-anchor"&gt;&lt;/a&gt;模型选择
+&lt;/h3&gt;&lt;p&gt;&lt;del&gt;在
+&lt;a
+class="link"
+href="https://github.com/immich-app/immich/discussions/2377#discussioncomment-9722890"
+target="_blank"
+rel="noopener"
+&gt;Does the app support Chinise? #2377&lt;/a&gt;
+中提到 &lt;code&gt;XLM-Roberta-Large-Vit-B-16Plus&lt;/code&gt; 支持多语言，但目前已过时&lt;/del&gt;&lt;/p&gt;
+&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://github.com/immich-app/immich/discussions/17105#discussioncomment-12620002"
+target="_blank"
+rel="noopener"
+&gt;Which one of the multilingual CLIP models is better? #17105&lt;/a&gt;
+使用 &lt;code&gt;XLM-Roberta-Large-ViT-H-14__frozen_laion5b_s13b_b90k&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;相关参考
+&lt;a
+class="link"
+href="https://github.com/immich-app/immich/discussions/11862"
+target="_blank"
+rel="noopener"
+&gt;Guide: Getting started with choosing a Machine Learning CLIP Model for Smart Search #11862&lt;/a&gt;
+和
+&lt;a
+class="link"
+href="https://immich.app/docs/features/searching/#clip-models"
+target="_blank"
+rel="noopener"
+&gt;immich docs: clip-models&lt;/a&gt;
+&lt;/p&gt;
+&lt;h3 id="硬件加速"&gt;&lt;a href="#%e7%a1%ac%e4%bb%b6%e5%8a%a0%e9%80%9f" class="header-anchor"&gt;&lt;/a&gt;硬件加速
+&lt;/h3&gt;&lt;h4 id="openvino"&gt;&lt;a href="#openvino" class="header-anchor"&gt;&lt;/a&gt;openvino
+&lt;/h4&gt;&lt;p&gt;参考文档
+&lt;a
+class="link"
+href="https://immich.app/docs/features/ml-hardware-acceleration/"
+target="_blank"
+rel="noopener"
+&gt;Hardware-Accelerated Machine Learning&lt;/a&gt;
+&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Integrated GPUs are more likely to experience issues than discrete GPUs,
+especially for older processors or servers with low RAM.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;!-- prettier-ignore --&gt;
+&lt;p&gt;对于 iGPU 可能会出现许多问题，如在 N100 的机器上会导致 &lt;code&gt;SMART SEARCH&lt;/code&gt;
+任务太慢，不如纯 CPU 快，且启动 1 分钟左右会自动断连，基本不可用。虽然在 WSL 中可以正常使用，
+可能是由于微软的优化，不需要 immich 直接对接硬件，但速度还是不如 CPU 快！&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/immich-app/immich/pull/9072"
+target="_blank"
+rel="noopener"
+&gt;docs(ml): clarify cuda and openvino requirements #9072&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://post.smzdm.com/p/182674/"
+target="_blank"
+rel="noopener"
+&gt;绿联&amp;amp;群晖，分别使用 immich 机器学习的效能情况&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/immich-app/immich/discussions/14781"
+target="_blank"
+rel="noopener"
+&gt;Intel Alderlake gen12 Machine learning doesn&amp;rsquo;t use GPU (intel n100) #14781&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="负载均衡"&gt;&lt;a href="#%e8%b4%9f%e8%bd%bd%e5%9d%87%e8%a1%a1" class="header-anchor"&gt;&lt;/a&gt;负载均衡
+&lt;/h3&gt;&lt;p&gt;在
+&lt;a
+class="link"
+href="https://immich.app/docs/guides/remote-machine-learning#load-balancing"
+target="_blank"
+rel="noopener"
+&gt;Load balancing&lt;/a&gt;
+中提到&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;While several URLs can be provided in the settings, they are tried
+sequentially; there is no attempt to distribute load across multiple
+containers. It is recommended to use a dedicated load balancer for such
+use-cases and specify it as the only URL. Among other things, it may enable
+the use of different APIs on the same server by running multiple containers
+with different configurations. For example, one might run an OpenVINO
+container in addition to a CUDA container, or run a standard release container
+to maximize both CPU and GPU utilization.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;可以同时启用 cpu/openvino 多个实例以提高 cpu/gpu 利用率，且模型内存可以共享。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-nginx" data-lang="nginx"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;upstream&lt;/span&gt; &lt;span class="s"&gt;ml&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kn"&gt;least_conn&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kn"&gt;server&lt;/span&gt; &lt;span class="n"&gt;cw-al-4l.lan&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;13003&lt;/span&gt; &lt;span class="s"&gt;max_fails=3&lt;/span&gt; &lt;span class="s"&gt;fail_timeout=30s&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kn"&gt;server&lt;/span&gt; &lt;span class="n"&gt;cw-al-4l.lan&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;13004&lt;/span&gt; &lt;span class="s"&gt;max_fails=3&lt;/span&gt; &lt;span class="s"&gt;fail_timeout=30s&lt;/span&gt; &lt;span class="s"&gt;weight=3&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kn"&gt;server&lt;/span&gt; &lt;span class="n"&gt;y9000x.lan&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;13003&lt;/span&gt; &lt;span class="s"&gt;max_fails=3&lt;/span&gt; &lt;span class="s"&gt;fail_timeout=30s&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kn"&gt;server&lt;/span&gt; &lt;span class="n"&gt;y9000x.lan&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;13004&lt;/span&gt; &lt;span class="s"&gt;max_fails=3&lt;/span&gt; &lt;span class="s"&gt;fail_timeout=30s&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kn"&gt;keepalive&lt;/span&gt; &lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="c1"&gt;# Keep connections alive
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# ...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/immich-app/immich/discussions/4616"
+target="_blank"
+rel="noopener"
+&gt;Feature Allow Multiple URLs for the Machine Learning Server #4616&lt;/a&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a
+class="link"
+href="https://github.com/immich-app/immich/discussions/1762"
+target="_blank"
+rel="noopener"
+&gt;Load Balancing / High Availability #1762&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="人脸识别"&gt;&lt;a href="#%e4%ba%ba%e8%84%b8%e8%af%86%e5%88%ab" class="header-anchor"&gt;&lt;/a&gt;人脸识别
+&lt;/h3&gt;&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://immich.app/docs/features/facial-recognition"
+target="_blank"
+rel="noopener"
+&gt;Facial Recognition&lt;/a&gt;
+&lt;/p&gt;
+&lt;h4 id="优化参数配置"&gt;&lt;a href="#%e4%bc%98%e5%8c%96%e5%8f%82%e6%95%b0%e9%85%8d%e7%bd%ae" class="header-anchor"&gt;&lt;/a&gt;优化参数配置
+&lt;/h4&gt;&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://immich.app/docs/features/facial-recognition#configuration"
+target="_blank"
+rel="noopener"
+&gt;Configuration&lt;/a&gt;
+与
+&lt;a
+class="link"
+href="https://immich.app/docs/guides/better-facial-clusters"
+target="_blank"
+rel="noopener"
+&gt;Better Facial Recognition Clusters&lt;/a&gt;
+总结为对于大型图库，在初始化识别时增加 &lt;code&gt;Minimum recognized faces&lt;/code&gt; 减少
+&lt;code&gt;Maximum recognition distance&lt;/code&gt;
+重置人脸识别，再减少到正常水平重新运行缺少的人脸识别&lt;/p&gt;
+&lt;!-- TODO --&gt;</description></item></channel></rss>

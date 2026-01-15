@@ -1,0 +1,446 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="在一次升级 debian 12 到 debian 13 时顺便将 postgresql 从 15 升级到最新的 18 版本，由于之前 pg_dumpall 配合 restic 备份数据，所以在升级前未处理任何 postgresql 的更新问题，直到更新并恢复数据后启动 miniflux 容器时出错：\n..."><title>一次迁移 miniflux postgresql 数据库的记录</title><link rel=canonical href=/posts/2025/12/a-record-of-migrating-the-miniflux-postgresql-database/><link rel=stylesheet href=/scss/style.min.b0e76e98cdd4f7082d1fc36f7af7e0843a81201db2197c03ca426751dc923735.css><meta property='og:title' content="一次迁移 miniflux postgresql 数据库的记录"><meta property='og:description' content="在一次升级 debian 12 到 debian 13 时顺便将 postgresql 从 15 升级到最新的 18 版本，由于之前 pg_dumpall 配合 restic 备份数据，所以在升级前未处理任何 postgresql 的更新问题，直到更新并恢复数据后启动 miniflux 容器时出错：\n..."><meta property='og:url' content='/posts/2025/12/a-record-of-migrating-the-miniflux-postgresql-database/'><meta property='og:site_name' content='NavyD 的个人博客'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='docker'><meta property='article:tag' content='postgresql'><meta property='article:tag' content='database'><meta property='article:tag' content='miniflux'><meta property='article:tag' content='restic'><meta property='article:tag' content='backup'><meta property='article:tag' content='troubleshooting'><meta property='article:tag' content='devops'><meta property='article:published_time' content='2025-12-03T00:31:16+08:00'><meta property='article:modified_time' content='2025-12-13T17:05:37+08:00'><meta name=twitter:title content="一次迁移 miniflux postgresql 数据库的记录"><meta name=twitter:description content="在一次升级 debian 12 到 debian 13 时顺便将 postgresql 从 15 升级到最新的 18 版本，由于之前 pg_dumpall 配合 restic 备份数据，所以在升级前未处理任何 postgresql 的更新问题，直到更新并恢复数据后启动 miniflux 容器时出错：\n..."></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=https://avatars.githubusercontent.com/u/22490764 width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🐧</span></figure><div class=site-meta><h1 class=site-name><a href=/>NavyD 的个人博客</a></h1><h2 class=site-description>Hello World!</h2></div></header><ol class=menu-social><li><a href=https://space.bilibili.com/47808239 target=_blank title=Bilibili rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7a4 4 0 01-4-4v-6z"/><path d="M8 3l2 3"/><path d="M16 3l-2 3"/><path d="M9 13v-2"/><path d="M15 11v2"/></svg></a></li><li><a href=https://github.com/NavyD target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://x.com/NavyD_hello target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/page/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/page/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=/en/>English</option><option value=/ selected>中文</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#分析>分析</a><ol><li><a href=#重建-miniflux-数据库>重建 miniflux 数据库</a></li></ol></li><li><a href=#总结>总结</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><div class=article-title-wrapper><h2 class=article-title><a href=/posts/2025/12/a-record-of-migrating-the-miniflux-postgresql-database/>一次迁移 miniflux postgresql 数据库的记录</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-12-03T00:31:16+08:00>2025年12月3日00:31</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 5 分钟</time></div></footer></div></header><section class=article-content><p>在一次升级 debian 12 到 debian 13 时顺便将 postgresql 从 15 升级到最新的 18
+版本，由于之前 <code>pg_dumpall</code> 配合 restic 备份数据，所以在升级前未处理任何
+postgresql 的更新问题，直到更新并恢复数据后启动 miniflux 容器时出错：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> docker compose up miniflux
+</span></span><span class=line><span class=cl><span class=go>[+] Running 3/3
+</span></span></span><span class=line><span class=cl><span class=go> ✔ Container browserless-chrome  Running            0.0s
+</span></span></span><span class=line><span class=cl><span class=go> ✔ Container rsshub              Running            0.0s
+</span></span></span><span class=line><span class=cl><span class=go> ✔ Container miniflux            Recreated          0.3s
+</span></span></span><span class=line><span class=cl><span class=go>Attaching to miniflux
+</span></span></span><span class=line><span class=cl><span class=go>miniflux  | time=2025-12-03T00:20:08.499+08:00 level=INFO msg=&#34;Running database migrations&#34; current_version=0 latest_version=120
+</span></span></span><span class=line><span class=cl><span class=go>miniflux  | [Migration v1] pq: relation &#34;schema_version&#34; already exists
+</span></span></span><span class=line><span class=cl><span class=go>miniflux exited with code 1 (restarting)
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=分析><a href=#%e5%88%86%e6%9e%90 class=header-anchor></a>分析</h2><p>下面是 miniflux 的版本信息：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> docker run --rm -it miniflux/miniflux:2.2.14 miniflux -info
+</span></span><span class=line><span class=cl><span class=go>Version: 2.2.14
+</span></span></span><span class=line><span class=cl><span class=go>Commit: 385d8bb9
+</span></span></span><span class=line><span class=cl><span class=go>Build Date: 2025-10-18T19:45:00Z
+</span></span></span><span class=line><span class=cl><span class=go>Go Version: go1.25.3
+</span></span></span><span class=line><span class=cl><span class=go>Compiler: gc
+</span></span></span><span class=line><span class=cl><span class=go>Arch: amd64
+</span></span></span><span class=line><span class=cl><span class=go>OS: linux
+</span></span></span></code></pre></td></tr></table></div></div><p>检查是否已有 schema_version 表 <code>psql -U postgres -d miniflux</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=go>miniflux=# SELECT * FROM schema_version LIMIT 10;
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=go> version
+</span></span></span><span class=line><span class=cl><span class=go>---------
+</span></span></span><span class=line><span class=cl><span class=go>(0 rows)
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=go>miniflux=# \d schema_version
+</span></span></span><span class=line><span class=cl><span class=go>          Table &#34;public.schema_version&#34;
+</span></span></span><span class=line><span class=cl><span class=go> Column  | Type | Collation | Nullable | Default
+</span></span></span><span class=line><span class=cl><span class=go>---------+------+-----------+----------+---------
+</span></span></span><span class=line><span class=cl><span class=go> version | text |           | not null |
+</span></span></span></code></pre></td></tr></table></div></div><p>可以发现 <code>schema_version</code> 表没有任何数据，我怀疑可能是 miniflux
+迁移出现的问题，尝试移除 <code>schema_version</code> 表。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=go>miniflux=# DROP TABLE schema_version;
+</span></span></span><span class=line><span class=cl><span class=go>DROP TABLE
+</span></span></span></code></pre></td></tr></table></div></div><p>重启 miniflux 发现 <code>users</code> 表也出现与 <code>schema_version</code> 一样的问题：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>&gt;</span> docker compose up miniflux
+</span></span><span class=line><span class=cl><span class=go>[+] Running 2/2
+</span></span></span><span class=line><span class=cl><span class=go> ✔ Container browserless-chrome  Running                                                            0.0s
+</span></span></span><span class=line><span class=cl><span class=go> ✔ Container rsshub              Running                                                            0.0s
+</span></span></span><span class=line><span class=cl><span class=go>Attaching to miniflux
+</span></span></span><span class=line><span class=cl><span class=go>miniflux  | time=2025-12-03T11:33:41.238+08:00 level=INFO msg=&#34;Running database migrations&#34; current_version=0 latest_version=120
+</span></span></span><span class=line><span class=cl><span class=go>miniflux  | [Migration v1] pq: relation &#34;users&#34; already exists
+</span></span></span><span class=line><span class=cl><span class=go>miniflux exited with code 1 (restarting)
+</span></span></span></code></pre></td></tr></table></div></div><p>查看 <code>users</code> 表发现也没有任何数据：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=go>miniflux=# \d users
+</span></span></span><span class=line><span class=cl><span class=go>                                                     Table &#34;public.users&#34;
+</span></span></span><span class=line><span class=cl><span class=go>                Column                |           Type           | Collation | Nullable |               Default
+</span></span></span><span class=line><span class=cl><span class=go>--------------------------------------+--------------------------+-----------+----------+-------------------------------------
+</span></span></span><span class=line><span class=cl><span class=go> id                                   | integer                  |           | not null | nextval(&#39;users_id_seq&#39;::regclass)
+</span></span></span><span class=line><span class=cl><span class=go> username                             | text                     |           | not null |
+</span></span></span><span class=line><span class=cl><span class=go> password                             | text                     |           |          |
+</span></span></span><span class=line><span class=cl><span class=go> is_admin                             | boolean                  |           |          | false
+</span></span></span><span class=line><span class=cl><span class=go> language                             | text                     |           |          | &#39;en_US&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> timezone                             | text                     |           |          | &#39;UTC&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> theme                                | text                     |           |          | &#39;light_serif&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> last_login_at                        | timestamp with time zone |           |          |
+</span></span></span><span class=line><span class=cl><span class=go> entry_direction                      | entry_sorting_direction  |           |          | &#39;asc&#39;::entry_sorting_direction
+</span></span></span><span class=line><span class=cl><span class=go> keyboard_shortcuts                   | boolean                  |           |          | true
+</span></span></span><span class=line><span class=cl><span class=go> entries_per_page                     | integer                  |           |          | 100
+</span></span></span><span class=line><span class=cl><span class=go> show_reading_time                    | boolean                  |           |          | true
+</span></span></span><span class=line><span class=cl><span class=go> entry_swipe                          | boolean                  |           |          | true
+</span></span></span><span class=line><span class=cl><span class=go> stylesheet                           | text                     |           | not null | &#39;&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> google_id                            | text                     |           | not null | &#39;&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> openid_connect_id                    | text                     |           | not null | &#39;&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> display_mode                         | webapp_display_mode      |           |          | &#39;standalone&#39;::webapp_display_mode
+</span></span></span><span class=line><span class=cl><span class=go> entry_order                          | entry_sorting_order      |           |          | &#39;published_at&#39;::entry_sorting_order
+</span></span></span><span class=line><span class=cl><span class=go> default_reading_speed                | integer                  |           |          | 265
+</span></span></span><span class=line><span class=cl><span class=go> cjk_reading_speed                    | integer                  |           |          | 500
+</span></span></span><span class=line><span class=cl><span class=go> default_home_page                    | text                     |           |          | &#39;unread&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> categories_sorting_order             | text                     |           | not null | &#39;unread_count&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> gesture_nav                          | text                     |           |          | &#39;tap&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> mark_read_on_view                    | boolean                  |           |          | true
+</span></span></span><span class=line><span class=cl><span class=go> media_playback_rate                  | numeric                  |           |          | 1
+</span></span></span><span class=line><span class=cl><span class=go> block_filter_entry_rules             | text                     |           | not null | &#39;&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> keep_filter_entry_rules              | text                     |           | not null | &#39;&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> mark_read_on_media_player_completion | boolean                  |           |          | false
+</span></span></span><span class=line><span class=cl><span class=go> custom_js                            | text                     |           | not null | &#39;&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> external_font_hosts                  | text                     |           | not null | &#39;&#39;::text
+</span></span></span><span class=line><span class=cl><span class=go> always_open_external_links           | boolean                  |           |          | false
+</span></span></span><span class=line><span class=cl><span class=go> open_external_links_in_new_tab       | boolean                  |           |          | true
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=go>miniflux=# SELECT * FROM users LIMIT 10;
+</span></span></span><span class=line><span class=cl><span class=go> id | username | password | is_admin | language | timezone | theme | last_login_at | entry_direction | keyboard_shortcuts | entries_per_page | show_reading_time | entry_swipe | stylesheet | google_id | openid_connect_id | display_mode | entry_order | default_reading_speed | cjk_reading_speed | default_home_page | categories_sorting_order | gesture_nav | mark_read_on_view | media_playback_rate | block_filter_entry_rules | keep_filter_entry_rules | mark_read_on_media_player_completion | custom_js | external_font_hosts | always_open_external_links | open_external_links_in_new_tab
+</span></span></span><span class=line><span class=cl><span class=go>----+----------+----------+----------+----------+----------+-------+---------------+-----------------+--------------------+------------------+-------------------+-------------+------------+-----------+-------------------+--------------+-------------+-----------------------+-------------------+-------------------+--------------------------+-------------+-------------------+---------------------+--------------------------+-------------------------+--------------------------------------+-----------+---------------------+----------------------------+--------------------------------
+</span></span></span><span class=line><span class=cl><span class=go>(0 rows)
+</span></span></span></code></pre></td></tr></table></div></div><p>我现在很慌，要是备份的数据出问题了那可就完蛋了！启动 pgadmin4
+连接数据库发现只是部分表的数据没有了，最重要的 <code>entries</code>
+表数据还存在，但也不确定是否完整。</p><p>我怀疑可能是从 postgresql 15 pg_dumpall 的数据在恢复到 postgresql 18
+时出现问题，尝试使用 docker 容器恢复到 postgresql 15 版本看看数据是否有问题。</p><p>由于当前的 <code>pg_dumpall</code> 备份的文件包含 immich
+数据库，其中有使用
+<a class=link href=https://github.com/tensorchord/VectorChord target=_blank rel=noopener>tensorchord/VectorChord</a>
+，参考
+<a class=link href=https://docs.vectorchord.ai/vectorchord/getting-started/installation.html#vectorchord-image target=_blank rel=noopener>installation/docker/VectorChord Image</a>
+使用
+<a class=link href=https://hub.docker.com/r/tensorchord/vchord-postgres target=_blank rel=noopener>tensorchord/vchord-postgres</a>
+docker 镜像，考虑到
+<a class=link href=https://docs.v2.3.1.archive.immich.app/administration/postgres-standalone/#prerequisites target=_blank rel=noopener>immich/Pre-existing Postgres/Prerequisites</a>
+当前 immich 支持其版本范围：</p><blockquote><p>Immich is known to work with Postgres versions >= 14, &lt; 19.</p><p>VectorChord is known to work with pgvector versions >= 0.7, &lt; 0.9.</p><p>The Immich server will check the VectorChord version on startup to ensure
+compatibility, and refuse to start if a compatible version is not found.
+The current accepted range for VectorChord is >= 0.3, &lt; 0.6.</p></blockquote><p>选择
+<a class=link href=https://github.com/tensorchord/VectorChord/releases/tag/0.5.3 target=_blank rel=noopener>VectorChord 0.5.3</a>
+版本及镜像
+<a class=link href=https://hub.docker.com/layers/tensorchord/vchord-postgres/pg15-v0.5.3/images/sha256-ce37a4ea3726b51afd869da4ec9eec09e92ff6d938df5464269e4471d946341b target=_blank rel=noopener>tensorchord/vchord-postgres:pg15-v0.5.3</a>
+，另外还需要
+<a class=link href=/posts/2025/06/add-zh_cn-utf8-character-set-encoding-support-to-postgresql/>在 docker 中为 postgresql 添加 zh_CN.utf8 字符集编码支持</a>
+，下面使用 dockerfile 构建新的镜像：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> docker build -t mini-pg -f - . &lt;&lt;<span class=s1>&#39;END&#39;</span>
+</span></span><span class=line><span class=cl><span class=go>FROM tensorchord/vchord-postgres:pg15-v0.5.3
+</span></span></span><span class=line><span class=cl><span class=go>RUN localedef -i zh_CN -c -f UTF-8 -A /usr/share/locale/locale.alias zh_CN.UTF-8
+</span></span></span><span class=line><span class=cl><span class=go>END
+</span></span></span><span class=line><span class=cl><span class=go>[+] Building 0.4s (6/6) FINISHED                                                          docker:default
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; [internal] load build definition from Dockerfile                                                0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; =&gt; transferring dockerfile: 163B                                                                0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; [internal] load metadata for docker.io/tensorchord/vchord-postgres:pg15-v0.5.3                  0.1s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; [internal] load .dockerignore                                                                   0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; =&gt; transferring context: 2B                                                                     0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; [1/2] FROM docker.io/tensorchord/vchord-postgres:pg15-v0.5.3@sha256:6b6262aa69d504ad87150814f1  0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; =&gt; resolve docker.io/tensorchord/vchord-postgres:pg15-v0.5.3@sha256:6b6262aa69d504ad87150814f1  0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; CACHED [2/2] RUN localedef -i zh_CN -c -f UTF-8 -A /usr/share/locale/locale.alias zh_CN.UTF-8   0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; exporting to image                                                                              0.1s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; =&gt; exporting layers                                                                             0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; =&gt; exporting manifest sha256:24a1292e3cab440c7e28774501112ca0c031930a200968f85fb999cd7957b6c5   0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; =&gt; exporting config sha256:c2c29369d61704ee8703c665a01db11aa6ad2edd6eae5704b920e014114c0dce     0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; =&gt; exporting attestation manifest sha256:1a08e13866477e5e9d14ebbd54d59dfc7989bff1630574e4b94da  0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; =&gt; exporting manifest list sha256:5a6e7634cd5c43008b939442c32576089968de1066ddd273f752da881433  0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; =&gt; naming to docker.io/library/mini-pg:latest                                                  0.0s
+</span></span></span><span class=line><span class=cl><span class=go> =&gt; =&gt; unpacking to docker.io/library/mini-pg:latest
+</span></span></span></code></pre></td></tr></table></div></div><p>运行容器并恢复数据，注意
+<a class=link href=/posts/2025/04/how-to-fix-permission-denied-for-schema-public-in-miniflux-postgres/#%e5%88%86%e6%9e%90>修复 Miniflux Postgres 中的 &ldquo;Permission Denied for Schema Public&rdquo; 问题</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> docker run --name pg -p 15432:5432 -d -e <span class=nv>POSTGRES_PASSWORD</span><span class=o>=</span><span class=m>1234</span> -v ~/all-databases.postgres.sql:/all-databases.postgres.sql mini-pg:latest
+</span></span><span class=line><span class=cl><span class=go>babb2e88a3fe671ebe3c58cbfb5519b791fc510bdd36d651a235f778c68b9fae
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=gp>$</span> docker <span class=nb>exec</span> -it pg psql -U postgres -c <span class=s1>&#39;\i /all-databases.postgres.sql&#39;</span> -c <span class=s1>&#39;ALTER USER miniflux WITH SUPERUSER;&#39;</span>
+</span></span><span class=line><span class=cl><span class=go>SET
+</span></span></span><span class=line><span class=cl><span class=go>SET
+</span></span></span><span class=line><span class=cl><span class=go>SET
+</span></span></span><span class=line><span class=cl><span class=go>CREATE ROLE
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=gp>#</span> ...
+</span></span><span class=line><span class=cl><span class=go>COPY 4653
+</span></span></span><span class=line><span class=cl><span class=go>ALTER ROLE
+</span></span></span></code></pre></td></tr></table></div></div><p>重新启动 miniflux 连接后发现仍然存在相同的问题，此时感觉是否是前段时间升级
+<a class=link href=https://github.com/miniflux/v2/releases/tag/2.2.14 target=_blank rel=noopener>miniflux 2.2.14</a>
+版本导致的，使用
+<a class=link href=https://github.com/miniflux/v2/releases/tag/2.2.13 target=_blank rel=noopener>miniflux 2.2.13</a>
+运行。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> docker run --rm -it miniflux/miniflux:2.2.13 miniflux -info
+</span></span><span class=line><span class=cl><span class=go>Version: 2.2.13
+</span></span></span><span class=line><span class=cl><span class=go>Commit: 10b2b368
+</span></span></span><span class=line><span class=cl><span class=go>Build Date: 2025-09-15T23:57:47Z
+</span></span></span><span class=line><span class=cl><span class=go>Go Version: go1.25.1
+</span></span></span><span class=line><span class=cl><span class=go>Compiler: gc
+</span></span></span><span class=line><span class=cl><span class=go>Arch: amd64
+</span></span></span><span class=line><span class=cl><span class=go>OS: linux
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=gp>$</span> docker compose up miniflux
+</span></span><span class=line><span class=cl><span class=go>[+] Running 3/3
+</span></span></span><span class=line><span class=cl><span class=go> ✔ Container browserless-chrome  Running                                                            0.0s
+</span></span></span><span class=line><span class=cl><span class=go> ✔ Container rsshub              Running                                                            0.0s
+</span></span></span><span class=line><span class=cl><span class=go> ✔ Container miniflux            Recreated                                                          0.1s
+</span></span></span><span class=line><span class=cl><span class=go>Attaching to miniflux
+</span></span></span><span class=line><span class=cl><span class=go>miniflux  | time=2025-12-03T15:25:29.161+08:00 level=INFO msg=&#34;Running database migrations&#34; current_version=0 latest_version=117
+</span></span></span><span class=line><span class=cl><span class=go>miniflux  | [Migration v1] pq: relation &#34;schema_version&#34; already exists
+</span></span></span><span class=line><span class=cl><span class=go>miniflux exited with code 1 (restarting)
+</span></span></span></code></pre></td></tr></table></div></div><p>即使降级还是存在同样的问题，这可能是数据源的问题，尝试使用更旧的 restic 备份：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> restic snapshots -H <span class=nv>$HOST</span>
+</span></span><span class=line><span class=cl><span class=go>repository ac0fb306 opened (version 2, compression level max)
+</span></span></span><span class=line><span class=cl><span class=go>ID        Time                 Host        Tags        Paths  Size
+</span></span></span><span class=line><span class=cl><span class=go>------------------------------------------------------------------------
+</span></span></span><span class=line><span class=cl><span class=go>data3e144  2025-06-29 09:53:54  nas         all         /      19.075 GiB
+</span></span></span><span class=line><span class=cl><span class=go>af0e25ce  2025-07-31 04:44:18  nas         all         /      19.150 GiB
+</span></span></span><span class=line><span class=cl><span class=go>ab9fbfe7  2025-08-24 04:43:54  nas         all         /      19.305 GiB
+</span></span></span><span class=line><span class=cl><span class=go>c3f620fc  2025-08-31 04:44:12  nas         all         /      19.310 GiB
+</span></span></span><span class=line><span class=cl><span class=go>c863d891  2025-09-07 04:44:29  nas         all         /      18.509 GiB
+</span></span></span><span class=line><span class=cl><span class=go>114144b3  2025-09-14 04:44:34  nas         all         /      18.981 GiB
+</span></span></span><span class=line><span class=cl><span class=go>0251ae16  2025-09-21 04:44:23  nas         all         /      18.982 GiB
+</span></span></span><span class=line><span class=cl><span class=go>bcd07af4  2025-09-28 04:44:24  nas         all         /      18.155 GiB
+</span></span></span><span class=line><span class=cl><span class=go>cf64448c  2025-09-30 04:44:30  nas         all         /      18.173 GiB
+</span></span></span><span class=line><span class=cl><span class=go>0d3818b6  2025-10-05 04:44:41  nas         all         /      18.117 GiB
+</span></span></span><span class=line><span class=cl><span class=go>505e28d5  2025-10-12 04:44:41  nas         all         /      18.135 GiB
+</span></span></span><span class=line><span class=cl><span class=go>49453702  2025-10-18 04:44:04  nas         all         /      18.067 GiB
+</span></span></span><span class=line><span class=cl><span class=go>41060645  2025-10-26 04:44:03  nas         all         /      15.735 GiB
+</span></span></span><span class=line><span class=cl><span class=go>73ebb427  2025-10-31 04:44:11  nas         all         /      16.010 GiB
+</span></span></span><span class=line><span class=cl><span class=go>1de15140  2025-11-02 04:43:54  nas         all         /      15.599 GiB
+</span></span></span><span class=line><span class=cl><span class=go>f314869c  2025-11-09 04:43:56  nas         all         /      15.495 GiB
+</span></span></span><span class=line><span class=cl><span class=go>8e13f59a  2025-11-16 04:43:56  nas         all         /      15.534 GiB
+</span></span></span><span class=line><span class=cl><span class=go>dc66ca8f  2025-11-18 04:43:55  nas         all         /      18.174 GiB
+</span></span></span><span class=line><span class=cl><span class=go>bed84ba7  2025-11-19 04:44:07  nas         all         /      18.365 GiB
+</span></span></span><span class=line><span class=cl><span class=go>18f25814  2025-11-20 04:43:50  nas         all         /      18.509 GiB
+</span></span></span><span class=line><span class=cl><span class=go>57805a58  2025-11-21 04:43:54  nas         all         /      18.985 GiB
+</span></span></span><span class=line><span class=cl><span class=go>b0d752dc  2025-11-22 04:43:52  nas         all         /      19.437 GiB
+</span></span></span><span class=line><span class=cl><span class=go>5029bafb  2025-11-23 04:44:01  nas         all         /      19.996 GiB
+</span></span></span><span class=line><span class=cl><span class=go>ac508b53  2025-11-24 04:44:01  nas         all         /      20.758 GiB
+</span></span></span><span class=line><span class=cl><span class=go>febd0aee  2025-11-25 17:26:50  nas         all         /      21.259 GiB
+</span></span></span><span class=line><span class=cl><span class=go>9322cd02  2025-11-26 04:44:07  nas         all         /      27.085 GiB
+</span></span></span><span class=line><span class=cl><span class=go>6552fff1  2025-11-27 04:44:08  nas         all         /      28.340 GiB
+</span></span></span><span class=line><span class=cl><span class=go>45b3c7ce  2025-11-28 04:44:08  nas         all         /      28.674 GiB
+</span></span></span><span class=line><span class=cl><span class=go>d14087fa  2025-11-29 04:44:01  nas         all         /      30.255 GiB
+</span></span></span><span class=line><span class=cl><span class=go>3174fd40  2025-11-30 04:43:56  nas         all         /      30.768 GiB
+</span></span></span><span class=line><span class=cl><span class=go>b10d9648  2025-12-01 16:14:27  nas         all         /      30.612 GiB
+</span></span></span><span class=line><span class=cl><span class=go>------------------------------------------------------------------------
+</span></span></span><span class=line><span class=cl><span class=go>31 snapshots
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=gp>$</span> restic restore c863d891 -vv --target / --include ~/all-databases.postgres.sql
+</span></span><span class=line><span class=cl><span class=go>repository ac0fb306 opened (version 2, compression level max)
+</span></span></span><span class=line><span class=cl><span class=go>[0:01] 100.00%  32 / 32 index files loaded
+</span></span></span><span class=line><span class=cl><span class=go>restoring snapshot c863d891 of [/] at 2025-09-07 04:44:29.349584676 +0800 CST by navyd@nas to /
+</span></span></span><span class=line><span class=cl><span class=go>updated   /home/navyd/all-databases.postgres.sql with size 1.412 GiB
+</span></span></span><span class=line><span class=cl><span class=go>restored  /home/navyd
+</span></span></span><span class=line><span class=cl><span class=go>restored  /home
+</span></span></span><span class=line><span class=cl><span class=go>Summary: Restored 3 / 1 files/dirs (1.412 GiB / 1.412 GiB) in 0:09
+</span></span></span></code></pre></td></tr></table></div></div><p>重新恢复容器数据：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>docker stop pg
+</span></span><span class=line><span class=cl>docker run --name pg -p 15432:5432 -d -e <span class=nv>POSTGRES_PASSWORD</span><span class=o>=</span><span class=m>1234</span> -v ~/all-databases.postgres.sql:/all-databases.postgres.sql mini-pg:latest
+</span></span><span class=line><span class=cl>docker <span class=nb>exec</span> -it pg psql -U postgres -c <span class=s1>&#39;\i /all-databases.postgres.sql&#39;</span> -c <span class=s1>&#39;ALTER USER miniflux WITH SUPERUSER;&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><p>经过测试后发现从开始到 <code>2025-10-31 04:44:11</code> 的 <code>73ebb427</code>
+间的快照都有效，自此之后的都存在问题！从这个时间点看是我升级
+<a class=link href=https://github.com/miniflux/v2/releases/tag/2.2.14 target=_blank rel=noopener>miniflux 2.2.14</a>
+后开始出现的问题。</p><h3 id=重建-miniflux-数据库><a href=#%e9%87%8d%e5%bb%ba-miniflux-%e6%95%b0%e6%8d%ae%e5%ba%93 class=header-anchor></a>重建 miniflux 数据库</h3><p>对于 debian 上的 postgresql 18 实例已经恢复了最新的备份，也就是 miniflux
+数据库需要重新恢复到 <code>2025-10-31 04:44:11</code> ，而其它数据库如 immich
+则应该保持最新。由于
+<a class=link href=https://www.postgresql.org/docs/current/app-pg-dumpall.html target=_blank rel=noopener>pg_dumpall</a>
+备份文件不支持恢复特定数据库，所以需要恢复所有数据后再备份单个数据库 miniflux
+，然后在原 postgresql 18 实例中重建 miniflux 数据库并导入这个新备份的数据</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl><span class=c1># pg 现在是 18 版本</span>
+</span></span><span class=line><span class=cl>docker <span class=nb>exec</span> -it pg pg_dump -U postgres miniflux &gt;miniflux.bak.sql
+</span></span></code></pre></td></tr></table></div></div><p>创建新 miniflux 数据库参考
+<a class=link href=https://miniflux.app/docs/database.html#creation target=_blank rel=noopener>Database Creation</a>
+：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>createdb miniflux2
+</span></span><span class=line><span class=cl>createuser -P miniflux
+</span></span><span class=line><span class=cl>createdb -O miniflux miniflux2
+</span></span></code></pre></td></tr></table></div></div><p>使用在 psql 中执行而不使用 postgresql 提供的 shell
+命令创建更清楚方便，注意这里只删除了 miniflux 数据库，而不需要重新创建用户
+miniflux 直接使用即可</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sql data-lang=sql><span class=line><span class=cl><span class=c1>-- 终止当前 miniflux 数据库所有的连接
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>SELECT</span><span class=w> </span><span class=n>pg_terminate_backend</span><span class=p>(</span><span class=n>pid</span><span class=p>)</span><span class=w> </span><span class=k>FROM</span><span class=w> </span><span class=n>pg_stat_activity</span><span class=w> </span><span class=k>WHERE</span><span class=w> </span><span class=n>datname</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s1>&#39;miniflux&#39;</span><span class=w> </span><span class=k>AND</span><span class=w> </span><span class=n>pid</span><span class=w> </span><span class=o>&lt;&gt;</span><span class=w> </span><span class=n>pg_backend_pid</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=c1>-- 删除 miniflux 数据库
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>DROP</span><span class=w> </span><span class=k>DATABASE</span><span class=w> </span><span class=n>miniflux</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=c1>-- 创建新数据库并指定用户
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>CREATE</span><span class=w> </span><span class=k>DATABASE</span><span class=w> </span><span class=n>miniflux</span><span class=w> </span><span class=k>OWNER</span><span class=w> </span><span class=n>miniflux</span><span class=p>;</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>恢复数据：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>psql -U postgres -d miniflux -f miniflux.bak.sql
+</span></span></code></pre></td></tr></table></div></div><p>重新从 docker postgresql 18 容器中备份再恢复启动 miniflux 2.2.14
+可正常工作</p><h2 id=总结><a href=#%e6%80%bb%e7%bb%93 class=header-anchor></a>总结</h2><p>对于重要的数据备份还是需要经常测试的否则出现问题就严重了。</p><ul><li><a class=link href=https://www.bilibili.com/bangumi/play/ep1231581/ target=_blank rel=noopener>deepseek chat: postgresql 15 可以升级到 18 吗</a></li></ul></section><footer class=article-footer><section class=article-tags><a href=/tags/docker/>Docker</a>
+<a href=/tags/postgresql/>Postgresql</a>
+<a href=/tags/database/>Database</a>
+<a href=/tags/miniflux/>Miniflux</a>
+<a href=/tags/restic/>Restic</a>
+<a href=/tags/backup/>Backup</a>
+<a href=/tags/troubleshooting/>Troubleshooting</a>
+<a href=/tags/devops/>Devops</a></section><section class=article-lastmod><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>最后更新于 2025-12-13 17:05:12 CST</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/posts/2025/04/how-to-fix-permission-denied-for-schema-public-in-miniflux-postgres/><div class=article-details><h2 class=article-title>如何修复 Miniflux Postgres 中的 "Permission Denied for Schema Public" 问题</h2></div></a></article><article><a href=/posts/2025/06/add-zh_cn-utf8-character-set-encoding-support-to-postgresql/><div class=article-details><h2 class=article-title>为 postgresql 添加 zh_CN.utf8 字符集编码支持</h2></div></a></article><article><a href=/posts/2023/05/use-restic-to-backup-vscode-server-extension/><div class=article-details><h2 class=article-title>使用 restic 备份 vscode server 的扩展</h2></div></a></article><article><a href=/posts/2025/03/deployment-of-immich-album-service/><div class=article-details><h2 class=article-title>部署 immich 相册服务</h2></div></a></article><article><a href=/posts/2025/02/local-github-action-practice/><div class=article-details><h2 class=article-title>Local Github Action Practice</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2026 NavyD 的个人博客</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

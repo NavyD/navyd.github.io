@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Terminal on NavyD 的个人博客</title><link>/tags/terminal/</link><description>Recent content in Terminal on NavyD 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 31 Aug 2025 11:02:49 +0800</lastBuildDate><atom:link href="/tags/terminal/index.xml" rel="self" type="application/rss+xml"/><item><title>如何使用 scoop 安装字体</title><link>/posts/2025/08/how-to-install-fonts-using-scoop/</link><pubDate>Fri, 29 Aug 2025 16:03:18 +0800</pubDate><guid>/posts/2025/08/how-to-install-fonts-using-scoop/</guid><description>&lt;!-- prettier-ignore --&gt;
+&lt;p&gt;在使用 scoop 安装字体
+&lt;a
+class="link"
+href="https://github.com/matthewjberger/scoop-nerd-fonts"
+target="_blank"
+rel="noopener"
+&gt;nerd-fonts&lt;/a&gt;
+后尝试更新时总是会遇到字体文件无法访问的问题 &lt;!-- markdownlint-disable-next-line MD013 --&gt;
+&lt;code&gt;Copy-Item : The process cannot access the file 'C:\Users\navyd\AppData\Local\Microsoft\Windows\Fonts\CaskaydiaCoveNerdFont-BoldItalic.ttf' because it is being used by another process.&lt;/code&gt;
+，与
+&lt;a
+class="link"
+href="https://github.com/matthewjberger/scoop-nerd-fonts/issues/271"
+target="_blank"
+rel="noopener"
+&gt;Updating font fails on Windows 10 (21H2) #271&lt;/a&gt;
+中的描述一致。&lt;/p&gt;
+&lt;h2 id="分析"&gt;&lt;a href="#%e5%88%86%e6%9e%90" class="header-anchor"&gt;&lt;/a&gt;分析
+&lt;/h2&gt;&lt;p&gt;由于之前是 scoop 全局安装的字体，不使用用户级字体安装原因参考
+&lt;a
+class="link"
+href="https://github.com/matthewjberger/scoop-nerd-fonts/issues/198#issuecomment-1488996737"
+target="_blank"
+rel="noopener"
+&gt;Weird behavior for installed fonts after Windows 11 22H2 update #198&lt;/a&gt;
+，并且 scoop 目前已经可以在用户目录正常安装字体，不再需要管理员权限！&lt;/p&gt;
+&lt;p&gt;在这里直接尝试使用 scoop 移除字体时发现字体被许多程序占用，无法卸载！&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-console" data-lang="console"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="gp"&gt;$&lt;/span&gt; gsudo scoop update -gf SarasaGothic-SC
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;SarasaGothic-SC: 1.0.32 -&amp;gt; 1.0.32 (global)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Updating one outdated app:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Updating &amp;#39;SarasaGothic-SC&amp;#39; (1.0.32 -&amp;gt; 1.0.32)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Downloading new version
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Loading Sarasa-TTF-1.0.32.7z from cache.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Checking hash of Sarasa-TTF-1.0.32.7z ... ok.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Running pre_uninstall script...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; Error
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; Cannot uninstall &amp;#39;SarasaGothic-SC&amp;#39; font.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="go"&gt; Reason
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; The &amp;#39;SarasaGothic-SC&amp;#39; font is currently being used by another application,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; so it cannot be deleted.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="go"&gt; Suggestion
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; Close all applications that are using &amp;#39;SarasaGothic-SC&amp;#39; font (e.g. vscode),
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt; and then try again.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="检查占用字体句柄的进程"&gt;&lt;a href="#%e6%a3%80%e6%9f%a5%e5%8d%a0%e7%94%a8%e5%ad%97%e4%bd%93%e5%8f%a5%e6%9f%84%e7%9a%84%e8%bf%9b%e7%a8%8b" class="header-anchor"&gt;&lt;/a&gt;检查占用字体句柄的进程
+&lt;/h3&gt;&lt;p&gt;使用 windows 资源监视器查看什么进程打开了这些字体。经过简单的测试发现，如果在
+&lt;code&gt;windows terminal&lt;/code&gt;
+中未包含中文字体时不会打开相关的中文字体句柄，首次出现中文字符才会打开相关字体句柄。&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2025/08/how-to-install-fonts-using-scoop/20250830190510.png"
+width="891"
+height="593"
+srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830190510_hu_7020d43db2cab685.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830190510_hu_1a59cb14586c065.png 1024w"
+loading="lazy"
+alt="search handles in resource monitor"
+class="gallery-image"
+data-flex-grow="150"
+data-flex-basis="360px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;微软官方应用
+&lt;a
+class="link"
+href="https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer"
+target="_blank"
+rel="noopener"
+&gt;Process Explorer&lt;/a&gt;
+（安装命令 &lt;code&gt;winget install Microsoft.Sysinternals.ProcessExplorer&lt;/code&gt;
+注意重启终端后执行命令 &lt;code&gt;procexp&lt;/code&gt;）也可以查看文件句柄。&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2025/08/how-to-install-fonts-using-scoop/20250831104858.png"
+width="786"
+height="593"
+srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250831104858_hu_b79b7909fad6c18f.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250831104858_hu_ca9d04f6b9402a52.png 1024w"
+loading="lazy"
+alt="search handles in process explorer"
+class="gallery-image"
+data-flex-grow="132"
+data-flex-basis="318px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;另外还可以使用
+&lt;a
+class="link"
+href="https://systeminformer.com/"
+target="_blank"
+rel="noopener"
+&gt;System Informer&lt;/a&gt;
+查看打开文件句柄的进程，响应更快。&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2025/08/how-to-install-fonts-using-scoop/20250830182325.png"
+width="811"
+height="593"
+srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830182325_hu_15a1e5e82a972678.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830182325_hu_8bac471d094f3755.png 1024w"
+loading="lazy"
+alt="search handles in system informer"
+class="gallery-image"
+data-flex-grow="136"
+data-flex-basis="328px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;注意：这 2 个应用要显示子进程树形列表可以点击 &lt;code&gt;Process&lt;/code&gt;, &lt;code&gt;Name&lt;/code&gt;
+列来切换显示方式，参考
+&lt;a
+class="link"
+href="https://github.com/winsiderss/systeminformer/discussions/1091#discussioncomment-1953197"
+target="_blank"
+rel="noopener"
+&gt;filtering multiple same processes to single process #1091&lt;/a&gt;
+。&lt;/p&gt;
+&lt;p&gt;可以发现有许多进程如 &lt;code&gt;chrome&lt;/code&gt;, &lt;code&gt;obsidian&lt;/code&gt;, &lt;code&gt;windows terminal&lt;/code&gt;
+等常用的应用都在使用这个字体，需要手动关闭这些进程，但棘手的是
+&lt;code&gt;windows terminal&lt;/code&gt;
+作为系统自带的终端，执行 powershell 等 CLI 命令需要在终端执行，这就不可能执行 scoop 卸载命令前关闭
+&lt;code&gt;windows terminal&lt;/code&gt; ，这是个死循环！！&lt;/p&gt;
+&lt;p&gt;参考
+&lt;a
+class="link"
+href="https://github.com/matthewjberger/scoop-nerd-fonts/issues/271#issuecomment-1825913674"
+target="_blank"
+rel="noopener"
+&gt;Updating font fails on Windows 10 (21H2) #271&lt;/a&gt;
+提到需要使用额外的终端软件运行 scoop 命令即可。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Note that updating the font from a console which uses the font still failed
+with the same error. I think this is expected. I just had to start a cmd.exe
+or another shell not using that font, and then the update went through without
+error. Similar to when updating pwsh or WindowsTerminal, I&amp;rsquo;ll have to keep an
+eye out using &lt;code&gt;scoop status&lt;/code&gt; when there is an update to the font, and update
+it in another shell instead of the one I use normally which uses the font.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;注意：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;目前执行 &lt;code&gt;cmd.exe&lt;/code&gt; 会启动 &lt;code&gt;windows terminal&lt;/code&gt; ，需要安装第三方终端如
+&lt;a
+class="link"
+href="https://github.com/alacritty/alacritty"
+target="_blank"
+rel="noopener"
+&gt;alacritty&lt;/a&gt;
+以避免使用需要移除的字体文件。&lt;/li&gt;
+&lt;li&gt;在执行 scoop 卸载命令前需要关闭所有使用相关字体的进程。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;执行卸载命令并安装字体到用户目录&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-console" data-lang="console"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="gp"&gt;$&lt;/span&gt; gsudo scoop uninstall -g SarasaGothic-SC
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Uninstalling &amp;#39;SarasaGothic-SC&amp;#39; (1.0.32).
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Running pre_uninstall script...done.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Running uninstaller script...The &amp;#39;Sarasa-Gothic&amp;#39; Font family has been uninstalled and will not be present after restarting your computer.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;done.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Unlinking C:\ProgramData\scoop\apps\SarasaGothic-SC\current
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Removing older version (1.0.19).
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Removing older version (1.0.25).
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Removing older version (1.0.28).
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Removing older version (1.0.30).
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Removing older version (_1.0.32.old).
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Removing older version (_1.0.32.old(1)).
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Removing older version (_1.0.32.old(2)).
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;&amp;#39;SarasaGothic-SC&amp;#39; was uninstalled.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="gp"&gt;$&lt;/span&gt; scoop install SarasaGothic-SC
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Installing &amp;#39;SarasaGothic-SC&amp;#39; (1.0.32) [64bit] from &amp;#39;spc&amp;#39; bucket
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Loading Sarasa-TTF-1.0.32.7z from cache.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Checking hash of Sarasa-TTF-1.0.32.7z ... ok.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Extracting Sarasa-TTF-1.0.32.7z ... done.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Running pre_install script...done.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Running installer script...done.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Linking ~\scoop\apps\SarasaGothic-SC\current =&amp;gt; ~\scoop\apps\SarasaGothic-SC\1.0.32
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;&amp;#39;SarasaGothic-SC&amp;#39; (1.0.32) was installed successfully!
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在成功卸载全局的相关字体重启后，尝试使用用户级目录安装字体时发现&lt;code&gt;~\AppData\Local\Microsoft\Windows\Fonts&lt;/code&gt;
+存在许久之前已安装的字体，尽管 scoop 安装过程中出现 &lt;code&gt;Copy-Item&lt;/code&gt;
+访问错误但最后提示命令成功执行，与开头提到的问题一样，这就导致了一个问题，scoop 更新的字体版本与实际 windows 上安装的字体版本不一致，系统仍然在更新前的老版本（注意这里的截图是
+&lt;code&gt;1.0.32&lt;/code&gt; 与 scoop 安装的一致，但实际更新出错时系统不会更新字体版本）。&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2025/08/how-to-install-fonts-using-scoop/20250830193355.png"
+width="707"
+height="526"
+srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830193355_hu_c37bbe1ca47900b5.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830193355_hu_f5ef603c78effae7.png 1024w"
+loading="lazy"
+alt="show font version in sys settings"
+class="gallery-image"
+data-flex-grow="134"
+data-flex-basis="322px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;在使用 &lt;code&gt;scoop install SarasaGothic-SC&lt;/code&gt;
+安装的字体后会导致卸载失败，重启后相关文件仍然存在！&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt; 10
+&lt;/span&gt;&lt;span class="lnt"&gt; 11
+&lt;/span&gt;&lt;span class="lnt"&gt; 12
+&lt;/span&gt;&lt;span class="lnt"&gt; 13
+&lt;/span&gt;&lt;span class="lnt"&gt; 14
+&lt;/span&gt;&lt;span class="lnt"&gt; 15
+&lt;/span&gt;&lt;span class="lnt"&gt; 16
+&lt;/span&gt;&lt;span class="lnt"&gt; 17
+&lt;/span&gt;&lt;span class="lnt"&gt; 18
+&lt;/span&gt;&lt;span class="lnt"&gt; 19
+&lt;/span&gt;&lt;span class="lnt"&gt; 20
+&lt;/span&gt;&lt;span class="lnt"&gt; 21
+&lt;/span&gt;&lt;span class="lnt"&gt; 22
+&lt;/span&gt;&lt;span class="lnt"&gt; 23
+&lt;/span&gt;&lt;span class="lnt"&gt; 24
+&lt;/span&gt;&lt;span class="lnt"&gt; 25
+&lt;/span&gt;&lt;span class="lnt"&gt; 26
+&lt;/span&gt;&lt;span class="lnt"&gt; 27
+&lt;/span&gt;&lt;span class="lnt"&gt; 28
+&lt;/span&gt;&lt;span class="lnt"&gt; 29
+&lt;/span&gt;&lt;span class="lnt"&gt; 30
+&lt;/span&gt;&lt;span class="lnt"&gt; 31
+&lt;/span&gt;&lt;span class="lnt"&gt; 32
+&lt;/span&gt;&lt;span class="lnt"&gt; 33
+&lt;/span&gt;&lt;span class="lnt"&gt; 34
+&lt;/span&gt;&lt;span class="lnt"&gt; 35
+&lt;/span&gt;&lt;span class="lnt"&gt; 36
+&lt;/span&gt;&lt;span class="lnt"&gt; 37
+&lt;/span&gt;&lt;span class="lnt"&gt; 38
+&lt;/span&gt;&lt;span class="lnt"&gt; 39
+&lt;/span&gt;&lt;span class="lnt"&gt; 40
+&lt;/span&gt;&lt;span class="lnt"&gt; 41
+&lt;/span&gt;&lt;span class="lnt"&gt; 42
+&lt;/span&gt;&lt;span class="lnt"&gt; 43
+&lt;/span&gt;&lt;span class="lnt"&gt; 44
+&lt;/span&gt;&lt;span class="lnt"&gt; 45
+&lt;/span&gt;&lt;span class="lnt"&gt; 46
+&lt;/span&gt;&lt;span class="lnt"&gt; 47
+&lt;/span&gt;&lt;span class="lnt"&gt; 48
+&lt;/span&gt;&lt;span class="lnt"&gt; 49
+&lt;/span&gt;&lt;span class="lnt"&gt; 50
+&lt;/span&gt;&lt;span class="lnt"&gt; 51
+&lt;/span&gt;&lt;span class="lnt"&gt; 52
+&lt;/span&gt;&lt;span class="lnt"&gt; 53
+&lt;/span&gt;&lt;span class="lnt"&gt; 54
+&lt;/span&gt;&lt;span class="lnt"&gt; 55
+&lt;/span&gt;&lt;span class="lnt"&gt; 56
+&lt;/span&gt;&lt;span class="lnt"&gt; 57
+&lt;/span&gt;&lt;span class="lnt"&gt; 58
+&lt;/span&gt;&lt;span class="lnt"&gt; 59
+&lt;/span&gt;&lt;span class="lnt"&gt; 60
+&lt;/span&gt;&lt;span class="lnt"&gt; 61
+&lt;/span&gt;&lt;span class="lnt"&gt; 62
+&lt;/span&gt;&lt;span class="lnt"&gt; 63
+&lt;/span&gt;&lt;span class="lnt"&gt; 64
+&lt;/span&gt;&lt;span class="lnt"&gt; 65
+&lt;/span&gt;&lt;span class="lnt"&gt; 66
+&lt;/span&gt;&lt;span class="lnt"&gt; 67
+&lt;/span&gt;&lt;span class="lnt"&gt; 68
+&lt;/span&gt;&lt;span class="lnt"&gt; 69
+&lt;/span&gt;&lt;span class="lnt"&gt; 70
+&lt;/span&gt;&lt;span class="lnt"&gt; 71
+&lt;/span&gt;&lt;span class="lnt"&gt; 72
+&lt;/span&gt;&lt;span class="lnt"&gt; 73
+&lt;/span&gt;&lt;span class="lnt"&gt; 74
+&lt;/span&gt;&lt;span class="lnt"&gt; 75
+&lt;/span&gt;&lt;span class="lnt"&gt; 76
+&lt;/span&gt;&lt;span class="lnt"&gt; 77
+&lt;/span&gt;&lt;span class="lnt"&gt; 78
+&lt;/span&gt;&lt;span class="lnt"&gt; 79
+&lt;/span&gt;&lt;span class="lnt"&gt; 80
+&lt;/span&gt;&lt;span class="lnt"&gt; 81
+&lt;/span&gt;&lt;span class="lnt"&gt; 82
+&lt;/span&gt;&lt;span class="lnt"&gt; 83
+&lt;/span&gt;&lt;span class="lnt"&gt; 84
+&lt;/span&gt;&lt;span class="lnt"&gt; 85
+&lt;/span&gt;&lt;span class="lnt"&gt; 86
+&lt;/span&gt;&lt;span class="lnt"&gt; 87
+&lt;/span&gt;&lt;span class="lnt"&gt; 88
+&lt;/span&gt;&lt;span class="lnt"&gt; 89
+&lt;/span&gt;&lt;span class="lnt"&gt; 90
+&lt;/span&gt;&lt;span class="lnt"&gt; 91
+&lt;/span&gt;&lt;span class="lnt"&gt; 92
+&lt;/span&gt;&lt;span class="lnt"&gt; 93
+&lt;/span&gt;&lt;span class="lnt"&gt; 94
+&lt;/span&gt;&lt;span class="lnt"&gt; 95
+&lt;/span&gt;&lt;span class="lnt"&gt; 96
+&lt;/span&gt;&lt;span class="lnt"&gt; 97
+&lt;/span&gt;&lt;span class="lnt"&gt; 98
+&lt;/span&gt;&lt;span class="lnt"&gt; 99
+&lt;/span&gt;&lt;span class="lnt"&gt;100
+&lt;/span&gt;&lt;span class="lnt"&gt;101
+&lt;/span&gt;&lt;span class="lnt"&gt;102
+&lt;/span&gt;&lt;span class="lnt"&gt;103
+&lt;/span&gt;&lt;span class="lnt"&gt;104
+&lt;/span&gt;&lt;span class="lnt"&gt;105
+&lt;/span&gt;&lt;span class="lnt"&gt;106
+&lt;/span&gt;&lt;span class="lnt"&gt;107
+&lt;/span&gt;&lt;span class="lnt"&gt;108
+&lt;/span&gt;&lt;span class="lnt"&gt;109
+&lt;/span&gt;&lt;span class="lnt"&gt;110
+&lt;/span&gt;&lt;span class="lnt"&gt;111
+&lt;/span&gt;&lt;span class="lnt"&gt;112
+&lt;/span&gt;&lt;span class="lnt"&gt;113
+&lt;/span&gt;&lt;span class="lnt"&gt;114
+&lt;/span&gt;&lt;span class="lnt"&gt;115
+&lt;/span&gt;&lt;span class="lnt"&gt;116
+&lt;/span&gt;&lt;span class="lnt"&gt;117
+&lt;/span&gt;&lt;span class="lnt"&gt;118
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-console" data-lang="console"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="gp"&gt;$&lt;/span&gt; scoop uninstall SarasaGothic-SC
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Uninstalling &amp;#39;SarasaGothic-SC&amp;#39; (1.0.32).
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Running pre_uninstall script...done.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Running uninstaller script...The &amp;#39;Sarasa-Gothic&amp;#39; Font family has been uninstalled and will not be present after restarting your computer.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;done.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Unlinking ~\scoop\apps\SarasaGothic-SC\current
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;&amp;#39;SarasaGothic-SC&amp;#39; was uninstalled.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;&lt;/span&gt;&lt;span class="err"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;&lt;/span&gt;&lt;span class="gp"&gt;$&lt;/span&gt; l C:&lt;span class="se"&gt;\U&lt;/span&gt;sers&lt;span class="se"&gt;\n&lt;/span&gt;avyd&lt;span class="se"&gt;\A&lt;/span&gt;ppData&lt;span class="se"&gt;\L&lt;/span&gt;ocal&lt;span class="se"&gt;\M&lt;/span&gt;icrosoft&lt;span class="se"&gt;\W&lt;/span&gt;indows&lt;span class="se"&gt;\F&lt;/span&gt;onts
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;Mode Size Date Modified Name
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;d---- - 2025-08-29 15:53 ./
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;d---- - 2025-07-06 17:52 ../
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.5M 2024-04-12 20:00 CaskaydiaCoveNerdFontMono-Bold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.3M 2024-04-12 20:00 CaskaydiaCoveNerdFontMono-BoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.5M 2024-04-12 20:00 CaskaydiaCoveNerdFontMono-ExtraLight.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.3M 2024-04-12 20:00 CaskaydiaCoveNerdFontMono-ExtraLightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.3M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-Italic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.5M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-Light.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.3M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-LightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.5M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-Regular.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.5M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-SemiBold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.3M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-SemiBoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.5M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-SemiLight.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.3M 2024-04-12 19:55 CaskaydiaCoveNerdFontMono-SemiLightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.6M 2024-04-12 20:02 CaskaydiaCoveNerdFontPropo-Bold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.4M 2024-04-12 20:02 CaskaydiaCoveNerdFontPropo-BoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.6M 2024-04-12 20:02 CaskaydiaCoveNerdFontPropo-ExtraLight.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.4M 2024-04-12 20:02 CaskaydiaCoveNerdFontPropo-ExtraLightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.4M 2024-04-12 19:57 CaskaydiaCoveNerdFontPropo-Italic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.6M 2024-04-12 19:58 CaskaydiaCoveNerdFontPropo-Light.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.4M 2024-04-12 19:58 CaskaydiaCoveNerdFontPropo-LightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.6M 2024-04-12 19:58 CaskaydiaCoveNerdFontPropo-Regular.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.6M 2024-04-12 19:58 CaskaydiaCoveNerdFontPropo-SemiBold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.4M 2024-04-12 19:57 CaskaydiaCoveNerdFontPropo-SemiBoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.6M 2024-04-12 19:58 CaskaydiaCoveNerdFontPropo-SemiLight.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 2.4M 2024-04-12 19:57 CaskaydiaCoveNerdFontPropo-SemiLightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 309k 2023-01-14 23:20 JetBrainsMonoVariable-Italic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 303k 2023-01-14 23:20 JetBrainsMonoVariable.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:40 SarasaFixedSC-Bold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaFixedSC-BoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:40 SarasaFixedSC-ExtraLight.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaFixedSC-ExtraLightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaFixedSC-Italic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:40 SarasaFixedSC-Light.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaFixedSC-LightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:40 SarasaFixedSC-Regular.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:40 SarasaFixedSC-SemiBold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaFixedSC-SemiBoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:40 SarasaFixedSlabSC-Bold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:41 SarasaFixedSlabSC-BoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:40 SarasaFixedSlabSC-ExtraLight.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaFixedSlabSC-ExtraLightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaFixedSlabSC-Italic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:40 SarasaFixedSlabSC-Light.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:41 SarasaFixedSlabSC-LightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:40 SarasaFixedSlabSC-Regular.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:40 SarasaFixedSlabSC-SemiBold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaFixedSlabSC-SemiBoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 24M 2025-07-20 08:39 SarasaGothicSC-Bold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaGothicSC-BoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 24M 2025-07-20 08:38 SarasaGothicSC-ExtraLight.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:38 SarasaGothicSC-ExtraLightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaGothicSC-Italic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 24M 2025-07-20 08:38 SarasaGothicSC-Light.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:38 SarasaGothicSC-LightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 24M 2025-07-20 08:39 SarasaGothicSC-Regular.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 24M 2025-07-20 08:39 SarasaGothicSC-SemiBold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaGothicSC-SemiBoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaMonoSC-Bold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaMonoSC-BoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:38 SarasaMonoSC-ExtraLight.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:38 SarasaMonoSC-ExtraLightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaMonoSC-Italic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:38 SarasaMonoSC-Light.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:38 SarasaMonoSC-LightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:38 SarasaMonoSC-Regular.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaMonoSC-SemiBold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaMonoSC-SemiBoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaMonoSlabSC-Bold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaMonoSlabSC-BoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaMonoSlabSC-ExtraLight.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaMonoSlabSC-ExtraLightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaMonoSlabSC-Italic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaMonoSlabSC-Light.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 27M 2025-07-20 08:39 SarasaMonoSlabSC-LightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaMonoSlabSC-Regular.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaMonoSlabSC-SemiBold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaMonoSlabSC-SemiBoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaTermSC-Bold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaTermSC-BoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaTermSC-ExtraLight.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaTermSC-ExtraLightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaTermSC-Italic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:39 SarasaTermSC-Light.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaTermSC-LightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaTermSC-Regular.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaTermSC-SemiBold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaTermSC-SemiBoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:40 SarasaTermSlabSC-Bold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaTermSlabSC-BoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaTermSlabSC-ExtraLight.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaTermSlabSC-ExtraLightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaTermSlabSC-Italic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaTermSlabSC-Light.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 27M 2025-07-20 08:40 SarasaTermSlabSC-LightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaTermSlabSC-Regular.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaTermSlabSC-SemiBold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 26M 2025-07-20 08:40 SarasaTermSlabSC-SemiBoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 24M 2025-07-20 08:39 SarasaUiSC-Bold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaUiSC-BoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 24M 2025-07-20 08:38 SarasaUiSC-ExtraLight.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:38 SarasaUiSC-ExtraLightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaUiSC-Italic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 24M 2025-07-20 08:38 SarasaUiSC-Light.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:38 SarasaUiSC-LightItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 24M 2025-07-20 08:38 SarasaUiSC-Regular.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 24M 2025-07-20 08:39 SarasaUiSC-SemiBold.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="go"&gt;-a--- 25M 2025-07-20 08:39 SarasaUiSC-SemiBoldItalic.ttf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;尝试从 &lt;code&gt;explorer.exe&lt;/code&gt; 中移除时失败&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2025/08/how-to-install-fonts-using-scoop/20250830152441.png"
+width="812"
+height="714"
+srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830152441_hu_ef2f11daa54d125.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830152441_hu_545b1a5cee1ce183.png 1024w"
+loading="lazy"
+alt="failed to delete in explorer.exe"
+class="gallery-image"
+data-flex-grow="113"
+data-flex-basis="272px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;但字体相关占用的进程又找不到！&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2025/08/how-to-install-fonts-using-scoop/20250830152700.png"
+width="786"
+height="593"
+srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830152700_hu_e5c992b87f8faf32.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830152700_hu_50874876995371d5.png 1024w"
+loading="lazy"
+alt="not found process"
+class="gallery-image"
+data-flex-grow="132"
+data-flex-basis="318px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;好在 deepseek 有办法！！&lt;/p&gt;
+&lt;h2 id="解决"&gt;&lt;a href="#%e8%a7%a3%e5%86%b3" class="header-anchor"&gt;&lt;/a&gt;解决
+&lt;/h2&gt;&lt;h3 id="通过系统设置卸载首选最安全"&gt;&lt;a href="#%e9%80%9a%e8%bf%87%e7%b3%bb%e7%bb%9f%e8%ae%be%e7%bd%ae%e5%8d%b8%e8%bd%bd%e9%a6%96%e9%80%89%e6%9c%80%e5%ae%89%e5%85%a8" class="header-anchor"&gt;&lt;/a&gt;通过系统设置卸载（首选、最安全）
+&lt;/h3&gt;&lt;p&gt;在设置界面中只能单个删除字体&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2025/08/how-to-install-fonts-using-scoop/20250830154418.png"
+width="707"
+height="890"
+srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830154418_hu_6e1082438f869de6.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830154418_hu_895ed0e81617c3bb.png 1024w"
+loading="lazy"
+alt="delete fonts in settings"
+class="gallery-image"
+data-flex-grow="79"
+data-flex-basis="190px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;可以使用 旧字体控制面板界面 或进入 &lt;code&gt;C:\WINDOWS\Fonts&lt;/code&gt; 批量删除字体&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2025/08/how-to-install-fonts-using-scoop/20250830154124.png"
+width="812"
+height="714"
+srcset="/posts/2025/08/how-to-install-fonts-using-scoop/20250830154124_hu_9d52193a3dbd8691.png 480w, /posts/2025/08/how-to-install-fonts-using-scoop/20250830154124_hu_f28d853a076b9872.png 1024w"
+loading="lazy"
+alt="delete fonts in control panel"
+class="gallery-image"
+data-flex-grow="113"
+data-flex-basis="272px"
+&gt;
+&lt;/p&gt;
+&lt;h3 id="在安全模式下删除"&gt;&lt;a href="#%e5%9c%a8%e5%ae%89%e5%85%a8%e6%a8%a1%e5%bc%8f%e4%b8%8b%e5%88%a0%e9%99%a4" class="header-anchor"&gt;&lt;/a&gt;在安全模式下删除
+&lt;/h3&gt;&lt;p&gt;未使用！！！&lt;/p&gt;
+&lt;h3 id="使用命令强制删除高级方法"&gt;&lt;a href="#%e4%bd%bf%e7%94%a8%e5%91%bd%e4%bb%a4%e5%bc%ba%e5%88%b6%e5%88%a0%e9%99%a4%e9%ab%98%e7%ba%a7%e6%96%b9%e6%b3%95" class="header-anchor"&gt;&lt;/a&gt;使用命令强制删除（高级方法）
+&lt;/h3&gt;&lt;p&gt;对于在可用字体中无法查找到的但存在于 &lt;code&gt;~\AppData\Local\Microsoft\Windows\Fonts&lt;/code&gt;
+中的字体文件，在 &lt;code&gt;explorer.exe&lt;/code&gt; 中无法删除提示
+&lt;code&gt;操作无法完成，因为文件已在 System 中打开。请关闭该文件并重试&lt;/code&gt; 时，可以使用
+&lt;em&gt;管理员权限&lt;/em&gt; 运行命令强制删除相关字体文件&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nb"&gt;Remove-Item&lt;/span&gt; &lt;span class="n"&gt;-Force&lt;/span&gt; &lt;span class="n"&gt;-Path&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;C:\Users\navyd\AppData\Local\Microsoft\Windows\Fonts\Sarasa*.ttf&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;注意：确保你删除的是正确的字体文件，误删系统字体会导致显示问题。&lt;/p&gt;
+&lt;h2 id="总结"&gt;&lt;a href="#%e6%80%bb%e7%bb%93" class="header-anchor"&gt;&lt;/a&gt;总结
+&lt;/h2&gt;&lt;p&gt;由于 windows 系统的限制，使用 scoop 管理字体相对比较麻烦，一旦字体需要更新，所有使用这些字体的进程都需要关闭才能正常更新。&lt;/p&gt;
+&lt;p&gt;如果使用 &lt;code&gt;scoop update -a&lt;/code&gt;
+更新字体时未成功应用到系统，可以关闭所有相关进程后强制重新安装
+&lt;code&gt;scoop update -f SarasaGothic-SC&lt;/code&gt; 即可。&lt;/p&gt;</description></item><item><title>Powerline in WSL2</title><link>/posts/2021/10/powerline-in-wsl2/</link><pubDate>Sun, 17 Oct 2021 16:19:48 +0800</pubDate><guid>/posts/2021/10/powerline-in-wsl2/</guid><description>&lt;p&gt;在wsl2中使用zsh主题出现乱码时需要安装powerline字体才能显示，windows terminal使用的Cascadia Code字体也支持powerline版本
+&lt;a
+class="link"
+href="https://github.com/microsoft/cascadia-code#installation"
+target="_blank"
+rel="noopener"
+&gt;Cascadia Code&lt;/a&gt;
+，常用的还有
+&lt;a
+class="link"
+href="https://github.com/powerline/fonts"
+target="_blank"
+rel="noopener"
+&gt;powerline/fonts&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;对于Cascadia Code字体下载
+&lt;a
+class="link"
+href="https://github.com/microsoft/cascadia-code/releases"
+target="_blank"
+rel="noopener"
+&gt;microsoft/cascadia-code/releases&lt;/a&gt;
+解压安装即可：&lt;/p&gt;
+&lt;p&gt;&lt;img src="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02.png"
+width="836"
+height="385"
+srcset="/posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02_hu_4005b900ffdf5d0b.png 480w, /posts/2021/10/powerline-in-wsl2/2021-10-17-20-09-02_hu_c0c55995f2f387dc.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="217"
+data-flex-basis="521px"
+&gt;
+&lt;/p&gt;
+&lt;p&gt;对于powerline字体文件可以使用&lt;code&gt;git clone https://github.com/powerline/fonts.git --depth=1&lt;/code&gt;下载后在管理员权限下执行安装
+&lt;a
+class="link"
+href="https://github.com/powerline/fonts/blob/master/install.ps1"
+target="_blank"
+rel="noopener"
+&gt;install.ps1&lt;/a&gt;
+&lt;/p&gt;
+&lt;h2 id="配置使用"&gt;&lt;a href="#%e9%85%8d%e7%bd%ae%e4%bd%bf%e7%94%a8" class="header-anchor"&gt;&lt;/a&gt;配置使用
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;vscode：在settings.json中添加&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;terminal.integrated.fontFamily&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;Cascadia Mono PL&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;windows terminal：在settings.json中添加&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;profiles&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;defaults&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;fontFace&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;Cascadia Code PL&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;
+&lt;a
+class="link"
+href="https://docs.microsoft.com/en-us/windows/terminal/tutorials/powerline-setup"
+target="_blank"
+rel="noopener"
+&gt;Tutorial: Set up Powerline in Windows Terminal&lt;/a&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+&lt;a
+class="link"
+href="https://code.visualstudio.com/docs/editor/integrated-terminal#_can-i-use-powerline-fonts-in-the-integrated-terminal"
+target="_blank"
+rel="noopener"
+&gt;Can I use Powerline fonts in the integrated terminal?&lt;/a&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

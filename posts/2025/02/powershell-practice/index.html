@@ -1,0 +1,570 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="profile 优化 参考 Powershell 配置文件启动加速 ..."><title>Powersell 实践</title><link rel=canonical href=/posts/2025/02/powershell-practice/><link rel=stylesheet href=/scss/style.min.b0e76e98cdd4f7082d1fc36f7af7e0843a81201db2197c03ca426751dc923735.css><meta property='og:title' content="Powersell 实践"><meta property='og:description' content="profile 优化 参考 Powershell 配置文件启动加速 ..."><meta property='og:url' content='/posts/2025/02/powershell-practice/'><meta property='og:site_name' content='NavyD 的个人博客'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='powershell'><meta property='article:tag' content='shell'><meta property='article:published_time' content='2025-02-24T23:32:16+08:00'><meta property='article:modified_time' content='2025-03-08T01:15:31+08:00'><meta name=twitter:title content="Powersell 实践"><meta name=twitter:description content="profile 优化 参考 Powershell 配置文件启动加速 ..."></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=https://avatars.githubusercontent.com/u/22490764 width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🐧</span></figure><div class=site-meta><h1 class=site-name><a href=/>NavyD 的个人博客</a></h1><h2 class=site-description>Hello World!</h2></div></header><ol class=menu-social><li><a href=https://space.bilibili.com/47808239 target=_blank title=Bilibili rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7a4 4 0 01-4-4v-6z"/><path d="M8 3l2 3"/><path d="M16 3l-2 3"/><path d="M9 13v-2"/><path d="M15 11v2"/></svg></a></li><li><a href=https://github.com/NavyD target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://x.com/NavyD_hello target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/page/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/page/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=/en/>English</option><option value=/ selected>中文</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#profile-优化>profile 优化</a></li><li><a href=#函数>函数</a><ol><li><a href=#定义参数>定义参数</a><ol><li><a href=#如何添加可选的-bool-参数>如何添加可选的 bool 参数</a></li><li><a href=#如何定义一个混合类型的参数>如何定义一个混合类型的参数</a></li></ol></li><li><a href=#传递有条件的参数>传递有条件的参数</a></li><li><a href=#scriptblock--splatting>scriptblock & splatting</a></li></ol></li><li><a href=#补全>补全</a><ol><li><a href=#pscompletions-set-item-问题>PSCompletions Set-Item 问题</a></li></ol></li><li><a href=#常用技巧>常用技巧</a><ol><li><a href=#后台任务>后台任务</a><ol><li><a href=#start-job>start-job</a><ol><li><a href=#传递变量>传递变量</a><ol><li><a href=#argumentlist>ArgumentList</a></li><li><a href=#using-本地变量>using 本地变量</a></li></ol></li><li><a href=#传递-scriptblock-对象作为参数>传递 scriptblock 对象作为参数</a></li><li><a href=#import-module-check-version>import-module check version</a></li></ol></li></ol></li><li><a href=#调试>调试</a><ol><li><a href=#日志>日志</a><ol><li><a href=#如何启用-write-debug-或-write-xxx--输出>如何启用 <code>Write-Debug</code> 或 <code>Write-xxx</code> 输出</a></li></ol></li><li><a href=#打印函数所有参数>打印函数所有参数</a></li><li><a href=#转换-hashtable-为字符串>转换 hashtable 为字符串</a></li></ol></li><li><a href=#其它>其它</a><ol><li><a href=#数组作为命令执行>数组作为命令执行</a><ol><li><a href=#转换为-string>转换为 string</a></li><li><a href=#unpack>unpack</a></li></ol></li><li><a href=#如何移除路径名中的非法字符>如何移除路径名中的非法字符</a></li><li><a href=#如何获取当前所在函数的名称>如何获取当前所在函数的名称</a></li><li><a href=#路径操作>路径操作</a><ol><li><a href=#mkdir--p><code>mkdir -p</code></a></li></ol></li><li><a href=#忽略命令的输出>忽略命令的输出</a></li><li><a href=#取最值>取最值</a><ol><li><a href=#math>math</a></li><li><a href=#measure-object>Measure-Object</a></li></ol></li><li><a href=#计算字符串的-hash-值>计算字符串的 Hash 值</a></li><li><a href=#invoke-expression-的问题>Invoke-Expression 的问题</a></li></ol></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><div class=article-title-wrapper><h2 class=article-title><a href=/posts/2025/02/powershell-practice/>Powersell 实践</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-02-24T23:32:16+08:00>2025年2月24日23:32</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 6 分钟</time></div></footer></div></header><section class=article-content><h2 id=profile-优化><a href=#profile-%e4%bc%98%e5%8c%96 class=header-anchor></a>profile 优化</h2><p>参考
+<a class=link href=/posts/2025/02/powershell-profile-startup-acceleration/>Powershell 配置文件启动加速</a></p><h2 id=函数><a href=#%e5%87%bd%e6%95%b0 class=header-anchor></a>函数</h2><h3 id=定义参数><a href=#%e5%ae%9a%e4%b9%89%e5%8f%82%e6%95%b0 class=header-anchor></a>定义参数</h3><h4 id=如何添加可选的-bool-参数><a href=#%e5%a6%82%e4%bd%95%e6%b7%bb%e5%8a%a0%e5%8f%af%e9%80%89%e7%9a%84-bool-%e5%8f%82%e6%95%b0 class=header-anchor></a>如何添加可选的 bool 参数</h4><p>在
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_advanced_parameters?view=powershell-7.4#switch-parameter-design-considerations" target=_blank rel=noopener>Switch parameter design considerations</a>
+使用 <code>switch</code> 类型可代替 <code>bool</code> 的场景</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=k>param</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=nb>Parameter</span><span class=p>(</span><span class=na>Mandatory</span> <span class=p>=</span> <span class=vm>$false</span><span class=p>)]</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=no>switch</span><span class=p>]</span><span class=nv>$WaitIfNoCache</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul><li><a class=link href=https://stackoverflow.com/questions/69589765/boolean-parameter-values-in-a-powershell-script target=_blank rel=noopener>Boolean parameter values in a PowerShell script</a></li></ul><h4 id=如何定义一个混合类型的参数><a href=#%e5%a6%82%e4%bd%95%e5%ae%9a%e4%b9%89%e4%b8%80%e4%b8%aa%e6%b7%b7%e5%90%88%e7%b1%bb%e5%9e%8b%e7%9a%84%e5%8f%82%e6%95%b0 class=header-anchor></a>如何定义一个混合类型的参数</h4><p>有一个需求是函数的参数接收命令参数数组 <code>string[]</code> 或
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_script_blocks?view=powershell-7.4" target=_blank rel=noopener>scriptblock</a>
+允许执行命令或代码块，可参考
+<a class=link href=https://github.com/gerardog/gsudo#usage target=_blank rel=noopener>gsudo usage</a>
+中类似 <code>gsudo echo hello</code>, <code>gsudo { echo hello }</code> 。</p><p>在
+<a class=link href=https://github.com/gerardog/gsudo/blob/master/src/gsudo.Wrappers/Invoke-gsudo.ps1 target=_blank rel=noopener>gsudo/src/gsudo.Wrappers/Invoke-gsudo.ps1</a>
+有很好的实现，但没有混合类型，在 deepseek 提示中可以使用 <code>object[]</code> 与
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_advanced_parameters?view=powershell-7.4#valuefromremainingarguments-argument" target=_blank rel=noopener><code>ValueFromRemainingArguments</code></a>
+属性收集所有未明确绑定的位置参数到 <code>$Cmd</code> 中，允许 <code>Test-Func -Wait { echo hello; echo world }</code> 和 <code>Test-Func -Wait echo hello world</code>。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=kd>function</span><span class=w> </span><span class=nb>Test-Func</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=nb>CmdletBinding</span><span class=p>()]</span>
+</span></span><span class=line><span class=cl>    <span class=k>param</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=nb>Parameter</span><span class=p>(</span><span class=na>Position</span><span class=p>=</span><span class=mf>0</span><span class=p>,</span> <span class=na>Mandatory</span><span class=p>=</span><span class=vm>$true</span><span class=p>,</span> <span class=na>ValueFromRemainingArguments</span><span class=p>=</span><span class=vm>$true</span><span class=p>)]</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=no>object[]</span><span class=p>]</span><span class=nv>$Cmd</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=nb>Parameter</span><span class=p>()]</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=no>switch</span><span class=p>]</span><span class=nv>$Wait</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>在函数中可以使用
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_type_operators?view=powershell-7.4#-isisnot-operators" target=_blank rel=noopener>-is/isnot</a>
+检查 <code>$Cmd[0] -is [scriptblock]</code> 判断是否是脚本块。</p><h3 id=传递有条件的参数><a href=#%e4%bc%a0%e9%80%92%e6%9c%89%e6%9d%a1%e4%bb%b6%e7%9a%84%e5%8f%82%e6%95%b0 class=header-anchor></a>传递有条件的参数</h3><p>参考
+<a class=link href=https://stackoverflow.com/questions/19093208/powershell-conditionally-add-parameter-argument-to-cmdlet target=_blank rel=noopener>Powershell - Conditionally add parameter/argument to cmdlet</a>
+和
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_splatting?view=powershell-7.4" target=_blank rel=noopener>Splatting with hash tables</a>
+类似如果一个变量存在时则作为命令的选项，不存在时则不指定这个选项</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=nv>$Object</span> <span class=p>=</span> <span class=vm>@</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>OptValue1</span>        <span class=p>=</span> <span class=vm>$null</span>
+</span></span><span class=line><span class=cl>    <span class=n>OptValue2</span>        <span class=p>=</span> <span class=s2>&#34;MyValue&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=vm>$true</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$Object</span><span class=p>.</span><span class=py>OptValue3</span> <span class=p>=</span> <span class=s2>&#34;val&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nb>New-Connection</span> <span class=nv>@Object</span>
+</span></span></code></pre></td></tr></table></div></div><p>在函数中使用 <code>@args</code> 解压参数传递到另一个函数或命令时非常有用</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=kd>function</span><span class=w> </span><span class=nb>TestArgs</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nb>echo </span><span class=s2>&#34;args: </span><span class=nv>$args</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=kd>function</span><span class=w> </span><span class=nb>Import-CmdOutput</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>TestArgs</span> <span class=n>-WaitIfNoCache</span> <span class=nv>@args</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nb>Import-CmdOutput</span> <span class=nb>echo </span><span class=n>a</span> <span class=p>{</span> <span class=nb>echo </span><span class=n>b</span><span class=p>;</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=c># args: -WaitIfNoCache echo a  echo b;</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=scriptblock--splatting><a href=#scriptblock--splatting class=header-anchor></a>scriptblock & splatting</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=kd>function</span><span class=w> </span><span class=nb>Test-Args</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>param</span><span class=p>(</span><span class=nv>$ModuleName</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nb>Start-Job</span> <span class=n>-ScriptBlock</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kd>function</span><span class=w> </span><span class=nb>Testecho</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nb>echo </span><span class=s2>&#34;test scriptblock outside args: </span><span class=nv>$args</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=n>Testecho</span> <span class=nv>@Using</span><span class=err>:</span><span class=n>args</span> <span class=nv>@Using</span><span class=err>:</span><span class=n>PSBoundParameters</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=p>|</span> <span class=nb>Receive-Job</span> <span class=n>-AutoRemoveJob</span> <span class=n>-Wait</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nb>Test-Args</span> <span class=n>hello</span>
+</span></span><span class=line><span class=cl><span class=c># test scriptblock outside args: -ModuleName: hello</span>
+</span></span><span class=line><span class=cl><span class=nb>Test-Args</span> <span class=n>hello</span> <span class=n>world</span>
+</span></span><span class=line><span class=cl><span class=c># test scriptblock outside args: world -ModuleName: hello</span>
+</span></span></code></pre></td></tr></table></div></div><p>有时需要将 scriptblock 作为参数重复使用。如果直接传递参数可能会出错</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=kd>function</span><span class=w> </span><span class=nb>Import-CmdOutput</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=nb>CmdletBinding</span><span class=p>(</span><span class=na>PositionalBinding</span> <span class=p>=</span> <span class=vm>$false</span><span class=p>)]</span>
+</span></span><span class=line><span class=cl>    <span class=k>param</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=nb>Parameter</span><span class=p>(</span><span class=na>Mandatory</span> <span class=p>=</span> <span class=vm>$false</span><span class=p>)]</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=no>string</span><span class=p>]</span><span class=nv>$ModuleName</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=nb>parameter</span><span class=p>(</span><span class=na>Mandatory</span><span class=p>,</span> <span class=na>ValueFromRemainingArguments</span><span class=p>)]</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=no>object[]</span><span class=p>]</span><span class=nv>$Commands</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=kd>function</span><span class=w> </span><span class=nb>TestArgs</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;args: </span><span class=nv>$args</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=no>scriptblock</span><span class=p>]</span><span class=nv>$sb</span> <span class=p>=</span> <span class=p>{</span> <span class=n>TestArgs</span> <span class=n>-WaitIfNoCache</span> <span class=nv>@Using</span><span class=err>:</span><span class=n>Commands</span> <span class=p>|</span> <span class=nb>Out-String</span> <span class=p>|</span> <span class=nb>Invoke-Expression</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nv>$ModuleName</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nb>New-Module</span> <span class=n>-Name</span> <span class=nv>$ModuleName</span> <span class=n>-ScriptBlock</span> <span class=nv>$sb</span> <span class=p>|</span> <span class=nb>Import-Module</span> <span class=n>-Global</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nb>Invoke-Command</span> <span class=n>-ScriptBlock</span> <span class=nv>$sb</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>在 scriptblock 中使用 <code>@Using:Commands</code> 在一个代码块中时定义就报错</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> Import-CmdOutput zoxide init powershell
+</span></span><span class=line><span class=cl><span class=go>InvalidOperation:
+</span></span></span><span class=line><span class=cl><span class=go>Line |
+</span></span></span><span class=line><span class=cl><span class=go>  12 |  … ock]$sb = { TestArgs -WaitIfNoCache @Using:Commands | Out-String | In …
+</span></span></span><span class=line><span class=cl><span class=go>     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span></span></span><span class=line><span class=cl><span class=go>     | A Using variable cannot be retrieved. A Using variable can be used only with Invoke-Command, Start-Job, or InlineScript in the script workflow. When it is used with Invoke-Command, the Using variable is valid only if the script block is invoked on a remote computer.
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=gp>$</span> Import-CmdOutput -ModuleName zoxidemod zoxide init powershell
+</span></span><span class=line><span class=cl><span class=go>InvalidOperation:
+</span></span></span><span class=line><span class=cl><span class=go>Line |
+</span></span></span><span class=line><span class=cl><span class=go>  12 |  … ock]$sb = { TestArgs -WaitIfNoCache @Using:Commands | Out-String | In …
+</span></span></span><span class=line><span class=cl><span class=go>     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span></span></span><span class=line><span class=cl><span class=go>     | A Using variable cannot be retrieved. A Using variable can be used only with Invoke-Command, Start-Job, or InlineScript in the script workflow. When it is used with Invoke-Command, the Using variable is valid only if the script block is invoked on a remote computer.
+</span></span></span></code></pre></td></tr></table></div></div><p>参考
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_script_blocks?view=powershell-7.4#using-script-blocks" target=_blank rel=noopener>Using Script Blocks</a>
+在代码块中使用 <code>param($p1, $p2)</code> 或 <code>$args</code> 传递参数而不是
+<a class=link href="https://learn.microsoft.com/zh-cn/powershell/module/microsoft.powershell.core/about/about_remote_variables?view=powershell-7.4#using-local-variables" target=_blank rel=noopener>使用局部变量</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=kd>function</span><span class=w> </span><span class=nb>Import-CmdOutput</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=nb>CmdletBinding</span><span class=p>(</span><span class=na>PositionalBinding</span> <span class=p>=</span> <span class=vm>$false</span><span class=p>)]</span>
+</span></span><span class=line><span class=cl>    <span class=k>param</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=nb>Parameter</span><span class=p>(</span><span class=na>Mandatory</span> <span class=p>=</span> <span class=vm>$false</span><span class=p>)]</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=no>string</span><span class=p>]</span><span class=nv>$ModuleName</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=nb>parameter</span><span class=p>(</span><span class=na>Mandatory</span><span class=p>,</span> <span class=na>ValueFromRemainingArguments</span><span class=p>)]</span>
+</span></span><span class=line><span class=cl>        <span class=p>[</span><span class=no>object[]</span><span class=p>]</span><span class=nv>$Commands</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=kd>function</span><span class=w> </span><span class=nb>TestArgs</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;args: </span><span class=nv>$args</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=no>scriptblock</span><span class=p>]</span><span class=nv>$sb</span> <span class=p>=</span> <span class=p>{</span> <span class=n>TestArgs</span> <span class=n>-WaitIfNoCache</span> <span class=nv>@args</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nv>$ModuleName</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nb>New-Module</span> <span class=n>-Name</span> <span class=nv>$ModuleName</span> <span class=n>-ScriptBlock</span> <span class=nv>$sb</span> <span class=n>-ArgumentList</span> <span class=nv>$Commands</span> <span class=p>|</span> <span class=nb>Import-Module</span> <span class=n>-Global</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nb>Invoke-Command</span> <span class=n>-ScriptBlock</span> <span class=nv>$sb</span> <span class=n>-ArgumentList</span> <span class=nv>$Commands</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>Import-CmdOutput</span> <span class=n>zoxide</span> <span class=n>init</span> <span class=n>powershell</span>
+</span></span><span class=line><span class=cl><span class=c># args: -WaitIfNoCache zoxide init powershell</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=补全><a href=#%e8%a1%a5%e5%85%a8 class=header-anchor></a>补全</h2><ul><li><a class=link href=https://github.com/abgox/PSCompletions target=_blank rel=noopener>PSCompletions: A completion manager for better and simpler use completions in PowerShell</a></li><li><a class=link href=https://github.com/sigoden/argc-completions target=_blank rel=noopener>argc-completions: {bash,zsh,fish,powershell,nushell}-completions for 1000+ commands.</a></li></ul><p>参考
+<a class=link href=https://github.com/sigoden/argc-completions#getting-started target=_blank rel=noopener>argc-completions getting-started</a>
+运行下面代码，注意：如果已下载
+<a class=link href=https://github.com/sigoden/argc target=_blank rel=noopener>argc</a>
+,
+<a class=link href=https://github.com/mikefarah/yq target=_blank rel=noopener>yq</a>
+则不用运行 <code>./scripts/download-tools.sh</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>git clone https://github.com/sigoden/argc-completions.git
+</span></span><span class=line><span class=cl><span class=nb>cd</span> argc-completions
+</span></span><span class=line><span class=cl>./scripts/download-tools.sh
+</span></span><span class=line><span class=cl>./scripts/setup-shell.sh bash  <span class=c1># bash/zsh/powershell/fish/nushell/elvish/xonsh/tcsh</span>
+</span></span></code></pre></td></tr></table></div></div><p>输出的 powershell 代码放到 <code>$PROFILE</code> 中即可</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=c># argc-completions</span>
+</span></span><span class=line><span class=cl><span class=c># Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete</span>
+</span></span><span class=line><span class=cl><span class=nv>$env:ARGC_COMPLETIONS_ROOT</span> <span class=p>=</span> <span class=s1>&#39;C:\Users\navyd\AppData\Local\Temp\argc-completions&#39;</span>
+</span></span><span class=line><span class=cl><span class=nv>$env:ARGC_COMPLETIONS_PATH</span> <span class=p>=</span> <span class=p>(</span><span class=nv>$env:ARGC_COMPLETIONS_ROOT</span> <span class=p>+</span> <span class=s1>&#39;\completions\windows;&#39;</span> <span class=p>+</span> <span class=nv>$env:ARGC_COMPLETIONS_ROOT</span> <span class=p>+</span> <span class=s1>&#39;\completions&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c># argc,yq路径如果不在arc-completions中则可以注释</span>
+</span></span><span class=line><span class=cl><span class=nv>$env:PATH</span> <span class=p>=</span> <span class=nv>$env:ARGC_COMPLETIONS_ROOT</span> <span class=p>+</span> <span class=s1>&#39;\bin&#39;</span> <span class=p>+</span> <span class=p>[</span><span class=no>IO.Path</span><span class=p>]::</span><span class=n>PathSeparator</span> <span class=p>+</span> <span class=nv>$env:PATH</span>
+</span></span><span class=line><span class=cl><span class=c># To add completions for only the specified command, modify next line e.g. $argc_scripts = @(&#34;cargo&#34;, &#34;git&#34;)</span>
+</span></span><span class=line><span class=cl><span class=nv>$argc_scripts</span> <span class=p>=</span> <span class=p>((</span><span class=nb>Get-ChildItem</span> <span class=o>-File</span> <span class=n>-Path</span> <span class=p>(</span><span class=nv>$env:ARGC_COMPLETIONS_ROOT</span> <span class=p>+</span> <span class=s1>&#39;\completions\windows&#39;</span><span class=p>),(</span><span class=nv>$env:ARGC_COMPLETIONS_ROOT</span> <span class=p>+</span> <span class=s1>&#39;\completions&#39;</span><span class=p>))</span> <span class=p>|</span> <span class=nb>ForEach-Object</span> <span class=p>{</span> <span class=nv>$_</span><span class=p>.</span><span class=py>BaseName</span> <span class=p>})</span>
+</span></span><span class=line><span class=cl><span class=n>argc</span> <span class=p>-</span><span class=n>-argc-completions</span> <span class=n>powershell</span> <span class=nv>$argc_scripts</span> <span class=p>|</span> <span class=nb>Out-String</span> <span class=p>|</span> <span class=nb>Invoke-Expression</span>
+</span></span></code></pre></td></tr></table></div></div><p>在
+<a class=link href=https://pscompletions.abgox.com/zh-CN/tips/pscompletions-and-argc-completions target=_blank rel=noopener><code>PSCompletions</code> and <code>argc-completions</code></a>
+中结合这 2 个项目使用效果还可以</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-diff data-lang=diff><span class=line><span class=cl><span class=gd>- argc --argc-completions powershell $argc_scripts | Out-String | Invoke-Expression
+</span></span></span><span class=line><span class=cl><span class=gd></span><span class=gi>+ $PSCompletions.argc_completions($argc_scripts)
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=pscompletions-set-item-问题><a href=#pscompletions-set-item-%e9%97%ae%e9%a2%98 class=header-anchor></a>PSCompletions Set-Item 问题</h3><p>在 <code>$PSCompletions.argc_completions($argc_scripts)</code> 运行在非 <code>$PROFILE</code> 中时如在 <code>$PROFILE</code> 通过函数调用，文件内容为上面的代码</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=kd>function</span><span class=w> </span><span class=nb>Testa</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nb>new-Module</span> <span class=n>-Name</span> <span class=n>testmod</span> <span class=n>-ScriptBlock</span> <span class=p>{</span> <span class=nb>get-content</span> <span class=s2>&#34;C:\Users\navyd\AppData\Local\Temp\Get-CachedCmdOutput\Import-M-71AAE5.out.ps1&#34;</span> <span class=p>|</span> <span class=nb>out-string</span> <span class=p>|</span> <span class=nb>Invoke-Expression</span> <span class=p>}</span> <span class=p>|</span> <span class=nb>Import-Module</span> <span class=n>-Global</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=kd>function</span><span class=w> </span><span class=nb>Testb</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nb>new-Module</span> <span class=n>-Name</span> <span class=n>testmod</span> <span class=n>-ScriptBlock</span> <span class=p>{</span> <span class=p>.</span> <span class=s2>&#34;C:\Users\navyd\AppData\Local\Temp\Get-CachedCmdOutput\Import-M-71AAE5.out.ps1&#34;</span> <span class=p>}</span> <span class=p>|</span> <span class=nb>Import-Module</span> <span class=n>-Global</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=kd>function</span><span class=w> </span><span class=nb>Testc</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span> <span class=s2>&#34;C:\Users\navyd\AppData\Local\Temp\Get-CachedCmdOutput\Import-M-71AAE5.out.ps1&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>运行后只有一个结果：<code>Set-Item: Cannot process argument because the value of argument "name" is null. Change the value of argument "name" to a non-null value.</code> , 无法通过 <code>Register-EngineEvent</code> 后台加载</p><p>另外，提示出现后还会出现乱码，可能是由于使用 starship nerdfont 的出现的问题，禁用 starship 即可，但为了亮点补全是不可能的</p><p><img src=/posts/2025/02/powershell-practice/20250302123849.png width=1115 height=628 srcset="/posts/2025/02/powershell-practice/20250302123849_hu_57c861cbd5d0d250.png 480w, /posts/2025/02/powershell-practice/20250302123849_hu_1f9e9bd9aae71ddc.png 1024w" loading=lazy alt="argc completion menu" class=gallery-image data-flex-grow=177 data-flex-basis=426px></p><p><img src=/posts/2025/02/powershell-practice/20250302123926.png width=1115 height=628 srcset="/posts/2025/02/powershell-practice/20250302123926_hu_beb70bd75038986c.png 480w, /posts/2025/02/powershell-practice/20250302123926_hu_c4bf9cdba44e369c.png 1024w" loading=lazy alt="garbled chars" class=gallery-image data-flex-grow=177 data-flex-basis=426px></p><h2 id=常用技巧><a href=#%e5%b8%b8%e7%94%a8%e6%8a%80%e5%b7%a7 class=header-anchor></a>常用技巧</h2><h3 id=后台任务><a href=#%e5%90%8e%e5%8f%b0%e4%bb%bb%e5%8a%a1 class=header-anchor></a>后台任务</h3><h4 id=start-job><a href=#start-job class=header-anchor></a>start-job</h4><h5 id=传递变量><a href=#%e4%bc%a0%e9%80%92%e5%8f%98%e9%87%8f class=header-anchor></a>传递变量</h5><h6 id=argumentlist><a href=#argumentlist class=header-anchor></a>ArgumentList</h6><p>参考
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/start-job?view=powershell-7.4#example-10-use-the-argumentlist-parameter-to-specify-an-array" target=_blank rel=noopener>Example 10: Use the ArgumentList parameter to specify an array</a>
+使用 <code>-ArgumentList</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=nb>Start-Job</span> <span class=n>-ScriptBlock</span> <span class=p>{</span> <span class=nb>Get-Process</span> <span class=n>-Name</span> <span class=nv>$args</span> <span class=p>}</span> <span class=n>-ArgumentList</span> <span class=n>powershell</span><span class=p>,</span> <span class=n>pwsh</span><span class=p>,</span> <span class=n>notepad</span>
+</span></span></code></pre></td></tr></table></div></div><h6 id=using-本地变量><a href=#using-%e6%9c%ac%e5%9c%b0%e5%8f%98%e9%87%8f class=header-anchor></a>using 本地变量</h6><p>通过
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_remote_variables?view=powershell-7.4#using-local-variables" target=_blank rel=noopener>Using local variables</a>
+可直接在 scriptblock 中使用本地变量 <code>$Using:&lt;VariableName></code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=nv>$ps</span> <span class=p>=</span> <span class=s2>&#34;*PowerShell*&#34;</span> <span class=nb>Invoke-Command</span> <span class=n>-ComputerName</span> <span class=n>S1</span> <span class=n>-ScriptBlock</span> <span class=p>{</span> <span class=nb>Get-WinEvent</span> <span class=n>-LogName</span> <span class=nv>$Using</span><span class=err>:</span><span class=nb>ps </span><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=传递-scriptblock-对象作为参数><a href=#%e4%bc%a0%e9%80%92-scriptblock-%e5%af%b9%e8%b1%a1%e4%bd%9c%e4%b8%ba%e5%8f%82%e6%95%b0 class=header-anchor></a>传递 scriptblock 对象作为参数</h5><p>在尝试将 scriptblock 传递给 start-job 中的 scriptblock 时只能传递为 string，无法作为对象被调用</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> <span class=nv>$OutFile</span> <span class=o>=</span> Join-Path <span class=s2>&#34;C:\Users\navyd\AppData\Local\Temp\test-scriptblock&#34;</span> <span class=s2>&#34;test-job.txt&#34;</span>
+</span></span><span class=line><span class=cl><span class=gp>$</span> <span class=nv>$s</span> <span class=o>=</span> <span class=o>{</span> <span class=nb>echo</span> b<span class=p>;</span> sleep 5<span class=p>;</span> <span class=nb>echo</span> c <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=gp>$</span> Start-Job -ScriptBlock <span class=o>{</span> <span class=p>&amp;</span> <span class=nv>$using</span>:s <span class=p>|</span> Out-File <span class=nv>$using</span>:OutFile<span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=go>Id     Name            PSJobTypeName   State         HasMoreData     Location             Command
+</span></span></span><span class=line><span class=cl><span class=go>--     ----            -------------   -----         -----------     --------             -------
+</span></span></span><span class=line><span class=cl><span class=go>3      Job3            BackgroundJob   Running       True            localhost             &amp; $using:s | Out-File $…
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=gp>$</span> receive-Job -Id <span class=m>3</span>
+</span></span><span class=line><span class=cl><span class=go>ObjectNotFound: The term &#39; echo b; sleep 5; echo c &#39; is not recognized as a name of a cmdlet, function, script file, or executable program.
+</span></span></span><span class=line><span class=cl><span class=go>Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+</span></span></span></code></pre></td></tr></table></div></div><p>参考
+<a class=link href=https://github.com/PowerShell/PowerShell/issues/11698#issuecomment-1302895834 target=_blank rel=noopener>Consider deserializing serialized script blocks as such (remoting, background jobs)</a>
+使用
+<a class=link href="https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.scriptblock.create?view=powershellsdk-7.4.0" target=_blank rel=noopener>[scriptblock]::Create()</a>
+将字符串转换为 scriptblock 对象</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=nb>Start-Job</span> <span class=n>-ScriptBlock</span> <span class=p>{</span> <span class=p>&amp;</span> <span class=p>([</span><span class=no>scriptblock</span><span class=p>]::</span><span class=n>Create</span><span class=p>(</span><span class=nv>$using</span><span class=err>:</span><span class=n>s</span><span class=p>))</span> <span class=p>|</span> <span class=nb>Out-File</span> <span class=nv>$using</span><span class=err>:</span><span class=n>OutFile</span> <span class=p>}</span> <span class=p>|</span> <span class=nb>Receive-Job</span> <span class=n>-Wait</span> <span class=n>-AutoRemove</span>
+</span></span><span class=line><span class=cl><span class=nb>Get-Content</span> <span class=nv>$OutFile</span>
+</span></span><span class=line><span class=cl><span class=c># b</span>
+</span></span><span class=line><span class=cl><span class=c># c</span>
+</span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul><li><a class=link href=https://stackoverflow.com/a/60270146/8566831 target=_blank rel=noopener>PowerShell Jobs vs Start-Process</a></li><li><a class=link href=https://stackoverflow.com/questions/56451469/using-parameters-when-calling-script-with-start-job target=_blank rel=noopener>Using Parameters when Calling Script with Start-Job</a></li><li><a class=link href=https://lazywinadmin.github.io/2017/03/ScriptBlockObject.html target=_blank rel=noopener>Create and reuse a powershell scriptblock</a></li></ul><h5 id=import-module-check-version><a href=#import-module-check-version class=header-anchor></a>import-module check version</h5><p>在导入模块时会出现更新提示，在后台运行时会导致无法</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> Import-Module PSCompletions -Global
+</span></span><span class=line><span class=cl><span class=go>Now PSCompletions module can be updated! Update?
+</span></span></span><span class=line><span class=cl><span class=go>(The added completion will be automatically migrated.)
+</span></span></span><span class=line><span class=cl><span class=go>5.3.2 =&gt; 5.3.3
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=go>5.3.3 : Update(2025/2/28)
+</span></span></span><span class=line><span class=cl><span class=go> - Optimized some key function in the completion menu.
+</span></span></span><span class=line><span class=cl><span class=go>    - Space is equivalent to Enter.
+</span></span></span><span class=line><span class=cl><span class=go>    - Shift + Space is removed.
+</span></span></span><span class=line><span class=cl><span class=go> - Fix a completion error triggered when an empty string appears in a completion item.
+</span></span></span><span class=line><span class=cl><span class=go> - Fix some issues in the module update.
+</span></span></span><span class=line><span class=cl><span class=go> - Other fixes and optimizations.
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=go>Press Enter key to update or other key(Without Ctrl) to cancel!
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=调试><a href=#%e8%b0%83%e8%af%95 class=header-anchor></a>调试</h3><h4 id=日志><a href=#%e6%97%a5%e5%bf%97 class=header-anchor></a>日志</h4><h5 id=如何启用-write-debug-或-write-xxx--输出><a href=#%e5%a6%82%e4%bd%95%e5%90%af%e7%94%a8-write-debug-%e6%88%96-write-xxx--%e8%be%93%e5%87%ba class=header-anchor></a>如何启用 <code>Write-Debug</code> 或 <code>Write-xxx</code> 输出</h5><p>参考
+<a class=link href=https://stackoverflow.com/a/45290695/8566831 target=_blank rel=noopener>With PowerShell, how can I get Write-Debug output to appear in the console?</a>
+在
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/write-debug?view=powershell-7.4" target=_blank rel=noopener>Write-Debug</a>
+使用 <code>$DebugPreference = "Continue"</code> 启用 debug 日志，使用（默认）<code>$DebugPreference = "SilentlyContinue"</code> 关闭日志</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=nv>$DebugPreference</span> <span class=p>=</span> <span class=s1>&#39;Continue&#39;</span>
+</span></span><span class=line><span class=cl><span class=nb>write-debug</span> <span class=s2>&#34;test&#34;</span>
+</span></span><span class=line><span class=cl><span class=c># DEBUG: test</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=打印函数所有参数><a href=#%e6%89%93%e5%8d%b0%e5%87%bd%e6%95%b0%e6%89%80%e6%9c%89%e5%8f%82%e6%95%b0 class=header-anchor></a>打印函数所有参数</h4><p>在 #
+<a class=link href=https://stackoverflow.com/questions/62861665/powershell-pass-all-parameters-received-in-function-and-handle-parameters-with target=_blank rel=noopener>PowerShell pass all parameters received in function, and handle parameters with spaces</a>
+提到可以使用
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_automatic_variables?view=powershell-7.4#psboundparameters" target=_blank rel=noopener>$PSBoundParameters</a>
+变量</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=kd>function</span><span class=w> </span><span class=nb>Test1</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>param</span><span class=p>(</span><span class=nv>$a</span><span class=p>,</span> <span class=nv>$b</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=c># Display the parameters in dictionary format.</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$PSBoundParameters</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=n>Test1</span> <span class=n>-a</span> <span class=n>Power</span> <span class=n>-b</span> <span class=n>Shell</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c># Key Value</span>
+</span></span><span class=line><span class=cl><span class=c># --- -----</span>
+</span></span><span class=line><span class=cl><span class=c># a   Power</span>
+</span></span><span class=line><span class=cl><span class=c># b   Shell</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=转换-hashtable-为字符串><a href=#%e8%bd%ac%e6%8d%a2-hashtable-%e4%b8%ba%e5%ad%97%e7%ac%a6%e4%b8%b2 class=header-anchor></a>转换 hashtable 为字符串</h4><p>参考
+<a class=link href=https://stackoverflow.com/questions/21413483/converting-hashtable-to-array-of-strings target=_blank rel=noopener>Converting hashtable to array of strings</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=nv>$a</span> <span class=p>=</span> <span class=vm>@</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>InitializationScript</span> <span class=p>=</span> <span class=vm>$null</span>
+</span></span><span class=line><span class=cl>    <span class=n>name</span> <span class=p>=</span> <span class=s2>&#34;name&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=p>.</span><span class=py>GetEnumerator</span><span class=p>()</span> <span class=p>|</span> <span class=nb>ForEach-Object</span> <span class=p>{</span> <span class=s2>&#34;</span><span class=p>$(</span><span class=nv>$_</span><span class=p>.</span><span class=n>Name</span><span class=p>)</span><span class=s2>=</span><span class=p>$(</span><span class=nv>$_</span><span class=p>.</span><span class=n>Value</span><span class=p>)</span><span class=s2>&#34;</span> <span class=p>}</span> <span class=p>|</span> <span class=nb>Join-String</span> <span class=n>-Separator</span> <span class=s1>&#39;,&#39;</span>
+</span></span><span class=line><span class=cl><span class=c># name=name,InitializationScript=</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=其它><a href=#%e5%85%b6%e5%ae%83 class=header-anchor></a>其它</h3><h4 id=数组作为命令执行><a href=#%e6%95%b0%e7%bb%84%e4%bd%9c%e4%b8%ba%e5%91%bd%e4%bb%a4%e6%89%a7%e8%a1%8c class=header-anchor></a>数组作为命令执行</h4><h5 id=转换为-string><a href=#%e8%bd%ac%e6%8d%a2%e4%b8%ba-string class=header-anchor></a>转换为 string</h5><p>参考
+<a class=link href=https://stackoverflow.com/a/7723859/8566831 target=_blank rel=noopener>PowerShell: How do I convert an array object to a string in PowerShell?</a>
+使用
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_join?view=powershell-7.4" target=_blank rel=noopener>-join</a>
+。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=nv>$a</span> <span class=p>=</span> <span class=s1>&#39;This&#39;</span><span class=p>,</span> <span class=s1>&#39;Is&#39;</span><span class=p>,</span> <span class=s1>&#39;a&#39;</span><span class=p>,</span> <span class=s1>&#39;cat&#39;</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span> <span class=n>-join</span> <span class=s1>&#39;-&#39;</span>
+</span></span><span class=line><span class=cl><span class=c># This-Is-a-cat</span>
+</span></span><span class=line><span class=cl><span class=nv>$cmd</span> <span class=p>=</span> <span class=vm>@</span><span class=p>(</span><span class=s2>&#34;echo&#34;</span><span class=p>,</span> <span class=s2>&#34;test&#34;</span><span class=p>,</span> <span class=s2>&#34;hello&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>Invoke-Expression</span> <span class=p>(</span><span class=nv>$cmd</span> <span class=n>-join</span> <span class=s1>&#39; &#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=unpack><a href=#unpack class=header-anchor></a>unpack</h5><p>将数组的第一个元素作为命令名称，剩余元素作为参数。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=nv>$cmd</span> <span class=p>=</span> <span class=vm>@</span><span class=p>(</span><span class=s2>&#34;echo&#34;</span><span class=p>,</span> <span class=s2>&#34;test&#34;</span><span class=p>,</span> <span class=s2>&#34;hello&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nv>$exe</span><span class=p>,</span> <span class=nv>$arguments</span> <span class=p>=</span> <span class=nv>$cmd</span>
+</span></span><span class=line><span class=cl><span class=p>&amp;</span> <span class=nv>$exe</span> <span class=nv>@arguments</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=如何移除路径名中的非法字符><a href=#%e5%a6%82%e4%bd%95%e7%a7%bb%e9%99%a4%e8%b7%af%e5%be%84%e5%90%8d%e4%b8%ad%e7%9a%84%e9%9d%9e%e6%b3%95%e5%ad%97%e7%ac%a6 class=header-anchor></a>如何移除路径名中的非法字符</h4><p>参考
+<a class=link href=https://stackoverflow.com/a/23067832/8566831 target=_blank rel=noopener>How to strip illegal characters before trying to save filenames?</a>
+使用
+<a class=link href="https://learn.microsoft.com/en-us/dotnet/api/system.io.path.getinvalidfilenamechars?view=net-8.0" target=_blank rel=noopener>Path.GetInvalidFileNameChars</a>
+和
+<a class=link href="https://learn.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.regex.escape?view=net-9.0" target=_blank rel=noopener>Regex.Escape(String)</a>
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_regular_expressions?view=powershell-7.4#escaping-characters" target=_blank rel=noopener>Escaping characters</a>
+替换字符</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=nv>$invalidChars</span> <span class=p>=</span> <span class=p>[</span><span class=no>IO.Path</span><span class=p>]::</span><span class=n>GetInvalidFileNameChars</span><span class=p>()</span> <span class=n>-join</span> <span class=s1>&#39;&#39;</span>
+</span></span><span class=line><span class=cl><span class=nv>$re</span> <span class=p>=</span> <span class=s2>&#34;[{0}]&#34;</span> <span class=o>-f</span> <span class=p>[</span><span class=no>RegEx</span><span class=p>]::</span><span class=n>Escape</span><span class=p>(</span><span class=nv>$invalidChars</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nv>$Name</span> <span class=o>-replace</span> <span class=nv>$re</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=如何获取当前所在函数的名称><a href=#%e5%a6%82%e4%bd%95%e8%8e%b7%e5%8f%96%e5%bd%93%e5%89%8d%e6%89%80%e5%9c%a8%e5%87%bd%e6%95%b0%e7%9a%84%e5%90%8d%e7%a7%b0 class=header-anchor></a>如何获取当前所在函数的名称</h4><p>参考
+<a class=link href=https://stackoverflow.com/questions/3689543/is-there-a-way-to-retrieve-a-powershell-function-name-from-within-a-function target=_blank rel=noopener>Is there a way to retrieve a PowerShell function name from within a function?</a>
+从
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_automatic_variables?view=powershell-7.4#myinvocation" target=_blank rel=noopener><code>$MyInvocation</code></a>
+对象
+<a class=link href="https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.invocationinfo?view=powershellsdk-7.4.0" target=_blank rel=noopener>InvocationInfo</a>
+中的属性
+<a class=link href="https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.invocationinfo.mycommand?view=powershellsdk-7.4.0#system-management-automation-invocationinfo-mycommand" target=_blank rel=noopener>MyCommand</a>
+获取</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=kd>function</span><span class=w> </span><span class=nb>foo</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=s1>&#39;This function is called {0}.&#39;</span> <span class=o>-f</span> <span class=nv>$MyInvocation</span><span class=p>.</span><span class=py>MyCommand</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=n>foo</span>
+</span></span><span class=line><span class=cl><span class=c># This function is called foo.</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=路径操作><a href=#%e8%b7%af%e5%be%84%e6%93%8d%e4%bd%9c class=header-anchor></a>路径操作</h4><ul><li><a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/test-path?view=powershell-7.4" target=_blank rel=noopener>Test-Path: Determines whether all elements of a path exist.</a></li><li><a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/new-item?view=powershell-7.4" target=_blank rel=noopener>New-Item: Creates a new item</a></li><li><a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/join-path?view=powershell-7.4" target=_blank rel=noopener>Join-Path: Combines a path and a child path into a single path</a></li><li><a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/split-path?view=powershell-7.4" target=_blank rel=noopener>Split-Path: Returns the specified part of a path</a></li></ul><p>注意：在 WindowsPowershell 5.1 上使用 <code>Join-Path a b c</code> 超过 2 个参数会出错</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> Join-Path a b c
+</span></span><span class=line><span class=cl><span class=go>Join-Path : 找不到接受实际参数“c”的位置形式参数。
+</span></span></span><span class=line><span class=cl><span class=go>所在位置 行:1 字符: 1
+</span></span></span><span class=line><span class=cl><span class=go>+ Join-Path a b c
+</span></span></span><span class=line><span class=cl><span class=go>+ ~~~~~~~~~~~~~~~
+</span></span></span><span class=line><span class=cl><span class=go>    + CategoryInfo          : InvalidArgument: (:) [Join-Path]，ParameterBindingException
+</span></span></span><span class=line><span class=cl><span class=go>    + FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.JoinPathCommand
+</span></span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul><li><a class=link href=https://stackoverflow.com/a/3690830/8566831 target=_blank rel=noopener>Is there a way to retrieve a PowerShell function name from within a function?</a></li><li><a class=link href=https://stackoverflow.com/a/16911470/8566831 target=_blank rel=noopener>Create directory if it does not exist</a></li></ul><h5 id=mkdir--p><a href=#mkdir--p class=header-anchor></a><code>mkdir -p</code></h5><p>参考
+<a class=link href=https://stackoverflow.com/a/65162639/8566831 target=_blank rel=noopener>powershell equivalent of linux &ldquo;mkdir -p&rdquo;?</a>
+使用 <code>-Force</code> 选项创建多级目录</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> New-Item -ItemType Directory -Force -Path <span class=nv>$env</span>:TEMP<span class=se>\a\b\c</span>
+</span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=go>    Directory: C:\Users\navyd\AppData\Local\Temp\a\b
+</span></span></span><span class=line><span class=cl><span class=go></span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=go>Mode                 LastWriteTime         Length Name
+</span></span></span><span class=line><span class=cl><span class=go>----                 -------------         ------ ----
+</span></span></span><span class=line><span class=cl><span class=go>d----           2025/2/26     1:58                c
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=忽略命令的输出><a href=#%e5%bf%bd%e7%95%a5%e5%91%bd%e4%bb%a4%e7%9a%84%e8%be%93%e5%87%ba class=header-anchor></a>忽略命令的输出</h4><p>参考
+<a class=link href=https://stackoverflow.com/a/5263780/8566831 target=_blank rel=noopener>What&rsquo;s the better (cleaner) way to ignore output in PowerShell? [closed]</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=vm>$null</span> <span class=p>=</span> <span class=nb>echo </span><span class=n>hello</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=取最值><a href=#%e5%8f%96%e6%9c%80%e5%80%bc class=header-anchor></a>取最值</h4><h5 id=math><a href=#math class=header-anchor></a>math</h5><p>使用
+<a class=link href="https://learn.microsoft.com/en-us/dotnet/api/system.math?view=net-8.0#methods" target=_blank rel=noopener>Math: methods</a>
+中的 max,min 等方法</p><h5 id=measure-object><a href=#measure-object class=header-anchor></a>Measure-Object</h5><p>在
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/measure-object?view=powershell-7.4" target=_blank rel=noopener>Measure-Object</a>
+中使用选项
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/measure-object?view=powershell-7.4#-maximum" target=_blank rel=noopener>-Maximum</a>
+和
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/measure-object?view=powershell-7.4#-minimum" target=_blank rel=noopener>-Minimum</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-console data-lang=console><span class=line><span class=cl><span class=gp>$</span> 2,1,3 <span class=p>|</span> Measure-Object -Maximum -Minimum -Sum
+</span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=go>Count             : 3
+</span></span></span><span class=line><span class=cl><span class=go>Average           :
+</span></span></span><span class=line><span class=cl><span class=go>Sum               : 6
+</span></span></span><span class=line><span class=cl><span class=go>Maximum           : 3
+</span></span></span><span class=line><span class=cl><span class=go>Minimum           : 1
+</span></span></span><span class=line><span class=cl><span class=go>StandardDeviation :
+</span></span></span><span class=line><span class=cl><span class=go>Property          :
+</span></span></span></code></pre></td></tr></table></div></div><p>参考：</p><ul><li><a class=link href=https://stackoverflow.com/questions/19170408/powershell-max-first-aggregate-functions target=_blank rel=noopener>powershell max/first/aggregate functions</a></li><li><a class=link href=https://4sysops.com/archives/do-the-math-with-powershell/ target=_blank rel=noopener>Do the math with PowerShell</a></li></ul><h4 id=计算字符串的-hash-值><a href=#%e8%ae%a1%e7%ae%97%e5%ad%97%e7%ac%a6%e4%b8%b2%e7%9a%84-hash-%e5%80%bc class=header-anchor></a>计算字符串的 Hash 值</h4><p>参考
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/get-filehash?view=powershell-7.4#example-4-compute-the-hash-of-a-string" target=_blank rel=noopener>Example 4: Compute the hash of a string</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=nv>$stringAsStream</span> <span class=p>=</span> <span class=p>[</span><span class=no>System.IO.MemoryStream</span><span class=p>]::</span><span class=n>new</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=nv>$writer</span> <span class=p>=</span> <span class=p>[</span><span class=no>System.IO.StreamWriter</span><span class=p>]::</span><span class=n>new</span><span class=p>(</span><span class=nv>$stringAsStream</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nv>$writer</span><span class=p>.</span><span class=py>write</span><span class=p>(</span><span class=s2>&#34;Hello world&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nv>$writer</span><span class=p>.</span><span class=py>Flush</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=nv>$stringAsStream</span><span class=p>.</span><span class=na>Position</span> <span class=p>=</span> <span class=mf>0</span>
+</span></span><span class=line><span class=cl><span class=nb>Get-FileHash</span> <span class=n>-InputStream</span> <span class=nv>$stringAsStream</span> <span class=p>|</span> <span class=nb>Select-Object</span> <span class=n>Hash</span>
+</span></span><span class=line><span class=cl><span class=c># Hash ---- 64EC88CA00B268E5BA1A35678A1B5316D212F4F366B2477232534A8AECA37F3C</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=invoke-expression-的问题><a href=#invoke-expression-%e7%9a%84%e9%97%ae%e9%a2%98 class=header-anchor></a>Invoke-Expression 的问题</h4><p>在 function 中调用和在 profile 中直接调用
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-expression?view=powershell-7.4" target=_blank rel=noopener>Invoke-Expression</a>
+,
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_scripts?view=powershell-7.4#script-scope-and-dot-sourcing" target=_blank rel=noopener>dot sourcing</a>
+,
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/import-module?view=powershell-7.4" target=_blank rel=noopener>Import-Module</a>
+可能无效或出错</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=kd>function</span><span class=w> </span><span class=nb>Import-CmdOutput</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nb>Get-CachedCmdOutput</span> <span class=n>-WaitIfNoCache</span> <span class=nv>@args</span> <span class=p>|</span> <span class=nb>Out-String</span> <span class=p>|</span> <span class=nb>Invoke-Expression</span>
+</span></span><span class=line><span class=cl>        <span class=c># NOTE: or `. script.ps1`</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=c># NOTE: 仅演示</span>
+</span></span><span class=line><span class=cl><span class=nb>Import-CmdOutput</span> <span class=nb>echo </span><span class=n>test</span>
+</span></span><span class=line><span class=cl><span class=c># Set-Item: Cannot process argument because the value of argument &#34;name&#34; is null. Change the value of argument &#34;name&#34; to a non-null value.</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c># 正常</span>
+</span></span><span class=line><span class=cl><span class=nb>Get-CachedCmdOutput</span> <span class=n>-WaitIfNoCache</span> <span class=nb>echo </span><span class=n>test</span> <span class=p>|</span> <span class=nb>Out-String</span> <span class=p>|</span> <span class=nb>Invoke-Expression</span>
+</span></span></code></pre></td></tr></table></div></div><p>参考
+<a class=link href=https://stackoverflow.com/questions/72129509/when-using-invoke-expression-inside-a-function-it-doesnt-do-anything target=_blank rel=noopener>When using Invoke-Expression inside a function it doesn&rsquo;t do anything</a>
+和
+<a class=link href="https://learn.microsoft.com/zh-cn/powershell/scripting/learn/deep-dives/avoid-using-invoke-expression?view=powershell-7.4" target=_blank rel=noopener>避免使用 Invoke-Expression</a>
+和
+<a class=link href=https://matt.kotsenas.com/posts/pwsh-profiling-async-startup target=_blank rel=noopener>Profiling and asynchronous initialization to improve PowerShell startup</a>
+后，发现是
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_scopes?view=powershell-7.4" target=_blank rel=noopener>scopes</a>
+的问题，上面 3 种情况都可以使用
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/import-module?view=powershell-7.4#-global" target=_blank rel=noopener>Import-Module -Global</a>
+选项与
+<a class=link href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/new-module?view=powershell-7.4#example-1-create-a-dynamic-module" target=_blank rel=noopener>New-Module: Create a dynamic module</a>
+解决：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-powershell data-lang=powershell><span class=line><span class=cl><span class=nb>New-Module</span> <span class=n>-ScriptBlock</span> <span class=p>{</span> <span class=nb>iex </span><span class=s2>&#34;</span><span class=p>$(</span><span class=n>thefuck</span> <span class=p>-</span><span class=n>-alias</span><span class=p>)</span><span class=s2>&#34;</span> <span class=p>}</span> <span class=p>|</span> <span class=nb>Import-Module</span> <span class=n>-Global</span>
+</span></span></code></pre></td></tr></table></div></div></section><footer class=article-footer><section class=article-tags><a href=/tags/powershell/>Powershell</a>
+<a href=/tags/shell/>Shell</a></section><section class=article-lastmod><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>最后更新于 2025-03-08 01:15:03 CST</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/posts/2025/02/powershell-profile-startup-acceleration/><div class=article-details><h2 class=article-title>Powershell 配置文件启动加速</h2></div></a></article><article><a href=/posts/2025/02/systemd-string-escaping/><div class=article-details><h2 class=article-title>在 Systemd Unit 中转义字符</h2></div></a></article><article><a href=/posts/2022/11/how-to-extract-a-single-file-from-tar-to-a-different-directory/><div class=article-details><h2 class=article-title>How to Extract a Single File From Tar to a Different Directory</h2></div></a></article><article><a href=/posts/2021/11/port-forwarding-in-wsl2/><div class=article-details><h2 class=article-title>Port Forwarding in Wsl2</h2></div></a></article><article><a href=/posts/2021/10/powerline-in-wsl2/><div class=article-details><h2 class=article-title>Powerline in WSL2</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2026 NavyD 的个人博客</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
